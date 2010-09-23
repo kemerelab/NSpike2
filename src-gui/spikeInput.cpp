@@ -1458,15 +1458,13 @@ SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
 
     QString s;
 
-    QFont f( "SansSerif", 12, QFont::Normal );
+    QFont f( "SansSerif", 11, QFont::Normal );
     QFont f2( "SansSerif", 10, QFont::Normal );
 
     clear = new QPushButton("Clear Status", this, "ClearStatus");
     connect(clear, SIGNAL( clicked() ), this, SLOT(clearStatus()) );
     clear->setFont(f2);
-    //grid->addMultiCellWidget(clear, 0, 0, 0, 0);
     addPermanentWidget(clear);
-
 
     message = new QLabel("test", this, 0);
     message->setFont(f);
@@ -1478,22 +1476,18 @@ SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
 
     fileStatus = new QLabel(FileDiskStatus);
     fileStatus->setFont(f);
-    //addPermanentWidget(fileStatus);
     statusLayout->addWidget(fileStatus,0,0,1,1);
 
     fileSize = new QLabel(FileDiskStatus);
     fileSize->setFont(f);
-    //addPermanentWidget(fileSize);
     statusLayout->addWidget(fileSize,0,1,1,1);
 
     diskStatus = new QLabel(FileDiskStatus);
     diskStatus->setFont(f);
-    //addPermanentWidget(diskStatus);
     statusLayout->addWidget(diskStatus,1,0,1,1);
 
     diskFree = new QLabel(FileDiskStatus);
     diskFree->setFont(f);
-    //addPermanentWidget(diskFree);
     statusLayout->addWidget(diskFree,1,1,1,1);
 
     FileDiskStatus->setLayout(statusLayout);
