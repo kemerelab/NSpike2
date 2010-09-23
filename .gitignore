@@ -9,7 +9,6 @@ autom4te.cache/*
 *~
 */.deps
 autom4te.cache
-
 src-extract/nspike_extract
 src-extract/nspike_postimestamp
 src-gui/libnspike.a
