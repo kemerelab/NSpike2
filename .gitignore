@@ -1,13 +1,19 @@
 
-autom4te.cache/*
-*/.moc/*
-*/.obj/*
-*/.ui/*
+.moc/*
+.obj/*
+.ui/*
+.deps/*
+.deps
+.moc
+.obj
 *.o
 *.Po
 *.a
 *~
-*/.deps
+Makefile
+Makefile.in
+config.*
+autom4te.cache/*
 autom4te.cache
 src-extract/nspike_extract
 src-extract/nspike_postimestamp
@@ -20,4 +26,3 @@ src-modules/spike_posdaq
 src-modules/spike_process_posdata
 src-modules/spike_save_data
 src-user/user_program
-
