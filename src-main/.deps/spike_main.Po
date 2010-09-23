@@ -49,17 +49,24 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
  ../include/spike_dsp.h ../include/spike_dio.h \
  ../include/spike_functions.h ../include/spike_rtl.h \
  ../include/spike_matlab.h ../src-gui/spikeMainWindow.h \
- ../src-gui/spikeGLPane.h /usr/include/qt4/QtGui/QtGui \
- /usr/include/qt4/QtCore/QtCore /usr/include/qt4/QtCore/qxmlstream.h \
- /usr/include/qt4/QtCore/qiodevice.h /usr/include/qt4/QtCore/qobject.h \
- /usr/include/qt4/QtCore/qobjectdefs.h \
- /usr/include/qt4/QtCore/qnamespace.h /usr/include/qt4/QtCore/qglobal.h \
- /usr/include/qt4/QtCore/qconfig.h /usr/include/qt4/QtCore/qfeatures.h \
- /usr/include/qt4/QtCore/qstring.h /usr/include/qt4/QtCore/qchar.h \
- /usr/include/qt4/QtCore/qbytearray.h /usr/include/qt4/QtCore/qatomic.h \
- /usr/include/qt4/QtCore/qbasicatomic.h \
- /usr/include/qt4/QtCore/qatomic_arch.h \
- /usr/include/qt4/QtCore/qatomic_x86_64.h /usr/include/c++/4.4/string \
+ ../src-gui/spikeGLPane.h /usr/share/qt4/include/QtGui/QtGui \
+ /usr/share/qt4/include/QtCore/QtCore \
+ /usr/share/qt4/include/QtCore/qxmlstream.h \
+ /usr/share/qt4/include/QtCore/qiodevice.h \
+ /usr/share/qt4/include/QtCore/qobject.h \
+ /usr/share/qt4/include/QtCore/qobjectdefs.h \
+ /usr/share/qt4/include/QtCore/qnamespace.h \
+ /usr/share/qt4/include/QtCore/qglobal.h \
+ /usr/share/qt4/include/QtCore/qconfig.h \
+ /usr/share/qt4/include/QtCore/qfeatures.h \
+ /usr/share/qt4/include/QtCore/qstring.h \
+ /usr/share/qt4/include/QtCore/qchar.h \
+ /usr/share/qt4/include/QtCore/qbytearray.h \
+ /usr/share/qt4/include/QtCore/qatomic.h \
+ /usr/share/qt4/include/QtCore/qbasicatomic.h \
+ /usr/share/qt4/include/QtCore/qatomic_arch.h \
+ /usr/share/qt4/include/QtCore/qatomic_x86_64.h \
+ /usr/include/c++/4.4/string \
  /usr/include/c++/4.4/x86_64-linux-gnu/bits/c++config.h \
  /usr/include/c++/4.4/x86_64-linux-gnu/bits/os_defines.h \
  /usr/include/c++/4.4/x86_64-linux-gnu/bits/cpu_defines.h \
@@ -98,10 +105,11 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
  /usr/include/c++/4.4/x86_64-linux-gnu/bits/atomic_word.h \
  /usr/include/c++/4.4/initializer_list \
  /usr/include/c++/4.4/bits/basic_string.tcc \
- /usr/include/qt4/QtCore/qlist.h /usr/include/qt4/QtCore/qiterator.h \
- /usr/include/qt4/QtCore/qalgorithms.h /usr/include/c++/4.4/iterator \
- /usr/include/c++/4.4/ostream /usr/include/c++/4.4/ios \
- /usr/include/c++/4.4/bits/ios_base.h \
+ /usr/share/qt4/include/QtCore/qlist.h \
+ /usr/share/qt4/include/QtCore/qiterator.h \
+ /usr/share/qt4/include/QtCore/qalgorithms.h \
+ /usr/include/c++/4.4/iterator /usr/include/c++/4.4/ostream \
+ /usr/include/c++/4.4/ios /usr/include/c++/4.4/bits/ios_base.h \
  /usr/include/c++/4.4/bits/locale_classes.h \
  /usr/include/c++/4.4/bits/locale_classes.tcc \
  /usr/include/c++/4.4/streambuf /usr/include/c++/4.4/bits/streambuf.tcc \
@@ -117,462 +125,601 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
  /usr/include/c++/4.4/bits/istream.tcc \
  /usr/include/c++/4.4/bits/stream_iterator.h /usr/include/c++/4.4/list \
  /usr/include/c++/4.4/bits/stl_list.h /usr/include/c++/4.4/bits/list.tcc \
- /usr/include/qt4/QtCore/qscopedpointer.h \
- /usr/include/qt4/QtCore/qvector.h /usr/include/c++/4.4/vector \
+ /usr/share/qt4/include/QtCore/qscopedpointer.h \
+ /usr/share/qt4/include/QtCore/qvector.h /usr/include/c++/4.4/vector \
  /usr/include/c++/4.4/bits/stl_construct.h \
  /usr/include/c++/4.4/bits/stl_uninitialized.h \
  /usr/include/c++/4.4/bits/stl_vector.h \
  /usr/include/c++/4.4/bits/stl_bvector.h \
  /usr/include/c++/4.4/bits/vector.tcc \
- /usr/include/qt4/QtCore/qabstractfileengine.h \
- /usr/include/qt4/QtCore/qdir.h /usr/include/qt4/QtCore/qfileinfo.h \
- /usr/include/qt4/QtCore/qfile.h /usr/include/qt4/QtCore/qstringlist.h \
- /usr/include/qt4/QtCore/qdatastream.h /usr/include/qt4/QtCore/qregexp.h \
- /usr/include/qt4/QtCore/qstringmatcher.h \
- /usr/include/qt4/QtCore/qbuffer.h /usr/include/qt4/QtCore/qdatastream.h \
- /usr/include/qt4/QtCore/qdebug.h /usr/include/qt4/QtCore/qhash.h \
- /usr/include/qt4/QtCore/qpair.h /usr/include/qt4/QtCore/qmap.h \
- /usr/include/c++/4.4/map /usr/include/c++/4.4/bits/stl_tree.h \
- /usr/include/c++/4.4/bits/stl_map.h \
+ /usr/share/qt4/include/QtCore/qabstractfileengine.h \
+ /usr/share/qt4/include/QtCore/qdir.h \
+ /usr/share/qt4/include/QtCore/qfileinfo.h \
+ /usr/share/qt4/include/QtCore/qfile.h \
+ /usr/share/qt4/include/QtCore/qstringlist.h \
+ /usr/share/qt4/include/QtCore/qdatastream.h \
+ /usr/share/qt4/include/QtCore/qregexp.h \
+ /usr/share/qt4/include/QtCore/qstringmatcher.h \
+ /usr/share/qt4/include/QtCore/qbuffer.h \
+ /usr/share/qt4/include/QtCore/qdatastream.h \
+ /usr/share/qt4/include/QtCore/qdebug.h \
+ /usr/share/qt4/include/QtCore/qhash.h \
+ /usr/share/qt4/include/QtCore/qpair.h \
+ /usr/share/qt4/include/QtCore/qmap.h /usr/include/c++/4.4/map \
+ /usr/include/c++/4.4/bits/stl_tree.h /usr/include/c++/4.4/bits/stl_map.h \
  /usr/include/c++/4.4/bits/stl_multimap.h \
- /usr/include/qt4/QtCore/qtextstream.h /usr/include/qt4/QtCore/qlocale.h \
- /usr/include/qt4/QtCore/qtextcodec.h /usr/include/qt4/QtCore/qset.h \
- /usr/include/qt4/QtCore/qcontiguouscache.h \
- /usr/include/qt4/QtCore/qdir.h /usr/include/qt4/QtCore/qdiriterator.h \
- /usr/include/qt4/QtCore/qfile.h /usr/include/qt4/QtCore/qfileinfo.h \
- /usr/include/qt4/QtCore/qfilesystemwatcher.h \
- /usr/include/qt4/QtCore/qfsfileengine.h \
- /usr/include/qt4/QtCore/qabstractfileengine.h \
- /usr/include/qt4/QtCore/qiodevice.h /usr/include/qt4/QtCore/qprocess.h \
- /usr/include/qt4/QtCore/qshareddata.h \
- /usr/include/qt4/QtCore/qresource.h /usr/include/qt4/QtCore/qsettings.h \
- /usr/include/qt4/QtCore/qvariant.h /usr/include/qt4/QtCore/qmetatype.h \
- /usr/include/qt4/QtCore/qtemporaryfile.h \
- /usr/include/qt4/QtCore/qtextstream.h /usr/include/qt4/QtCore/qurl.h \
- /usr/include/qt4/QtCore/qtextcodec.h \
- /usr/include/qt4/QtCore/qtextcodecplugin.h \
- /usr/include/qt4/QtCore/qplugin.h /usr/include/qt4/QtCore/qpointer.h \
- /usr/include/qt4/QtCore/qfactoryinterface.h \
- /usr/include/qt4/QtCore/qalgorithms.h \
- /usr/include/qt4/QtCore/qbitarray.h /usr/include/qt4/QtCore/qbytearray.h \
- /usr/include/qt4/QtCore/qbytearraymatcher.h \
- /usr/include/qt4/QtCore/qcache.h /usr/include/qt4/QtCore/qchar.h \
- /usr/include/qt4/QtCore/qcontainerfwd.h \
- /usr/include/qt4/QtCore/qcontiguouscache.h \
- /usr/include/qt4/QtCore/qcryptographichash.h \
- /usr/include/qt4/QtCore/qdatetime.h \
- /usr/include/qt4/QtCore/qsharedpointer.h \
- /usr/include/qt4/QtCore/qsharedpointer_impl.h \
- /usr/include/qt4/QtCore/qeasingcurve.h /usr/include/qt4/QtCore/qhash.h \
- /usr/include/qt4/QtCore/qiterator.h /usr/include/qt4/QtCore/qline.h \
- /usr/include/qt4/QtCore/qpoint.h /usr/include/qt4/QtCore/qlinkedlist.h \
- /usr/include/qt4/QtCore/qlist.h /usr/include/qt4/QtCore/qlocale.h \
- /usr/include/qt4/QtCore/qmap.h /usr/include/qt4/QtCore/qmargins.h \
- /usr/include/qt4/QtCore/qpair.h /usr/include/qt4/QtCore/qpoint.h \
- /usr/include/qt4/QtCore/qqueue.h /usr/include/qt4/QtCore/qrect.h \
- /usr/include/qt4/QtCore/qsize.h /usr/include/qt4/QtCore/qregexp.h \
- /usr/include/qt4/QtCore/qscopedpointer.h /usr/include/qt4/QtCore/qset.h \
- /usr/include/qt4/QtCore/qshareddata.h \
- /usr/include/qt4/QtCore/qsharedpointer.h /usr/include/qt4/QtCore/qsize.h \
- /usr/include/qt4/QtCore/qstack.h /usr/include/qt4/QtCore/qstring.h \
- /usr/include/qt4/QtCore/qstringbuilder.h \
- /usr/include/qt4/QtCore/qstringlist.h \
- /usr/include/qt4/QtCore/qstringmatcher.h \
- /usr/include/qt4/QtCore/qtextboundaryfinder.h \
- /usr/include/qt4/QtCore/qtimeline.h \
- /usr/include/qt4/QtCore/qeasingcurve.h \
- /usr/include/qt4/QtCore/qvarlengtharray.h \
- /usr/include/qt4/QtCore/qcontainerfwd.h \
- /usr/include/qt4/QtCore/qvector.h /usr/include/qt4/QtCore/qendian.h \
- /usr/include/qt4/QtCore/qfeatures.h /usr/include/qt4/QtCore/qglobal.h \
- /usr/include/qt4/QtCore/qlibraryinfo.h /usr/include/qt4/QtCore/QDate \
- /usr/include/qt4/QtCore/qnamespace.h /usr/include/qt4/QtCore/qnumeric.h \
- /usr/include/qt4/QtCore/qabstracteventdispatcher.h \
- /usr/include/qt4/QtCore/qeventloop.h \
- /usr/include/qt4/QtCore/qabstractitemmodel.h \
- /usr/include/qt4/QtCore/qbasictimer.h \
- /usr/include/qt4/QtCore/qcoreapplication.h \
- /usr/include/qt4/QtCore/qcoreevent.h \
- /usr/include/qt4/QtCore/qcoreevent.h \
- /usr/include/qt4/QtCore/qeventloop.h /usr/include/qt4/QtCore/qmath.h \
- /usr/include/qt4/QtCore/qmetaobject.h \
- /usr/include/qt4/QtCore/qmetatype.h /usr/include/qt4/QtCore/qmimedata.h \
- /usr/include/qt4/QtCore/qobject.h \
- /usr/include/qt4/QtCore/qobjectcleanuphandler.h \
- /usr/include/qt4/QtCore/qobjectdefs.h /usr/include/qt4/QtCore/qpointer.h \
- /usr/include/qt4/QtCore/qsharedmemory.h \
- /usr/include/qt4/QtCore/qsignalmapper.h \
- /usr/include/qt4/QtCore/qsocketnotifier.h \
- /usr/include/qt4/QtCore/qsystemsemaphore.h \
- /usr/include/qt4/QtCore/qtimer.h /usr/include/qt4/QtCore/qbasictimer.h \
- /usr/include/qt4/QtCore/qtranslator.h /usr/include/qt4/QtCore/qvariant.h \
- /usr/include/qt4/QtCore/qfuture.h \
- /usr/include/qt4/QtCore/qfutureinterface.h \
- /usr/include/qt4/QtCore/qrunnable.h /usr/include/qt4/QtCore/qmutex.h \
- /usr/include/qt4/QtCore/qtconcurrentexception.h \
- /usr/include/qt4/QtCore/qtconcurrentresultstore.h \
- /usr/include/qt4/QtCore/qdebug.h \
- /usr/include/qt4/QtCore/qtconcurrentcompilertest.h \
- /usr/include/qt4/QtCore/qfutureinterface.h \
- /usr/include/qt4/QtCore/qfuturesynchronizer.h \
- /usr/include/qt4/QtCore/qfuture.h \
- /usr/include/qt4/QtCore/qfuturewatcher.h \
- /usr/include/qt4/QtCore/qrunnable.h \
- /usr/include/qt4/QtCore/qtconcurrentcompilertest.h \
- /usr/include/qt4/QtCore/qtconcurrentexception.h \
- /usr/include/qt4/QtCore/qtconcurrentfilter.h \
- /usr/include/qt4/QtCore/qtconcurrentfilterkernel.h \
- /usr/include/qt4/QtCore/qtconcurrentiteratekernel.h \
- /usr/include/qt4/QtCore/qtconcurrentmedian.h \
- /usr/include/qt4/QtCore/qtconcurrentthreadengine.h \
- /usr/include/qt4/QtCore/qthreadpool.h /usr/include/qt4/QtCore/qthread.h \
- /usr/include/qt4/QtCore/qwaitcondition.h \
- /usr/include/qt4/QtCore/qsemaphore.h \
- /usr/include/qt4/QtCore/qtconcurrentmapkernel.h \
- /usr/include/qt4/QtCore/qtconcurrentreducekernel.h \
- /usr/include/qt4/QtCore/qtconcurrentfunctionwrappers.h \
- /usr/include/qt4/QtCore/qtconcurrentfilterkernel.h \
- /usr/include/qt4/QtCore/qtconcurrentfunctionwrappers.h \
- /usr/include/qt4/QtCore/qtconcurrentiteratekernel.h \
- /usr/include/qt4/QtCore/qtconcurrentmap.h \
- /usr/include/qt4/QtCore/qtconcurrentmapkernel.h \
- /usr/include/qt4/QtCore/qtconcurrentmedian.h \
- /usr/include/qt4/QtCore/qtconcurrentreducekernel.h \
- /usr/include/qt4/QtCore/qtconcurrentresultstore.h \
- /usr/include/qt4/QtCore/qtconcurrentrun.h \
- /usr/include/qt4/QtCore/qtconcurrentrunbase.h \
- /usr/include/qt4/QtCore/qtconcurrentstoredfunctioncall.h \
- /usr/include/qt4/QtCore/qtconcurrentrunbase.h \
- /usr/include/qt4/QtCore/qtconcurrentstoredfunctioncall.h \
- /usr/include/qt4/QtCore/qtconcurrentthreadengine.h \
- /usr/include/qt4/QtCore/qthreadpool.h \
- /usr/include/qt4/QtCore/qfactoryinterface.h \
- /usr/include/qt4/QtCore/qlibrary.h /usr/include/qt4/QtCore/qplugin.h \
- /usr/include/qt4/QtCore/qpluginloader.h \
- /usr/include/qt4/QtCore/qlibrary.h /usr/include/qt4/QtCore/quuid.h \
- /usr/include/qt4/QtCore/qatomic.h /usr/include/qt4/QtCore/qbasicatomic.h \
- /usr/include/qt4/QtCore/qmutex.h \
- /usr/include/qt4/QtCore/qreadwritelock.h \
- /usr/include/qt4/QtCore/qsemaphore.h /usr/include/qt4/QtCore/qthread.h \
- /usr/include/qt4/QtCore/qthreadstorage.h \
- /usr/include/qt4/QtCore/qwaitcondition.h \
- /usr/include/qt4/QtCore/qabstractstate.h \
- /usr/include/qt4/QtCore/qabstracttransition.h \
- /usr/include/qt4/QtCore/qeventtransition.h \
- /usr/include/qt4/QtCore/qabstracttransition.h \
- /usr/include/qt4/QtCore/qfinalstate.h \
- /usr/include/qt4/QtCore/qabstractstate.h \
- /usr/include/qt4/QtCore/qhistorystate.h \
- /usr/include/qt4/QtCore/qsignaltransition.h \
- /usr/include/qt4/QtCore/qstate.h /usr/include/qt4/QtCore/qstatemachine.h \
- /usr/include/qt4/QtCore/qstate.h \
- /usr/include/qt4/QtCore/qabstractanimation.h \
- /usr/include/qt4/QtCore/qanimationgroup.h \
- /usr/include/qt4/QtCore/qabstractanimation.h \
- /usr/include/qt4/QtCore/qparallelanimationgroup.h \
- /usr/include/qt4/QtCore/qanimationgroup.h \
- /usr/include/qt4/QtCore/qpauseanimation.h \
- /usr/include/qt4/QtCore/qpropertyanimation.h \
- /usr/include/qt4/QtCore/qvariantanimation.h \
- /usr/include/qt4/QtCore/qsequentialanimationgroup.h \
- /usr/include/qt4/QtCore/qvariantanimation.h \
- /usr/include/qt4/QtGui/qbitmap.h /usr/include/qt4/QtGui/qpixmap.h \
- /usr/include/qt4/QtGui/qpaintdevice.h \
- /usr/include/qt4/QtGui/qwindowdefs.h /usr/include/qt4/QtCore/qrect.h \
- /usr/include/qt4/QtGui/qcolor.h /usr/include/qt4/QtGui/qrgb.h \
- /usr/include/qt4/QtGui/qimage.h /usr/include/qt4/QtGui/qtransform.h \
- /usr/include/qt4/QtGui/qmatrix.h /usr/include/qt4/QtGui/qpolygon.h \
- /usr/include/qt4/QtGui/qregion.h /usr/include/qt4/QtCore/qline.h \
- /usr/include/qt4/QtGui/qwmatrix.h /usr/include/qt4/QtGui/qpainterpath.h \
- /usr/include/qt4/QtGui/qicon.h /usr/include/qt4/QtGui/qiconengine.h \
- /usr/include/qt4/QtGui/qicon.h \
- /usr/include/qt4/QtGui/qiconengineplugin.h \
- /usr/include/qt4/QtGui/qimage.h /usr/include/qt4/QtGui/qimageiohandler.h \
- /usr/include/qt4/QtGui/qimagereader.h \
- /usr/include/qt4/QtGui/qimageiohandler.h \
- /usr/include/qt4/QtGui/qimagewriter.h /usr/include/qt4/QtGui/qmovie.h \
- /usr/include/qt4/QtGui/qimagereader.h /usr/include/qt4/QtGui/qpicture.h \
- /usr/include/qt4/QtGui/qpictureformatplugin.h \
- /usr/include/qt4/QtGui/qpixmap.h /usr/include/qt4/QtGui/qpixmapcache.h \
- /usr/include/qt4/QtGui/qs60mainapplication.h \
- /usr/include/qt4/QtGui/qs60mainappui.h \
- /usr/include/qt4/QtGui/qs60maindocument.h \
- /usr/include/qt4/QtGui/qvfbhdr.h /usr/include/qt4/QtGui/qwsembedwidget.h \
- /usr/include/qt4/QtGui/qwidget.h /usr/include/qt4/QtCore/qmargins.h \
- /usr/include/qt4/QtGui/qpalette.h /usr/include/qt4/QtGui/qbrush.h \
- /usr/include/qt4/QtGui/qfont.h /usr/include/qt4/QtGui/qfontmetrics.h \
- /usr/include/qt4/QtGui/qfontinfo.h /usr/include/qt4/QtGui/qsizepolicy.h \
- /usr/include/qt4/QtGui/qcursor.h /usr/include/qt4/QtGui/qkeysequence.h \
- /usr/include/qt4/QtGui/qabstractbutton.h \
- /usr/include/qt4/QtGui/qabstractscrollarea.h \
- /usr/include/qt4/QtGui/qframe.h /usr/include/qt4/QtGui/qabstractslider.h \
- /usr/include/qt4/QtGui/qabstractspinbox.h \
- /usr/include/qt4/QtGui/qvalidator.h \
- /usr/include/qt4/QtGui/qbuttongroup.h \
- /usr/include/qt4/QtGui/qcalendarwidget.h \
- /usr/include/qt4/QtCore/qdatetime.h /usr/include/qt4/QtGui/qcheckbox.h \
- /usr/include/qt4/QtGui/qabstractbutton.h \
- /usr/include/qt4/QtGui/qcombobox.h \
- /usr/include/qt4/QtGui/qabstractitemdelegate.h \
- /usr/include/qt4/QtGui/qstyleoption.h \
- /usr/include/qt4/QtGui/qabstractspinbox.h \
- /usr/include/qt4/QtGui/qslider.h \
- /usr/include/qt4/QtGui/qabstractslider.h /usr/include/qt4/QtGui/qstyle.h \
- /usr/include/qt4/QtGui/qtabbar.h /usr/include/qt4/QtGui/qtabwidget.h \
- /usr/include/qt4/QtGui/qrubberband.h \
- /usr/include/qt4/QtCore/qabstractitemmodel.h \
- /usr/include/qt4/QtGui/qcommandlinkbutton.h \
- /usr/include/qt4/QtGui/qpushbutton.h \
- /usr/include/qt4/QtGui/qdatetimeedit.h /usr/include/qt4/QtGui/qdial.h \
- /usr/include/qt4/QtGui/qdialogbuttonbox.h \
- /usr/include/qt4/QtGui/qdockwidget.h \
- /usr/include/qt4/QtGui/qfocusframe.h \
- /usr/include/qt4/QtGui/qfontcombobox.h \
- /usr/include/qt4/QtGui/qcombobox.h \
- /usr/include/qt4/QtGui/qfontdatabase.h /usr/include/qt4/QtGui/qframe.h \
- /usr/include/qt4/QtGui/qgroupbox.h /usr/include/qt4/QtGui/qlabel.h \
- /usr/include/qt4/QtGui/qlcdnumber.h /usr/include/qt4/QtCore/qbitarray.h \
- /usr/include/qt4/QtGui/qlineedit.h /usr/include/qt4/QtGui/qmainwindow.h \
- /usr/include/qt4/QtGui/qmdiarea.h \
- /usr/include/qt4/QtGui/qabstractscrollarea.h \
- /usr/include/qt4/QtGui/qmdisubwindow.h /usr/include/qt4/QtGui/qmenu.h \
- /usr/include/qt4/QtGui/qaction.h /usr/include/qt4/QtGui/qactiongroup.h \
- /usr/include/qt4/QtGui/qmenubar.h /usr/include/qt4/QtGui/qmenu.h \
- /usr/include/qt4/QtGui/qmenudata.h \
- /usr/include/qt4/QtGui/qplaintextedit.h \
- /usr/include/qt4/QtGui/qtextedit.h \
- /usr/include/qt4/QtGui/qtextdocument.h \
- /usr/include/qt4/QtGui/qtextoption.h \
- /usr/include/qt4/QtGui/qtextcursor.h \
- /usr/include/qt4/QtGui/qtextformat.h /usr/include/qt4/QtGui/qpen.h \
- /usr/include/qt4/QtGui/qtextobject.h \
- /usr/include/qt4/QtGui/qtextlayout.h /usr/include/qt4/QtGui/qevent.h \
- /usr/include/qt4/QtGui/qmime.h /usr/include/qt4/QtCore/qmimedata.h \
- /usr/include/qt4/QtGui/qdrag.h \
- /usr/include/qt4/QtGui/qabstracttextdocumentlayout.h \
- /usr/include/qt4/QtGui/qprintpreviewwidget.h \
- /usr/include/qt4/QtGui/qprinter.h /usr/include/qt4/QtGui/qprogressbar.h \
- /usr/include/qt4/QtGui/qpushbutton.h \
- /usr/include/qt4/QtGui/qradiobutton.h \
- /usr/include/qt4/QtGui/qrubberband.h \
- /usr/include/qt4/QtGui/qscrollarea.h /usr/include/qt4/QtGui/qscrollbar.h \
- /usr/include/qt4/QtGui/qsizegrip.h /usr/include/qt4/QtGui/qslider.h \
- /usr/include/qt4/QtGui/qspinbox.h /usr/include/qt4/QtGui/qsplashscreen.h \
- /usr/include/qt4/QtGui/qsplitter.h \
- /usr/include/qt4/QtGui/qstackedwidget.h \
- /usr/include/qt4/QtGui/qstatusbar.h /usr/include/qt4/QtGui/qtabbar.h \
- /usr/include/qt4/QtGui/qtabwidget.h \
- /usr/include/qt4/QtGui/qtextbrowser.h /usr/include/qt4/QtCore/qurl.h \
- /usr/include/qt4/QtGui/qtextedit.h /usr/include/qt4/QtGui/qtoolbar.h \
- /usr/include/qt4/QtGui/qtoolbox.h /usr/include/qt4/QtGui/qtoolbutton.h \
- /usr/include/qt4/QtGui/qvalidator.h /usr/include/qt4/QtGui/qworkspace.h \
- /usr/include/qt4/QtGui/qinputcontext.h \
- /usr/include/qt4/QtGui/qinputcontextfactory.h \
- /usr/include/qt4/QtGui/qinputcontextplugin.h \
- /usr/include/qt4/QtGui/qgraphicsanchorlayout.h \
- /usr/include/qt4/QtGui/qgraphicsitem.h \
- /usr/include/qt4/QtGui/qgraphicslayout.h \
- /usr/include/qt4/QtGui/qgraphicslayoutitem.h \
- /usr/include/qt4/QtGui/qgraphicsgridlayout.h \
- /usr/include/qt4/QtGui/qgraphicsitem.h \
- /usr/include/qt4/QtGui/qgraphicsitemanimation.h \
- /usr/include/qt4/QtGui/qgraphicslayout.h \
- /usr/include/qt4/QtGui/qgraphicslayoutitem.h \
- /usr/include/qt4/QtGui/qgraphicslinearlayout.h \
- /usr/include/qt4/QtGui/qgraphicsproxywidget.h \
- /usr/include/qt4/QtGui/qgraphicswidget.h \
- /usr/include/qt4/QtGui/qgraphicsscene.h \
- /usr/include/qt4/QtGui/qgraphicssceneevent.h \
- /usr/include/qt4/QtGui/qgraphicstransform.h \
- /usr/include/qt4/QtCore/QObject /usr/include/qt4/QtGui/QVector3D \
- /usr/include/qt4/QtGui/qvector3d.h /usr/include/qt4/QtGui/QTransform \
- /usr/include/qt4/QtGui/qtransform.h /usr/include/qt4/QtGui/QMatrix4x4 \
- /usr/include/qt4/QtGui/qmatrix4x4.h /usr/include/qt4/QtGui/qvector3d.h \
- /usr/include/qt4/QtGui/qvector4d.h /usr/include/qt4/QtGui/qquaternion.h \
- /usr/include/qt4/QtGui/qgenericmatrix.h \
- /usr/include/qt4/QtGui/qgraphicsview.h /usr/include/qt4/QtGui/qpainter.h \
- /usr/include/qt4/QtGui/qdrawutil.h /usr/include/qt4/QtGui/qscrollarea.h \
- /usr/include/qt4/QtGui/qgraphicsscene.h \
- /usr/include/qt4/QtGui/qgraphicswidget.h \
- /usr/include/qt4/QtGui/qgenericmatrix.h \
- /usr/include/qt4/QtGui/qquaternion.h /usr/include/qt4/QtGui/qvector2d.h \
- /usr/include/qt4/QtGui/qvector4d.h \
- /usr/include/qt4/QtGui/qabstracttextdocumentlayout.h \
- /usr/include/qt4/QtGui/qfont.h /usr/include/qt4/QtGui/qfontdatabase.h \
- /usr/include/qt4/QtGui/qfontinfo.h /usr/include/qt4/QtGui/qfontmetrics.h \
- /usr/include/qt4/QtGui/qsyntaxhighlighter.h \
- /usr/include/qt4/QtGui/qtextcursor.h \
- /usr/include/qt4/QtGui/qtextdocument.h \
- /usr/include/qt4/QtGui/qtextdocumentfragment.h \
- /usr/include/qt4/QtGui/qtextdocumentwriter.h \
- /usr/include/qt4/QtGui/qtextformat.h \
- /usr/include/qt4/QtGui/qtextlayout.h /usr/include/qt4/QtGui/qtextlist.h \
- /usr/include/qt4/QtGui/qtextobject.h \
- /usr/include/qt4/QtGui/qtextoption.h /usr/include/qt4/QtGui/qtexttable.h \
- /usr/include/qt4/QtGui/qabstractpagesetupdialog.h \
- /usr/include/qt4/QtGui/qdialog.h \
- /usr/include/qt4/QtGui/qabstractprintdialog.h \
- /usr/include/qt4/QtGui/qcolordialog.h /usr/include/qt4/QtGui/qdialog.h \
- /usr/include/qt4/QtGui/qerrormessage.h \
- /usr/include/qt4/QtGui/qfiledialog.h \
- /usr/include/qt4/QtGui/qfilesystemmodel.h \
- /usr/include/qt4/QtCore/qdiriterator.h \
- /usr/include/qt4/QtGui/qfontdialog.h \
- /usr/include/qt4/QtGui/qinputdialog.h /usr/include/qt4/QtGui/qlineedit.h \
- /usr/include/qt4/QtGui/qmessagebox.h \
- /usr/include/qt4/QtGui/qpagesetupdialog.h \
- /usr/include/qt4/QtGui/qabstractpagesetupdialog.h \
- /usr/include/qt4/QtGui/qprintdialog.h \
- /usr/include/qt4/QtGui/qabstractprintdialog.h \
- /usr/include/qt4/QtGui/qprintpreviewdialog.h \
- /usr/include/qt4/QtGui/qprogressdialog.h \
- /usr/include/qt4/QtGui/qwizard.h /usr/include/qt4/QtGui/qaccessible.h \
- /usr/include/qt4/QtGui/qaccessible2.h \
- /usr/include/qt4/QtGui/qaccessible.h \
- /usr/include/qt4/QtGui/qaccessiblebridge.h \
- /usr/include/qt4/QtGui/qaccessibleobject.h \
- /usr/include/qt4/QtGui/qaccessibleplugin.h \
- /usr/include/qt4/QtGui/qaccessiblewidget.h \
- /usr/include/qt4/QtGui/qaccessibleobject.h \
- /usr/include/qt4/QtGui/qaction.h /usr/include/qt4/QtGui/qactiongroup.h \
- /usr/include/qt4/QtGui/qapplication.h \
- /usr/include/qt4/QtCore/qcoreapplication.h \
- /usr/include/qt4/QtGui/qboxlayout.h /usr/include/qt4/QtGui/qlayout.h \
- /usr/include/qt4/QtGui/qlayoutitem.h /usr/include/qt4/QtGui/qboxlayout.h \
- /usr/include/qt4/QtGui/qgridlayout.h /usr/include/qt4/QtGui/qclipboard.h \
- /usr/include/qt4/QtGui/qcursor.h /usr/include/qt4/QtGui/qdesktopwidget.h \
- /usr/include/qt4/QtGui/qdrag.h /usr/include/qt4/QtGui/qevent.h \
- /usr/include/qt4/QtGui/qformlayout.h /usr/include/qt4/QtGui/QLayout \
- /usr/include/qt4/QtGui/qlayout.h /usr/include/qt4/QtGui/qgesture.h \
- /usr/include/qt4/QtGui/qgesturerecognizer.h \
- /usr/include/qt4/QtGui/qgridlayout.h \
- /usr/include/qt4/QtGui/qkeysequence.h \
- /usr/include/qt4/QtGui/qlayoutitem.h /usr/include/qt4/QtGui/qmime.h \
- /usr/include/qt4/QtGui/qpalette.h \
- /usr/include/qt4/QtGui/qsessionmanager.h \
- /usr/include/qt4/QtGui/qshortcut.h /usr/include/qt4/QtGui/qsizepolicy.h \
- /usr/include/qt4/QtGui/qsound.h /usr/include/qt4/QtGui/qstackedlayout.h \
- /usr/include/qt4/QtGui/qtooltip.h /usr/include/qt4/QtGui/qwhatsthis.h \
- /usr/include/qt4/QtGui/qwidget.h /usr/include/qt4/QtGui/qwidgetaction.h \
- /usr/include/qt4/QtGui/qwindowdefs.h \
- /usr/include/qt4/QtGui/qabstractitemdelegate.h \
- /usr/include/qt4/QtGui/qabstractitemview.h \
- /usr/include/qt4/QtGui/qitemselectionmodel.h \
- /usr/include/qt4/QtGui/qabstractproxymodel.h \
- /usr/include/qt4/QtGui/qcolumnview.h \
- /usr/include/qt4/QtGui/qabstractitemview.h \
- /usr/include/qt4/QtGui/qdatawidgetmapper.h \
- /usr/include/qt4/QtGui/qdirmodel.h \
- /usr/include/qt4/QtGui/qfileiconprovider.h \
- /usr/include/qt4/QtGui/qfileiconprovider.h \
- /usr/include/qt4/QtGui/qheaderview.h \
- /usr/include/qt4/QtGui/qitemdelegate.h \
- /usr/include/qt4/QtGui/qitemeditorfactory.h \
- /usr/include/qt4/QtCore/qmetaobject.h \
- /usr/include/qt4/QtGui/qitemselectionmodel.h \
- /usr/include/qt4/QtGui/qlistview.h /usr/include/qt4/QtGui/qlistwidget.h \
- /usr/include/qt4/QtGui/qlistview.h /usr/include/qt4/QtGui/qproxymodel.h \
- /usr/include/qt4/QtGui/qsortfilterproxymodel.h \
- /usr/include/qt4/QtGui/qabstractproxymodel.h \
- /usr/include/qt4/QtGui/qstandarditemmodel.h \
- /usr/include/qt4/QtGui/qstringlistmodel.h \
- /usr/include/qt4/QtGui/qstyleditemdelegate.h \
- /usr/include/qt4/QtGui/qtableview.h \
- /usr/include/qt4/QtGui/qtablewidget.h \
- /usr/include/qt4/QtGui/qtableview.h /usr/include/qt4/QtGui/qtreeview.h \
- /usr/include/qt4/QtGui/qtreewidget.h /usr/include/qt4/QtGui/qtreeview.h \
- /usr/include/qt4/QtGui/qtreewidgetitemiterator.h \
- /usr/include/qt4/QtGui/qtreewidgetitemiterator.h \
- /usr/include/qt4/QtGui/qbrush.h /usr/include/qt4/QtGui/qcolor.h \
- /usr/include/qt4/QtGui/qcolormap.h /usr/include/qt4/QtGui/qdrawutil.h \
- /usr/include/qt4/QtGui/qmatrix.h /usr/include/qt4/QtGui/qpaintdevice.h \
- /usr/include/qt4/QtGui/qpaintengine.h /usr/include/qt4/QtGui/qpainter.h \
- /usr/include/qt4/QtGui/qpainterpath.h /usr/include/qt4/QtGui/qpen.h \
- /usr/include/qt4/QtGui/qpolygon.h /usr/include/qt4/QtGui/qprintengine.h \
- /usr/include/qt4/QtGui/qprinter.h /usr/include/qt4/QtGui/qprinterinfo.h \
- /usr/include/qt4/QtGui/QPrinter /usr/include/qt4/QtCore/QList \
- /usr/include/qt4/QtGui/qregion.h /usr/include/qt4/QtGui/qrgb.h \
- /usr/include/qt4/QtGui/qstylepainter.h /usr/include/qt4/QtGui/qwmatrix.h \
- /usr/include/qt4/QtGui/qsymbianevent.h \
- /usr/include/qt4/QtGui/qcdestyle.h /usr/include/qt4/QtGui/qmotifstyle.h \
- /usr/include/qt4/QtGui/qcommonstyle.h \
- /usr/include/qt4/QtGui/qcleanlooksstyle.h \
- /usr/include/qt4/QtGui/qwindowsstyle.h \
- /usr/include/qt4/QtGui/qcommonstyle.h /usr/include/qt4/QtGui/qgtkstyle.h \
- /usr/include/qt4/QtGui/QCleanlooksStyle /usr/include/qt4/QtGui/QPalette \
- /usr/include/qt4/QtGui/QFont /usr/include/qt4/QtGui/QFileDialog \
- /usr/include/qt4/QtGui/qmotifstyle.h \
- /usr/include/qt4/QtGui/qplastiquestyle.h \
- /usr/include/qt4/QtGui/qproxystyle.h /usr/include/qt4/QtGui/QCommonStyle \
- /usr/include/qt4/QtGui/qs60style.h /usr/include/qt4/QtGui/qstyle.h \
- /usr/include/qt4/QtGui/qstylefactory.h \
- /usr/include/qt4/QtGui/qstyleoption.h \
- /usr/include/qt4/QtGui/qstyleplugin.h \
- /usr/include/qt4/QtGui/qwindowscestyle.h \
- /usr/include/qt4/QtGui/qwindowsmobilestyle.h \
- /usr/include/qt4/QtGui/qwindowsstyle.h \
- /usr/include/qt4/QtGui/qwindowsvistastyle.h \
- /usr/include/qt4/QtGui/qwindowsxpstyle.h \
- /usr/include/qt4/QtGui/qwindowsxpstyle.h \
- /usr/include/qt4/QtGui/qkeyeventtransition.h \
- /usr/include/qt4/QtCore/qeventtransition.h \
- /usr/include/qt4/QtGui/qmouseeventtransition.h \
- /usr/include/qt4/QtGui/qgraphicseffect.h \
- /usr/include/qt4/QtGui/qcompleter.h \
- /usr/include/qt4/QtGui/qdesktopservices.h \
- /usr/include/qt4/QtGui/qsystemtrayicon.h \
- /usr/include/qt4/QtGui/qundogroup.h /usr/include/qt4/QtGui/qundostack.h \
- /usr/include/qt4/QtGui/qundoview.h /usr/include/qt4/QtOpenGL/qgl.h \
- /usr/include/qt4/QtGui/qpaintengine.h \
- /usr/include/qt4/QtOpenGL/qglcolormap.h /usr/include/GL/gl.h \
+ /usr/share/qt4/include/QtCore/qtextstream.h \
+ /usr/share/qt4/include/QtCore/qlocale.h \
+ /usr/share/qt4/include/QtCore/qtextcodec.h \
+ /usr/share/qt4/include/QtCore/qset.h \
+ /usr/share/qt4/include/QtCore/qcontiguouscache.h \
+ /usr/share/qt4/include/QtCore/qdir.h \
+ /usr/share/qt4/include/QtCore/qdiriterator.h \
+ /usr/share/qt4/include/QtCore/qfile.h \
+ /usr/share/qt4/include/QtCore/qfileinfo.h \
+ /usr/share/qt4/include/QtCore/qfilesystemwatcher.h \
+ /usr/share/qt4/include/QtCore/qfsfileengine.h \
+ /usr/share/qt4/include/QtCore/qabstractfileengine.h \
+ /usr/share/qt4/include/QtCore/qiodevice.h \
+ /usr/share/qt4/include/QtCore/qprocess.h \
+ /usr/share/qt4/include/QtCore/qshareddata.h \
+ /usr/share/qt4/include/QtCore/qresource.h \
+ /usr/share/qt4/include/QtCore/qsettings.h \
+ /usr/share/qt4/include/QtCore/qvariant.h \
+ /usr/share/qt4/include/QtCore/qmetatype.h \
+ /usr/share/qt4/include/QtCore/qtemporaryfile.h \
+ /usr/share/qt4/include/QtCore/qtextstream.h \
+ /usr/share/qt4/include/QtCore/qurl.h \
+ /usr/share/qt4/include/QtCore/qtextcodec.h \
+ /usr/share/qt4/include/QtCore/qtextcodecplugin.h \
+ /usr/share/qt4/include/QtCore/qplugin.h \
+ /usr/share/qt4/include/QtCore/qpointer.h \
+ /usr/share/qt4/include/QtCore/qfactoryinterface.h \
+ /usr/share/qt4/include/QtCore/qalgorithms.h \
+ /usr/share/qt4/include/QtCore/qbitarray.h \
+ /usr/share/qt4/include/QtCore/qbytearray.h \
+ /usr/share/qt4/include/QtCore/qbytearraymatcher.h \
+ /usr/share/qt4/include/QtCore/qcache.h \
+ /usr/share/qt4/include/QtCore/qchar.h \
+ /usr/share/qt4/include/QtCore/qcontainerfwd.h \
+ /usr/share/qt4/include/QtCore/qcontiguouscache.h \
+ /usr/share/qt4/include/QtCore/qcryptographichash.h \
+ /usr/share/qt4/include/QtCore/qdatetime.h \
+ /usr/share/qt4/include/QtCore/qsharedpointer.h \
+ /usr/share/qt4/include/QtCore/qsharedpointer_impl.h \
+ /usr/share/qt4/include/QtCore/qeasingcurve.h \
+ /usr/share/qt4/include/QtCore/qhash.h \
+ /usr/share/qt4/include/QtCore/qiterator.h \
+ /usr/share/qt4/include/QtCore/qline.h \
+ /usr/share/qt4/include/QtCore/qpoint.h \
+ /usr/share/qt4/include/QtCore/qlinkedlist.h \
+ /usr/share/qt4/include/QtCore/qlist.h \
+ /usr/share/qt4/include/QtCore/qlocale.h \
+ /usr/share/qt4/include/QtCore/qmap.h \
+ /usr/share/qt4/include/QtCore/qmargins.h \
+ /usr/share/qt4/include/QtCore/qpair.h \
+ /usr/share/qt4/include/QtCore/qpoint.h \
+ /usr/share/qt4/include/QtCore/qqueue.h \
+ /usr/share/qt4/include/QtCore/qrect.h \
+ /usr/share/qt4/include/QtCore/qsize.h \
+ /usr/share/qt4/include/QtCore/qregexp.h \
+ /usr/share/qt4/include/QtCore/qscopedpointer.h \
+ /usr/share/qt4/include/QtCore/qset.h \
+ /usr/share/qt4/include/QtCore/qshareddata.h \
+ /usr/share/qt4/include/QtCore/qsharedpointer.h \
+ /usr/share/qt4/include/QtCore/qsize.h \
+ /usr/share/qt4/include/QtCore/qstack.h \
+ /usr/share/qt4/include/QtCore/qstring.h \
+ /usr/share/qt4/include/QtCore/qstringbuilder.h \
+ /usr/share/qt4/include/QtCore/qstringlist.h \
+ /usr/share/qt4/include/QtCore/qstringmatcher.h \
+ /usr/share/qt4/include/QtCore/qtextboundaryfinder.h \
+ /usr/share/qt4/include/QtCore/qtimeline.h \
+ /usr/share/qt4/include/QtCore/qeasingcurve.h \
+ /usr/share/qt4/include/QtCore/qvarlengtharray.h \
+ /usr/share/qt4/include/QtCore/qcontainerfwd.h \
+ /usr/share/qt4/include/QtCore/qvector.h \
+ /usr/share/qt4/include/QtCore/qendian.h \
+ /usr/share/qt4/include/QtCore/qfeatures.h \
+ /usr/share/qt4/include/QtCore/qglobal.h \
+ /usr/share/qt4/include/QtCore/qlibraryinfo.h \
+ /usr/share/qt4/include/QtCore/QDate \
+ /usr/share/qt4/include/QtCore/qnamespace.h \
+ /usr/share/qt4/include/QtCore/qnumeric.h \
+ /usr/share/qt4/include/QtCore/qabstracteventdispatcher.h \
+ /usr/share/qt4/include/QtCore/qeventloop.h \
+ /usr/share/qt4/include/QtCore/qabstractitemmodel.h \
+ /usr/share/qt4/include/QtCore/qbasictimer.h \
+ /usr/share/qt4/include/QtCore/qcoreapplication.h \
+ /usr/share/qt4/include/QtCore/qcoreevent.h \
+ /usr/share/qt4/include/QtCore/qcoreevent.h \
+ /usr/share/qt4/include/QtCore/qeventloop.h \
+ /usr/share/qt4/include/QtCore/qmath.h \
+ /usr/share/qt4/include/QtCore/qmetaobject.h \
+ /usr/share/qt4/include/QtCore/qmetatype.h \
+ /usr/share/qt4/include/QtCore/qmimedata.h \
+ /usr/share/qt4/include/QtCore/qobject.h \
+ /usr/share/qt4/include/QtCore/qobjectcleanuphandler.h \
+ /usr/share/qt4/include/QtCore/qobjectdefs.h \
+ /usr/share/qt4/include/QtCore/qpointer.h \
+ /usr/share/qt4/include/QtCore/qsharedmemory.h \
+ /usr/share/qt4/include/QtCore/qsignalmapper.h \
+ /usr/share/qt4/include/QtCore/qsocketnotifier.h \
+ /usr/share/qt4/include/QtCore/qsystemsemaphore.h \
+ /usr/share/qt4/include/QtCore/qtimer.h \
+ /usr/share/qt4/include/QtCore/qbasictimer.h \
+ /usr/share/qt4/include/QtCore/qtranslator.h \
+ /usr/share/qt4/include/QtCore/qvariant.h \
+ /usr/share/qt4/include/QtCore/qfuture.h \
+ /usr/share/qt4/include/QtCore/qfutureinterface.h \
+ /usr/share/qt4/include/QtCore/qrunnable.h \
+ /usr/share/qt4/include/QtCore/qmutex.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentexception.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentresultstore.h \
+ /usr/share/qt4/include/QtCore/qdebug.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentcompilertest.h \
+ /usr/share/qt4/include/QtCore/qfutureinterface.h \
+ /usr/share/qt4/include/QtCore/qfuturesynchronizer.h \
+ /usr/share/qt4/include/QtCore/qfuture.h \
+ /usr/share/qt4/include/QtCore/qfuturewatcher.h \
+ /usr/share/qt4/include/QtCore/qrunnable.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentcompilertest.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentexception.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentfilter.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentfilterkernel.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentiteratekernel.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentmedian.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentthreadengine.h \
+ /usr/share/qt4/include/QtCore/qthreadpool.h \
+ /usr/share/qt4/include/QtCore/qthread.h \
+ /usr/share/qt4/include/QtCore/qwaitcondition.h \
+ /usr/share/qt4/include/QtCore/qsemaphore.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentmapkernel.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentreducekernel.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentfunctionwrappers.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentfilterkernel.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentfunctionwrappers.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentiteratekernel.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentmap.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentmapkernel.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentmedian.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentreducekernel.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentresultstore.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentrun.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentrunbase.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentstoredfunctioncall.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentrunbase.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentstoredfunctioncall.h \
+ /usr/share/qt4/include/QtCore/qtconcurrentthreadengine.h \
+ /usr/share/qt4/include/QtCore/qthreadpool.h \
+ /usr/share/qt4/include/QtCore/qfactoryinterface.h \
+ /usr/share/qt4/include/QtCore/qlibrary.h \
+ /usr/share/qt4/include/QtCore/qplugin.h \
+ /usr/share/qt4/include/QtCore/qpluginloader.h \
+ /usr/share/qt4/include/QtCore/qlibrary.h \
+ /usr/share/qt4/include/QtCore/quuid.h \
+ /usr/share/qt4/include/QtCore/qatomic.h \
+ /usr/share/qt4/include/QtCore/qbasicatomic.h \
+ /usr/share/qt4/include/QtCore/qmutex.h \
+ /usr/share/qt4/include/QtCore/qreadwritelock.h \
+ /usr/share/qt4/include/QtCore/qsemaphore.h \
+ /usr/share/qt4/include/QtCore/qthread.h \
+ /usr/share/qt4/include/QtCore/qthreadstorage.h \
+ /usr/share/qt4/include/QtCore/qwaitcondition.h \
+ /usr/share/qt4/include/QtCore/qabstractstate.h \
+ /usr/share/qt4/include/QtCore/qabstracttransition.h \
+ /usr/share/qt4/include/QtCore/qeventtransition.h \
+ /usr/share/qt4/include/QtCore/qabstracttransition.h \
+ /usr/share/qt4/include/QtCore/qfinalstate.h \
+ /usr/share/qt4/include/QtCore/qabstractstate.h \
+ /usr/share/qt4/include/QtCore/qhistorystate.h \
+ /usr/share/qt4/include/QtCore/qsignaltransition.h \
+ /usr/share/qt4/include/QtCore/qstate.h \
+ /usr/share/qt4/include/QtCore/qstatemachine.h \
+ /usr/share/qt4/include/QtCore/qstate.h \
+ /usr/share/qt4/include/QtCore/qabstractanimation.h \
+ /usr/share/qt4/include/QtCore/qanimationgroup.h \
+ /usr/share/qt4/include/QtCore/qabstractanimation.h \
+ /usr/share/qt4/include/QtCore/qparallelanimationgroup.h \
+ /usr/share/qt4/include/QtCore/qanimationgroup.h \
+ /usr/share/qt4/include/QtCore/qpauseanimation.h \
+ /usr/share/qt4/include/QtCore/qpropertyanimation.h \
+ /usr/share/qt4/include/QtCore/qvariantanimation.h \
+ /usr/share/qt4/include/QtCore/qsequentialanimationgroup.h \
+ /usr/share/qt4/include/QtCore/qvariantanimation.h \
+ /usr/share/qt4/include/QtGui/qbitmap.h \
+ /usr/share/qt4/include/QtGui/qpixmap.h \
+ /usr/share/qt4/include/QtGui/qpaintdevice.h \
+ /usr/share/qt4/include/QtGui/qwindowdefs.h \
+ /usr/share/qt4/include/QtCore/qrect.h \
+ /usr/share/qt4/include/QtGui/qcolor.h \
+ /usr/share/qt4/include/QtGui/qrgb.h \
+ /usr/share/qt4/include/QtGui/qimage.h \
+ /usr/share/qt4/include/QtGui/qtransform.h \
+ /usr/share/qt4/include/QtGui/qmatrix.h \
+ /usr/share/qt4/include/QtGui/qpolygon.h \
+ /usr/share/qt4/include/QtGui/qregion.h \
+ /usr/share/qt4/include/QtCore/qline.h \
+ /usr/share/qt4/include/QtGui/qwmatrix.h \
+ /usr/share/qt4/include/QtGui/qpainterpath.h \
+ /usr/share/qt4/include/QtGui/qicon.h \
+ /usr/share/qt4/include/QtGui/qiconengine.h \
+ /usr/share/qt4/include/QtGui/qicon.h \
+ /usr/share/qt4/include/QtGui/qiconengineplugin.h \
+ /usr/share/qt4/include/QtGui/qimage.h \
+ /usr/share/qt4/include/QtGui/qimageiohandler.h \
+ /usr/share/qt4/include/QtGui/qimagereader.h \
+ /usr/share/qt4/include/QtGui/qimageiohandler.h \
+ /usr/share/qt4/include/QtGui/qimagewriter.h \
+ /usr/share/qt4/include/QtGui/qmovie.h \
+ /usr/share/qt4/include/QtGui/qimagereader.h \
+ /usr/share/qt4/include/QtGui/qpicture.h \
+ /usr/share/qt4/include/QtGui/qpictureformatplugin.h \
+ /usr/share/qt4/include/QtGui/qpixmap.h \
+ /usr/share/qt4/include/QtGui/qpixmapcache.h \
+ /usr/share/qt4/include/QtGui/qs60mainapplication.h \
+ /usr/share/qt4/include/QtGui/qs60mainappui.h \
+ /usr/share/qt4/include/QtGui/qs60maindocument.h \
+ /usr/share/qt4/include/QtGui/qvfbhdr.h \
+ /usr/share/qt4/include/QtGui/qwsembedwidget.h \
+ /usr/share/qt4/include/QtGui/qwidget.h \
+ /usr/share/qt4/include/QtCore/qmargins.h \
+ /usr/share/qt4/include/QtGui/qpalette.h \
+ /usr/share/qt4/include/QtGui/qbrush.h \
+ /usr/share/qt4/include/QtGui/qfont.h \
+ /usr/share/qt4/include/QtGui/qfontmetrics.h \
+ /usr/share/qt4/include/QtGui/qfontinfo.h \
+ /usr/share/qt4/include/QtGui/qsizepolicy.h \
+ /usr/share/qt4/include/QtGui/qcursor.h \
+ /usr/share/qt4/include/QtGui/qkeysequence.h \
+ /usr/share/qt4/include/QtGui/qabstractbutton.h \
+ /usr/share/qt4/include/QtGui/qabstractscrollarea.h \
+ /usr/share/qt4/include/QtGui/qframe.h \
+ /usr/share/qt4/include/QtGui/qabstractslider.h \
+ /usr/share/qt4/include/QtGui/qabstractspinbox.h \
+ /usr/share/qt4/include/QtGui/qvalidator.h \
+ /usr/share/qt4/include/QtGui/qbuttongroup.h \
+ /usr/share/qt4/include/QtGui/qcalendarwidget.h \
+ /usr/share/qt4/include/QtCore/qdatetime.h \
+ /usr/share/qt4/include/QtGui/qcheckbox.h \
+ /usr/share/qt4/include/QtGui/qabstractbutton.h \
+ /usr/share/qt4/include/QtGui/qcombobox.h \
+ /usr/share/qt4/include/QtGui/qabstractitemdelegate.h \
+ /usr/share/qt4/include/QtGui/qstyleoption.h \
+ /usr/share/qt4/include/QtGui/qabstractspinbox.h \
+ /usr/share/qt4/include/QtGui/qslider.h \
+ /usr/share/qt4/include/QtGui/qabstractslider.h \
+ /usr/share/qt4/include/QtGui/qstyle.h \
+ /usr/share/qt4/include/QtGui/qtabbar.h \
+ /usr/share/qt4/include/QtGui/qtabwidget.h \
+ /usr/share/qt4/include/QtGui/qrubberband.h \
+ /usr/share/qt4/include/QtCore/qabstractitemmodel.h \
+ /usr/share/qt4/include/QtGui/qcommandlinkbutton.h \
+ /usr/share/qt4/include/QtGui/qpushbutton.h \
+ /usr/share/qt4/include/QtGui/qdatetimeedit.h \
+ /usr/share/qt4/include/QtGui/qdial.h \
+ /usr/share/qt4/include/QtGui/qdialogbuttonbox.h \
+ /usr/share/qt4/include/QtGui/qdockwidget.h \
+ /usr/share/qt4/include/QtGui/qfocusframe.h \
+ /usr/share/qt4/include/QtGui/qfontcombobox.h \
+ /usr/share/qt4/include/QtGui/qcombobox.h \
+ /usr/share/qt4/include/QtGui/qfontdatabase.h \
+ /usr/share/qt4/include/QtGui/qframe.h \
+ /usr/share/qt4/include/QtGui/qgroupbox.h \
+ /usr/share/qt4/include/QtGui/qlabel.h \
+ /usr/share/qt4/include/QtGui/qlcdnumber.h \
+ /usr/share/qt4/include/QtCore/qbitarray.h \
+ /usr/share/qt4/include/QtGui/qlineedit.h \
+ /usr/share/qt4/include/QtGui/qmainwindow.h \
+ /usr/share/qt4/include/QtGui/qmdiarea.h \
+ /usr/share/qt4/include/QtGui/qabstractscrollarea.h \
+ /usr/share/qt4/include/QtGui/qmdisubwindow.h \
+ /usr/share/qt4/include/QtGui/qmenu.h \
+ /usr/share/qt4/include/QtGui/qaction.h \
+ /usr/share/qt4/include/QtGui/qactiongroup.h \
+ /usr/share/qt4/include/QtGui/qmenubar.h \
+ /usr/share/qt4/include/QtGui/qmenu.h \
+ /usr/share/qt4/include/QtGui/qmenudata.h \
+ /usr/share/qt4/include/QtGui/qplaintextedit.h \
+ /usr/share/qt4/include/QtGui/qtextedit.h \
+ /usr/share/qt4/include/QtGui/qtextdocument.h \
+ /usr/share/qt4/include/QtGui/qtextoption.h \
+ /usr/share/qt4/include/QtGui/qtextcursor.h \
+ /usr/share/qt4/include/QtGui/qtextformat.h \
+ /usr/share/qt4/include/QtGui/qpen.h \
+ /usr/share/qt4/include/QtGui/qtextobject.h \
+ /usr/share/qt4/include/QtGui/qtextlayout.h \
+ /usr/share/qt4/include/QtGui/qevent.h \
+ /usr/share/qt4/include/QtGui/qmime.h \
+ /usr/share/qt4/include/QtCore/qmimedata.h \
+ /usr/share/qt4/include/QtGui/qdrag.h \
+ /usr/share/qt4/include/QtGui/qabstracttextdocumentlayout.h \
+ /usr/share/qt4/include/QtGui/qprintpreviewwidget.h \
+ /usr/share/qt4/include/QtGui/qprinter.h \
+ /usr/share/qt4/include/QtGui/qprogressbar.h \
+ /usr/share/qt4/include/QtGui/qpushbutton.h \
+ /usr/share/qt4/include/QtGui/qradiobutton.h \
+ /usr/share/qt4/include/QtGui/qrubberband.h \
+ /usr/share/qt4/include/QtGui/qscrollarea.h \
+ /usr/share/qt4/include/QtGui/qscrollbar.h \
+ /usr/share/qt4/include/QtGui/qsizegrip.h \
+ /usr/share/qt4/include/QtGui/qslider.h \
+ /usr/share/qt4/include/QtGui/qspinbox.h \
+ /usr/share/qt4/include/QtGui/qsplashscreen.h \
+ /usr/share/qt4/include/QtGui/qsplitter.h \
+ /usr/share/qt4/include/QtGui/qstackedwidget.h \
+ /usr/share/qt4/include/QtGui/qstatusbar.h \
+ /usr/share/qt4/include/QtGui/qtabbar.h \
+ /usr/share/qt4/include/QtGui/qtabwidget.h \
+ /usr/share/qt4/include/QtGui/qtextbrowser.h \
+ /usr/share/qt4/include/QtCore/qurl.h \
+ /usr/share/qt4/include/QtGui/qtextedit.h \
+ /usr/share/qt4/include/QtGui/qtoolbar.h \
+ /usr/share/qt4/include/QtGui/qtoolbox.h \
+ /usr/share/qt4/include/QtGui/qtoolbutton.h \
+ /usr/share/qt4/include/QtGui/qvalidator.h \
+ /usr/share/qt4/include/QtGui/qworkspace.h \
+ /usr/share/qt4/include/QtGui/qinputcontext.h \
+ /usr/share/qt4/include/QtGui/qinputcontextfactory.h \
+ /usr/share/qt4/include/QtGui/qinputcontextplugin.h \
+ /usr/share/qt4/include/QtGui/qgraphicsanchorlayout.h \
+ /usr/share/qt4/include/QtGui/qgraphicsitem.h \
+ /usr/share/qt4/include/QtGui/qgraphicslayout.h \
+ /usr/share/qt4/include/QtGui/qgraphicslayoutitem.h \
+ /usr/share/qt4/include/QtGui/qgraphicsgridlayout.h \
+ /usr/share/qt4/include/QtGui/qgraphicsitem.h \
+ /usr/share/qt4/include/QtGui/qgraphicsitemanimation.h \
+ /usr/share/qt4/include/QtGui/qgraphicslayout.h \
+ /usr/share/qt4/include/QtGui/qgraphicslayoutitem.h \
+ /usr/share/qt4/include/QtGui/qgraphicslinearlayout.h \
+ /usr/share/qt4/include/QtGui/qgraphicsproxywidget.h \
+ /usr/share/qt4/include/QtGui/qgraphicswidget.h \
+ /usr/share/qt4/include/QtGui/qgraphicsscene.h \
+ /usr/share/qt4/include/QtGui/qgraphicssceneevent.h \
+ /usr/share/qt4/include/QtGui/qgraphicstransform.h \
+ /usr/share/qt4/include/QtCore/QObject \
+ /usr/share/qt4/include/QtGui/QVector3D \
+ /usr/share/qt4/include/QtGui/qvector3d.h \
+ /usr/share/qt4/include/QtGui/QTransform \
+ /usr/share/qt4/include/QtGui/qtransform.h \
+ /usr/share/qt4/include/QtGui/QMatrix4x4 \
+ /usr/share/qt4/include/QtGui/qmatrix4x4.h \
+ /usr/share/qt4/include/QtGui/qvector3d.h \
+ /usr/share/qt4/include/QtGui/qvector4d.h \
+ /usr/share/qt4/include/QtGui/qquaternion.h \
+ /usr/share/qt4/include/QtGui/qgenericmatrix.h \
+ /usr/share/qt4/include/QtGui/qgraphicsview.h \
+ /usr/share/qt4/include/QtGui/qpainter.h \
+ /usr/share/qt4/include/QtGui/qdrawutil.h \
+ /usr/share/qt4/include/QtGui/qscrollarea.h \
+ /usr/share/qt4/include/QtGui/qgraphicsscene.h \
+ /usr/share/qt4/include/QtGui/qgraphicswidget.h \
+ /usr/share/qt4/include/QtGui/qgenericmatrix.h \
+ /usr/share/qt4/include/QtGui/qquaternion.h \
+ /usr/share/qt4/include/QtGui/qvector2d.h \
+ /usr/share/qt4/include/QtGui/qvector4d.h \
+ /usr/share/qt4/include/QtGui/qabstracttextdocumentlayout.h \
+ /usr/share/qt4/include/QtGui/qfont.h \
+ /usr/share/qt4/include/QtGui/qfontdatabase.h \
+ /usr/share/qt4/include/QtGui/qfontinfo.h \
+ /usr/share/qt4/include/QtGui/qfontmetrics.h \
+ /usr/share/qt4/include/QtGui/qsyntaxhighlighter.h \
+ /usr/share/qt4/include/QtGui/qtextcursor.h \
+ /usr/share/qt4/include/QtGui/qtextdocument.h \
+ /usr/share/qt4/include/QtGui/qtextdocumentfragment.h \
+ /usr/share/qt4/include/QtGui/qtextdocumentwriter.h \
+ /usr/share/qt4/include/QtGui/qtextformat.h \
+ /usr/share/qt4/include/QtGui/qtextlayout.h \
+ /usr/share/qt4/include/QtGui/qtextlist.h \
+ /usr/share/qt4/include/QtGui/qtextobject.h \
+ /usr/share/qt4/include/QtGui/qtextoption.h \
+ /usr/share/qt4/include/QtGui/qtexttable.h \
+ /usr/share/qt4/include/QtGui/qabstractpagesetupdialog.h \
+ /usr/share/qt4/include/QtGui/qdialog.h \
+ /usr/share/qt4/include/QtGui/qabstractprintdialog.h \
+ /usr/share/qt4/include/QtGui/qcolordialog.h \
+ /usr/share/qt4/include/QtGui/qdialog.h \
+ /usr/share/qt4/include/QtGui/qerrormessage.h \
+ /usr/share/qt4/include/QtGui/qfiledialog.h \
+ /usr/share/qt4/include/QtGui/qfilesystemmodel.h \
+ /usr/share/qt4/include/QtCore/qdiriterator.h \
+ /usr/share/qt4/include/QtGui/qfontdialog.h \
+ /usr/share/qt4/include/QtGui/qinputdialog.h \
+ /usr/share/qt4/include/QtGui/qlineedit.h \
+ /usr/share/qt4/include/QtGui/qmessagebox.h \
+ /usr/share/qt4/include/QtGui/qpagesetupdialog.h \
+ /usr/share/qt4/include/QtGui/qabstractpagesetupdialog.h \
+ /usr/share/qt4/include/QtGui/qprintdialog.h \
+ /usr/share/qt4/include/QtGui/qabstractprintdialog.h \
+ /usr/share/qt4/include/QtGui/qprintpreviewdialog.h \
+ /usr/share/qt4/include/QtGui/qprogressdialog.h \
+ /usr/share/qt4/include/QtGui/qwizard.h \
+ /usr/share/qt4/include/QtGui/qaccessible.h \
+ /usr/share/qt4/include/QtGui/qaccessible2.h \
+ /usr/share/qt4/include/QtGui/qaccessible.h \
+ /usr/share/qt4/include/QtGui/qaccessiblebridge.h \
+ /usr/share/qt4/include/QtGui/qaccessibleobject.h \
+ /usr/share/qt4/include/QtGui/qaccessibleplugin.h \
+ /usr/share/qt4/include/QtGui/qaccessiblewidget.h \
+ /usr/share/qt4/include/QtGui/qaccessibleobject.h \
+ /usr/share/qt4/include/QtGui/qaction.h \
+ /usr/share/qt4/include/QtGui/qactiongroup.h \
+ /usr/share/qt4/include/QtGui/qapplication.h \
+ /usr/share/qt4/include/QtCore/qcoreapplication.h \
+ /usr/share/qt4/include/QtGui/qboxlayout.h \
+ /usr/share/qt4/include/QtGui/qlayout.h \
+ /usr/share/qt4/include/QtGui/qlayoutitem.h \
+ /usr/share/qt4/include/QtGui/qboxlayout.h \
+ /usr/share/qt4/include/QtGui/qgridlayout.h \
+ /usr/share/qt4/include/QtGui/qclipboard.h \
+ /usr/share/qt4/include/QtGui/qcursor.h \
+ /usr/share/qt4/include/QtGui/qdesktopwidget.h \
+ /usr/share/qt4/include/QtGui/qdrag.h \
+ /usr/share/qt4/include/QtGui/qevent.h \
+ /usr/share/qt4/include/QtGui/qformlayout.h \
+ /usr/share/qt4/include/QtGui/QLayout \
+ /usr/share/qt4/include/QtGui/qlayout.h \
+ /usr/share/qt4/include/QtGui/qgesture.h \
+ /usr/share/qt4/include/QtGui/qgesturerecognizer.h \
+ /usr/share/qt4/include/QtGui/qgridlayout.h \
+ /usr/share/qt4/include/QtGui/qkeysequence.h \
+ /usr/share/qt4/include/QtGui/qlayoutitem.h \
+ /usr/share/qt4/include/QtGui/qmime.h \
+ /usr/share/qt4/include/QtGui/qpalette.h \
+ /usr/share/qt4/include/QtGui/qsessionmanager.h \
+ /usr/share/qt4/include/QtGui/qshortcut.h \
+ /usr/share/qt4/include/QtGui/qsizepolicy.h \
+ /usr/share/qt4/include/QtGui/qsound.h \
+ /usr/share/qt4/include/QtGui/qstackedlayout.h \
+ /usr/share/qt4/include/QtGui/qtooltip.h \
+ /usr/share/qt4/include/QtGui/qwhatsthis.h \
+ /usr/share/qt4/include/QtGui/qwidget.h \
+ /usr/share/qt4/include/QtGui/qwidgetaction.h \
+ /usr/share/qt4/include/QtGui/qwindowdefs.h \
+ /usr/share/qt4/include/QtGui/qabstractitemdelegate.h \
+ /usr/share/qt4/include/QtGui/qabstractitemview.h \
+ /usr/share/qt4/include/QtGui/qitemselectionmodel.h \
+ /usr/share/qt4/include/QtGui/qabstractproxymodel.h \
+ /usr/share/qt4/include/QtGui/qcolumnview.h \
+ /usr/share/qt4/include/QtGui/qabstractitemview.h \
+ /usr/share/qt4/include/QtGui/qdatawidgetmapper.h \
+ /usr/share/qt4/include/QtGui/qdirmodel.h \
+ /usr/share/qt4/include/QtGui/qfileiconprovider.h \
+ /usr/share/qt4/include/QtGui/qfileiconprovider.h \
+ /usr/share/qt4/include/QtGui/qheaderview.h \
+ /usr/share/qt4/include/QtGui/qitemdelegate.h \
+ /usr/share/qt4/include/QtGui/qitemeditorfactory.h \
+ /usr/share/qt4/include/QtCore/qmetaobject.h \
+ /usr/share/qt4/include/QtGui/qitemselectionmodel.h \
+ /usr/share/qt4/include/QtGui/qlistview.h \
+ /usr/share/qt4/include/QtGui/qlistwidget.h \
+ /usr/share/qt4/include/QtGui/qlistview.h \
+ /usr/share/qt4/include/QtGui/qproxymodel.h \
+ /usr/share/qt4/include/QtGui/qsortfilterproxymodel.h \
+ /usr/share/qt4/include/QtGui/qabstractproxymodel.h \
+ /usr/share/qt4/include/QtGui/qstandarditemmodel.h \
+ /usr/share/qt4/include/QtGui/qstringlistmodel.h \
+ /usr/share/qt4/include/QtGui/qstyleditemdelegate.h \
+ /usr/share/qt4/include/QtGui/qtableview.h \
+ /usr/share/qt4/include/QtGui/qtablewidget.h \
+ /usr/share/qt4/include/QtGui/qtableview.h \
+ /usr/share/qt4/include/QtGui/qtreeview.h \
+ /usr/share/qt4/include/QtGui/qtreewidget.h \
+ /usr/share/qt4/include/QtGui/qtreeview.h \
+ /usr/share/qt4/include/QtGui/qtreewidgetitemiterator.h \
+ /usr/share/qt4/include/QtGui/qtreewidgetitemiterator.h \
+ /usr/share/qt4/include/QtGui/qbrush.h \
+ /usr/share/qt4/include/QtGui/qcolor.h \
+ /usr/share/qt4/include/QtGui/qcolormap.h \
+ /usr/share/qt4/include/QtGui/qdrawutil.h \
+ /usr/share/qt4/include/QtGui/qmatrix.h \
+ /usr/share/qt4/include/QtGui/qpaintdevice.h \
+ /usr/share/qt4/include/QtGui/qpaintengine.h \
+ /usr/share/qt4/include/QtGui/qpainter.h \
+ /usr/share/qt4/include/QtGui/qpainterpath.h \
+ /usr/share/qt4/include/QtGui/qpen.h \
+ /usr/share/qt4/include/QtGui/qpolygon.h \
+ /usr/share/qt4/include/QtGui/qprintengine.h \
+ /usr/share/qt4/include/QtGui/qprinter.h \
+ /usr/share/qt4/include/QtGui/qprinterinfo.h \
+ /usr/share/qt4/include/QtGui/QPrinter \
+ /usr/share/qt4/include/QtCore/QList \
+ /usr/share/qt4/include/QtGui/qregion.h \
+ /usr/share/qt4/include/QtGui/qrgb.h \
+ /usr/share/qt4/include/QtGui/qstylepainter.h \
+ /usr/share/qt4/include/QtGui/qwmatrix.h \
+ /usr/share/qt4/include/QtGui/qsymbianevent.h \
+ /usr/share/qt4/include/QtGui/qcdestyle.h \
+ /usr/share/qt4/include/QtGui/qmotifstyle.h \
+ /usr/share/qt4/include/QtGui/qcommonstyle.h \
+ /usr/share/qt4/include/QtGui/qcleanlooksstyle.h \
+ /usr/share/qt4/include/QtGui/qwindowsstyle.h \
+ /usr/share/qt4/include/QtGui/qcommonstyle.h \
+ /usr/share/qt4/include/QtGui/qgtkstyle.h \
+ /usr/share/qt4/include/QtGui/QCleanlooksStyle \
+ /usr/share/qt4/include/QtGui/QPalette /usr/share/qt4/include/QtGui/QFont \
+ /usr/share/qt4/include/QtGui/QFileDialog \
+ /usr/share/qt4/include/QtGui/qmotifstyle.h \
+ /usr/share/qt4/include/QtGui/qplastiquestyle.h \
+ /usr/share/qt4/include/QtGui/qproxystyle.h \
+ /usr/share/qt4/include/QtGui/QCommonStyle \
+ /usr/share/qt4/include/QtGui/qs60style.h \
+ /usr/share/qt4/include/QtGui/qstyle.h \
+ /usr/share/qt4/include/QtGui/qstylefactory.h \
+ /usr/share/qt4/include/QtGui/qstyleoption.h \
+ /usr/share/qt4/include/QtGui/qstyleplugin.h \
+ /usr/share/qt4/include/QtGui/qwindowscestyle.h \
+ /usr/share/qt4/include/QtGui/qwindowsmobilestyle.h \
+ /usr/share/qt4/include/QtGui/qwindowsstyle.h \
+ /usr/share/qt4/include/QtGui/qwindowsvistastyle.h \
+ /usr/share/qt4/include/QtGui/qwindowsxpstyle.h \
+ /usr/share/qt4/include/QtGui/qwindowsxpstyle.h \
+ /usr/share/qt4/include/QtGui/qkeyeventtransition.h \
+ /usr/share/qt4/include/QtCore/qeventtransition.h \
+ /usr/share/qt4/include/QtGui/qmouseeventtransition.h \
+ /usr/share/qt4/include/QtGui/qgraphicseffect.h \
+ /usr/share/qt4/include/QtGui/qcompleter.h \
+ /usr/share/qt4/include/QtGui/qdesktopservices.h \
+ /usr/share/qt4/include/QtGui/qsystemtrayicon.h \
+ /usr/share/qt4/include/QtGui/qundogroup.h \
+ /usr/share/qt4/include/QtGui/qundostack.h \
+ /usr/share/qt4/include/QtGui/qundoview.h \
+ /usr/share/qt4/include/QtOpenGL/qgl.h \
+ /usr/share/qt4/include/QtGui/qpaintengine.h \
+ /usr/share/qt4/include/QtOpenGL/qglcolormap.h /usr/include/GL/gl.h \
  /usr/include/GL/glext.h /usr/include/inttypes.h /usr/include/GL/glu.h \
- /usr/include/qt4/Qt3Support/q3buttongroup.h \
- /usr/include/qt4/QtGui/qbuttongroup.h \
- /usr/include/qt4/Qt3Support/q3groupbox.h \
- /usr/include/qt4/QtGui/qgroupbox.h ../include/sqcompat.h \
- /usr/include/qt4/QtCore/qobject.h /usr/include/c++/4.4/iostream \
+ /usr/share/qt4/include/Qt3Support/q3buttongroup.h \
+ /usr/share/qt4/include/QtGui/qbuttongroup.h \
+ /usr/share/qt4/include/Qt3Support/q3groupbox.h \
+ /usr/share/qt4/include/QtGui/qgroupbox.h ../include/sqcompat.h \
+ /usr/share/qt4/include/QtCore/qobject.h /usr/include/c++/4.4/iostream \
  ../include/spike_defines.h ../src-gui/spikeInput.h \
  ../src-gui/spikeUserGUI.h ../include/spike_dsp.h ../include/spike_main.h \
  ../include/../src-gui/spikeInput.h ../include/../src-gui/spikeGLPane.h \
- ../include/../src-gui/spikeUserGUI.h /usr/include/qt4/QtCore/qrect.h \
- /usr/include/qt4/QtGui/qtabwidget.h /usr/include/qt4/QtGui/qwidget.h \
- /usr/include/qt4/Qt3Support/q3popupmenu.h /usr/include/qt4/QtGui/QLabel \
+ ../include/../src-gui/spikeUserGUI.h \
+ /usr/share/qt4/include/QtCore/qrect.h \
+ /usr/share/qt4/include/QtGui/qtabwidget.h \
+ /usr/share/qt4/include/QtGui/qwidget.h \
+ /usr/share/qt4/include/Qt3Support/q3popupmenu.h \
+ /usr/share/qt4/include/QtGui/QLabel \
  ../include/spike_userprogram_defines.h \
- /usr/include/qt4/Qt3Support/q3widgetstack.h \
- /usr/include/qt4/Qt3Support/q3frame.h \
- /usr/include/qt4/Qt3Support/q3intdict.h \
- /usr/include/qt4/Qt3Support/q3gdict.h \
- /usr/include/qt4/Qt3Support/q3ptrcollection.h \
- /usr/include/qt4/Qt3Support/q3ptrdict.h \
- /usr/include/qt4/Qt3Support/q3textedit.h \
- /usr/include/qt4/Qt3Support/q3scrollview.h \
- /usr/include/qt4/QtGui/qscrollbar.h \
- /usr/include/qt4/Qt3Support/q3stylesheet.h \
- /usr/include/qt4/Qt3Support/q3mimefactory.h ../include/spike_dio.h \
- ../src-gui/rewardControl.h /usr/include/qt4/Qt3Support/q3listbox.h \
- /usr/include/qt4/QtGui/QKeyEvent \
- /usr/include/qt4/Qt3Support/Q3GridLayout \
- /usr/include/qt4/Qt3Support/q3gridlayout.h \
- /usr/include/qt4/Qt3Support/Q3PopupMenu \
- /usr/include/qt4/Qt3Support/q3popupmenu.h \
- /usr/include/qt4/Qt3Support/q3filedialog.h \
- /usr/include/qt4/Qt3Support/q3urloperator.h \
- /usr/include/qt4/Qt3Support/q3url.h \
- /usr/include/qt4/Qt3Support/q3ptrlist.h \
- /usr/include/qt4/Qt3Support/q3glist.h \
- /usr/include/qt4/Qt3Support/q3networkprotocol.h \
- /usr/include/qt4/Qt3Support/q3dict.h \
- /usr/include/qt4/Qt3Support/q3valuelist.h \
- /usr/include/qt4/QtCore/qlinkedlist.h \
- /usr/include/qt4/Qt3Support/Q3TextStream \
- /usr/include/qt4/Qt3Support/q3textstream.h \
- /usr/include/qt4/Qt3Support/q3cstring.h \
- /usr/include/qt4/Qt3Support/Q3HBoxLayout \
- /usr/include/qt4/Qt3Support/q3boxlayout.h \
- /usr/include/qt4/Qt3Support/Q3BoxLayout \
- /usr/include/qt4/QtGui/qapplication.h /usr/include/qt4/QtCore/qtimer.h \
- /usr/include/qt4/QtGui/qlayout.h /usr/include/qt4/QtGui/qsizepolicy.h \
- /usr/include/qt4/QtGui/qfont.h /usr/include/c++/4.4/sstream \
+ /usr/share/qt4/include/Qt3Support/q3widgetstack.h \
+ /usr/share/qt4/include/Qt3Support/q3frame.h \
+ /usr/share/qt4/include/Qt3Support/q3intdict.h \
+ /usr/share/qt4/include/Qt3Support/q3gdict.h \
+ /usr/share/qt4/include/Qt3Support/q3ptrcollection.h \
+ /usr/share/qt4/include/Qt3Support/q3ptrdict.h \
+ /usr/share/qt4/include/Qt3Support/q3textedit.h \
+ /usr/share/qt4/include/Qt3Support/q3scrollview.h \
+ /usr/share/qt4/include/QtGui/qscrollbar.h \
+ /usr/share/qt4/include/Qt3Support/q3stylesheet.h \
+ /usr/share/qt4/include/Qt3Support/q3mimefactory.h ../include/spike_dio.h \
+ ../src-gui/rewardControl.h /usr/share/qt4/include/Qt3Support/q3listbox.h \
+ /usr/share/qt4/include/QtGui/QKeyEvent \
+ /usr/share/qt4/include/Qt3Support/Q3GridLayout \
+ /usr/share/qt4/include/Qt3Support/q3gridlayout.h \
+ /usr/share/qt4/include/Qt3Support/Q3PopupMenu \
+ /usr/share/qt4/include/Qt3Support/q3popupmenu.h \
+ /usr/share/qt4/include/Qt3Support/q3filedialog.h \
+ /usr/share/qt4/include/Qt3Support/q3urloperator.h \
+ /usr/share/qt4/include/Qt3Support/q3url.h \
+ /usr/share/qt4/include/Qt3Support/q3ptrlist.h \
+ /usr/share/qt4/include/Qt3Support/q3glist.h \
+ /usr/share/qt4/include/Qt3Support/q3networkprotocol.h \
+ /usr/share/qt4/include/Qt3Support/q3dict.h \
+ /usr/share/qt4/include/Qt3Support/q3valuelist.h \
+ /usr/share/qt4/include/QtCore/qlinkedlist.h \
+ /usr/share/qt4/include/Qt3Support/Q3TextStream \
+ /usr/share/qt4/include/Qt3Support/q3textstream.h \
+ /usr/share/qt4/include/Qt3Support/q3cstring.h \
+ /usr/share/qt4/include/Qt3Support/Q3HBoxLayout \
+ /usr/share/qt4/include/Qt3Support/q3boxlayout.h \
+ /usr/share/qt4/include/Qt3Support/Q3BoxLayout \
+ /usr/share/qt4/include/QtGui/qapplication.h \
+ /usr/share/qt4/include/QtCore/qtimer.h \
+ /usr/share/qt4/include/QtGui/qlayout.h \
+ /usr/share/qt4/include/QtGui/qsizepolicy.h \
+ /usr/share/qt4/include/QtGui/qfont.h /usr/include/c++/4.4/sstream \
  /usr/include/c++/4.4/bits/sstream.tcc spike_main_shared.cpp
 
 ../include/spikecommon.h:
@@ -787,39 +934,39 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 
 ../src-gui/spikeGLPane.h:
 
-/usr/include/qt4/QtGui/QtGui:
+/usr/share/qt4/include/QtGui/QtGui:
 
-/usr/include/qt4/QtCore/QtCore:
+/usr/share/qt4/include/QtCore/QtCore:
 
-/usr/include/qt4/QtCore/qxmlstream.h:
+/usr/share/qt4/include/QtCore/qxmlstream.h:
 
-/usr/include/qt4/QtCore/qiodevice.h:
+/usr/share/qt4/include/QtCore/qiodevice.h:
 
-/usr/include/qt4/QtCore/qobject.h:
+/usr/share/qt4/include/QtCore/qobject.h:
 
-/usr/include/qt4/QtCore/qobjectdefs.h:
+/usr/share/qt4/include/QtCore/qobjectdefs.h:
 
-/usr/include/qt4/QtCore/qnamespace.h:
+/usr/share/qt4/include/QtCore/qnamespace.h:
 
-/usr/include/qt4/QtCore/qglobal.h:
+/usr/share/qt4/include/QtCore/qglobal.h:
 
-/usr/include/qt4/QtCore/qconfig.h:
+/usr/share/qt4/include/QtCore/qconfig.h:
 
-/usr/include/qt4/QtCore/qfeatures.h:
+/usr/share/qt4/include/QtCore/qfeatures.h:
 
-/usr/include/qt4/QtCore/qstring.h:
+/usr/share/qt4/include/QtCore/qstring.h:
 
-/usr/include/qt4/QtCore/qchar.h:
+/usr/share/qt4/include/QtCore/qchar.h:
 
-/usr/include/qt4/QtCore/qbytearray.h:
+/usr/share/qt4/include/QtCore/qbytearray.h:
 
-/usr/include/qt4/QtCore/qatomic.h:
+/usr/share/qt4/include/QtCore/qatomic.h:
 
-/usr/include/qt4/QtCore/qbasicatomic.h:
+/usr/share/qt4/include/QtCore/qbasicatomic.h:
 
-/usr/include/qt4/QtCore/qatomic_arch.h:
+/usr/share/qt4/include/QtCore/qatomic_arch.h:
 
-/usr/include/qt4/QtCore/qatomic_x86_64.h:
+/usr/share/qt4/include/QtCore/qatomic_x86_64.h:
 
 /usr/include/c++/4.4/string:
 
@@ -923,11 +1070,11 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 
 /usr/include/c++/4.4/bits/basic_string.tcc:
 
-/usr/include/qt4/QtCore/qlist.h:
+/usr/share/qt4/include/QtCore/qlist.h:
 
-/usr/include/qt4/QtCore/qiterator.h:
+/usr/share/qt4/include/QtCore/qiterator.h:
 
-/usr/include/qt4/QtCore/qalgorithms.h:
+/usr/share/qt4/include/QtCore/qalgorithms.h:
 
 /usr/include/c++/4.4/iterator:
 
@@ -977,9 +1124,9 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 
 /usr/include/c++/4.4/bits/list.tcc:
 
-/usr/include/qt4/QtCore/qscopedpointer.h:
+/usr/share/qt4/include/QtCore/qscopedpointer.h:
 
-/usr/include/qt4/QtCore/qvector.h:
+/usr/share/qt4/include/QtCore/qvector.h:
 
 /usr/include/c++/4.4/vector:
 
@@ -993,33 +1140,33 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 
 /usr/include/c++/4.4/bits/vector.tcc:
 
-/usr/include/qt4/QtCore/qabstractfileengine.h:
+/usr/share/qt4/include/QtCore/qabstractfileengine.h:
 
-/usr/include/qt4/QtCore/qdir.h:
+/usr/share/qt4/include/QtCore/qdir.h:
 
-/usr/include/qt4/QtCore/qfileinfo.h:
+/usr/share/qt4/include/QtCore/qfileinfo.h:
 
-/usr/include/qt4/QtCore/qfile.h:
+/usr/share/qt4/include/QtCore/qfile.h:
 
-/usr/include/qt4/QtCore/qstringlist.h:
+/usr/share/qt4/include/QtCore/qstringlist.h:
 
-/usr/include/qt4/QtCore/qdatastream.h:
+/usr/share/qt4/include/QtCore/qdatastream.h:
 
-/usr/include/qt4/QtCore/qregexp.h:
+/usr/share/qt4/include/QtCore/qregexp.h:
 
-/usr/include/qt4/QtCore/qstringmatcher.h:
+/usr/share/qt4/include/QtCore/qstringmatcher.h:
 
-/usr/include/qt4/QtCore/qbuffer.h:
+/usr/share/qt4/include/QtCore/qbuffer.h:
 
-/usr/include/qt4/QtCore/qdatastream.h:
+/usr/share/qt4/include/QtCore/qdatastream.h:
 
-/usr/include/qt4/QtCore/qdebug.h:
+/usr/share/qt4/include/QtCore/qdebug.h:
 
-/usr/include/qt4/QtCore/qhash.h:
+/usr/share/qt4/include/QtCore/qhash.h:
 
-/usr/include/qt4/QtCore/qpair.h:
+/usr/share/qt4/include/QtCore/qpair.h:
 
-/usr/include/qt4/QtCore/qmap.h:
+/usr/share/qt4/include/QtCore/qmap.h:
 
 /usr/include/c++/4.4/map:
 
@@ -1029,1045 +1176,1045 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 
 /usr/include/c++/4.4/bits/stl_multimap.h:
 
-/usr/include/qt4/QtCore/qtextstream.h:
+/usr/share/qt4/include/QtCore/qtextstream.h:
 
-/usr/include/qt4/QtCore/qlocale.h:
+/usr/share/qt4/include/QtCore/qlocale.h:
 
-/usr/include/qt4/QtCore/qtextcodec.h:
+/usr/share/qt4/include/QtCore/qtextcodec.h:
 
-/usr/include/qt4/QtCore/qset.h:
+/usr/share/qt4/include/QtCore/qset.h:
 
-/usr/include/qt4/QtCore/qcontiguouscache.h:
+/usr/share/qt4/include/QtCore/qcontiguouscache.h:
 
-/usr/include/qt4/QtCore/qdir.h:
+/usr/share/qt4/include/QtCore/qdir.h:
 
-/usr/include/qt4/QtCore/qdiriterator.h:
+/usr/share/qt4/include/QtCore/qdiriterator.h:
 
-/usr/include/qt4/QtCore/qfile.h:
+/usr/share/qt4/include/QtCore/qfile.h:
 
-/usr/include/qt4/QtCore/qfileinfo.h:
+/usr/share/qt4/include/QtCore/qfileinfo.h:
 
-/usr/include/qt4/QtCore/qfilesystemwatcher.h:
+/usr/share/qt4/include/QtCore/qfilesystemwatcher.h:
 
-/usr/include/qt4/QtCore/qfsfileengine.h:
+/usr/share/qt4/include/QtCore/qfsfileengine.h:
 
-/usr/include/qt4/QtCore/qabstractfileengine.h:
+/usr/share/qt4/include/QtCore/qabstractfileengine.h:
 
-/usr/include/qt4/QtCore/qiodevice.h:
+/usr/share/qt4/include/QtCore/qiodevice.h:
 
-/usr/include/qt4/QtCore/qprocess.h:
+/usr/share/qt4/include/QtCore/qprocess.h:
 
-/usr/include/qt4/QtCore/qshareddata.h:
+/usr/share/qt4/include/QtCore/qshareddata.h:
 
-/usr/include/qt4/QtCore/qresource.h:
+/usr/share/qt4/include/QtCore/qresource.h:
 
-/usr/include/qt4/QtCore/qsettings.h:
+/usr/share/qt4/include/QtCore/qsettings.h:
 
-/usr/include/qt4/QtCore/qvariant.h:
+/usr/share/qt4/include/QtCore/qvariant.h:
 
-/usr/include/qt4/QtCore/qmetatype.h:
+/usr/share/qt4/include/QtCore/qmetatype.h:
 
-/usr/include/qt4/QtCore/qtemporaryfile.h:
+/usr/share/qt4/include/QtCore/qtemporaryfile.h:
 
-/usr/include/qt4/QtCore/qtextstream.h:
+/usr/share/qt4/include/QtCore/qtextstream.h:
 
-/usr/include/qt4/QtCore/qurl.h:
+/usr/share/qt4/include/QtCore/qurl.h:
 
-/usr/include/qt4/QtCore/qtextcodec.h:
+/usr/share/qt4/include/QtCore/qtextcodec.h:
 
-/usr/include/qt4/QtCore/qtextcodecplugin.h:
+/usr/share/qt4/include/QtCore/qtextcodecplugin.h:
 
-/usr/include/qt4/QtCore/qplugin.h:
+/usr/share/qt4/include/QtCore/qplugin.h:
 
-/usr/include/qt4/QtCore/qpointer.h:
+/usr/share/qt4/include/QtCore/qpointer.h:
 
-/usr/include/qt4/QtCore/qfactoryinterface.h:
+/usr/share/qt4/include/QtCore/qfactoryinterface.h:
 
-/usr/include/qt4/QtCore/qalgorithms.h:
+/usr/share/qt4/include/QtCore/qalgorithms.h:
 
-/usr/include/qt4/QtCore/qbitarray.h:
+/usr/share/qt4/include/QtCore/qbitarray.h:
 
-/usr/include/qt4/QtCore/qbytearray.h:
+/usr/share/qt4/include/QtCore/qbytearray.h:
 
-/usr/include/qt4/QtCore/qbytearraymatcher.h:
+/usr/share/qt4/include/QtCore/qbytearraymatcher.h:
 
-/usr/include/qt4/QtCore/qcache.h:
+/usr/share/qt4/include/QtCore/qcache.h:
 
-/usr/include/qt4/QtCore/qchar.h:
+/usr/share/qt4/include/QtCore/qchar.h:
 
-/usr/include/qt4/QtCore/qcontainerfwd.h:
+/usr/share/qt4/include/QtCore/qcontainerfwd.h:
 
-/usr/include/qt4/QtCore/qcontiguouscache.h:
+/usr/share/qt4/include/QtCore/qcontiguouscache.h:
 
-/usr/include/qt4/QtCore/qcryptographichash.h:
+/usr/share/qt4/include/QtCore/qcryptographichash.h:
 
-/usr/include/qt4/QtCore/qdatetime.h:
+/usr/share/qt4/include/QtCore/qdatetime.h:
 
-/usr/include/qt4/QtCore/qsharedpointer.h:
+/usr/share/qt4/include/QtCore/qsharedpointer.h:
 
-/usr/include/qt4/QtCore/qsharedpointer_impl.h:
+/usr/share/qt4/include/QtCore/qsharedpointer_impl.h:
 
-/usr/include/qt4/QtCore/qeasingcurve.h:
+/usr/share/qt4/include/QtCore/qeasingcurve.h:
 
-/usr/include/qt4/QtCore/qhash.h:
+/usr/share/qt4/include/QtCore/qhash.h:
 
-/usr/include/qt4/QtCore/qiterator.h:
+/usr/share/qt4/include/QtCore/qiterator.h:
 
-/usr/include/qt4/QtCore/qline.h:
+/usr/share/qt4/include/QtCore/qline.h:
 
-/usr/include/qt4/QtCore/qpoint.h:
+/usr/share/qt4/include/QtCore/qpoint.h:
 
-/usr/include/qt4/QtCore/qlinkedlist.h:
+/usr/share/qt4/include/QtCore/qlinkedlist.h:
 
-/usr/include/qt4/QtCore/qlist.h:
+/usr/share/qt4/include/QtCore/qlist.h:
 
-/usr/include/qt4/QtCore/qlocale.h:
+/usr/share/qt4/include/QtCore/qlocale.h:
 
-/usr/include/qt4/QtCore/qmap.h:
+/usr/share/qt4/include/QtCore/qmap.h:
 
-/usr/include/qt4/QtCore/qmargins.h:
+/usr/share/qt4/include/QtCore/qmargins.h:
 
-/usr/include/qt4/QtCore/qpair.h:
+/usr/share/qt4/include/QtCore/qpair.h:
 
-/usr/include/qt4/QtCore/qpoint.h:
+/usr/share/qt4/include/QtCore/qpoint.h:
 
-/usr/include/qt4/QtCore/qqueue.h:
+/usr/share/qt4/include/QtCore/qqueue.h:
 
-/usr/include/qt4/QtCore/qrect.h:
+/usr/share/qt4/include/QtCore/qrect.h:
 
-/usr/include/qt4/QtCore/qsize.h:
+/usr/share/qt4/include/QtCore/qsize.h:
 
-/usr/include/qt4/QtCore/qregexp.h:
+/usr/share/qt4/include/QtCore/qregexp.h:
 
-/usr/include/qt4/QtCore/qscopedpointer.h:
+/usr/share/qt4/include/QtCore/qscopedpointer.h:
 
-/usr/include/qt4/QtCore/qset.h:
+/usr/share/qt4/include/QtCore/qset.h:
 
-/usr/include/qt4/QtCore/qshareddata.h:
+/usr/share/qt4/include/QtCore/qshareddata.h:
 
-/usr/include/qt4/QtCore/qsharedpointer.h:
+/usr/share/qt4/include/QtCore/qsharedpointer.h:
 
-/usr/include/qt4/QtCore/qsize.h:
+/usr/share/qt4/include/QtCore/qsize.h:
 
-/usr/include/qt4/QtCore/qstack.h:
+/usr/share/qt4/include/QtCore/qstack.h:
 
-/usr/include/qt4/QtCore/qstring.h:
+/usr/share/qt4/include/QtCore/qstring.h:
 
-/usr/include/qt4/QtCore/qstringbuilder.h:
+/usr/share/qt4/include/QtCore/qstringbuilder.h:
 
-/usr/include/qt4/QtCore/qstringlist.h:
+/usr/share/qt4/include/QtCore/qstringlist.h:
 
-/usr/include/qt4/QtCore/qstringmatcher.h:
+/usr/share/qt4/include/QtCore/qstringmatcher.h:
 
-/usr/include/qt4/QtCore/qtextboundaryfinder.h:
+/usr/share/qt4/include/QtCore/qtextboundaryfinder.h:
 
-/usr/include/qt4/QtCore/qtimeline.h:
+/usr/share/qt4/include/QtCore/qtimeline.h:
 
-/usr/include/qt4/QtCore/qeasingcurve.h:
+/usr/share/qt4/include/QtCore/qeasingcurve.h:
 
-/usr/include/qt4/QtCore/qvarlengtharray.h:
+/usr/share/qt4/include/QtCore/qvarlengtharray.h:
 
-/usr/include/qt4/QtCore/qcontainerfwd.h:
+/usr/share/qt4/include/QtCore/qcontainerfwd.h:
 
-/usr/include/qt4/QtCore/qvector.h:
+/usr/share/qt4/include/QtCore/qvector.h:
 
-/usr/include/qt4/QtCore/qendian.h:
+/usr/share/qt4/include/QtCore/qendian.h:
 
-/usr/include/qt4/QtCore/qfeatures.h:
+/usr/share/qt4/include/QtCore/qfeatures.h:
 
-/usr/include/qt4/QtCore/qglobal.h:
+/usr/share/qt4/include/QtCore/qglobal.h:
 
-/usr/include/qt4/QtCore/qlibraryinfo.h:
+/usr/share/qt4/include/QtCore/qlibraryinfo.h:
 
-/usr/include/qt4/QtCore/QDate:
+/usr/share/qt4/include/QtCore/QDate:
 
-/usr/include/qt4/QtCore/qnamespace.h:
+/usr/share/qt4/include/QtCore/qnamespace.h:
 
-/usr/include/qt4/QtCore/qnumeric.h:
+/usr/share/qt4/include/QtCore/qnumeric.h:
 
-/usr/include/qt4/QtCore/qabstracteventdispatcher.h:
+/usr/share/qt4/include/QtCore/qabstracteventdispatcher.h:
 
-/usr/include/qt4/QtCore/qeventloop.h:
+/usr/share/qt4/include/QtCore/qeventloop.h:
 
-/usr/include/qt4/QtCore/qabstractitemmodel.h:
+/usr/share/qt4/include/QtCore/qabstractitemmodel.h:
 
-/usr/include/qt4/QtCore/qbasictimer.h:
+/usr/share/qt4/include/QtCore/qbasictimer.h:
 
-/usr/include/qt4/QtCore/qcoreapplication.h:
+/usr/share/qt4/include/QtCore/qcoreapplication.h:
 
-/usr/include/qt4/QtCore/qcoreevent.h:
+/usr/share/qt4/include/QtCore/qcoreevent.h:
 
-/usr/include/qt4/QtCore/qcoreevent.h:
+/usr/share/qt4/include/QtCore/qcoreevent.h:
 
-/usr/include/qt4/QtCore/qeventloop.h:
+/usr/share/qt4/include/QtCore/qeventloop.h:
 
-/usr/include/qt4/QtCore/qmath.h:
+/usr/share/qt4/include/QtCore/qmath.h:
 
-/usr/include/qt4/QtCore/qmetaobject.h:
+/usr/share/qt4/include/QtCore/qmetaobject.h:
 
-/usr/include/qt4/QtCore/qmetatype.h:
+/usr/share/qt4/include/QtCore/qmetatype.h:
 
-/usr/include/qt4/QtCore/qmimedata.h:
+/usr/share/qt4/include/QtCore/qmimedata.h:
 
-/usr/include/qt4/QtCore/qobject.h:
+/usr/share/qt4/include/QtCore/qobject.h:
 
-/usr/include/qt4/QtCore/qobjectcleanuphandler.h:
+/usr/share/qt4/include/QtCore/qobjectcleanuphandler.h:
 
-/usr/include/qt4/QtCore/qobjectdefs.h:
+/usr/share/qt4/include/QtCore/qobjectdefs.h:
 
-/usr/include/qt4/QtCore/qpointer.h:
+/usr/share/qt4/include/QtCore/qpointer.h:
 
-/usr/include/qt4/QtCore/qsharedmemory.h:
+/usr/share/qt4/include/QtCore/qsharedmemory.h:
 
-/usr/include/qt4/QtCore/qsignalmapper.h:
+/usr/share/qt4/include/QtCore/qsignalmapper.h:
 
-/usr/include/qt4/QtCore/qsocketnotifier.h:
+/usr/share/qt4/include/QtCore/qsocketnotifier.h:
 
-/usr/include/qt4/QtCore/qsystemsemaphore.h:
+/usr/share/qt4/include/QtCore/qsystemsemaphore.h:
 
-/usr/include/qt4/QtCore/qtimer.h:
+/usr/share/qt4/include/QtCore/qtimer.h:
 
-/usr/include/qt4/QtCore/qbasictimer.h:
+/usr/share/qt4/include/QtCore/qbasictimer.h:
 
-/usr/include/qt4/QtCore/qtranslator.h:
+/usr/share/qt4/include/QtCore/qtranslator.h:
 
-/usr/include/qt4/QtCore/qvariant.h:
+/usr/share/qt4/include/QtCore/qvariant.h:
 
-/usr/include/qt4/QtCore/qfuture.h:
+/usr/share/qt4/include/QtCore/qfuture.h:
 
-/usr/include/qt4/QtCore/qfutureinterface.h:
+/usr/share/qt4/include/QtCore/qfutureinterface.h:
 
-/usr/include/qt4/QtCore/qrunnable.h:
+/usr/share/qt4/include/QtCore/qrunnable.h:
 
-/usr/include/qt4/QtCore/qmutex.h:
+/usr/share/qt4/include/QtCore/qmutex.h:
 
-/usr/include/qt4/QtCore/qtconcurrentexception.h:
+/usr/share/qt4/include/QtCore/qtconcurrentexception.h:
 
-/usr/include/qt4/QtCore/qtconcurrentresultstore.h:
+/usr/share/qt4/include/QtCore/qtconcurrentresultstore.h:
 
-/usr/include/qt4/QtCore/qdebug.h:
+/usr/share/qt4/include/QtCore/qdebug.h:
 
-/usr/include/qt4/QtCore/qtconcurrentcompilertest.h:
+/usr/share/qt4/include/QtCore/qtconcurrentcompilertest.h:
 
-/usr/include/qt4/QtCore/qfutureinterface.h:
+/usr/share/qt4/include/QtCore/qfutureinterface.h:
 
-/usr/include/qt4/QtCore/qfuturesynchronizer.h:
+/usr/share/qt4/include/QtCore/qfuturesynchronizer.h:
 
-/usr/include/qt4/QtCore/qfuture.h:
+/usr/share/qt4/include/QtCore/qfuture.h:
 
-/usr/include/qt4/QtCore/qfuturewatcher.h:
+/usr/share/qt4/include/QtCore/qfuturewatcher.h:
 
-/usr/include/qt4/QtCore/qrunnable.h:
+/usr/share/qt4/include/QtCore/qrunnable.h:
 
-/usr/include/qt4/QtCore/qtconcurrentcompilertest.h:
+/usr/share/qt4/include/QtCore/qtconcurrentcompilertest.h:
 
-/usr/include/qt4/QtCore/qtconcurrentexception.h:
+/usr/share/qt4/include/QtCore/qtconcurrentexception.h:
 
-/usr/include/qt4/QtCore/qtconcurrentfilter.h:
+/usr/share/qt4/include/QtCore/qtconcurrentfilter.h:
 
-/usr/include/qt4/QtCore/qtconcurrentfilterkernel.h:
+/usr/share/qt4/include/QtCore/qtconcurrentfilterkernel.h:
 
-/usr/include/qt4/QtCore/qtconcurrentiteratekernel.h:
+/usr/share/qt4/include/QtCore/qtconcurrentiteratekernel.h:
 
-/usr/include/qt4/QtCore/qtconcurrentmedian.h:
+/usr/share/qt4/include/QtCore/qtconcurrentmedian.h:
 
-/usr/include/qt4/QtCore/qtconcurrentthreadengine.h:
+/usr/share/qt4/include/QtCore/qtconcurrentthreadengine.h:
 
-/usr/include/qt4/QtCore/qthreadpool.h:
+/usr/share/qt4/include/QtCore/qthreadpool.h:
 
-/usr/include/qt4/QtCore/qthread.h:
+/usr/share/qt4/include/QtCore/qthread.h:
 
-/usr/include/qt4/QtCore/qwaitcondition.h:
+/usr/share/qt4/include/QtCore/qwaitcondition.h:
 
-/usr/include/qt4/QtCore/qsemaphore.h:
+/usr/share/qt4/include/QtCore/qsemaphore.h:
 
-/usr/include/qt4/QtCore/qtconcurrentmapkernel.h:
+/usr/share/qt4/include/QtCore/qtconcurrentmapkernel.h:
 
-/usr/include/qt4/QtCore/qtconcurrentreducekernel.h:
+/usr/share/qt4/include/QtCore/qtconcurrentreducekernel.h:
 
-/usr/include/qt4/QtCore/qtconcurrentfunctionwrappers.h:
+/usr/share/qt4/include/QtCore/qtconcurrentfunctionwrappers.h:
 
-/usr/include/qt4/QtCore/qtconcurrentfilterkernel.h:
+/usr/share/qt4/include/QtCore/qtconcurrentfilterkernel.h:
 
-/usr/include/qt4/QtCore/qtconcurrentfunctionwrappers.h:
+/usr/share/qt4/include/QtCore/qtconcurrentfunctionwrappers.h:
 
-/usr/include/qt4/QtCore/qtconcurrentiteratekernel.h:
+/usr/share/qt4/include/QtCore/qtconcurrentiteratekernel.h:
 
-/usr/include/qt4/QtCore/qtconcurrentmap.h:
+/usr/share/qt4/include/QtCore/qtconcurrentmap.h:
 
-/usr/include/qt4/QtCore/qtconcurrentmapkernel.h:
+/usr/share/qt4/include/QtCore/qtconcurrentmapkernel.h:
 
-/usr/include/qt4/QtCore/qtconcurrentmedian.h:
+/usr/share/qt4/include/QtCore/qtconcurrentmedian.h:
 
-/usr/include/qt4/QtCore/qtconcurrentreducekernel.h:
+/usr/share/qt4/include/QtCore/qtconcurrentreducekernel.h:
 
-/usr/include/qt4/QtCore/qtconcurrentresultstore.h:
+/usr/share/qt4/include/QtCore/qtconcurrentresultstore.h:
 
-/usr/include/qt4/QtCore/qtconcurrentrun.h:
+/usr/share/qt4/include/QtCore/qtconcurrentrun.h:
 
-/usr/include/qt4/QtCore/qtconcurrentrunbase.h:
+/usr/share/qt4/include/QtCore/qtconcurrentrunbase.h:
 
-/usr/include/qt4/QtCore/qtconcurrentstoredfunctioncall.h:
+/usr/share/qt4/include/QtCore/qtconcurrentstoredfunctioncall.h:
 
-/usr/include/qt4/QtCore/qtconcurrentrunbase.h:
+/usr/share/qt4/include/QtCore/qtconcurrentrunbase.h:
 
-/usr/include/qt4/QtCore/qtconcurrentstoredfunctioncall.h:
+/usr/share/qt4/include/QtCore/qtconcurrentstoredfunctioncall.h:
 
-/usr/include/qt4/QtCore/qtconcurrentthreadengine.h:
+/usr/share/qt4/include/QtCore/qtconcurrentthreadengine.h:
 
-/usr/include/qt4/QtCore/qthreadpool.h:
+/usr/share/qt4/include/QtCore/qthreadpool.h:
 
-/usr/include/qt4/QtCore/qfactoryinterface.h:
+/usr/share/qt4/include/QtCore/qfactoryinterface.h:
 
-/usr/include/qt4/QtCore/qlibrary.h:
+/usr/share/qt4/include/QtCore/qlibrary.h:
 
-/usr/include/qt4/QtCore/qplugin.h:
+/usr/share/qt4/include/QtCore/qplugin.h:
 
-/usr/include/qt4/QtCore/qpluginloader.h:
+/usr/share/qt4/include/QtCore/qpluginloader.h:
 
-/usr/include/qt4/QtCore/qlibrary.h:
+/usr/share/qt4/include/QtCore/qlibrary.h:
 
-/usr/include/qt4/QtCore/quuid.h:
+/usr/share/qt4/include/QtCore/quuid.h:
 
-/usr/include/qt4/QtCore/qatomic.h:
+/usr/share/qt4/include/QtCore/qatomic.h:
 
-/usr/include/qt4/QtCore/qbasicatomic.h:
+/usr/share/qt4/include/QtCore/qbasicatomic.h:
 
-/usr/include/qt4/QtCore/qmutex.h:
+/usr/share/qt4/include/QtCore/qmutex.h:
 
-/usr/include/qt4/QtCore/qreadwritelock.h:
+/usr/share/qt4/include/QtCore/qreadwritelock.h:
 
-/usr/include/qt4/QtCore/qsemaphore.h:
+/usr/share/qt4/include/QtCore/qsemaphore.h:
 
-/usr/include/qt4/QtCore/qthread.h:
+/usr/share/qt4/include/QtCore/qthread.h:
 
-/usr/include/qt4/QtCore/qthreadstorage.h:
+/usr/share/qt4/include/QtCore/qthreadstorage.h:
 
-/usr/include/qt4/QtCore/qwaitcondition.h:
+/usr/share/qt4/include/QtCore/qwaitcondition.h:
 
-/usr/include/qt4/QtCore/qabstractstate.h:
+/usr/share/qt4/include/QtCore/qabstractstate.h:
 
-/usr/include/qt4/QtCore/qabstracttransition.h:
+/usr/share/qt4/include/QtCore/qabstracttransition.h:
 
-/usr/include/qt4/QtCore/qeventtransition.h:
+/usr/share/qt4/include/QtCore/qeventtransition.h:
 
-/usr/include/qt4/QtCore/qabstracttransition.h:
+/usr/share/qt4/include/QtCore/qabstracttransition.h:
 
-/usr/include/qt4/QtCore/qfinalstate.h:
+/usr/share/qt4/include/QtCore/qfinalstate.h:
 
-/usr/include/qt4/QtCore/qabstractstate.h:
+/usr/share/qt4/include/QtCore/qabstractstate.h:
 
-/usr/include/qt4/QtCore/qhistorystate.h:
+/usr/share/qt4/include/QtCore/qhistorystate.h:
 
-/usr/include/qt4/QtCore/qsignaltransition.h:
+/usr/share/qt4/include/QtCore/qsignaltransition.h:
 
-/usr/include/qt4/QtCore/qstate.h:
+/usr/share/qt4/include/QtCore/qstate.h:
 
-/usr/include/qt4/QtCore/qstatemachine.h:
+/usr/share/qt4/include/QtCore/qstatemachine.h:
 
-/usr/include/qt4/QtCore/qstate.h:
+/usr/share/qt4/include/QtCore/qstate.h:
 
-/usr/include/qt4/QtCore/qabstractanimation.h:
+/usr/share/qt4/include/QtCore/qabstractanimation.h:
 
-/usr/include/qt4/QtCore/qanimationgroup.h:
+/usr/share/qt4/include/QtCore/qanimationgroup.h:
 
-/usr/include/qt4/QtCore/qabstractanimation.h:
+/usr/share/qt4/include/QtCore/qabstractanimation.h:
 
-/usr/include/qt4/QtCore/qparallelanimationgroup.h:
+/usr/share/qt4/include/QtCore/qparallelanimationgroup.h:
 
-/usr/include/qt4/QtCore/qanimationgroup.h:
+/usr/share/qt4/include/QtCore/qanimationgroup.h:
 
-/usr/include/qt4/QtCore/qpauseanimation.h:
+/usr/share/qt4/include/QtCore/qpauseanimation.h:
 
-/usr/include/qt4/QtCore/qpropertyanimation.h:
+/usr/share/qt4/include/QtCore/qpropertyanimation.h:
 
-/usr/include/qt4/QtCore/qvariantanimation.h:
+/usr/share/qt4/include/QtCore/qvariantanimation.h:
 
-/usr/include/qt4/QtCore/qsequentialanimationgroup.h:
+/usr/share/qt4/include/QtCore/qsequentialanimationgroup.h:
 
-/usr/include/qt4/QtCore/qvariantanimation.h:
+/usr/share/qt4/include/QtCore/qvariantanimation.h:
 
-/usr/include/qt4/QtGui/qbitmap.h:
+/usr/share/qt4/include/QtGui/qbitmap.h:
 
-/usr/include/qt4/QtGui/qpixmap.h:
+/usr/share/qt4/include/QtGui/qpixmap.h:
 
-/usr/include/qt4/QtGui/qpaintdevice.h:
+/usr/share/qt4/include/QtGui/qpaintdevice.h:
 
-/usr/include/qt4/QtGui/qwindowdefs.h:
+/usr/share/qt4/include/QtGui/qwindowdefs.h:
 
-/usr/include/qt4/QtCore/qrect.h:
+/usr/share/qt4/include/QtCore/qrect.h:
 
-/usr/include/qt4/QtGui/qcolor.h:
+/usr/share/qt4/include/QtGui/qcolor.h:
 
-/usr/include/qt4/QtGui/qrgb.h:
+/usr/share/qt4/include/QtGui/qrgb.h:
 
-/usr/include/qt4/QtGui/qimage.h:
+/usr/share/qt4/include/QtGui/qimage.h:
 
-/usr/include/qt4/QtGui/qtransform.h:
+/usr/share/qt4/include/QtGui/qtransform.h:
 
-/usr/include/qt4/QtGui/qmatrix.h:
+/usr/share/qt4/include/QtGui/qmatrix.h:
 
-/usr/include/qt4/QtGui/qpolygon.h:
+/usr/share/qt4/include/QtGui/qpolygon.h:
 
-/usr/include/qt4/QtGui/qregion.h:
+/usr/share/qt4/include/QtGui/qregion.h:
 
-/usr/include/qt4/QtCore/qline.h:
+/usr/share/qt4/include/QtCore/qline.h:
 
-/usr/include/qt4/QtGui/qwmatrix.h:
+/usr/share/qt4/include/QtGui/qwmatrix.h:
 
-/usr/include/qt4/QtGui/qpainterpath.h:
+/usr/share/qt4/include/QtGui/qpainterpath.h:
 
-/usr/include/qt4/QtGui/qicon.h:
+/usr/share/qt4/include/QtGui/qicon.h:
 
-/usr/include/qt4/QtGui/qiconengine.h:
+/usr/share/qt4/include/QtGui/qiconengine.h:
 
-/usr/include/qt4/QtGui/qicon.h:
+/usr/share/qt4/include/QtGui/qicon.h:
 
-/usr/include/qt4/QtGui/qiconengineplugin.h:
+/usr/share/qt4/include/QtGui/qiconengineplugin.h:
 
-/usr/include/qt4/QtGui/qimage.h:
+/usr/share/qt4/include/QtGui/qimage.h:
 
-/usr/include/qt4/QtGui/qimageiohandler.h:
+/usr/share/qt4/include/QtGui/qimageiohandler.h:
 
-/usr/include/qt4/QtGui/qimagereader.h:
+/usr/share/qt4/include/QtGui/qimagereader.h:
 
-/usr/include/qt4/QtGui/qimageiohandler.h:
+/usr/share/qt4/include/QtGui/qimageiohandler.h:
 
-/usr/include/qt4/QtGui/qimagewriter.h:
+/usr/share/qt4/include/QtGui/qimagewriter.h:
 
-/usr/include/qt4/QtGui/qmovie.h:
+/usr/share/qt4/include/QtGui/qmovie.h:
 
-/usr/include/qt4/QtGui/qimagereader.h:
+/usr/share/qt4/include/QtGui/qimagereader.h:
 
-/usr/include/qt4/QtGui/qpicture.h:
+/usr/share/qt4/include/QtGui/qpicture.h:
 
-/usr/include/qt4/QtGui/qpictureformatplugin.h:
+/usr/share/qt4/include/QtGui/qpictureformatplugin.h:
 
-/usr/include/qt4/QtGui/qpixmap.h:
+/usr/share/qt4/include/QtGui/qpixmap.h:
 
-/usr/include/qt4/QtGui/qpixmapcache.h:
+/usr/share/qt4/include/QtGui/qpixmapcache.h:
 
-/usr/include/qt4/QtGui/qs60mainapplication.h:
+/usr/share/qt4/include/QtGui/qs60mainapplication.h:
 
-/usr/include/qt4/QtGui/qs60mainappui.h:
+/usr/share/qt4/include/QtGui/qs60mainappui.h:
 
-/usr/include/qt4/QtGui/qs60maindocument.h:
+/usr/share/qt4/include/QtGui/qs60maindocument.h:
 
-/usr/include/qt4/QtGui/qvfbhdr.h:
+/usr/share/qt4/include/QtGui/qvfbhdr.h:
 
-/usr/include/qt4/QtGui/qwsembedwidget.h:
+/usr/share/qt4/include/QtGui/qwsembedwidget.h:
 
-/usr/include/qt4/QtGui/qwidget.h:
+/usr/share/qt4/include/QtGui/qwidget.h:
 
-/usr/include/qt4/QtCore/qmargins.h:
+/usr/share/qt4/include/QtCore/qmargins.h:
 
-/usr/include/qt4/QtGui/qpalette.h:
+/usr/share/qt4/include/QtGui/qpalette.h:
 
-/usr/include/qt4/QtGui/qbrush.h:
+/usr/share/qt4/include/QtGui/qbrush.h:
 
-/usr/include/qt4/QtGui/qfont.h:
+/usr/share/qt4/include/QtGui/qfont.h:
 
-/usr/include/qt4/QtGui/qfontmetrics.h:
+/usr/share/qt4/include/QtGui/qfontmetrics.h:
 
-/usr/include/qt4/QtGui/qfontinfo.h:
+/usr/share/qt4/include/QtGui/qfontinfo.h:
 
-/usr/include/qt4/QtGui/qsizepolicy.h:
+/usr/share/qt4/include/QtGui/qsizepolicy.h:
 
-/usr/include/qt4/QtGui/qcursor.h:
+/usr/share/qt4/include/QtGui/qcursor.h:
 
-/usr/include/qt4/QtGui/qkeysequence.h:
+/usr/share/qt4/include/QtGui/qkeysequence.h:
 
-/usr/include/qt4/QtGui/qabstractbutton.h:
+/usr/share/qt4/include/QtGui/qabstractbutton.h:
 
-/usr/include/qt4/QtGui/qabstractscrollarea.h:
+/usr/share/qt4/include/QtGui/qabstractscrollarea.h:
 
-/usr/include/qt4/QtGui/qframe.h:
+/usr/share/qt4/include/QtGui/qframe.h:
 
-/usr/include/qt4/QtGui/qabstractslider.h:
+/usr/share/qt4/include/QtGui/qabstractslider.h:
 
-/usr/include/qt4/QtGui/qabstractspinbox.h:
+/usr/share/qt4/include/QtGui/qabstractspinbox.h:
 
-/usr/include/qt4/QtGui/qvalidator.h:
+/usr/share/qt4/include/QtGui/qvalidator.h:
 
-/usr/include/qt4/QtGui/qbuttongroup.h:
+/usr/share/qt4/include/QtGui/qbuttongroup.h:
 
-/usr/include/qt4/QtGui/qcalendarwidget.h:
+/usr/share/qt4/include/QtGui/qcalendarwidget.h:
 
-/usr/include/qt4/QtCore/qdatetime.h:
+/usr/share/qt4/include/QtCore/qdatetime.h:
 
-/usr/include/qt4/QtGui/qcheckbox.h:
+/usr/share/qt4/include/QtGui/qcheckbox.h:
 
-/usr/include/qt4/QtGui/qabstractbutton.h:
+/usr/share/qt4/include/QtGui/qabstractbutton.h:
 
-/usr/include/qt4/QtGui/qcombobox.h:
+/usr/share/qt4/include/QtGui/qcombobox.h:
 
-/usr/include/qt4/QtGui/qabstractitemdelegate.h:
+/usr/share/qt4/include/QtGui/qabstractitemdelegate.h:
 
-/usr/include/qt4/QtGui/qstyleoption.h:
+/usr/share/qt4/include/QtGui/qstyleoption.h:
 
-/usr/include/qt4/QtGui/qabstractspinbox.h:
+/usr/share/qt4/include/QtGui/qabstractspinbox.h:
 
-/usr/include/qt4/QtGui/qslider.h:
+/usr/share/qt4/include/QtGui/qslider.h:
 
-/usr/include/qt4/QtGui/qabstractslider.h:
+/usr/share/qt4/include/QtGui/qabstractslider.h:
 
-/usr/include/qt4/QtGui/qstyle.h:
+/usr/share/qt4/include/QtGui/qstyle.h:
 
-/usr/include/qt4/QtGui/qtabbar.h:
+/usr/share/qt4/include/QtGui/qtabbar.h:
 
-/usr/include/qt4/QtGui/qtabwidget.h:
+/usr/share/qt4/include/QtGui/qtabwidget.h:
 
-/usr/include/qt4/QtGui/qrubberband.h:
+/usr/share/qt4/include/QtGui/qrubberband.h:
 
-/usr/include/qt4/QtCore/qabstractitemmodel.h:
+/usr/share/qt4/include/QtCore/qabstractitemmodel.h:
 
-/usr/include/qt4/QtGui/qcommandlinkbutton.h:
+/usr/share/qt4/include/QtGui/qcommandlinkbutton.h:
 
-/usr/include/qt4/QtGui/qpushbutton.h:
+/usr/share/qt4/include/QtGui/qpushbutton.h:
 
-/usr/include/qt4/QtGui/qdatetimeedit.h:
+/usr/share/qt4/include/QtGui/qdatetimeedit.h:
 
-/usr/include/qt4/QtGui/qdial.h:
+/usr/share/qt4/include/QtGui/qdial.h:
 
-/usr/include/qt4/QtGui/qdialogbuttonbox.h:
+/usr/share/qt4/include/QtGui/qdialogbuttonbox.h:
 
-/usr/include/qt4/QtGui/qdockwidget.h:
+/usr/share/qt4/include/QtGui/qdockwidget.h:
 
-/usr/include/qt4/QtGui/qfocusframe.h:
+/usr/share/qt4/include/QtGui/qfocusframe.h:
 
-/usr/include/qt4/QtGui/qfontcombobox.h:
+/usr/share/qt4/include/QtGui/qfontcombobox.h:
 
-/usr/include/qt4/QtGui/qcombobox.h:
+/usr/share/qt4/include/QtGui/qcombobox.h:
 
-/usr/include/qt4/QtGui/qfontdatabase.h:
+/usr/share/qt4/include/QtGui/qfontdatabase.h:
 
-/usr/include/qt4/QtGui/qframe.h:
+/usr/share/qt4/include/QtGui/qframe.h:
 
-/usr/include/qt4/QtGui/qgroupbox.h:
+/usr/share/qt4/include/QtGui/qgroupbox.h:
 
-/usr/include/qt4/QtGui/qlabel.h:
+/usr/share/qt4/include/QtGui/qlabel.h:
 
-/usr/include/qt4/QtGui/qlcdnumber.h:
+/usr/share/qt4/include/QtGui/qlcdnumber.h:
 
-/usr/include/qt4/QtCore/qbitarray.h:
+/usr/share/qt4/include/QtCore/qbitarray.h:
 
-/usr/include/qt4/QtGui/qlineedit.h:
+/usr/share/qt4/include/QtGui/qlineedit.h:
 
-/usr/include/qt4/QtGui/qmainwindow.h:
+/usr/share/qt4/include/QtGui/qmainwindow.h:
 
-/usr/include/qt4/QtGui/qmdiarea.h:
+/usr/share/qt4/include/QtGui/qmdiarea.h:
 
-/usr/include/qt4/QtGui/qabstractscrollarea.h:
+/usr/share/qt4/include/QtGui/qabstractscrollarea.h:
 
-/usr/include/qt4/QtGui/qmdisubwindow.h:
+/usr/share/qt4/include/QtGui/qmdisubwindow.h:
 
-/usr/include/qt4/QtGui/qmenu.h:
+/usr/share/qt4/include/QtGui/qmenu.h:
 
-/usr/include/qt4/QtGui/qaction.h:
+/usr/share/qt4/include/QtGui/qaction.h:
 
-/usr/include/qt4/QtGui/qactiongroup.h:
+/usr/share/qt4/include/QtGui/qactiongroup.h:
 
-/usr/include/qt4/QtGui/qmenubar.h:
+/usr/share/qt4/include/QtGui/qmenubar.h:
 
-/usr/include/qt4/QtGui/qmenu.h:
+/usr/share/qt4/include/QtGui/qmenu.h:
 
-/usr/include/qt4/QtGui/qmenudata.h:
+/usr/share/qt4/include/QtGui/qmenudata.h:
 
-/usr/include/qt4/QtGui/qplaintextedit.h:
+/usr/share/qt4/include/QtGui/qplaintextedit.h:
 
-/usr/include/qt4/QtGui/qtextedit.h:
+/usr/share/qt4/include/QtGui/qtextedit.h:
 
-/usr/include/qt4/QtGui/qtextdocument.h:
+/usr/share/qt4/include/QtGui/qtextdocument.h:
 
-/usr/include/qt4/QtGui/qtextoption.h:
+/usr/share/qt4/include/QtGui/qtextoption.h:
 
-/usr/include/qt4/QtGui/qtextcursor.h:
+/usr/share/qt4/include/QtGui/qtextcursor.h:
 
-/usr/include/qt4/QtGui/qtextformat.h:
+/usr/share/qt4/include/QtGui/qtextformat.h:
 
-/usr/include/qt4/QtGui/qpen.h:
+/usr/share/qt4/include/QtGui/qpen.h:
 
-/usr/include/qt4/QtGui/qtextobject.h:
+/usr/share/qt4/include/QtGui/qtextobject.h:
 
-/usr/include/qt4/QtGui/qtextlayout.h:
+/usr/share/qt4/include/QtGui/qtextlayout.h:
 
-/usr/include/qt4/QtGui/qevent.h:
+/usr/share/qt4/include/QtGui/qevent.h:
 
-/usr/include/qt4/QtGui/qmime.h:
+/usr/share/qt4/include/QtGui/qmime.h:
 
-/usr/include/qt4/QtCore/qmimedata.h:
+/usr/share/qt4/include/QtCore/qmimedata.h:
 
-/usr/include/qt4/QtGui/qdrag.h:
+/usr/share/qt4/include/QtGui/qdrag.h:
 
-/usr/include/qt4/QtGui/qabstracttextdocumentlayout.h:
+/usr/share/qt4/include/QtGui/qabstracttextdocumentlayout.h:
 
-/usr/include/qt4/QtGui/qprintpreviewwidget.h:
+/usr/share/qt4/include/QtGui/qprintpreviewwidget.h:
 
-/usr/include/qt4/QtGui/qprinter.h:
+/usr/share/qt4/include/QtGui/qprinter.h:
 
-/usr/include/qt4/QtGui/qprogressbar.h:
+/usr/share/qt4/include/QtGui/qprogressbar.h:
 
-/usr/include/qt4/QtGui/qpushbutton.h:
+/usr/share/qt4/include/QtGui/qpushbutton.h:
 
-/usr/include/qt4/QtGui/qradiobutton.h:
+/usr/share/qt4/include/QtGui/qradiobutton.h:
 
-/usr/include/qt4/QtGui/qrubberband.h:
+/usr/share/qt4/include/QtGui/qrubberband.h:
 
-/usr/include/qt4/QtGui/qscrollarea.h:
+/usr/share/qt4/include/QtGui/qscrollarea.h:
 
-/usr/include/qt4/QtGui/qscrollbar.h:
+/usr/share/qt4/include/QtGui/qscrollbar.h:
 
-/usr/include/qt4/QtGui/qsizegrip.h:
+/usr/share/qt4/include/QtGui/qsizegrip.h:
 
-/usr/include/qt4/QtGui/qslider.h:
+/usr/share/qt4/include/QtGui/qslider.h:
 
-/usr/include/qt4/QtGui/qspinbox.h:
+/usr/share/qt4/include/QtGui/qspinbox.h:
 
-/usr/include/qt4/QtGui/qsplashscreen.h:
+/usr/share/qt4/include/QtGui/qsplashscreen.h:
 
-/usr/include/qt4/QtGui/qsplitter.h:
+/usr/share/qt4/include/QtGui/qsplitter.h:
 
-/usr/include/qt4/QtGui/qstackedwidget.h:
+/usr/share/qt4/include/QtGui/qstackedwidget.h:
 
-/usr/include/qt4/QtGui/qstatusbar.h:
+/usr/share/qt4/include/QtGui/qstatusbar.h:
 
-/usr/include/qt4/QtGui/qtabbar.h:
+/usr/share/qt4/include/QtGui/qtabbar.h:
 
-/usr/include/qt4/QtGui/qtabwidget.h:
+/usr/share/qt4/include/QtGui/qtabwidget.h:
 
-/usr/include/qt4/QtGui/qtextbrowser.h:
+/usr/share/qt4/include/QtGui/qtextbrowser.h:
 
-/usr/include/qt4/QtCore/qurl.h:
+/usr/share/qt4/include/QtCore/qurl.h:
 
-/usr/include/qt4/QtGui/qtextedit.h:
+/usr/share/qt4/include/QtGui/qtextedit.h:
 
-/usr/include/qt4/QtGui/qtoolbar.h:
+/usr/share/qt4/include/QtGui/qtoolbar.h:
 
-/usr/include/qt4/QtGui/qtoolbox.h:
+/usr/share/qt4/include/QtGui/qtoolbox.h:
 
-/usr/include/qt4/QtGui/qtoolbutton.h:
+/usr/share/qt4/include/QtGui/qtoolbutton.h:
 
-/usr/include/qt4/QtGui/qvalidator.h:
+/usr/share/qt4/include/QtGui/qvalidator.h:
 
-/usr/include/qt4/QtGui/qworkspace.h:
+/usr/share/qt4/include/QtGui/qworkspace.h:
 
-/usr/include/qt4/QtGui/qinputcontext.h:
+/usr/share/qt4/include/QtGui/qinputcontext.h:
 
-/usr/include/qt4/QtGui/qinputcontextfactory.h:
+/usr/share/qt4/include/QtGui/qinputcontextfactory.h:
 
-/usr/include/qt4/QtGui/qinputcontextplugin.h:
+/usr/share/qt4/include/QtGui/qinputcontextplugin.h:
 
-/usr/include/qt4/QtGui/qgraphicsanchorlayout.h:
+/usr/share/qt4/include/QtGui/qgraphicsanchorlayout.h:
 
-/usr/include/qt4/QtGui/qgraphicsitem.h:
+/usr/share/qt4/include/QtGui/qgraphicsitem.h:
 
-/usr/include/qt4/QtGui/qgraphicslayout.h:
+/usr/share/qt4/include/QtGui/qgraphicslayout.h:
 
-/usr/include/qt4/QtGui/qgraphicslayoutitem.h:
+/usr/share/qt4/include/QtGui/qgraphicslayoutitem.h:
 
-/usr/include/qt4/QtGui/qgraphicsgridlayout.h:
+/usr/share/qt4/include/QtGui/qgraphicsgridlayout.h:
 
-/usr/include/qt4/QtGui/qgraphicsitem.h:
+/usr/share/qt4/include/QtGui/qgraphicsitem.h:
 
-/usr/include/qt4/QtGui/qgraphicsitemanimation.h:
+/usr/share/qt4/include/QtGui/qgraphicsitemanimation.h:
 
-/usr/include/qt4/QtGui/qgraphicslayout.h:
+/usr/share/qt4/include/QtGui/qgraphicslayout.h:
 
-/usr/include/qt4/QtGui/qgraphicslayoutitem.h:
+/usr/share/qt4/include/QtGui/qgraphicslayoutitem.h:
 
-/usr/include/qt4/QtGui/qgraphicslinearlayout.h:
+/usr/share/qt4/include/QtGui/qgraphicslinearlayout.h:
 
-/usr/include/qt4/QtGui/qgraphicsproxywidget.h:
+/usr/share/qt4/include/QtGui/qgraphicsproxywidget.h:
 
-/usr/include/qt4/QtGui/qgraphicswidget.h:
+/usr/share/qt4/include/QtGui/qgraphicswidget.h:
 
-/usr/include/qt4/QtGui/qgraphicsscene.h:
+/usr/share/qt4/include/QtGui/qgraphicsscene.h:
 
-/usr/include/qt4/QtGui/qgraphicssceneevent.h:
+/usr/share/qt4/include/QtGui/qgraphicssceneevent.h:
 
-/usr/include/qt4/QtGui/qgraphicstransform.h:
+/usr/share/qt4/include/QtGui/qgraphicstransform.h:
 
-/usr/include/qt4/QtCore/QObject:
+/usr/share/qt4/include/QtCore/QObject:
 
-/usr/include/qt4/QtGui/QVector3D:
+/usr/share/qt4/include/QtGui/QVector3D:
 
-/usr/include/qt4/QtGui/qvector3d.h:
+/usr/share/qt4/include/QtGui/qvector3d.h:
 
-/usr/include/qt4/QtGui/QTransform:
+/usr/share/qt4/include/QtGui/QTransform:
 
-/usr/include/qt4/QtGui/qtransform.h:
+/usr/share/qt4/include/QtGui/qtransform.h:
 
-/usr/include/qt4/QtGui/QMatrix4x4:
+/usr/share/qt4/include/QtGui/QMatrix4x4:
 
-/usr/include/qt4/QtGui/qmatrix4x4.h:
+/usr/share/qt4/include/QtGui/qmatrix4x4.h:
 
-/usr/include/qt4/QtGui/qvector3d.h:
+/usr/share/qt4/include/QtGui/qvector3d.h:
 
-/usr/include/qt4/QtGui/qvector4d.h:
+/usr/share/qt4/include/QtGui/qvector4d.h:
 
-/usr/include/qt4/QtGui/qquaternion.h:
+/usr/share/qt4/include/QtGui/qquaternion.h:
 
-/usr/include/qt4/QtGui/qgenericmatrix.h:
+/usr/share/qt4/include/QtGui/qgenericmatrix.h:
 
-/usr/include/qt4/QtGui/qgraphicsview.h:
+/usr/share/qt4/include/QtGui/qgraphicsview.h:
 
-/usr/include/qt4/QtGui/qpainter.h:
+/usr/share/qt4/include/QtGui/qpainter.h:
 
-/usr/include/qt4/QtGui/qdrawutil.h:
+/usr/share/qt4/include/QtGui/qdrawutil.h:
 
-/usr/include/qt4/QtGui/qscrollarea.h:
+/usr/share/qt4/include/QtGui/qscrollarea.h:
 
-/usr/include/qt4/QtGui/qgraphicsscene.h:
+/usr/share/qt4/include/QtGui/qgraphicsscene.h:
 
-/usr/include/qt4/QtGui/qgraphicswidget.h:
+/usr/share/qt4/include/QtGui/qgraphicswidget.h:
 
-/usr/include/qt4/QtGui/qgenericmatrix.h:
+/usr/share/qt4/include/QtGui/qgenericmatrix.h:
 
-/usr/include/qt4/QtGui/qquaternion.h:
+/usr/share/qt4/include/QtGui/qquaternion.h:
 
-/usr/include/qt4/QtGui/qvector2d.h:
+/usr/share/qt4/include/QtGui/qvector2d.h:
 
-/usr/include/qt4/QtGui/qvector4d.h:
+/usr/share/qt4/include/QtGui/qvector4d.h:
 
-/usr/include/qt4/QtGui/qabstracttextdocumentlayout.h:
+/usr/share/qt4/include/QtGui/qabstracttextdocumentlayout.h:
 
-/usr/include/qt4/QtGui/qfont.h:
+/usr/share/qt4/include/QtGui/qfont.h:
 
-/usr/include/qt4/QtGui/qfontdatabase.h:
+/usr/share/qt4/include/QtGui/qfontdatabase.h:
 
-/usr/include/qt4/QtGui/qfontinfo.h:
+/usr/share/qt4/include/QtGui/qfontinfo.h:
 
-/usr/include/qt4/QtGui/qfontmetrics.h:
+/usr/share/qt4/include/QtGui/qfontmetrics.h:
 
-/usr/include/qt4/QtGui/qsyntaxhighlighter.h:
+/usr/share/qt4/include/QtGui/qsyntaxhighlighter.h:
 
-/usr/include/qt4/QtGui/qtextcursor.h:
+/usr/share/qt4/include/QtGui/qtextcursor.h:
 
-/usr/include/qt4/QtGui/qtextdocument.h:
+/usr/share/qt4/include/QtGui/qtextdocument.h:
 
-/usr/include/qt4/QtGui/qtextdocumentfragment.h:
+/usr/share/qt4/include/QtGui/qtextdocumentfragment.h:
 
-/usr/include/qt4/QtGui/qtextdocumentwriter.h:
+/usr/share/qt4/include/QtGui/qtextdocumentwriter.h:
 
-/usr/include/qt4/QtGui/qtextformat.h:
+/usr/share/qt4/include/QtGui/qtextformat.h:
 
-/usr/include/qt4/QtGui/qtextlayout.h:
+/usr/share/qt4/include/QtGui/qtextlayout.h:
 
-/usr/include/qt4/QtGui/qtextlist.h:
+/usr/share/qt4/include/QtGui/qtextlist.h:
 
-/usr/include/qt4/QtGui/qtextobject.h:
+/usr/share/qt4/include/QtGui/qtextobject.h:
 
-/usr/include/qt4/QtGui/qtextoption.h:
+/usr/share/qt4/include/QtGui/qtextoption.h:
 
-/usr/include/qt4/QtGui/qtexttable.h:
+/usr/share/qt4/include/QtGui/qtexttable.h:
 
-/usr/include/qt4/QtGui/qabstractpagesetupdialog.h:
+/usr/share/qt4/include/QtGui/qabstractpagesetupdialog.h:
 
-/usr/include/qt4/QtGui/qdialog.h:
+/usr/share/qt4/include/QtGui/qdialog.h:
 
-/usr/include/qt4/QtGui/qabstractprintdialog.h:
+/usr/share/qt4/include/QtGui/qabstractprintdialog.h:
 
-/usr/include/qt4/QtGui/qcolordialog.h:
+/usr/share/qt4/include/QtGui/qcolordialog.h:
 
-/usr/include/qt4/QtGui/qdialog.h:
+/usr/share/qt4/include/QtGui/qdialog.h:
 
-/usr/include/qt4/QtGui/qerrormessage.h:
+/usr/share/qt4/include/QtGui/qerrormessage.h:
 
-/usr/include/qt4/QtGui/qfiledialog.h:
+/usr/share/qt4/include/QtGui/qfiledialog.h:
 
-/usr/include/qt4/QtGui/qfilesystemmodel.h:
+/usr/share/qt4/include/QtGui/qfilesystemmodel.h:
 
-/usr/include/qt4/QtCore/qdiriterator.h:
+/usr/share/qt4/include/QtCore/qdiriterator.h:
 
-/usr/include/qt4/QtGui/qfontdialog.h:
+/usr/share/qt4/include/QtGui/qfontdialog.h:
 
-/usr/include/qt4/QtGui/qinputdialog.h:
+/usr/share/qt4/include/QtGui/qinputdialog.h:
 
-/usr/include/qt4/QtGui/qlineedit.h:
+/usr/share/qt4/include/QtGui/qlineedit.h:
 
-/usr/include/qt4/QtGui/qmessagebox.h:
+/usr/share/qt4/include/QtGui/qmessagebox.h:
 
-/usr/include/qt4/QtGui/qpagesetupdialog.h:
+/usr/share/qt4/include/QtGui/qpagesetupdialog.h:
 
-/usr/include/qt4/QtGui/qabstractpagesetupdialog.h:
+/usr/share/qt4/include/QtGui/qabstractpagesetupdialog.h:
 
-/usr/include/qt4/QtGui/qprintdialog.h:
+/usr/share/qt4/include/QtGui/qprintdialog.h:
 
-/usr/include/qt4/QtGui/qabstractprintdialog.h:
+/usr/share/qt4/include/QtGui/qabstractprintdialog.h:
 
-/usr/include/qt4/QtGui/qprintpreviewdialog.h:
+/usr/share/qt4/include/QtGui/qprintpreviewdialog.h:
 
-/usr/include/qt4/QtGui/qprogressdialog.h:
+/usr/share/qt4/include/QtGui/qprogressdialog.h:
 
-/usr/include/qt4/QtGui/qwizard.h:
+/usr/share/qt4/include/QtGui/qwizard.h:
 
-/usr/include/qt4/QtGui/qaccessible.h:
+/usr/share/qt4/include/QtGui/qaccessible.h:
 
-/usr/include/qt4/QtGui/qaccessible2.h:
+/usr/share/qt4/include/QtGui/qaccessible2.h:
 
-/usr/include/qt4/QtGui/qaccessible.h:
+/usr/share/qt4/include/QtGui/qaccessible.h:
 
-/usr/include/qt4/QtGui/qaccessiblebridge.h:
+/usr/share/qt4/include/QtGui/qaccessiblebridge.h:
 
-/usr/include/qt4/QtGui/qaccessibleobject.h:
+/usr/share/qt4/include/QtGui/qaccessibleobject.h:
 
-/usr/include/qt4/QtGui/qaccessibleplugin.h:
+/usr/share/qt4/include/QtGui/qaccessibleplugin.h:
 
-/usr/include/qt4/QtGui/qaccessiblewidget.h:
+/usr/share/qt4/include/QtGui/qaccessiblewidget.h:
 
-/usr/include/qt4/QtGui/qaccessibleobject.h:
+/usr/share/qt4/include/QtGui/qaccessibleobject.h:
 
-/usr/include/qt4/QtGui/qaction.h:
+/usr/share/qt4/include/QtGui/qaction.h:
 
-/usr/include/qt4/QtGui/qactiongroup.h:
+/usr/share/qt4/include/QtGui/qactiongroup.h:
 
-/usr/include/qt4/QtGui/qapplication.h:
+/usr/share/qt4/include/QtGui/qapplication.h:
 
-/usr/include/qt4/QtCore/qcoreapplication.h:
+/usr/share/qt4/include/QtCore/qcoreapplication.h:
 
-/usr/include/qt4/QtGui/qboxlayout.h:
+/usr/share/qt4/include/QtGui/qboxlayout.h:
 
-/usr/include/qt4/QtGui/qlayout.h:
+/usr/share/qt4/include/QtGui/qlayout.h:
 
-/usr/include/qt4/QtGui/qlayoutitem.h:
+/usr/share/qt4/include/QtGui/qlayoutitem.h:
 
-/usr/include/qt4/QtGui/qboxlayout.h:
+/usr/share/qt4/include/QtGui/qboxlayout.h:
 
-/usr/include/qt4/QtGui/qgridlayout.h:
+/usr/share/qt4/include/QtGui/qgridlayout.h:
 
-/usr/include/qt4/QtGui/qclipboard.h:
+/usr/share/qt4/include/QtGui/qclipboard.h:
 
-/usr/include/qt4/QtGui/qcursor.h:
+/usr/share/qt4/include/QtGui/qcursor.h:
 
-/usr/include/qt4/QtGui/qdesktopwidget.h:
+/usr/share/qt4/include/QtGui/qdesktopwidget.h:
 
-/usr/include/qt4/QtGui/qdrag.h:
+/usr/share/qt4/include/QtGui/qdrag.h:
 
-/usr/include/qt4/QtGui/qevent.h:
+/usr/share/qt4/include/QtGui/qevent.h:
 
-/usr/include/qt4/QtGui/qformlayout.h:
+/usr/share/qt4/include/QtGui/qformlayout.h:
 
-/usr/include/qt4/QtGui/QLayout:
+/usr/share/qt4/include/QtGui/QLayout:
 
-/usr/include/qt4/QtGui/qlayout.h:
+/usr/share/qt4/include/QtGui/qlayout.h:
 
-/usr/include/qt4/QtGui/qgesture.h:
+/usr/share/qt4/include/QtGui/qgesture.h:
 
-/usr/include/qt4/QtGui/qgesturerecognizer.h:
+/usr/share/qt4/include/QtGui/qgesturerecognizer.h:
 
-/usr/include/qt4/QtGui/qgridlayout.h:
+/usr/share/qt4/include/QtGui/qgridlayout.h:
 
-/usr/include/qt4/QtGui/qkeysequence.h:
+/usr/share/qt4/include/QtGui/qkeysequence.h:
 
-/usr/include/qt4/QtGui/qlayoutitem.h:
+/usr/share/qt4/include/QtGui/qlayoutitem.h:
 
-/usr/include/qt4/QtGui/qmime.h:
+/usr/share/qt4/include/QtGui/qmime.h:
 
-/usr/include/qt4/QtGui/qpalette.h:
+/usr/share/qt4/include/QtGui/qpalette.h:
 
-/usr/include/qt4/QtGui/qsessionmanager.h:
+/usr/share/qt4/include/QtGui/qsessionmanager.h:
 
-/usr/include/qt4/QtGui/qshortcut.h:
+/usr/share/qt4/include/QtGui/qshortcut.h:
 
-/usr/include/qt4/QtGui/qsizepolicy.h:
+/usr/share/qt4/include/QtGui/qsizepolicy.h:
 
-/usr/include/qt4/QtGui/qsound.h:
+/usr/share/qt4/include/QtGui/qsound.h:
 
-/usr/include/qt4/QtGui/qstackedlayout.h:
+/usr/share/qt4/include/QtGui/qstackedlayout.h:
 
-/usr/include/qt4/QtGui/qtooltip.h:
+/usr/share/qt4/include/QtGui/qtooltip.h:
 
-/usr/include/qt4/QtGui/qwhatsthis.h:
+/usr/share/qt4/include/QtGui/qwhatsthis.h:
 
-/usr/include/qt4/QtGui/qwidget.h:
+/usr/share/qt4/include/QtGui/qwidget.h:
 
-/usr/include/qt4/QtGui/qwidgetaction.h:
+/usr/share/qt4/include/QtGui/qwidgetaction.h:
 
-/usr/include/qt4/QtGui/qwindowdefs.h:
+/usr/share/qt4/include/QtGui/qwindowdefs.h:
 
-/usr/include/qt4/QtGui/qabstractitemdelegate.h:
+/usr/share/qt4/include/QtGui/qabstractitemdelegate.h:
 
-/usr/include/qt4/QtGui/qabstractitemview.h:
+/usr/share/qt4/include/QtGui/qabstractitemview.h:
 
-/usr/include/qt4/QtGui/qitemselectionmodel.h:
+/usr/share/qt4/include/QtGui/qitemselectionmodel.h:
 
-/usr/include/qt4/QtGui/qabstractproxymodel.h:
+/usr/share/qt4/include/QtGui/qabstractproxymodel.h:
 
-/usr/include/qt4/QtGui/qcolumnview.h:
+/usr/share/qt4/include/QtGui/qcolumnview.h:
 
-/usr/include/qt4/QtGui/qabstractitemview.h:
+/usr/share/qt4/include/QtGui/qabstractitemview.h:
 
-/usr/include/qt4/QtGui/qdatawidgetmapper.h:
+/usr/share/qt4/include/QtGui/qdatawidgetmapper.h:
 
-/usr/include/qt4/QtGui/qdirmodel.h:
+/usr/share/qt4/include/QtGui/qdirmodel.h:
 
-/usr/include/qt4/QtGui/qfileiconprovider.h:
+/usr/share/qt4/include/QtGui/qfileiconprovider.h:
 
-/usr/include/qt4/QtGui/qfileiconprovider.h:
+/usr/share/qt4/include/QtGui/qfileiconprovider.h:
 
-/usr/include/qt4/QtGui/qheaderview.h:
+/usr/share/qt4/include/QtGui/qheaderview.h:
 
-/usr/include/qt4/QtGui/qitemdelegate.h:
+/usr/share/qt4/include/QtGui/qitemdelegate.h:
 
-/usr/include/qt4/QtGui/qitemeditorfactory.h:
+/usr/share/qt4/include/QtGui/qitemeditorfactory.h:
 
-/usr/include/qt4/QtCore/qmetaobject.h:
+/usr/share/qt4/include/QtCore/qmetaobject.h:
 
-/usr/include/qt4/QtGui/qitemselectionmodel.h:
+/usr/share/qt4/include/QtGui/qitemselectionmodel.h:
 
-/usr/include/qt4/QtGui/qlistview.h:
+/usr/share/qt4/include/QtGui/qlistview.h:
 
-/usr/include/qt4/QtGui/qlistwidget.h:
+/usr/share/qt4/include/QtGui/qlistwidget.h:
 
-/usr/include/qt4/QtGui/qlistview.h:
+/usr/share/qt4/include/QtGui/qlistview.h:
 
-/usr/include/qt4/QtGui/qproxymodel.h:
+/usr/share/qt4/include/QtGui/qproxymodel.h:
 
-/usr/include/qt4/QtGui/qsortfilterproxymodel.h:
+/usr/share/qt4/include/QtGui/qsortfilterproxymodel.h:
 
-/usr/include/qt4/QtGui/qabstractproxymodel.h:
+/usr/share/qt4/include/QtGui/qabstractproxymodel.h:
 
-/usr/include/qt4/QtGui/qstandarditemmodel.h:
+/usr/share/qt4/include/QtGui/qstandarditemmodel.h:
 
-/usr/include/qt4/QtGui/qstringlistmodel.h:
+/usr/share/qt4/include/QtGui/qstringlistmodel.h:
 
-/usr/include/qt4/QtGui/qstyleditemdelegate.h:
+/usr/share/qt4/include/QtGui/qstyleditemdelegate.h:
 
-/usr/include/qt4/QtGui/qtableview.h:
+/usr/share/qt4/include/QtGui/qtableview.h:
 
-/usr/include/qt4/QtGui/qtablewidget.h:
+/usr/share/qt4/include/QtGui/qtablewidget.h:
 
-/usr/include/qt4/QtGui/qtableview.h:
+/usr/share/qt4/include/QtGui/qtableview.h:
 
-/usr/include/qt4/QtGui/qtreeview.h:
+/usr/share/qt4/include/QtGui/qtreeview.h:
 
-/usr/include/qt4/QtGui/qtreewidget.h:
+/usr/share/qt4/include/QtGui/qtreewidget.h:
 
-/usr/include/qt4/QtGui/qtreeview.h:
+/usr/share/qt4/include/QtGui/qtreeview.h:
 
-/usr/include/qt4/QtGui/qtreewidgetitemiterator.h:
+/usr/share/qt4/include/QtGui/qtreewidgetitemiterator.h:
 
-/usr/include/qt4/QtGui/qtreewidgetitemiterator.h:
+/usr/share/qt4/include/QtGui/qtreewidgetitemiterator.h:
 
-/usr/include/qt4/QtGui/qbrush.h:
+/usr/share/qt4/include/QtGui/qbrush.h:
 
-/usr/include/qt4/QtGui/qcolor.h:
+/usr/share/qt4/include/QtGui/qcolor.h:
 
-/usr/include/qt4/QtGui/qcolormap.h:
+/usr/share/qt4/include/QtGui/qcolormap.h:
 
-/usr/include/qt4/QtGui/qdrawutil.h:
+/usr/share/qt4/include/QtGui/qdrawutil.h:
 
-/usr/include/qt4/QtGui/qmatrix.h:
+/usr/share/qt4/include/QtGui/qmatrix.h:
 
-/usr/include/qt4/QtGui/qpaintdevice.h:
+/usr/share/qt4/include/QtGui/qpaintdevice.h:
 
-/usr/include/qt4/QtGui/qpaintengine.h:
+/usr/share/qt4/include/QtGui/qpaintengine.h:
 
-/usr/include/qt4/QtGui/qpainter.h:
+/usr/share/qt4/include/QtGui/qpainter.h:
 
-/usr/include/qt4/QtGui/qpainterpath.h:
+/usr/share/qt4/include/QtGui/qpainterpath.h:
 
-/usr/include/qt4/QtGui/qpen.h:
+/usr/share/qt4/include/QtGui/qpen.h:
 
-/usr/include/qt4/QtGui/qpolygon.h:
+/usr/share/qt4/include/QtGui/qpolygon.h:
 
-/usr/include/qt4/QtGui/qprintengine.h:
+/usr/share/qt4/include/QtGui/qprintengine.h:
 
-/usr/include/qt4/QtGui/qprinter.h:
+/usr/share/qt4/include/QtGui/qprinter.h:
 
-/usr/include/qt4/QtGui/qprinterinfo.h:
+/usr/share/qt4/include/QtGui/qprinterinfo.h:
 
-/usr/include/qt4/QtGui/QPrinter:
+/usr/share/qt4/include/QtGui/QPrinter:
 
-/usr/include/qt4/QtCore/QList:
+/usr/share/qt4/include/QtCore/QList:
 
-/usr/include/qt4/QtGui/qregion.h:
+/usr/share/qt4/include/QtGui/qregion.h:
 
-/usr/include/qt4/QtGui/qrgb.h:
+/usr/share/qt4/include/QtGui/qrgb.h:
 
-/usr/include/qt4/QtGui/qstylepainter.h:
+/usr/share/qt4/include/QtGui/qstylepainter.h:
 
-/usr/include/qt4/QtGui/qwmatrix.h:
+/usr/share/qt4/include/QtGui/qwmatrix.h:
 
-/usr/include/qt4/QtGui/qsymbianevent.h:
+/usr/share/qt4/include/QtGui/qsymbianevent.h:
 
-/usr/include/qt4/QtGui/qcdestyle.h:
+/usr/share/qt4/include/QtGui/qcdestyle.h:
 
-/usr/include/qt4/QtGui/qmotifstyle.h:
+/usr/share/qt4/include/QtGui/qmotifstyle.h:
 
-/usr/include/qt4/QtGui/qcommonstyle.h:
+/usr/share/qt4/include/QtGui/qcommonstyle.h:
 
-/usr/include/qt4/QtGui/qcleanlooksstyle.h:
+/usr/share/qt4/include/QtGui/qcleanlooksstyle.h:
 
-/usr/include/qt4/QtGui/qwindowsstyle.h:
+/usr/share/qt4/include/QtGui/qwindowsstyle.h:
 
-/usr/include/qt4/QtGui/qcommonstyle.h:
+/usr/share/qt4/include/QtGui/qcommonstyle.h:
 
-/usr/include/qt4/QtGui/qgtkstyle.h:
+/usr/share/qt4/include/QtGui/qgtkstyle.h:
 
-/usr/include/qt4/QtGui/QCleanlooksStyle:
+/usr/share/qt4/include/QtGui/QCleanlooksStyle:
 
-/usr/include/qt4/QtGui/QPalette:
+/usr/share/qt4/include/QtGui/QPalette:
 
-/usr/include/qt4/QtGui/QFont:
+/usr/share/qt4/include/QtGui/QFont:
 
-/usr/include/qt4/QtGui/QFileDialog:
+/usr/share/qt4/include/QtGui/QFileDialog:
 
-/usr/include/qt4/QtGui/qmotifstyle.h:
+/usr/share/qt4/include/QtGui/qmotifstyle.h:
 
-/usr/include/qt4/QtGui/qplastiquestyle.h:
+/usr/share/qt4/include/QtGui/qplastiquestyle.h:
 
-/usr/include/qt4/QtGui/qproxystyle.h:
+/usr/share/qt4/include/QtGui/qproxystyle.h:
 
-/usr/include/qt4/QtGui/QCommonStyle:
+/usr/share/qt4/include/QtGui/QCommonStyle:
 
-/usr/include/qt4/QtGui/qs60style.h:
+/usr/share/qt4/include/QtGui/qs60style.h:
 
-/usr/include/qt4/QtGui/qstyle.h:
+/usr/share/qt4/include/QtGui/qstyle.h:
 
-/usr/include/qt4/QtGui/qstylefactory.h:
+/usr/share/qt4/include/QtGui/qstylefactory.h:
 
-/usr/include/qt4/QtGui/qstyleoption.h:
+/usr/share/qt4/include/QtGui/qstyleoption.h:
 
-/usr/include/qt4/QtGui/qstyleplugin.h:
+/usr/share/qt4/include/QtGui/qstyleplugin.h:
 
-/usr/include/qt4/QtGui/qwindowscestyle.h:
+/usr/share/qt4/include/QtGui/qwindowscestyle.h:
 
-/usr/include/qt4/QtGui/qwindowsmobilestyle.h:
+/usr/share/qt4/include/QtGui/qwindowsmobilestyle.h:
 
-/usr/include/qt4/QtGui/qwindowsstyle.h:
+/usr/share/qt4/include/QtGui/qwindowsstyle.h:
 
-/usr/include/qt4/QtGui/qwindowsvistastyle.h:
+/usr/share/qt4/include/QtGui/qwindowsvistastyle.h:
 
-/usr/include/qt4/QtGui/qwindowsxpstyle.h:
+/usr/share/qt4/include/QtGui/qwindowsxpstyle.h:
 
-/usr/include/qt4/QtGui/qwindowsxpstyle.h:
+/usr/share/qt4/include/QtGui/qwindowsxpstyle.h:
 
-/usr/include/qt4/QtGui/qkeyeventtransition.h:
+/usr/share/qt4/include/QtGui/qkeyeventtransition.h:
 
-/usr/include/qt4/QtCore/qeventtransition.h:
+/usr/share/qt4/include/QtCore/qeventtransition.h:
 
-/usr/include/qt4/QtGui/qmouseeventtransition.h:
+/usr/share/qt4/include/QtGui/qmouseeventtransition.h:
 
-/usr/include/qt4/QtGui/qgraphicseffect.h:
+/usr/share/qt4/include/QtGui/qgraphicseffect.h:
 
-/usr/include/qt4/QtGui/qcompleter.h:
+/usr/share/qt4/include/QtGui/qcompleter.h:
 
-/usr/include/qt4/QtGui/qdesktopservices.h:
+/usr/share/qt4/include/QtGui/qdesktopservices.h:
 
-/usr/include/qt4/QtGui/qsystemtrayicon.h:
+/usr/share/qt4/include/QtGui/qsystemtrayicon.h:
 
-/usr/include/qt4/QtGui/qundogroup.h:
+/usr/share/qt4/include/QtGui/qundogroup.h:
 
-/usr/include/qt4/QtGui/qundostack.h:
+/usr/share/qt4/include/QtGui/qundostack.h:
 
-/usr/include/qt4/QtGui/qundoview.h:
+/usr/share/qt4/include/QtGui/qundoview.h:
 
-/usr/include/qt4/QtOpenGL/qgl.h:
+/usr/share/qt4/include/QtOpenGL/qgl.h:
 
-/usr/include/qt4/QtGui/qpaintengine.h:
+/usr/share/qt4/include/QtGui/qpaintengine.h:
 
-/usr/include/qt4/QtOpenGL/qglcolormap.h:
+/usr/share/qt4/include/QtOpenGL/qglcolormap.h:
 
 /usr/include/GL/gl.h:
 
@@ -2077,17 +2224,17 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 
 /usr/include/GL/glu.h:
 
-/usr/include/qt4/Qt3Support/q3buttongroup.h:
+/usr/share/qt4/include/Qt3Support/q3buttongroup.h:
 
-/usr/include/qt4/QtGui/qbuttongroup.h:
+/usr/share/qt4/include/QtGui/qbuttongroup.h:
 
-/usr/include/qt4/Qt3Support/q3groupbox.h:
+/usr/share/qt4/include/Qt3Support/q3groupbox.h:
 
-/usr/include/qt4/QtGui/qgroupbox.h:
+/usr/share/qt4/include/QtGui/qgroupbox.h:
 
 ../include/sqcompat.h:
 
-/usr/include/qt4/QtCore/qobject.h:
+/usr/share/qt4/include/QtCore/qobject.h:
 
 /usr/include/c++/4.4/iostream:
 
@@ -2107,95 +2254,95 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 
 ../include/../src-gui/spikeUserGUI.h:
 
-/usr/include/qt4/QtCore/qrect.h:
+/usr/share/qt4/include/QtCore/qrect.h:
 
-/usr/include/qt4/QtGui/qtabwidget.h:
+/usr/share/qt4/include/QtGui/qtabwidget.h:
 
-/usr/include/qt4/QtGui/qwidget.h:
+/usr/share/qt4/include/QtGui/qwidget.h:
 
-/usr/include/qt4/Qt3Support/q3popupmenu.h:
+/usr/share/qt4/include/Qt3Support/q3popupmenu.h:
 
-/usr/include/qt4/QtGui/QLabel:
+/usr/share/qt4/include/QtGui/QLabel:
 
 ../include/spike_userprogram_defines.h:
 
-/usr/include/qt4/Qt3Support/q3widgetstack.h:
+/usr/share/qt4/include/Qt3Support/q3widgetstack.h:
 
-/usr/include/qt4/Qt3Support/q3frame.h:
+/usr/share/qt4/include/Qt3Support/q3frame.h:
 
-/usr/include/qt4/Qt3Support/q3intdict.h:
+/usr/share/qt4/include/Qt3Support/q3intdict.h:
 
-/usr/include/qt4/Qt3Support/q3gdict.h:
+/usr/share/qt4/include/Qt3Support/q3gdict.h:
 
-/usr/include/qt4/Qt3Support/q3ptrcollection.h:
+/usr/share/qt4/include/Qt3Support/q3ptrcollection.h:
 
-/usr/include/qt4/Qt3Support/q3ptrdict.h:
+/usr/share/qt4/include/Qt3Support/q3ptrdict.h:
 
-/usr/include/qt4/Qt3Support/q3textedit.h:
+/usr/share/qt4/include/Qt3Support/q3textedit.h:
 
-/usr/include/qt4/Qt3Support/q3scrollview.h:
+/usr/share/qt4/include/Qt3Support/q3scrollview.h:
 
-/usr/include/qt4/QtGui/qscrollbar.h:
+/usr/share/qt4/include/QtGui/qscrollbar.h:
 
-/usr/include/qt4/Qt3Support/q3stylesheet.h:
+/usr/share/qt4/include/Qt3Support/q3stylesheet.h:
 
-/usr/include/qt4/Qt3Support/q3mimefactory.h:
+/usr/share/qt4/include/Qt3Support/q3mimefactory.h:
 
 ../include/spike_dio.h:
 
 ../src-gui/rewardControl.h:
 
-/usr/include/qt4/Qt3Support/q3listbox.h:
+/usr/share/qt4/include/Qt3Support/q3listbox.h:
 
-/usr/include/qt4/QtGui/QKeyEvent:
+/usr/share/qt4/include/QtGui/QKeyEvent:
 
-/usr/include/qt4/Qt3Support/Q3GridLayout:
+/usr/share/qt4/include/Qt3Support/Q3GridLayout:
 
-/usr/include/qt4/Qt3Support/q3gridlayout.h:
+/usr/share/qt4/include/Qt3Support/q3gridlayout.h:
 
-/usr/include/qt4/Qt3Support/Q3PopupMenu:
+/usr/share/qt4/include/Qt3Support/Q3PopupMenu:
 
-/usr/include/qt4/Qt3Support/q3popupmenu.h:
+/usr/share/qt4/include/Qt3Support/q3popupmenu.h:
 
-/usr/include/qt4/Qt3Support/q3filedialog.h:
+/usr/share/qt4/include/Qt3Support/q3filedialog.h:
 
-/usr/include/qt4/Qt3Support/q3urloperator.h:
+/usr/share/qt4/include/Qt3Support/q3urloperator.h:
 
-/usr/include/qt4/Qt3Support/q3url.h:
+/usr/share/qt4/include/Qt3Support/q3url.h:
 
-/usr/include/qt4/Qt3Support/q3ptrlist.h:
+/usr/share/qt4/include/Qt3Support/q3ptrlist.h:
 
-/usr/include/qt4/Qt3Support/q3glist.h:
+/usr/share/qt4/include/Qt3Support/q3glist.h:
 
-/usr/include/qt4/Qt3Support/q3networkprotocol.h:
+/usr/share/qt4/include/Qt3Support/q3networkprotocol.h:
 
-/usr/include/qt4/Qt3Support/q3dict.h:
+/usr/share/qt4/include/Qt3Support/q3dict.h:
 
-/usr/include/qt4/Qt3Support/q3valuelist.h:
+/usr/share/qt4/include/Qt3Support/q3valuelist.h:
 
-/usr/include/qt4/QtCore/qlinkedlist.h:
+/usr/share/qt4/include/QtCore/qlinkedlist.h:
 
-/usr/include/qt4/Qt3Support/Q3TextStream:
+/usr/share/qt4/include/Qt3Support/Q3TextStream:
 
-/usr/include/qt4/Qt3Support/q3textstream.h:
+/usr/share/qt4/include/Qt3Support/q3textstream.h:
 
-/usr/include/qt4/Qt3Support/q3cstring.h:
+/usr/share/qt4/include/Qt3Support/q3cstring.h:
 
-/usr/include/qt4/Qt3Support/Q3HBoxLayout:
+/usr/share/qt4/include/Qt3Support/Q3HBoxLayout:
 
-/usr/include/qt4/Qt3Support/q3boxlayout.h:
+/usr/share/qt4/include/Qt3Support/q3boxlayout.h:
 
-/usr/include/qt4/Qt3Support/Q3BoxLayout:
+/usr/share/qt4/include/Qt3Support/Q3BoxLayout:
 
-/usr/include/qt4/QtGui/qapplication.h:
+/usr/share/qt4/include/QtGui/qapplication.h:
 
-/usr/include/qt4/QtCore/qtimer.h:
+/usr/share/qt4/include/QtCore/qtimer.h:
 
-/usr/include/qt4/QtGui/qlayout.h:
+/usr/share/qt4/include/QtGui/qlayout.h:
 
-/usr/include/qt4/QtGui/qsizepolicy.h:
+/usr/share/qt4/include/QtGui/qsizepolicy.h:
 
-/usr/include/qt4/QtGui/qfont.h:
+/usr/share/qt4/include/QtGui/qfont.h:
 
 /usr/include/c++/4.4/sstream:
 
