@@ -208,8 +208,8 @@ double filterPosSpeed (u32 x, u32 y) {
   /* Smooth instantaneous speed. */
   smoothSpd = 0.5*spd + 0.5*smoothSpd;
 
-  if (posOutputFile != NULL)
-    fprintf(posOutputFile,"%f %f %f\n",lastx,lasty,smoothSpd);
+  // if (posOutputFile != NULL)
+    // fprintf(posOutputFile,"%f %f %f\n",lastx,lasty,smoothSpd);
 
   return smoothSpd;
 }

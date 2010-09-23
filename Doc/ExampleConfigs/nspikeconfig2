@@ -1,4 +1,4 @@
-% Spzephyr configuration file
+% Spsnowstorm configuration file
 % 
 %
 % The settings should be kept in the same order they are here. 
@@ -15,7 +15,7 @@ nslaves 	0
 % change the port number if the software complains that it cannot open a
 % connection on the specified port.  
 % The port numbers must be > 1024 and < 65335
-master    	zephyr    10000
+master    	snowstorm    10000
 
 % optional slave lines, one for each slave, would go here
 
@@ -70,7 +70,7 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype	zephyr		SPIKE
+datatype	snowstorm		SPIKE
 
 % the data directory specifies the default location for data files on each
 % machine.  Note that the Master menu open all files command assumes that the
@@ -78,7 +78,7 @@ datatype	zephyr		SPIKE
 % doesn't save data, the datadirectory does not need to be specified for that
 % machine.
 
-datadirectory   zephyr		/data/
+datadirectory   snowstorm		/data/
 
 % the audio settings set the initial gain factor (volume), cutoff for diode
 % emulation, and delay in milliseconds.
@@ -103,9 +103,9 @@ dspclock	1
 % does analog outputs, it will ignore the sampling rate, but make sure to put
 % some number in the sampling rate field below
 % 	    dsp num   	sampling rate  		machine receiving data
-dspinfo		0		110			zephyr
-dspinfo		1		30000			zephyr
-dspinfo		2		30000			zephyr
+dspinfo		0		110			snowstorm
+dspinfo		1		30000			snowstorm
+dspinfo		2		30000			snowstorm
 
 % calibration file specifies the name of the calibration file to set the
 % relative amplitudes of the channels.  See writecalfile.m for a matlab script
@@ -154,7 +154,7 @@ electmap	8		0	115
 % first comes the name of the host. All channels following the hostname line
 % are assumed to be from the same host until the next hostname line is
 % encoutered
-hostname 	zephyr
+hostname 	snowstorm
 % tetrode 1
     channel 	0
 	    dspnum		1

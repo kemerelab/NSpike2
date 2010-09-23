@@ -3,6 +3,7 @@
 #include <GL/gl.h>	// Header File For The OpenGL32 Library
 #include <GL/glu.h>	// Header File For The GLu32 Library
 #include "../src-gui/spikeInput.h"
+#include "../src-gui/spikeStatusbar.h"
 #include "../src-gui/spikeGLPane.h"
 #include "../src-gui/spikeUserGUI.h"
 #include "qrect.h"

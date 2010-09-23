@@ -34,7 +34,6 @@ short unsigned int laserPort = 2; // the default laser port is 2
 
 double cmPerPix = DIO_DEFAULT_CM_PER_PIX;
 
-FILE *posOutputFile;
 /* ---- */
 
 int main(int argc, char **argv) 
@@ -82,8 +81,6 @@ int main(int argc, char **argv)
 
   biggestfd = MAX(datafd,inputfd);
 
-  posOutputFile = fopen("posoutput.txt","w");
-
   /* set up the initial list of file descriptors to be watched */
   FD_ZERO(&readfds);
 
@@ -117,18 +114,21 @@ int main(int argc, char **argv)
           }
           ProcessTimestamp();
 
-          /* // Check timing of timestamp packets (answer - they
-          // come roughly every 193 samples
+          /*
+          // Check timing of timestamp packets 
+          // answer - by default they come roughly every 193 samples, 
+          // note this is adjustable with the config file option [dspsampperpacket  1 2] 
           tsdiff = timestamp - oldts;
           avgtsdiff = avgtsdiff + (tsdiff - avgtsdiff)/100;
           stdtsdiff = stdtsdiff + ( abs(tsdiff - avgtsdiff) - stdtsdiff )/100;
           oldts = timestamp;
-          if (counter++ > 100) {
+          if (counter++ > 10) {
             counter = 0;
             fprintf(stderr,"Moving average timestamp diff: %f (%f); Last: %d\n",
                 avgtsdiff, stdtsdiff, tsdiff);
           }
           */
+
           break;
         default:
           break;
@@ -289,7 +289,6 @@ int main(int argc, char **argv)
     }
   }
 
-  fclose(posOutputFile);
   return 0;
 }
 

@@ -7,17 +7,21 @@
 // in other words, #ifdef NO_DSP_DEBUG means to not really use DSPs and to build
 // a dummy/demo version of nspike -- so comment this out for a final build
 //
-#define NO_DSP_DEBUG
+// #define NO_DSP_DEBUG
 
 // uncomment to debug without video
 // in other words, #ifdef NO_VIDEO_DEBUG means to not really use the video
 // capture card and to build a dummy/demo version of nspike -- 
 // so comment this out for a final build
 //
-#define NO_VIDEO_DEBUG
+// #define NO_VIDEO_DEBUG
 
 // uncomment to produce output of each digitial IO packet 
 #define DIO_DEBUG
+
+// indicate where the digital IO boards are.  For the separate DIO DSP, comment
+// out the following
+#define DIO_ON_MASTER_DSP
 
 /* some math defines */
 #define sqr(x) ((x) * (x))
@@ -47,7 +51,7 @@
 /* the maximum number of DSPS.  Note that if you change this you will have to
  * remove or add definitions to keep the number of defined DSPS equal to
  * MAX_DSPS */
-#define MAX_DSPS		11
+#define MAX_DSPS		13
 #define MAX_CHAN_PER_DSP	16
 #define MAX_ELECT_PER_DSP	(MAX_CHAN_PER_DSP / NCHAN_PER_ELECTRODE)
 #define DSP_BASE_SAMP_RATE	((int) 30000)
@@ -76,14 +80,22 @@
 #define DSP7			7
 #define DSP8			8
 #define DSP9			9
-#define DSP0ECHO		10 // the echo port for DSP0
-#define SPIKE_POSDAQ		11
-#define	SPIKE_DAQ		12
-#define	SPIKE_PROCESS_POSDATA	13
-#define	SPIKE_SAVE_DATA		14
-#define	SPIKE_MATLAB		15
-#define	SPIKE_MAIN		16
-#define MAX_MODULE_ID		16
+
+#ifdef DIO_ON_MASTER_DSP
+#define DSPDIO			DSP0 // the DSP that handles digital and analog IO
+#else
+#define DSPDIO			10 // the DSP that handles digital and analog IO
+#endif
+
+#define DSP0ECHO		11 // the echo port for DSP0
+#define DSPDIOECHO		12 // the echo port for DSPDIO
+#define SPIKE_POSDAQ		13
+#define	SPIKE_DAQ		14
+#define	SPIKE_PROCESS_POSDATA	15
+#define	SPIKE_SAVE_DATA		16
+#define	SPIKE_MATLAB		17
+#define	SPIKE_MAIN		18
+#define MAX_MODULE_ID		18
 
 #define NAUDIO_OUTPUTS		2  // there are currently 2 analog outputs on the DSPs
 
@@ -297,6 +309,7 @@ when adding new messages */
 /* Definitions related to data structures */
 
 #define NCHAN_PER_ELECTRODE	4 // 4 channels per tetrode
+#define MAX_CHAN_PER_ELECTRODE	32 // for silicon probes ; continuous mode only
 #define MAX_CHANNELS		127 // Currently a max of 127 channels per machine
 #define MAX_ELECTRODES		128 // Current maximum number of electrodes (used for array sizes and electrode number checking) 
 #define MIN_ELECTRODE_NUMBER	1 // Electrodes must be numbered starting with 1
@@ -393,11 +406,13 @@ typedef struct _ChannelInfo {
 typedef struct _ElectrodeInfo {
     int		number;		// the number of this electrode (used only in the DSPInfo structure */
     int 	nchan;		// the number of channels
-    short 	dspchan[NCHAN_PER_ELECTRODE];	// the dsp channel for each channel of this electrode 
-    short 	channelinfochan[NCHAN_PER_ELECTRODE];	// the channelinfo channel for each channel of this electrode 
+    short 	dspchan[MAX_CHAN_PER_ELECTRODE];	// the dsp channel for each channel of this electrode 
+    short 	channelinfochan[MAX_CHAN_PER_ELECTRODE];	// the channelinfo channel for each channel of this electrode 
 } ElectrodeInfo;
 
 typedef struct _DSPInfo {
+    unsigned short coderev;
+
     int samprate; // the samping rate on this dsp
     int	machinenum; // the machine that communicates with this DSP
     int	nchan;		// the total number of channels processed by this DSP
@@ -408,10 +423,13 @@ typedef struct _DSPInfo {
     int packetsize;	// dsp packetsize in bytes
     int datasize;	// dsp data size in bytes
     int nelectrodes;
-    short 	dspchan[MAX_CHAN_PER_DSP]; // the numbers of the dsp channels handled by this DSP
-    short 	dspcal[MAX_CHAN_PER_DSP]; // the calibration factors for each channel
-    unsigned short coderev;
-    ElectrodeInfo	electinfo[MAX_ELECTRODES]; // The electrodes and channels on this DSP.  Note that this is a copy of the electinfo array from sysinfo on systems that do spike processing, but on LFP systems it differs, as each electrode will be represented by only one channel (generally speaking)
+    short dspchan[MAX_CHAN_PER_DSP]; // the numbers of the dsp channels handled by this DSP
+    short dspcal[MAX_CHAN_PER_DSP]; // the calibration factors for each channel
+    int channelinfochan[MAX_CHAN_PER_DSP]; // the channelinfo channels for each dsp channel
+    ElectrodeInfo	electinfo[MAX_ELECTRODES]; // The electrodes and channels on this DSP.  
+    // Note that this is a copy of the electinfo array from sysinfo on systems that do spike processing, 
+    // but on LFP systems it differs, as each electrode will be represented by only one channel (generally speaking).  
+    // This is somewhat redundant with the three variables above.
 } DSPInfo;
 
 /* info for running programs which interface with DAQ */
