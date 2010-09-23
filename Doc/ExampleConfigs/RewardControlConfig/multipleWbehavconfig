@@ -1,0 +1,50 @@
+nWells		6
+well	0	
+	prev	0  0  0  0  0  0  
+	curr	0  0  0  0  0  0  
+	inputBit	0	
+	triggerHigh	0	
+	outputBit	0	
+	rewardLength	0	
+	rewardPercent	100	
+well	1	
+	prev	1  0  0  1  1  1  
+	curr	0  0  1  0  0  0  
+	inputBit	0	
+	triggerHigh	0	
+	outputBit	0	
+	rewardLength	0	
+	rewardPercent	100	
+well	2	
+	prev	1  1  1  1  1  1  
+	curr	1  1  0  1  1  1  
+	inputBit	0	
+	triggerHigh	0	
+	outputBit	0	
+	rewardLength	0	
+	rewardPercent	100	
+well	3	
+	prev	1  1  0  0  1  1  
+	curr	0  0  1  0  0  0  
+	inputBit	0	
+	triggerHigh	0	
+	outputBit	0	
+	rewardLength	0	
+	rewardPercent	100	
+well	4	
+	prev	0  0  0  0  0  0  
+	curr	0  0  0  0  0  0  
+	inputBit	0	
+	triggerHigh	0	
+	outputBit	0	
+	rewardLength	0	
+	rewardPercent	100	
+well	5	
+	prev	0  0  0  0  0  0  
+	curr	0  0  0  0  0  0  
+	inputBit	0	
+	triggerHigh	0	
+	outputBit	0	
+	rewardLength	0	
+	rewardPercent	100	
+firstReward	2	

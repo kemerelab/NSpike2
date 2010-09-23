@@ -1,0 +1,46 @@
+Spike_Troubleshooting_HOWTO
+
+Loren M. Frank
+2-19-02
+
+This is a (very) incomplete list of the problems we have run into and various
+solutions. In general, if the error is produced by spike_main, you can start
+spike_main using gdb (or your favorite debugger) and, with some back tracking,
+figure out the cause.
+
+1. Problem:    Segmentation fault when reading config file.
+   Solution:   Check the config file for errors. I haven't actually seen this
+               error with the current version of the code, but I'm sure it
+	       could be generated with a bit of creativity.
+
+2. Problem:    "Error allocating shared memory for daq board. Try reinserting 
+               spike_uei_module or rebooting."
+   Cause:      As far as I know, this happens only after the buffersamp
+	       variable in the config file has been changed after a crash (eg.
+	       after spike_main was killed by the user rather than exiting
+	       normally). This error occurs becuase the program did not
+	       properly free the shared memory regions allocated using mbuff,
+	       and can therefore not allocate new regions. 
+	       This could also happen if buffersamp is set to be too large, but
+	       with buffersamp at 98304 or less, you should be okay.
+    Solution:  Reboot, and fix whatever it was that forced you to kill the
+	       program.
+
+3. Problem:    "Error opening /dev/rtf# for ... "
+   Cause:      Two possibilities: First, the modules have not been inserted
+	       into the kernel. Second, for some unspecified reason, the
+	       program has decided that it doesn't like you. This happens
+	       occasionally for reasons I don't understand, but if you figure
+	       it out, let me know. 
+   Solution:   In this case, try removing and then reinserting the modules. 
+   	       If that doesn't work, try going into spike_rtl.h, changing the 
+               #define for the fifo that is not working so that that fifo has 
+	       a different number, and recompiling the main code and the 
+	       modules.
+
+4. Problem:    Error when starting with a message containing the word "network"
+   Cause:      Errors in spikenetworkconfig or an indication that the program
+	       has not been started on all of the slaves.
+   Solution:   You guessed it: fix spikenetworkconfig and/or make sure the
+	       program has been started on all of the slaves.
+

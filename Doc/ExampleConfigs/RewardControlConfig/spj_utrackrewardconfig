@@ -1,0 +1,18 @@
+nWells		2
+well	0	
+	prev	1  1  
+	curr	0  1  
+	inputBit	16	
+	triggerHigh	0	
+	outputBit	33	
+	rewardLength	1100	
+	rewardPercent	100	
+well	1	
+	prev	1  1  
+	curr	1  0  
+	inputBit	17	
+	triggerHigh	0	
+	outputBit	34	
+	rewardLength	1200	
+	rewardPercent	100	
+firstReward	0	

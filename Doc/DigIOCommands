@@ -1,0 +1,125 @@
+Overview:
+
+The MainDSP can be fitted with up to 64 TTL-compatible digital I/Os, 
+configured in 4 "ports" of 16 bits.  Each port can be configured as an 
+input or output.  Outputs levels can be set directly by writing to the 
+DigOut memory locations described below, or by programming the Output 
+State Machine to set and clear outputs after changes in digital inputs 
+or programmed time delays.  Inputs can be read from the DigIn memory 
+locations, or the user can program the MainDSP to send a UDP packet in 
+response to a change in selected digital inputs.
+
+DigOutEnable  (0x0000D9)
+bit 0 set to 1 to enable bits 1-16 for output, set to 0 for input.
+bit 1 set to 1 to enable bits 17-32 for output, set to 0 for input.
+bit 2 set to 1 to enable bits 33-48 for output, set to 0 for input.
+bit 3 set to 1 to enable bits 49-64 for output, set to 0 for input.
+Defaults to 0x0000 (all inputs)
+
+DigOut(n) directly control the digital output pins.
+When the state machine is enabled, and updates output bits or words, it 
+first writes them to these memory locations.  Background code then 
+transfers them to the digital IO hardware.  Thus, these locations can be 
+monitored to track the status of the state machine.  Note that state 
+machine instructions which update single bits do not affect the other 
+bits in the DigOut registers.
+
+DigOut1            (0x0000DA)  output bits 1-16
+DigOut2            (0x0000DB)   output bits 17-32
+DigOut3            (0x0000DC)   output bits 33-48
+DigOut4            (0x0000DD)   output bits 49-64
+
+DigIn(n) are the current state of the digital inputs.
+DigIn1            (0x0000DE)   input bits 1-16
+DigIn2            (0x0000DF)   input bits 17-32
+DigIn3            (0x0000E0)   input bits 33-48
+DigIn4            (0x0000E1)   input bits 49-64
+
+--------- OUTPUT STATE MACHINE -----------------------
+
+SMEnableFlag (0x0000ED)
+When bit 0 is set to 1, the DSP code runs the output state machine.
+
+State Machine Buffer
+StateMachineBuffer0 (0x000200)
+StateMachineBuffer1 (0x000240)
+StateMachineBuffer2 (0x000280)
+StateMachineBuffer3 (0x0002C0)
+
+StateMachinePtr0 (0x0000F0)
+Pointer to currently executed instruction in the state machine buffer, 
+relative to the beginning of the buffer.  Range is 0x0000 to 0x00FF.  
+User may change this value to force the state machine to execute from a 
+specific instruction, or read it to monitor the progress of the state 
+machine.
+StateMachinePtr1 (0x0000F3)
+StateMachinePtr2 (0x0000F6)
+StateMachinePtr3 (0x0000F9)
+
+FreeStateMachine (0x0000E7) The number of the next free state machine (-1 if
+	none are free)
+
+
+For the following commands,
+ BBBBBB is the address of the selected bit.  000000 corresponds to bit 
+1, 111111 corresponds to bit 64.
+PP is the output port.  00 = bits 1-16, 01 = bits 17-32, etc.
+
+;commands (binary):
+;11111111 11111111 = wait forever (halt)
+;1TTTTTTT TTTTTTTT = wait for T samples.  Max = 32767 samples (1.09 seconds)
+;0111xxxx xxxxxxxx = wait for absolute time
+    This is followed by 2 argument words: the high word of the timestamp
+    and the low word of the timestamp.  Sorry about the flipped endian 
+word order.
+;0110xxxx xxxxxxxx = wait for masked input change (see below)
+;0100xxx1 xxBBBBBB = wait for input B to go high
+;0100xxx0 xxBBBBBB = wait for input B to go low
+;0011xxx1 xxBBBBBB = set output B to 1
+;0011xxx0 xxBBBBBB = set output B to 0
+;0010xxxx xxxxxxPP = set port P to argument word
+;00000001 AAAAAAAA = jump absolute.  AAAAAAAA is added to the start 
+location of the state machine buffer, and the result is written to the 
+state machine pointer.
+;00000000 AAAAAAAA = jump relative.  AAAAAAAA is added to the current 
+pointer location, the result is masked to leave only the low 8 bits, and 
+then it is added to the start location of the state machine buffer, and 
+written to the state machine pointer.  Thus, of AAAAAAAA = 11111111, the 
+pointer will be decremented by 1 location, provided it is not at the 
+beginning of the buffer.
+
+---------- INPUT INTERRUPTS -----------------------
+
+DigIn(n)Mask are the interrupt masks for the digital inputs.  If any 
+input whose mask bit is set to 1 changes state, the DSP will send the 
+following packet:
+
+;Digin pipeid
+;samplecount low
+;samplecount high
+;port0state
+;port1state
+;port2state
+;port3state
+
+DigIn1Mask        (0x0000E2)
+DigIn2Mask        (0x0000E3)
+DigIn3Mask        (0x0000E4)
+DigIn4Mask        (0x0000E5)
+These default to 0 on power-up (no packets sent)
+
+DebounceTime    (0x0000E8)
+The digital inputs can be debounced to prevent multiple transitions on 
+an input from swamping an ethernet link with packets.  Units are in 
+samples.  For a mechanical switch, an appropriate debounce time is on 
+the order of 100 msec (3000).
+
+DigInPipeID (0x0000EE) is the pipe ID of the packets sent when the 
+digital input changes.
+
+
+
+
+
+
+

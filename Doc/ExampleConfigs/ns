@@ -1,0 +1,545 @@
+% Spike configuration file
+% 
+% This file has a format similar to the network configuration file.
+%
+% The settings should be kept in the same order they are here. 
+%
+
+% the number of slaves is the number of computers that receive commands from
+% the master.  These include normal slaves, the rtslave and, if applicable, the
+% matlab slave
+nslaves 	0
+
+% the master line gives the name of the master computer and the port for
+% connections to the master from each slave.  You may need to
+% change the port number if the software complains that it cannot open a
+% connection on the specified port. Note that if a slave collects position
+% data, it should be specified as "rtslave" 
+% The port numbers must be > 1024 and < 65335
+master    	snow    9999
+
+% optional slave lines, one for each slave, would go here
+
+
+% the port lines give the numbers of ports that the system can use for
+% establishing tcpip or udp connections.  Make sure there are at least 20 of
+% them (max 100)
+port		10005
+port		10006
+port		10007
+port		10008
+port		10009
+port		10010
+port		10011
+port		10012
+port		10013
+port		10014
+port		10015
+port		10016
+port		10017
+port		10018
+port		10019
+port		10020
+
+
+% the datatype line specifies the datatype processed on each machine.  Make
+% sure to replace the name with the name of your machine
+
+% datatype is a combination of
+% SPIKE 
+% DIGITALIO
+% and
+% MATLAB
+% or a combination of 
+% CONTINUOUS 
+% POSITION
+% DIGITALIO
+% and 
+% MATLAB
+% 
+% If you want POSITION data, both the master and the rtslave must have POSITION
+% as a datatype
+%
+% Only one machine can have a datatype of DIGITALIO or MATLAB
+% 
+% e.g.
+% datatype	machinename	SPIKE
+% datatype	machinename	CONTINOUS 
+% datatype	machinename	CONTINOUS POSITION 
+% datatype	machinename	CONTINOUS POSITION DIGITALIO
+
+datatype 	snow		CONTINUOUS POSITION DIGITALIO
+
+% the data directory specifies the default location for data files on each
+% machine.  Note that the Master menu open all files command assumes that the
+% same directory exists on all machines. Also note that as the rtlinux machine
+% doesn't save data, the datadirectory does not need to be specified for that
+% machine.
+datadirectory   snow		/data
+
+% the audio settings set the initial gain factor (volume), cutoff for diode
+% emulation, and delay in milliseconds.
+% the ranges are as follows:
+% 0 < gain <= 128
+% 0 < cutoff <= 32767
+% 0 < delay <= 1000
+%	output#	gain	cutoff	delay
+audio	0	32	0	0
+audio	1	32	0	0
+
+% the dspclock line indicates whether we want to use the external 10 KHz clock
+% from the DSPs or the internal counter on the PCI-CTR05 card.  You should only
+% use the internal counter if you are taking position and behavior data but not
+% taking any electrophysiological data, as otherwise the clocks will not be
+% synchronized properly.
+dspclock	1
+
+% dspinfo specifies the sampling rate and machine name for each dsp
+% 	    dsp num   sampling rate  machine receiving data
+dspinfo		0	1500		snow
+dspinfo		1	30000		snow
+dspinfo		2	30000		snow
+
+% dspsampperpacket specifies the number of samples per packet (used for fast
+% processing of incoming data
+%                    dsp num  samp
+dspsampperpacket	0	2
+
+% the colorfile specifies the location of the spike_rgbcolor file which gives
+% the indeces for eeg trace colors.  If unspecified, it assumes
+% /usr/local/nspike/spike_rgbcolor
+%colorfile	/usr/local/nspike/spike_rgbcolor
+
+% for position data, posthresh specifics the threshold luminance value for 
+% including/excluding pixels in the tracked set
+%  (0 <= posdiffthresh <= 255)
+posthresh   255
+
+% set trackdarkpixels flag to 1 if tracking dark pixels, 0 if tracking bright
+trackdarkpixels 0
+
+% set the length (in seconds) of the eeg trace 
+eegtracelength 	1.0
+
+%DigitalIO Variables
+% there must be a total of 4 output ports for the 64 bit card
+ndioports 4
+dioport	0	output
+dioport	1	output
+dioport	2	output
+dioport	3	output
+% nprograms is the number of behavioral programs (max 10)
+nprograms	1
+% program specificies the number and the full execution string for each behavioral
+% program
+program		0	Behavior/rt_devel/filter
+
+% user the stim usergui
+usergui	stim
+
+
+% the mapping from electrodes to dsp channels.  This mapping is set by the
+% connections from the microdrive array to the A to D box.
+% NOTE: the channel numbers and the dsp channels are 0 based
+%	       electrode  channel#  dsp_channel
+electmap	1		0	0	
+electmap	1		1	30
+electmap	2		0	1	
+electmap	3		0	2	
+electmap	4		0	3	
+electmap	5		0	4	
+electmap	6		0	5	
+electmap	7		0	6	
+electmap	8		0	7	
+electmap	9		0	8	
+electmap	10		0	9	
+electmap	11		0	10	
+electmap	12		0	11	
+electmap	13		0	12	
+electmap	14		0	13	
+electmap	15		0	14	
+electmap	16		0	15	
+electmap	17		0	16
+electmap	18		0	17
+electmap	19		0	18	
+electmap	20		0	19	
+electmap	21		0	20	
+electmap	22		0	21	
+electmap	23		0	22	
+electmap	24		0	23	
+electmap	25		0	24	
+electmap	26		0	25	
+electmap	27		0	26	
+electmap	27		1	27	
+electmap	27		2	28	
+electmap	27		3	29	
+electmap	28		0	63 
+
+% note that the last entry is required if you want to save the video sync
+% signal which is on dsp channel 63
+
+
+% the settings for the individual channels
+
+% first comes the name of the host. All channels following the hostname line
+% are assumed to be from the same host until the next hostname line is
+% encoutered
+hostname 	snow
+
+% first comes the number of the channel, then the parameters for that channel
+% the channels should be numbered from 0 upward (0 based)
+    channel 	0
+
+%	the number of the dsp that processes data from this channel
+	    dspnum		1
+
+%	the channel number on the dsps.  This is redandant with the electmap set
+%	up above, and is used to help catch errors
+	    dspchan		30
+
+%	the reference electrode for this channel
+	    refelect		27
+
+%	the reference channel on the reference electrode
+	    refchan 		1
+
+% 	the user defined number for this channel (continuous mode) or 
+%       electrode (spike mode)
+	    number	1
+
+% 	the number (0-3 for a tetrode) of this channel within the electrode.
+% 	This is also redundant with the electmap and is used to help catch
+% 	errors
+	    electchan	1
+
+% 	the current depth in 1/12ths of a screw turn for an 0-80 screw
+	    depth 	0
+
+% 	the threshold for spike detection in microvolts
+	    thresh 	40
+
+%	the maximum displayable value (without clipping) in microvolts. This
+%	sets the scale of the displayed trace
+	    maxdispval	1000
+
+%	the low and high filter settings. 
+	    filter 	300	6000
+
+%	the color setting is only used for continuous mode display, but it 
+%	should be specified in any case. The color refers to an index into the 
+%       internal color array given in the spike color file (usually
+%	spike_rgbcolor)	
+	    color	0
+
+
+    channel 	1
+	    dspnum		1
+	    dspchan		1
+	    refelect		27
+	    refchan		0
+	    number		2
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	2
+	    dspnum		1
+	    dspchan		2
+	    refelect		27
+	    refchan		0
+	    number		3
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	3
+	    dspnum		1
+	    dspchan		3
+	    refelect		27
+	    refchan		0
+	    number		4
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	4
+	    dspnum		1
+	    dspchan		4
+	    refelect		27
+	    refchan		0
+	    number		5
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	5
+	    dspnum		1
+	    dspchan		5
+	    refelect		27
+	    refchan		0
+	    number		6
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	6
+	    dspnum		1
+	    dspchan		6
+	    refelect		27
+	    refchan		0
+	    number		7
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	7
+	    dspnum		1
+	    dspchan		7
+	    refelect		27
+	    refchan		0
+	    number		8
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	8
+	    dspnum		1
+	    dspchan		8
+	    refelect		27
+	    refchan		0
+	    number		9
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	9
+	    dspnum		1
+	    dspchan		9
+	    refelect		27
+	    refchan		0
+	    number		10
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	10
+	    dspnum		1
+	    dspchan		10
+	    refelect		27
+	    refchan		0
+	    number		11
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	11
+	    dspnum		1
+	    dspchan		11
+	    refelect		27
+	    refchan		0
+	    number		12
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	12
+	    dspnum		2
+	    dspchan		12
+	    refelect		27
+	    refchan		0
+	    number		13
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	13
+	    dspnum		2
+	    dspchan		13
+	    refelect		27
+	    refchan		0
+	    number		14
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	14
+	    dspnum		2
+	    dspchan		14
+	    refelect		27
+	    refchan		0
+	    number		15
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	15
+	    dspnum		2
+	    dspchan		15
+	    refelect		27
+	    refchan		0
+	    number		16
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	16
+	    dspnum		2
+	    dspchan		16
+	    refelect		27
+	    refchan		0
+	    number		17
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	17
+	    dspnum		2
+	    dspchan		17
+	    refelect		27
+	    refchan		0
+	    number		18
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	18
+	    dspnum		2
+	    dspchan		18
+	    refelect		27
+	    refchan		0
+	    number		19
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	19
+	    dspnum		2
+	    dspchan		19
+	    refelect		27
+	    refchan		0
+	    number		20
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	20
+	    dspnum		2
+	    dspchan		20
+	    refelect		27
+	    refchan		0
+	    number		21
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	21
+	    dspnum		2
+	    dspchan		21
+	    refelect		27
+	    refchan		0
+	    number		22
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	22
+	    dspnum		2
+	    dspchan		22
+	    refelect		27
+	    refchan		0
+	    number		23
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	23
+	    dspnum		2
+	    dspchan		23
+	    refelect		27
+	    refchan		0
+	    number		24
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval	1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	24
+	    dspnum		2
+	    dspchan		63
+	    refelect		0
+	    refchan		0
+	    number		28
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		20000
+	    filter 		1	11000
+	    color		0

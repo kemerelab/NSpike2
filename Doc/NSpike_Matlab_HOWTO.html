@@ -1,0 +1,366 @@
+MIME-Version: 1.0
+Content-Location: file:///C:/42A8E6CF/Spike2_Matlab_HOWTO.htm
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="us-ascii"
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml"
+xmlns:o=3D"urn:schemas-microsoft-com:office:office"
+xmlns:w=3D"urn:schemas-microsoft-com:office:word"
+xmlns=3D"http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=3DContent-Type content=3D"text/html; charset=3Dus-ascii">
+<meta name=3DProgId content=3DWord.Document>
+<meta name=3DGenerator content=3D"Microsoft Word 11">
+<meta name=3DOriginator content=3D"Microsoft Word 11">
+<link rel=3DFile-List href=3D"Spike2_Matlab_HOWTO_files/filelist.xml">
+<title>Spi</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Loren Frank</o:Author>
+  <o:Template>Normal</o:Template>
+  <o:LastAuthor>Loren Frank</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>75</o:TotalTime>
+  <o:Created>2005-09-17T21:12:00Z</o:Created>
+  <o:LastSaved>2005-09-17T22:27:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>491</o:Words>
+  <o:Characters>2802</o:Characters>
+  <o:Company>UCSF</o:Company>
+  <o:Lines>23</o:Lines>
+  <o:Paragraphs>6</o:Paragraphs>
+  <o:CharactersWithSpaces>3287</o:CharactersWithSpaces>
+  <o:Version>11.6360</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:SelectEntireFieldWithStartOrEnd/>
+   <w:UseWord2002TableStyleRules/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState=3D"false" LatentStyleCount=3D"156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0in 5.4pt 0in 5.4pt;
+	mso-para-margin:0in;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext=3D"edit" spidmax=3D"2050"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext=3D"edit">
+  <o:idmap v:ext=3D"edit" data=3D"1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=3DEN-US style=3D'tab-interval:.5in'>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal>Spike2 <span class=3DSpellE>Matlab</span> HOWTO</p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>Overview</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>Spike2
+can export data to a running <span class=3DSpellE>matlab</span> process.<sp=
+an
+style=3D'mso-spacerun:yes'>&nbsp; </span>Currently the <span class=3DSpellE=
+>matlab</span>
+process must be running on one of the data acquisition computers, but it wi=
+ll
+eventually be possible to run spike2_matlab on a non-data acquisition
+computer.<span style=3D'mso-spacerun:yes'>&nbsp; </span>The RT-Linux machine
+cannot be used as the <span class=3DSpellE>matlab</span> computer, although=
+ behavioral
+and position outputs from the RT-Linux computer can be sent to <span
+class=3DSpellE>matlab</span>.</p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>Configuration File Setup</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>One
+machine should be designated as the <span class=3DSpellE>Matlab</span> comp=
+uter. <span
+style=3D'mso-spacerun:yes'>&nbsp;</span>To do so, add &#8220;MATLAB&#8221; =
+to the
+<span class=3DSpellE>datatype</span> line for that computer. E.g.:</p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span class=3DSpellE>datatype</span><span
+style=3D'mso-spacerun:yes'>&nbsp; </span><span style=3D'mso-tab-count:1'>&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>snow
+<span style=3D'mso-tab-count:2'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>CONTINUOUS<span
+style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp; </span>MATLAB</p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>You
+can also specify the initial types of data to be sent to <span class=3DSpel=
+lE>matlab</span>
+as follows:</p>
+
+<p class=3DMsoNormal><span class=3DSpellE>matlab</span><span style=3D'mso-t=
+ab-count:
+1'>&nbsp; </span><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>CONTINUOUS<span
+style=3D'mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>1</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>specifies
+that continuous data from electrode 1 should be sent to <span class=3DSpell=
+E>matlab</span>.<o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span class=3DSpellE>matlab</span><span style=3D'mso-t=
+ab-count:
+1'>&nbsp; </span><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>SPIKE<span
+style=3D'mso-tab-count:2'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp; </span><span
+style=3D'mso-spacerun:yes'>&nbsp;&nbsp;&nbsp; </span>2</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>specifies
+that spike data from electrode 2 should be sent to <span class=3DSpellE>mat=
+lab</span></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span class=3DSpellE>matlab</span><span
+style=3D'mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </spa=
+n><span
+style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>BEHAVIOR</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>specifies
+that digital IO to/from <span class=3DSpellE>spike_behav</span> should be s=
+ent to
+<span class=3DSpellE>matlab</span></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span class=3DSpellE>matlab</span> <span style=3D'mso-=
+tab-count:
+1'> </span><span style=3D'mso-spacerun:yes'>&nbsp;&nbsp;</span><span
+style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp; </span>POSITION</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>specifies
+that the tracked pixels from each position from should be sent to <span
+class=3DSpellE>matlab</span><o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>When you start up spike2 on that computer (snow in this
+example) the <span class=3DSpellE>spike_matlab</span> program will automati=
+cally
+be launched. </p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>Selecting <span class=3DSpellE>matlab</span> output fr=
+om
+spike2</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>The
+Master menu on the master computer has three <span class=3DSpellE>matlab</s=
+pan>
+related menu items:</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+class=3DSpellE>Matlab</span> Save On</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+class=3DSpellE>Matlab</span> Save Off</p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+class=3DSpellE>Matlab</span> Settings</p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+class=3DSpellE>Matlab</span> Save On and <span class=3DSpellE>Matlab</span>=
+ Save
+Off start or stop the sending of data to <span class=3DSpellE>spike_matlab<=
+/span>.<span
+style=3D'mso-spacerun:yes'>&nbsp; </span><span class=3DSpellE>Spike_matlab<=
+/span> saves
+the data in a circularly linked list of buffers whose size is given in incl=
+ude/<span
+class=3DSpellE>spike_matlab.h</span> (default 10 buffers of 10MB each).<span
+style=3D'mso-spacerun:yes'>&nbsp; </span><span class=3DSpellE>Spike_matlab<=
+/span>
+will automatically cycle through the buffers, but note that if you save &gt=
+; <span
+class=3DSpellE>nbuffers</span> * <span class=3DSpellE>buffersize</span> byt=
+es, you
+will lose data, as the first buffer will be overwritten.</p>
+
+<p class=3DMsoNormal><span style=3D'mso-spacerun:yes'>&nbsp; </span><span
+style=3D'mso-spacerun:yes'>&nbsp;</span></p>
+
+<p class=3DMsoNormal><span style=3D'mso-tab-count:1'>&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
+class=3DSpellE>Matlab</span> Settings brings up a dialog that lets you sele=
+ct
+which types of data and which electrodes are saved.<span
+style=3D'mso-spacerun:yes'>&nbsp; </span>This is only available when <span
+class=3DSpellE>Matlab</span> saving is off.</p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>Sending data to <span class=3DSpellE>matlab</span></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><span style=3D'mso-tab-coun=
+t:1'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </s=
+pan>To
+send data to <span class=3DSpellE>matlab</span>, start up a <span class=3DS=
+pellE>matlab</span>
+process and run the <span class=3DSpellE>matlab</span> function <span
+class=3DSpellE>matlabspikesocket</span> located in the Modules subdirectory=
+.<span
+style=3D'mso-spacerun:yes'>&nbsp; </span>This is a <span class=3DSpellE>mex=
+</span>
+function (source: Modules/<span class=3DSpellE>matlabspikesocket.cpp</span>=
+) and
+you may need to recompile it for your system, which you can do by running t=
+he Modules/<span
+class=3DSpellE>compilematlab.m</span> script. <span
+style=3D'mso-spacerun:yes'>&nbsp;</span></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'>The format for the function=
+ is as
+follows:</p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'>[<span class=3DSpellE>spike=
+data</span>
+<span class=3DSpellE>contdata</span> <span class=3DSpellE>posdata</span> <s=
+pan
+class=3DSpellE>behavdata</span> <span class=3DSpellE>starttime</span>] =3D =
+<span
+class=3DSpellE>matlabspikesocket</span>();</p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><span class=3DSpellE>spiked=
+ata</span>
+is a cell array where each element contains the spike times and waveforms f=
+or the
+electrode of that number.</p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><span class=3DSpellE>contda=
+ta</span> is
+a cell array where each element contains the continuous data for the electr=
+ode
+of that number.<span style=3D'mso-spacerun:yes'>&nbsp; </span>The time of t=
+he
+first element is given by <span class=3DSpellE>starttime</span></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><span class=3DSpellE>posdat=
+a</span>
+is a structure array where each element contains the tracked pixels for a
+position frame</p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><span class=3DSpellE>behavd=
+ata</span>
+is an array with the timestamp and status of the specified output port</p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'>Note that each time you run=
+ <span
+class=3DSpellE>matlabspikesocket</span> you should get one buffer from <span
+class=3DSpellE>spike_matlab</span>.<span style=3D'mso-spacerun:yes'>&nbsp;
+</span>It is currently the users responsibility to run <span class=3DSpellE=
+>matlabspikesocket</span>
+often enough to download all of the saved data.</p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'>I would suggest starting th=
+e save,
+stopping the save, and then running <span class=3DSpellE>matlab</span> <span
+class=3DSpellE>spikesocket</span> a few times to get the data.<span
+style=3D'mso-spacerun:yes'>&nbsp; </span>Make sure to use new variables in =
+the
+call so that you don&#8217;t erase the data from the previous save. </p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal style=3D'margin-left:.5in'><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>

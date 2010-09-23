@@ -1,0 +1,21 @@
+#!/bin/tcsh
+# run this after turning on the dsps 
+
+# the following looks at the host variable and sets the ethernet interfact
+# appropriately.  Modify this for your system.
+set eth=eth1
+
+#reload the sysctl settings
+sysctl -p
+
+# use arping to get the hardware addresses for the DSPs, which are 10.1.2.10-18 
+set i=10
+while ($i < 20)
+	arping -c 3 -I $eth 10.1.2.$i >& /dev/null &
+	@ i++
+end
+
+# create and load the arp file
+sleep 3
+arp | grep dsp | grep -v fakedsp | awk '{print $1 "     " $3}' > /etc/ethers.dsp
+arp -f /etc/ethers.dsp

@@ -1,0 +1,130 @@
+Here are the DSP coefficients, with their addresses.  All are shorts
+unless specifically described as longs.  The longs are stored with the
+low word in the specified address, and the high word in the next address
+above it.
+
+Forgive the formatting -- I'm copying and pasting directly from my
+assembler source, so as not to introduce any errors.
+
+ResyncCount  .set 0x0000C3 ;keeps track of resynchronization events
+This can be read to determine if the DSP box has lost sync with the A/D
+box.  I can't remember if I implemented this, but if I didn't, I will,
+and here's where the count will live.
+
+DAC0Delay  .set 0x0000CC ;in samples.  max = 16383
+DAC1Delay  .set 0x0000CD
+This is the delay in samples for the two DAC channels on the master
+DSP.  These parameters aren't used by the aux DSPs.
+
+SyncControl  .set 0x0000CF
+;BIT0: 0 resets the sample counter, 1 unresets it
+;BIT1: 0 stops the sample counter, 1 runs it
+;BIT2: 0 resets the 10KHz pulser, 1 runs it
+This is only used by the master DSP.  The "sample counter" is the
+timestamp, incremented every sample, which the master DSP injects into
+channel 127 of the data stream, and which the aux DSPs copy to create
+the timestamp info.  On power up, all 3 bits are set, so everything is
+running.  The host should briefly (> 10 msec) set these three bits to 0,
+then back to 1, to ensure that the DSPs are all synchronized and their
+timestamps are reset.
+
+
+MASTER DSP ONLY:
+0x00D1 = DAC0Gain.  Defaults to 256 (unity gain).  
+    
+    Range = 0 (gain = 0) to 32767 (gain = slightly less than 128)
+
+0x00D2 = DAC1Gain.
+0x00D3 = DAC0 Positive Threshold.  Defaults to 0.  Range = 0 (no 
+	threshold action) to 32767 (no signals passed).
+0x00D4 = DAC0 Negative Threshold.  Defaults to 0.  Range = 0 to -32767
+0x00D5 = DAC1 Positive Threshold.
+0x00D6 = DAC1 Negative Threshold.
+
+
+AUX DSP ONLY:
+
+PipeID  .set 0x0000D0
+Only on aux DSPs.  This is the first word sent in every Continuous
+Packet.  The host PC sets this word to anything it wants, to help it
+distinguish the DSPs from each other.
+
+Blocks2Send  .set 0x0000D2
+Aux only.  This is the number of UDP packets the host would like the DSP
+to send.  The host first sets up the other coeffcients, then makes
+Blocks2Send non-zero to start the data transfer.  If this number is
+negative, the DSP will keep sending packets until the host sets this
+number to 0.  Briefly (for more than 10 msec) setting this number to 0
+resets the read pointer in the data buffer to the write pointer.
+
+ChannelsPerSample .set 0x0000D3
+Aux only.  The number of active channels in the transfer, corresponding
+to the (T) parameter in your spec.  The DSP always sends the first T
+channels defined in coefficient memory; in other words, it can't jump
+around.
+
+SamplesPerBlock .set 0x0000D4
+Aux only.  The number of measurements per channel, what your spec calls
+"M".  T*M is the number of data words in each block.
+
+DecimationFactor .set 0x0000D5
+Aux only.  1 corresponds to no decimation, 2 is decimation by a factor
+of 2, etc.
+
+
+
+
+BOTH DSPS:
+
+;The coefficient buffer stores the coefficients to combine and filter
+the
+;32 channels of data.  24 words per channel, starting at address 0x0180
+
+;Source 1 address.  The address of the first electrode.  Must be a
+number between 0 and 127,
+                            corresponding to the "address" column in the
+channel mapping document.
+;Source 1 gain        Gain for first electrode.  Must be between -32767
+and 32767.
+                             Unity gain is 16384
+;Source 2 address
+;Source 2 gain
+                              Note that because the gain is bipolar,
+channels may be subtracted or summed.
+                            Typically, the source 1 gains will be in the
+neighborhood of 16384, +/- a few
+                            percent, which is determined by
+calibration.  To subtract out a reference channel,
+                            set source 2 gain to -16384, +/- a few
+percent.
+
+                            Follows the coefficients (a0, a1, a2, b1,
+b2) for the two biquads, arbitrarily called
+                            "LPF" and "HPF" although they are coded
+generically in the DSP, so either slot may
+                            have either kind of filter, as well as
+bandpass and band-reject filters.  All of the
+                            coefficients are longs, with the low word in
+the low address, and can generated with
+                            MATLAB code, or any other program capable of
+doing simple trig to 32-bit accuracy.
+;LPF a2 lo, hi
+;LPF a1 lo, hi
+;LPF a0 lo, hi
+;LPF b2 lo, hi
+;LPF b1 lo, hi
+;HPF a2 lo, hi
+;HPF a1 lo, hi
+;HPF a0 lo, hi
+;HPF b2 lo, hi
+;HPF b1 lo, hi
+
+For the master DSP, the first set of coefficients corresponds to DAC0,
+and the second set to DAC1.  The rest are unused.
+At the moment, only the first 24 channels are working.  The last 8 await
+code optimization.
+
+
+
+
+

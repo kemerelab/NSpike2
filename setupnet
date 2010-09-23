@@ -1,0 +1,27 @@
+#!/bin/bash
+# run this after turning on the dsps 
+
+# the following looks at the host variable and sets the ethernet interfact
+# appropriately.  Modify this for your system.
+eth=eth1
+
+#reload the sysctl settings
+sysctl -p
+
+arping -c 1 -I $eth 10.1.2.10 
+arping -c 1 -I $eth 10.1.2.11 
+arping -c 1 -I $eth 10.1.2.12 
+arping -c 1 -I $eth 10.1.2.13 
+arping -c 1 -I $eth 10.1.2.14 
+arping -c 1 -I $eth 10.1.2.15 
+arping -c 1 -I $eth 10.1.2.16 
+arping -c 1 -I $eth 10.1.2.17 
+arping -c 1 -I $eth 10.1.2.18 
+
+arp | grep dsp | grep -v fakedsp | awk '{print $1 "     " $3}' > /etc/ethers.dsp
+arp -f /etc/ethers.dsp
+
+if [ ! -e /dev/video ]; then
+  echo "Creating /dev/video soft link."
+  ln -s /dev/video0 /dev/video
+fi

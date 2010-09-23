@@ -1,0 +1,10 @@
+#!/bin/bash
+# kill off the errant spike processes
+kill -9 `ps auxww | grep "spike[_main_rt\|_matlab\|2\|_process_data\|_process_posdata\|_save_data\|_daq\|_behav\|_amp\|_posdaq]" | grep -v gdb | grep -v vi | grep -v gvim |grep -v grep | awk '{print $2}'` 2&> /dev/null
+
+kill -9 `ps auxww | grep "nspike" | grep -v gdb | grep -v vi | grep -v gvim |grep -v grep | awk '{print $2}'` 2&> /dev/null
+kill -9 `ps auxww | grep "user_program" | grep -v gdb | grep -v vi | grep -v gvim |grep -v grep | awk '{print $2}'` 2&> /dev/null
+
+# remove fifos
+rm -f /tmp/spike_* 2&> /dev/null
+rm -f /tmp/matlab_spike_socket 2&> /dev/null

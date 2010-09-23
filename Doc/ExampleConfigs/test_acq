@@ -1,0 +1,669 @@
+% Spike configuration file
+% 
+% The settings should be kept in the same order they are here. 
+%
+
+% the number of slaves is the number of computers that receive commands from
+% the master.  These include normal slaves, the rtslave and, if applicable, the
+% matlab slave
+
+nslaves 	0
+
+% the master line gives the name of the master computer and the port for
+% connections to the master from each slave.  You may need to
+% change the port number if the software complains that it cannot open a
+% connection on the specified port.  
+% The port numbers must be > 1024 and < 65335
+master    	snow    10000
+
+% optional slave lines, one for each slave, would go here
+
+
+% the port lines give the numbers of ports that the system can use for
+% establishing tcpip or udp connections.  Make sure there are at least 20 of
+% them (max 100)
+
+port		10001
+port		10002
+port		10003
+port		10004
+port		10005
+port		10006
+port		10007
+port		10008
+port		10009
+port		10010
+port		10011
+port		10012
+port		10013
+port		10014
+port		10015
+port		10016
+port		10017
+port		10018
+port		10019
+port		10020
+
+% the datatype line specifies the datatype processed on each machine.  Make
+% sure to replace the name with the name of your machine
+
+ % datatype is 
+% SPIKE or
+% SPIKE MATLAB
+% or a combination of 
+% CONTINUOUS 
+% POSITION
+% BEHAVIOR
+% and 
+% MATLAB
+% 
+% e.g.
+ datatype	snow	  CONTINUOUS POSITION DIGITALIO
+
+% the data directory specifies the default location for data files on each
+% machine.  Note that the Master menu open all files command assumes that the
+% same directory exists on all machines. Also note that as the rtlinux machine
+% doesn't save data, the datadirectory does not need to be specified for that
+% machine.
+
+datadirectory   snow	./test/
+
+
+% the dspclock line indicates whether we want to use the external 10 KHz clock
+% from the DSPs or the internal counter on the PCI-CTR05 card.  You should only
+% use the internal counter if you are taking position and behavior data but not
+% taking any electrophysiological data, as otherwise the clocks will not be
+% synchronized properly.
+
+dspclock	1
+
+% dspinfo specifies the sampling rate (per channel) and machine names. 
+% dsp 0 is the master DSP and should only communicate with the master. As it
+% does analog outputs, it will ignore the sampling rate, but make sure to put
+% some number in the sampling rate field below
+% should not be listed here.
+
+% 	    dsp num        sampling rate              machine  receiving data
+
+dspinfo		0		110				snow
+dspinfo		1		1000				snow
+dspinfo		2		1000				snow
+
+
+% calibration file specifies the name of the calibration file to set the
+% relative amplitudes of the channels.  See writecalfile.m for a matlab script
+% that generates an example calibration file
+
+calibrationfile		nspikecalfile
+
+% set the length (in seconds) of the eeg trace         
+
+eegtracelength 	1.0
+
+%DigitalIO Variables
+% there must be a total of 4 output ports for the 64 bit card
+ndioports 4
+dioport	0	output
+dioport	1	output
+dioport	2	output
+dioport	3	output
+% nprograms is the number of behavioral programs (max 10)
+nprograms	1
+% program specificies the number and the full execution string for each behavioral
+% program
+program	0	./Behavior/daq_process
+enable_daq 1
+
+
+
+% the mapping from electrodes to dsp channels.  This mapping is set by the
+% connections from the microdrive array to the A to D box.
+% NOTE: the channel numbers and the dsp channels are 0 based but the electrode
+% numbers must be 1 based
+
+
+% I amp     electrode       channel# dsp_channel
+% 
+
+electmap	1		0	96	%27                
+electmap	1		1	112	%28
+electmap	1		2	80	%25
+electmap	1		3	64	%26
+electmap	2		0	32	%23
+electmap	2		1	48	%24
+electmap	2		2	16	%21
+electmap	2		3	00	%22
+electmap	3		0	97	%19
+electmap	3		1	113	%20
+electmap	3		2	81	%17
+electmap	3		3	65	%18
+electmap	4		0	33	%15
+electmap	4		1	49	%16
+electmap	4		2	17	%13
+electmap	4		3	01	%14
+electmap	5		0	98	%11
+electmap	5		1	114	%12
+electmap	5		2	82	%09
+electmap	5		3	66	%10
+electmap	6		0	34	%07
+electmap	6		1	50	%08
+electmap	6		2	18	%05
+electmap	6		3	02	%06
+electmap	7		0	99	%03
+electmap	7		1	115	%04
+electmap	8		0	83	%01
+
+% II amp    electrode      channel#  dsp_channel
+
+electmap	9		0	100	%27                
+electmap	9		1	116	%28
+electmap	9		2	84	%25
+electmap	9		3	68	%26
+electmap	10		0	36	%23
+electmap	10		1	52	%24
+electmap	10		2	20	%21
+electmap	10		3	04	%22
+electmap	11		0	101	%19
+electmap	11		1	117	%20
+electmap	11		2	85	%17
+electmap	11		3	69	%18
+electmap	12		0	37	%15
+electmap	12		1	53	%16
+electmap	12		2	21	%13
+electmap	12		3	05	%14
+electmap	13		0	102	%11
+electmap	13		1	118	%12
+electmap	13		2	86	%09
+electmap	13		3	70	%10
+electmap	14		0	38	%07
+electmap	14		1	54	%08
+electmap	14		2	22	%05
+electmap	14		3	06	%06
+electmap	15		0	103	%03
+electmap	15		1	119	%04
+ 
+% III amp   electrode      channel#  dsp_channel
+	   
+electmap	16		0	104	%27                
+electmap	16		1 	120	%28
+electmap	16		2	88	%25
+electmap	16		3	72	%26
+electmap	17		0	40	%23
+electmap	17		1	56	%24
+electmap	17		2	24	%21
+electmap	17		3	08	%22
+electmap	18		0	105	%19
+electmap	18		1	121	%20
+electmap	18		2	89	%17
+electmap	18		3	73	%18
+electmap	19		0	41	%15
+electmap	19		1	57	%16
+electmap	19		2	25	%13
+electmap	19		3	09	%14
+electmap	20		0	106	%11
+electmap	20		1	122	%12
+electmap	20		2	90	%09
+electmap	20		3	74	%10
+electmap	21		0	42	%07
+electmap	21		1	58	%08
+electmap	21		2	26	%05
+electmap	21		3	10	%06
+electmap	22		0	107	%03
+electmap	22		1	123	%04
+electmap	23		0	91	%01
+ 
+
+% IV amp    electrode       channel# dsp_channel
+	   
+electmap	24		0	108	%27                
+electmap	24		1	124	%28
+electmap	24		2	92	%25
+electmap	24		3	76	%26
+electmap	25		0	44	%23
+electmap	25		1	60	%24
+electmap	25		2	28	%21
+electmap	25		3	12	%22
+electmap	26		0	109	%19
+electmap	26		1	125	%20
+electmap	26		2	93	%17
+electmap	26		3	77	%18
+electmap	27		0	45	%15
+electmap	27		1	61	%16
+electmap	27		2	29	%13
+electmap	27		3	13	%14
+electmap	28		0	110	%11
+electmap	28		1	126	%12
+electmap	28		2	94	%09
+electmap	28		3	78	%10
+electmap	29		0	46	%07
+electmap	29		1	62	%08
+electmap	29		2	30	%05
+electmap	29		3	14	%06
+electmap	30		0	111	%03
+electmap	30		1	127	%04
+electmap	31		0	63	%video sync
+
+% the settings for the individual channels
+
+  % first comes the name of the host. All channels following the hostname line
+  % are assumed to be from the same host until the next hostname line is
+  % encoutered
+
+hostname 	snow
+
+% first comes the number of the channel, then the parameters for that channel
+% the channels should be numbered from 0 upward (0 based)
+    channel 	0
+
+%	the number of the dsp that processes data from this channel  %%%% DSP    1
+	    dspnum		1
+
+%	the channel number on the dsps.  This is redandant with the electmap set
+%	up above, and is used to help catch errors
+	    dspchan		96                      
+
+%	the reference electrode for this channel
+	    refelect		8
+
+%	the reference channel on the reference electrode
+	    refchan 		0
+
+% 	the user defined number for this channel (continuous mode) or 
+%       electrode (spike mode)
+	    number	1
+
+% 	the number (0-3 for a tetrode) of this channel within the electrode.
+% 	This is also redundant with the electmap and is used to help catch
+% 	errors
+	    electchan	0
+
+% 	the current depth in 1/12ths of an 0-80 screw turn 
+	    depth 	0
+
+% 	the threshold for spike detection in microvolts
+	    thresh 	40                                                             %% SAME?
+
+%	the maximum displayable value (without clipping) in microvolts. This
+%	sets the scale of the displayed trace but does not effect the trace as
+%	it is stored on disk.
+	    maxdispval	1000
+
+%	the low and high filter settings. 
+	    filter 	300	6000
+
+%	the color setting is only used for continuous mode display, but it 
+%	should be specified in any case. The color refers to an index into the 
+%       internal color array given in the spike color file (usually
+%	spike_rgbcolor)	
+	    color	0
+
+%%-------------------------------------------------------------------------------------
+
+    channel 	1
+	    dspnum		1
+	    dspchan		32
+	    refelect            8                
+	    refchan		0
+	    number		2
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	2
+	    dspnum		1
+	    dspchan		97
+	    refelect            8                
+	    refchan		0
+	    number		3
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	3
+	    dspnum		1
+	    dspchan		33
+	    refelect            8                
+	    refchan		0
+	    number		4
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+    channel 	4
+	    dspnum		1
+	    dspchan		98
+	    refelect            8                
+	    refchan		0
+	    number		5
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	5
+	    dspnum		1
+	    dspchan		34
+	    refelect            8                
+	    refchan		0
+	    number		6
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+	    
+    channel 	6
+	    dspnum		1
+	    dspchan		99
+	    refelect            8       
+	    refchan		0
+	    number		7
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+	    
+
+    channel 	7
+	    dspnum		1
+	    dspchan		100
+	    refelect            8   %% II Amp                
+	    refchan		0
+	    number		9
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	8
+	    dspnum		1
+	    dspchan		36
+	    refelect            8   %% II Amp                
+	    refchan		0
+	    number		10
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	9
+	    dspnum		1
+	    dspchan		101
+	    refelect            8   %% II Amp                
+	    refchan		0
+	    number		11
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	10
+	    dspnum		1
+	    dspchan		37
+	    refelect            8   %% II Amp                
+	    refchan		0
+	    number		12
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	11
+	    dspnum		1
+	    dspchan		102
+	    refelect            8   %% II Amp                
+	    refchan		0
+	    number		13
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	12
+	    dspnum		1
+	    dspchan		38
+	    refelect            8   %% II Amp                
+	    refchan		0
+	    number		14
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	13
+	    dspnum		1
+	    dspchan		103
+	    refelect            8   %% II Amp                
+	    refchan		0
+	    number		15
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+%%----------------------------------------------   %%%%     DSP       2
+
+    channel 	14
+	    dspnum		2
+	    dspchan		104
+	    refelect            23                
+	    refchan		0
+	    number		16
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	15
+	    dspnum		2
+	    dspchan		40
+	    refelect            23                
+	    refchan		0
+	    number		17
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	16
+	    dspnum		2
+	    dspchan		105
+	    refelect            23                
+	    refchan		0
+	    number		18
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	17
+	    dspnum		2
+	    dspchan		41
+	    refelect            23                
+	    refchan		0
+	    number		19
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	18
+	    dspnum		2
+	    dspchan		106
+	    refelect            23                
+	    refchan		0
+	    number		20
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	19
+	    dspnum		2
+	    dspchan		42
+	    refelect            23                
+	    refchan		0
+	    number		21
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	20
+	    dspnum		2
+	    dspchan		107
+	    refelect            23                
+	    refchan		0
+	    number		22
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+  channel   	21
+	    dspnum		2
+	    dspchan		108
+	    refelect            23   %%  Amp IV                
+	    refchan		0
+	    number		24
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+  channel   	22
+	    dspnum		2
+	    dspchan		44
+	    refelect            23   %%  Amp IV                
+	    refchan		0
+	    number		25
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+  channel   	23
+	    dspnum		2
+	    dspchan		109
+	    refelect            23   %%  Amp IV                
+	    refchan		0
+	    number		26
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	24
+	    dspnum		2
+	    dspchan		45
+	    refelect            23   %%  Amp IV                               
+	    refchan		0
+	    number		27
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	25
+	    dspnum		2
+	    dspchan		110
+	    refelect            23   %%  Amp IV                  
+	    refchan		0
+	    number		28
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	26
+	    dspnum		2
+	    dspchan		46
+	    refelect            23   %%  Amp IV                  
+	    refchan		0
+	    number		29
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	27
+	    dspnum		2
+	    dspchan		111
+	    refelect            23   %%  Amp IV                  
+	    refchan		0
+	    number		30
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		1000
+	    filter 		300	6000
+	    color		0
+
+    channel 	28
+	    dspnum		2
+	    dspchan		63
+	    refelect            0
+	    refchan		0
+	    number		31
+	    electchan		0
+	    depth 		0
+	    thresh 		40
+	    maxdispval		65000
+	    filter 		1	6000
+	    color		0
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

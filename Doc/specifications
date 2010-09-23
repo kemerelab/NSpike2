@@ -1,0 +1,86 @@
+Data acquisition setup specifications
+
+Input
+Four sets of 27 channels
+Original signal: ± ~33 mV
+
+Amplification / A to D stage
+	Four 32 channel amplifiers
+Each amplifier gets
+27 channels Amplified by ~100 
+6 tetrodes x 4 channels / tetrode = 24 channels
+3 EEG / reference electrodes
+Up to 5 external inputs
+Ideally these would be switchable from the ± ~33 mV to a 
+± 5V range
+	Each signal line sampled at 30 KHz and digitized at 16 bits
+	Signals sent through fiber to DSP box
+
+DSP stage
+	Each DSP box handles 32 channels
+	High speed fiber link between DSP boxes 
+64 16 bit channels at 30 KHz
+	Three types of DSP processing
+		1.  Communication
+			Other DSPs will need channels in two contexts:
+				Reference signal
+				EEG signal
+2.	Spike extraction
+Spike extraction should be optional
+(e.g. it should be possible to have each DSP send out packets with continuous data)
+Ideally we could group channels from each group of 27 arbitrarily 	
+	e.g. tetrode 1 = channels 1,2,16,17
+Ideally it would be possible to have arbitrary numbers of 
+channels in each tetrode (2,3, or 4)
+		            Subtract off reference for each channel (could have a single 
+reference for each tetrode, but it is probably easier to keep 
+it at the channel level.
+Filter signal between either 300 Hz or 600 Hz and 6 KHZ
+	Additional filter levels useful but not absolutely essential 
+			For each channel in a group there will be a user defined threshold
+If the signal exceeds the threshold on any channel, chop out a spike 
+By taking n points before the threshold crossing (default 8) and m 
+points after the crossing (default 31) on each channel
+Send resulting n+m points (default 40) in UDP packet to computer
+Move processing ahead by p points (default 16) and begin 
+checking for threshold crossings again.
+ 				If signal is above threshold for first point after shift of p 
+points, ignore signal until it goes below threshold.
+3.	Continuous data sampling
+On a separate DSP, collect the channels that are to be used for EEG data.
+Subtract off the reference for each channel.
+Reduce the sampling frequency to a user defined rate (normal 1.5 KHz / channel)
+Filter between x and y Hz (minimum 1, maximum 400)
+Send out packets with either
+	Data from s samples of one channel
+Interleaved data (s samples from all channels in user specified order)
+	Alternate outputs
+		Analog line level audio out
+User selectable set of 4 channels, probably output from DSP that handles EEG data, but should be an option to have on any DSP.
+	Inputs to DSP
+		UDP packets in p64 from master computer.
+
+Packet specifications:
+	Spike packet
+		Header
+			4 byte unsigned long timestamp
+			2 byte signed short datatype
+			2 byte signed short tetrode number
+			2 byte signed short number of electrodes in bundle
+			2 byte signed short sampling rate
+			2 byte signed short total number of measurements (N)
+		Data	
+			N 2 byte signed short data points
+	Continuous Packet
+		Header
+			4 byte unsigned long timestamp
+			2 byte signed short datatype
+			2 byte signed short sampling rate
+			2 byte signed shorts number of tetrodes (T)
+			T 2 byte signed shorts corresponding to tetrode numbers
+			2 byte signed short total number of measurements (M) per
+channel (N = T * M)
+		Data	
+			N 2 byte signed short data points
+
+

@@ -1,0 +1,46 @@
+This is a brief set of instructions for adding a new program (eg. module) to
+Spike.
+
+1. Write the module, including the messaging between it and whatever other
+programs it needs to send messages / data to.
+	I would start with one of the existing modules and edit it to suit your
+	needs. The progam must call StartModuleMessaging() with the appropriate
+	arguments for your program. Any types of sockets that are not used
+	should be NULL in the call to StartModuleMessaging.
+
+	Note that every module gets the SYSTEM_INFO, START_ACQUISITION, and
+	STOP_ACQUISITION messages, and every module is expect to respond to the
+	start and stop acquisition messages.
+
+2. Edit spike_define.h
+	Add a #define for your module to assign it a number. The new section of
+	spike_define.h would look like:
+#define SPIKE_DAQ               0
+#define SPIKE_POSDAQ            1
+#define SPIKE_BEHAV             2
+#define SPIKE_PROCESS_POSDATA   3
+#define SPIKE_PROCESS_DATA      4
+#define SPIKE_SAVE_DATA         5
+#define SPIKE_AMP               6
+#define SPIKE_MYPROGRAM         7
+#define SPIKE_DISPLAY           8
+#define MAX_SOCKETS             9       // The largest program number plus one
+	where your program is going to be referred to as SPIKE_MYPROGRAM. Make
+        Note that acqusition is started on the highest number programs first, 
+	so the programs that do actual data collection should have the lowest
+	numbers. 
+
+	Add #defines for the messaging (and, if necessary, data) sockets.
+	The messaging sockets are for short status messages while the data
+	sockets are for large data messages. I think the format is fairly self
+	explanatory
+
+3. Edit spike_message.c to include your all of the communication to and from
+your program.
+	This is also fairly straight forward, in that you can follow the
+	examples for the current programs. Make sure to remember the difference
+	between server sockets (they receive data) and client sockets (they
+	send out data)
+
+
+

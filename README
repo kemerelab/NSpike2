@@ -1,0 +1,10 @@
+
+See the INSTALL file for installation details.
+
+If dependencies change, run "autogen.sh" to regenerate configure
+script from "configure.ac" and "Makefile.am" (and src-directory
+"Makefile.am" files).
+
+To create a distributable tar file, run "make dist". If files are
+added or removed, make sure that everything is updated so that
+this still works!!!

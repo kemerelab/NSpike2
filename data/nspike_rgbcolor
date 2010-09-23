@@ -1,0 +1,162 @@
+% the color file for the Spike data acquisition program. These colors form the
+% palette for displaying continuous traces. The names are optional and are
+% ignored by the program.
+255 255 255		white
+127 255 212             aquamarine
+ 69 139 116             aquamarine4
+240 255 255             azure
+245 245 220             beige
+255 228 196             bisque
+  0   0 255             blue
+138  43 226             blue violet
+  0   0 255             blue1
+  0   0 139             blue4
+138  43 226             blueviolet
+255  64  64             brown1
+222 184 135             burlywood
+ 95 158 160             cadetblue
+152 245 255             cadetblue1
+127 255   0             chartreuse
+210 105  30             chocolate
+255 127  36             chocolate1
+255 127  80             coral
+100 149 237             cornflowerblue
+255 248 220             cornsilk1
+  0 255 255             cyan
+  0 191 255             deep sky blue
+255  20 147             deeppink
+  0 191 255             deepskyblue
+ 30 144 255             dodgerblue
+178  34  34             firebrick
+255 250 240             floralwhite
+ 34 139  34             forestgreen
+220 220 220             gainsboro
+248 248 255             ghost white
+248 248 255             ghostwhite
+255 215   0             gold
+218 165  32             goldenrod
+190 190 190             gray
+189 189 189             gray74
+173 255  47             green yellow
+  0 255   0             green1
+173 255  47             greenyellow
+190 190 190             grey
+240 255 240             honeydew
+255 105 180             hot pink
+205  92  92             indianred
+255 255 240             ivory
+240 230 140             khaki
+230 230 250             lavender
+255 240 245             lavenderblush
+255 240 245             lavenderblush1
+124 252   0             lawngreen
+255 250 205             lemonchiffon
+173 216 230             light blue
+240 128 128             light coral
+224 255 255             light cyan
+238 221 130             light goldenrod
+250 250 210             light goldenrod yellow
+211 211 211             light gray
+144 238 144             light green
+211 211 211             light grey
+255 182 193             light pink
+255 160 122             light salmon
+ 32 178 170             light sea green
+135 206 250             light sky blue
+132 112 255             light slate blue
+119 136 153             light slate gray
+119 136 153             light slate grey
+176 196 222             light steel blue
+255 255 224             light yellow
+173 216 230             lightblue
+240 128 128             lightcoral
+224 255 255             lightcyan
+209 238 238             lightcyan2
+238 221 130             lightgoldenrod
+211 211 211             lightgray
+144 238 144             lightgreen
+211 211 211             lightgrey
+ 32 178 170             lightseagreen
+135 206 250             lightskyblue
+132 112 255             lightslateblue
+119 136 153             lightslategray
+176 196 222             lightsteelblue
+202 225 255             lightsteelblue1
+255 255 224             lightyellow
+250 240 230             linen
+255   0 255             magenta
+205   0 205             magenta3
+176  48  96             maroon
+238  48 167             maroon2
+205  41 144             maroon3
+102 205 170             medium aquamarine
+  0   0 205             medium blue
+186  85 211             medium orchid
+147 112 219             medium purple
+ 60 179 113             medium sea green
+123 104 238             medium slate blue
+  0 250 154             medium spring green
+ 72 209 204             medium turquoise
+199  21 133             medium violet red
+102 205 170             mediumaquamarine
+  0   0 205             mediumblue
+186  85 211             mediumorchid
+147 112 219             mediumpurple
+ 60 179 113             mediumseagreen
+123 104 238             mediumslateblue
+  0 250 154             mediumspringgreen
+ 72 209 204             mediumturquoise
+199  21 133             mediumvioletred
+ 25  25 112             midnightblue
+245 255 250             mint cream
+255 228 225             mistyrose1
+238 213 210             mistyrose2
+255 228 181             moccasin
+  0   0 128             navy
+253 245 230             oldlace
+255 165   0             orange
+255  69   0             orange red
+218 112 214             orchid
+238 232 170             pale goldenrod
+175 238 238             pale turquoise
+219 112 147             pale violet red
+238 232 170             palegoldenrod
+152 251 152             palegreen
+175 238 238             paleturquoise
+219 112 147             palevioletred
+255 239 213             papaya whip
+255 239 213             papayawhip
+255 218 185             peachpuff
+205 133  63             peru
+255 192 203             pink
+221 160 221             plum
+160  32 240             purple
+255   0   0             red
+188 143 143             rosy brown
+ 65 105 225             royal blue
+ 65 105 225             royalblue
+139  69  19             saddle brown
+139  69  19             saddlebrown
+250 128 114             salmon
+244 164  96             sandy brown
+244 164  96             sandybrown
+ 46 139  87             sea green
+ 46 139  87             seagreen
+255 245 238             seashell
+160  82  45             sienna
+135 206 235             sky blue
+135 206 235             skyblue
+106  90 205             slate blue
+112 128 144             slate grey
+106  90 205             slateblue
+  0 255 127             springgreen
+ 70 130 180             steel blue
+ 70 130 180             steelblue
+210 180 140             tan
+216 191 216             thistle
+255  99  71             tomato
+ 64 224 208             turquoise
+238 130 238             violet
+208  32 144             violetred
+255 255   0             yellow
+154 205  50             yellowgreen

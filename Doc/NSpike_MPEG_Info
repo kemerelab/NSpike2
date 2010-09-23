@@ -1,0 +1,13 @@
+SPIKE_MPEG_HOWTO
+
+spike_fixpos contains a modified version of the Berkeley mpeg_play mpeg
+player.  
+
+spike_fixpos requires util.c video.c parseblock.c motionvector.c decoders.c
+readfile.c jrevdct.c and the associated header files, but not the various
+dithering routines, as the image is grayscale.
+
+video.c and util.c were modified to remove references to quietFlag,
+DoDitherImage, ExecuteDisplay and SeekStream
+ 
+

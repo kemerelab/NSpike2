@@ -1,0 +1,3328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>NSpike Instructions</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 3.0  (Linux)">
+	<META NAME="CREATED" CONTENT="0;0">
+	<META NAME="CHANGEDBY" CONTENT="Loren Frank">
+	<META NAME="CHANGED" CONTENT="20081202;22174900">
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P STYLE="margin-bottom: 0in">Table of contents<BR><BR><A HREF="#Overview">Overview</A></P>
+<P STYLE="margin-left: 0.42in; margin-bottom: 0in"><FONT SIZE=2><A HREF="#NSpike_NDAQ_Hardware_overview">NSpike
+NDAQ Hardware Overview</A><BR><A HREF="#NSpike_Computer_Hardware_Overview">NSpike
+Computer Hardware Overview</A><BR><A HREF="#Things_to_Buy">Things to
+Buy</A></FONT> 
+</P>
+<P STYLE="margin-bottom: 0in"><A HREF="#Hardware_Requirements">Computer
+Hardware Requirements</A><BR><A HREF="#Connecting_the_Data_Acquisition_System">Connecting
+the Data Acquisition System and the Computers</A></P>
+<P STYLE="margin-left: 0.42in; margin-bottom: 0in"><FONT SIZE=2><A HREF="#Connecting_the_Computer_Cables">Building
+the Clock Cable</A><BR><A HREF="#Connecting_the_Computer_Cables">Connecting
+the Data Acquisition System components</A><BR><A HREF="#Connecting_the_Computer_Cables">Connecting
+the Computers</A> </FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><A HREF="#Installing_Linux_and_RT-linux">Installing
+Linux</A> 
+</P>
+<P STYLE="margin-left: 0.42in; margin-bottom: 0in"><A HREF="#Linux_Installation"><FONT SIZE=2>Linux
+Installation</FONT></A></P>
+<P STYLE="margin-left: 0.83in; margin-bottom: 0in"><FONT SIZE=2><A HREF="#Direct_Rendering_Check:">Networking
+Setup</A><BR><A HREF="#Direct_Rendering_Check:">Kernel Networking
+Setup</A><BR><A HREF="#Direct_Rendering_Check:">Direct Rendering
+Check</A> </FONT>
+</P>
+<P STYLE="margin-bottom: 0in"> <A HREF="#Installing_and_Compiling_the_NSpike_Code">Istalling
+and Compiling the NSpike Code<BR></A><A HREF="#Installing_and_Compiling_the_NSpike_Code">Running
+the NSpike Code </A>
+</P>
+<P STYLE="margin-left: 0.42in; margin-bottom: 0in"><FONT SIZE=2><A HREF="#Installing_and_Compiling_the_NSpike_Code">NSpike
+Configuration Files</A> <BR><A HREF="#Installing_and_Compiling_the_NSpike_Code">Running
+NSpike on One Computer</A><BR><A HREF="#Running_the_Program_on_Two_Networked">Running
+NSpike on Two Networked Computers</A></FONT></P>
+<P STYLE="margin-bottom: 0in"><A HREF="#Collecting_Data_with_the_NSpike_Hardware"><FONT SIZE=3>Collecting
+Data with the NSpike Hardware and Software</FONT></A></P>
+<P STYLE="margin-left: 0.42in; margin-bottom: 0in"><A HREF="#Setting_up_Your_Configuration_File"><FONT SIZE=2>Setting
+up Your Configuration File</FONT></A></P>
+<P STYLE="margin-left: 0.83in; margin-bottom: 0in"><A HREF="#DSP_Channel_Mapping"><FONT SIZE=2>DSP
+Channel Mapping</FONT></A><BR><A HREF="#Electmap_Section_of_Config_File"><FONT SIZE=2>Electmap
+Section of Config File</FONT></A><BR><A HREF="#Hostname_and_Channel_Section_of_Config"><FONT SIZE=2>Hostname
+and Channel Section of Config File</FONT></A></P>
+<P STYLE="margin-bottom: 0in"><A HREF="#Using_the_NSpike_GUI"><FONT SIZE=2>Using
+the NSpike GUI</FONT></A></P>
+<P STYLE="margin-left: 0.83in; margin-bottom: 0in"><A HREF="#Menus"><FONT SIZE=2>Menus</FONT></A></P>
+<P STYLE="margin-left: 1.25in; margin-bottom: 0in"><A HREF="#Master_Menu_Items"><FONT SIZE=2>Master
+Menu</FONT></A><BR><A HREF="#File_Menu_Items"><FONT SIZE=2>File
+Menu</FONT></A><BR><A HREF="#Display_Menu_Items"><FONT SIZE=2>Display
+Menu</FONT></A><BR><A HREF="#Behavior_Menu_Items"><FONT SIZE=2>Digital
+IO Menu</FONT></A><BR><A HREF="#PositionMenu"><FONT SIZE=2><U>Position
+Menu</U></FONT></A><BR><FONT SIZE=2><A HREF="#Tetrode_Menu_Items">Tetrode
+Settings Menu</A><BR><A HREF="#Status_Information">Status Information</A></FONT></P>
+<P STYLE="margin-left: 0.83in; margin-bottom: 0in"><FONT SIZE=2><A HREF="#Continuous_Mode_Display">Continuous
+Mode Display</A><BR><A HREF="#Spike_Mode_Display">Spike Mode Display</A></FONT></P>
+<P STYLE="margin-left: 0.42in; margin-bottom: 0in"><FONT SIZE=2><A HREF="#Extracting_Data_from_NSpike">Extracting
+Data from NSpike</A><BR><A HREF="#Working_with_Extracted_Data">Working
+with Extracted Data</A></FONT></P>
+<P><A HREF="#Troubleshooting"><FONT SIZE=4>Troubleshooting</FONT></A><BR><A HREF="#Working_with_the_NSpike_Code"><FONT SIZE=4>Working
+with the NSpike Code</FONT></A></P>
+<HR>
+<P><A NAME="Overview"></A><FONT SIZE=5>Overview </FONT><FONT SIZE=4><BR><BR></FONT>This
+is the documentation for the NSpike Neural Data Acquisition hardware
+and associated open source software. This documentation includes
+descriptions of the data acquisition front end (the amplifier,
+digitial to analog converter, DSP processors and digitial
+input/output system) as well a set of instructions for setting up a
+network of computers to run the nspike data acquisition software.
+<BR><BR>Conventions: Instructions are in normal typeface, while
+commands that should be typed into a terminal window or into a file
+are in <FONT FACE="monospace">fixed width</FONT> typeface.
+Directories are in <B>bold face</B>. 
+</P>
+<P><A NAME="NSpike_NDAQ_Hardware_overview"></A><FONT SIZE=4>NSpike
+NDAQ Hardware Overview </FONT><BR><BR>The NDAQ hardware system
+consists of the following: 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">127 channel amplifier 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Amplifies both neural and, if
+		desired, higher level signals, transmits data to 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">127 channel analog to digital
+	converter 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Samples the amplified data at 30
+		KHz, 16 bits per sample, transmits data via optical fiber to</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Master DSP 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Maintains sample counter, outputs
+		10 KHz square wave for synchronization, outputs two analog channels
+		for audio monitor / oscilloscope, passes data to</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Auxillary DSPs 
+	</P>
+	<UL>
+		<LI><P>Each Aux DSP processes up to 16 channels of data. A user
+		selectable reference is subtracted from each channel, the result is
+		filtered, decimated if so desired, and sendt out in UDP ethernet
+		packets (each containing a fixed number of samples from each
+		channel) to one computer. 
+		</P>
+	</UL>
+</UL>
+<P><A NAME="NSpike_Computer_Hardware_Overview"></A><BR><BR><BR><FONT SIZE=4>NSpike
+Computer Hardware Overview </FONT><BR><BR>The NSpike software package
+is designed to run on 1 or more computers. For the purpose of these
+instructions, we are assuming that are four computers, although
+additional slave computers can be added and we are currently
+experimenting to determine whether a single non-RT slave computer is
+sufficient. The computers consist of<BR><BR>1 main computer and 2
+slave computers.<BR><BR>These instructions should generalize to an
+arbitrary number of slave computers, as long as there is exactly one
+master computer. Each computer handles part of the data processing,
+displaying or saving as described below. 
+</P>
+<P>Tasks are divided among the computers as follows: <BR><BR>The
+non-RT slave computer(s) 
+</P>
+<UL>
+	<LI><P>process, save and display from one or more aux DSPs 
+	</P>
+</UL>
+<P><BR>The master computer 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">processes, saves and displays
+	continuous EEG data from one or more aux DSPs 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">controls the Master DSP 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">controls file I/O and data
+	acquisition for all computers</P>
+	<LI><P>processes, saves and displays position data (video) from the
+	a framegrabber 
+	</P>
+</UL>
+<P><A NAME="Things_to_Buy"></A><BR><BR><BR><FONT SIZE=4>Things to
+Buy</FONT><BR><BR>&nbsp;You need to purchase or make</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Five 6 - 12' BNC cables 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Two BNC T connectors 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">One Female DB37 connector for the
+	clock cable 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">An audio monitor (we recommend
+	buying a powered speaker with a volume control (total cost ~$350)
+	rather than spending $1200 or so on a Grass Audio Monitor; it's
+	cheaper and the sound is better) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">A two channel oscilloscope (if
+	desired) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Cables to connect the
+	preamplifiers on the animal to the amplifier 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">One or more black and white CCD
+	cameras for position monitoring 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Preamps (if you would like simple
+	and cheap 27 channel preamps, email Loren) 
+	</P>
+	<LI><P>Computers (see below) 
+	</P>
+</UL>
+<P><BR><BR><BR><BR><BR>
+</P>
+<HR>
+<P><A NAME="Hardware_Requirements"></A><FONT SIZE=5>Computer Hardware
+Requirements</FONT><BR><BR>The computer hardware consists of a
+minimum of two computers (we use either two or three) and several
+auxillary devices. Below are recommended specifications:<BR><BR>Computer
+specifications: 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Fast processor (&gt; 2 GHz),
+	multiple processor is fine, 32 or 64 bit (we use AMD systems)</P>
+	<LI><P STYLE="margin-bottom: 0in">512 MB RAM minimum 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">high-performance accelerated
+	graphics card (e.g. NVidia GeForce 4, 64 MB RAM) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">One reasonable size hard drive (we
+	suggest &gt; 100 GB) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">DVD-ROM drive for linux
+	installation 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">19&quot; or larger LCD monitor
+	(CRT is fine, but takes up more space) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Gigabit ethernet 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">The master should have three
+		gigabit ethernet cards 
+		</P>
+		<LI><P>The two slaves should have two gigabit ethernet cards</P>
+	</UL>
+</UL>
+<P>If you want to include video, you will also need</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">One frame grabber card compatible
+	with the v4l2 standard (e.g., Hauppage WinTV-GO card,
+	http://www.haupppage.com).&nbsp; 
+	</P>
+	<LI><P>BNC Cables and a BNC to RCA adapter to connect your camera to
+	the Master DSP and from the Master DSP video output to the
+	framegrabbler card. 
+	</P>
+</UL>
+<P>Other devices</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Two gigabit ethernet switches, one
+	16 port and one with 4 or more ports. 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">The first hub will be used for
+		data from the DSPs. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">The second hub will be used for
+		communications between computers, including the transmission of
+		position frames from the RT computer to the Master computer.\ 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Do not use a hub, as it is
+		essential that packets get routed to their destination and are not
+		seen by other systems. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">One four port KVM switch to allow
+	you the use of a single keyboard and mouse (and monitor, if you
+	prefer) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">One keyboard 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">One mouse 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Ethernet cables 
+	</P>
+	<UL>
+		<LI><P>For a 128 channel system (8 aux DSPS) you will need a total
+		of 15 short (5-10 foot) Cat 5e or Cat6 ethernet cables plus a
+		single cable to connect the Master to the rest of your network. 
+		</P>
+	</UL>
+</UL>
+<P><BR><BR><BR><BR><BR><BR>
+</P>
+<HR>
+<P><A NAME="Connecting_the_Data_Acquisition_System"></A><FONT SIZE=5>Connecting
+the Data Acquisition System and the Computers</FONT></P>
+<P><A NAME="Building_the_Clock_Cable"></A>The diagrams below shows
+the overall organization of the data acquisition system as it is used
+in our lab, including the networking setup and the resulting data
+flow.<BR><IMG SRC="setupoverview.png" NAME="graphics1" ALIGN=BOTTOM WIDTH=754 HEIGHT=521 BORDER=0><BR><BR><BR>Network
+Connections:<BR><BR><IMG SRC="nspikenetworkconnections.png" NAME="graphics2" ALIGN=BOTTOM WIDTH=501 HEIGHT=524 BORDER=0><BR><BR>Data
+Flow:<BR><BR><IMG SRC="nspikedataflow.png" NAME="graphics3" ALIGN=BOTTOM WIDTH=558 HEIGHT=538 BORDER=0><BR><BR><BR><BR><BR><FONT SIZE=4>Building
+a Clock Cable</FONT></P>
+<P>If you want to synchronize your system with some other hardware
+you can do so witha &nbsp;clock cable that connects the 10 KHz output
+of the Master DSP to a counter (e.g. a PCI-CTR05 card) in some other
+computer.&nbsp; Take a 6 foot or longer BNCcable, chop off one end,
+and strip the other so that you have access to both the signal and
+ground lines. Solder the lines to the female DB37 as follows:</P>
+<P STYLE="margin-bottom: 0in"><A NAME="Connecting_the_Data_Acquisition_System_"></A><A NAME="Connecting_the_Computer_Cables"></A>
+<IMG SRC="clockcable.png" NAME="graphics4" ALIGN=BOTTOM WIDTH=319 HEIGHT=461 BORDER=0><BR>Use
+hot glue gun glue to cover the solder cups of all of the pins of the
+connector after soldering to pin 36 and wrap aluminum foil around the
+back of the connector and the BNC cable. You may want to fill the
+space around the back of the connector with hot glue. Make sure the
+foil makes good contact with the shielding of the cable and the metal
+outside of the connector. Finally, wrap the foil with electrical
+tape. If you have synchronization problems, check the shielding of
+the cable.<BR><BR><BR><BR><BR><BR><FONT SIZE=4>Connecting the Data
+Acquisition System components<BR><BR>Additional specifications can be
+found in NSpike_NDAQ_Setup.doc.<BR></FONT><U><BR></U><BR><I>Amplifier
+/ Analog to Digital Converter Boxes:</I><BR>The amplifier and the A/D
+box should be eventually placed in or at the ceiling, but for initial
+testing purposes we recommend putting them on a table top. The back
+of the Amplifier box has four 50 pin SCSI connectors on it and one
+input for a power cable. Make sure the power supply is off and attach
+the bare wire end of the power cable to the one of the 6V power
+supplies and the other to the Amplifier box.&nbsp; Repeat for the A/D
+box. Plug one SCSI cable into each connector on the Amplifier box and
+attach the other end of each cable to the A/D box. Make sure output 1
+from the Amplifier connects to input 1 on the A/D box, output 2 goes
+to input 2 and so on.<BR><BR>The Amplifier box has four rows of
+connectors on the front panel. These can be either Mill-max
+connectors (2x15 pins) and SMA connectors or DB-37 connectors. Here
+we assume you have the Mill-max version, each of which carries 27
+channels of data, +5V and ground. The other connectors can be
+connected to either neural signals or line level signals (+/- 5V) but
+the amplitude ranges must be specified when you order the system. The
+pin numbers for each Mill-max and the mapping to the DSP channels is
+given in Appendix 1. Plug your fine wire cables into the Mill-max
+inputs.<BR><BR>Plug the long fiber optic cable into the TX fiber
+optic connector on the A/D box. <BR><BR><I>Master and Aux DSP
+Boxes</I>:<BR>Plug the other end of the long fiber optic cable into
+the RX fiber optic connector on the Master DSP box. Use the short
+fiber optic cable to connect the TX connector of the Master DSP box
+to the RX connector of the Aux DSP box. Connect the power supplies
+for the Master and Aux DSP boxes. Use Cat5, Cat5e or Cat6 ethernet
+cables to connect the ethernet ports on the Master DSP and on each
+Aux DSP to the 16 port hub.<BR><BR><BR><I>Video</I><BR>If you are
+using one camera, run a BNC line from the camera to a T connector
+attached to the video sync 1 input on the back of the Master DSP box.
+The other video sync input should be terminated. &nbsp;Run another
+BNC from the free end of the T connector to your frame grabber
+card.<BR><BR><BR><FONT SIZE=4><U>Connecting the Computers</U></FONT></P>
+<P ALIGN=LEFT STYLE="margin-bottom: 0in">This document assumes you
+know how to put the computers together and hook up the KVM switch.
+Below are the instructions for the networking and clock cable
+connections.</P>
+<P><BR><I>Master Computer:</I><BR>There are three ethernet ports on
+the master. Generally the number of the corresponding ethernet device
+will increase as you move from the top to the bottom of the case, so
+the port closest to the top of computer is usually the first ethernet
+device (eth0). Plug the cable connecting the Master to the rest of
+your network into the first ethernet port. Plug the cable connecting
+the Master to the 16 port data hub into the next port (eth1) and the
+cable to the smaller, computer only hub into the last port (eth2).
+<BR><I><BR>Slave computers</I> <BR>Plug the cable connecting each
+computer to the 16 port data hub into topport (eth0) and the cable to
+the smaller, computer only hub into the last port (eth1).<BR><BR><BR>
+</P>
+<HR>
+<P><A NAME="Installing_Linux_and_RT-linux"></A><FONT SIZE=5>Installing
+Linux</FONT><BR><BR>&nbsp;This document assumes some familiarity with
+linux installation. The goal of this process is to 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Install Linux (we use Mandriva) on
+	each computer 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Set up networking 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Set the kernel variables related
+	to networking properly 
+	</P>
+	<LI><P>Ensure that accelerated graphics are available (Direct
+	Rendering) 
+	</P>
+</UL>
+<P><A NAME="Linux_Installation"></A><BR><BR><BR><FONT SIZE=4>Linux
+Installation&nbsp;</FONT><BR><BR>Get a DVD withthe latest version of
+your favorite distribution (we use Mandriva linux). Start the
+installation process. We recommend the following for installation: 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Set aside 10 GB for the / (root)
+	partition and 1GB for a swap partition. On the master computer, set
+	aside an additional 6 GB for a /home partition. (NFS will be set up
+	so that all slave computers mount the /home directory that resides
+	on the master computer.) The remaining disk space on each computer
+	should be assigned as a /data partition. I suggest the ext3 file
+	system or some other journaling file system (this is now the
+	standard). 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Be sure to install kernel source
+	files. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Install your favorite shell, text
+	editor, etc. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Install X11 and a low overhead
+	window manager (e.g. fvwm or blackbox). You should have XFree86 /
+	Xorgversion 4.3 or later. 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">With any luck, your installation
+		will correctly set up accelerated networking. If not, you will
+		probably need to go to the NVidia or ATI website and download and
+		install the correct drivers. We use NVidia cards, and the
+		installation process is fairly straight forward, so it is not
+		covered here. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">We have found that some versions
+		of the Gnome window cause problems for the software related to some
+		port numbers, so we do not use it.&nbsp; We have not tested KDE,
+		another popular window manager. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Select the Development packages so
+	that you get gcc, the gnu debugger, and so on 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Install the Qt and Qt development
+	libraries. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Install the Mesa OpenGL, Glut, and
+	Glut development libraries. 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">If you cannot find these packages
+		during installation, you can install them later using your
+		distributions software configuration tools (drakconf for Mandrake) 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Install the libmpeg2dec and
+	libfame libraries if you plan to use collect and&nbsp;video data. 
+	</P>
+	<LI><P>Install xawtv if you plan to collect video data. 
+	</P>
+</UL>
+<P><A NAME="Networking_Setup:"></A><BR><BR><BR><BR><U>Networking
+Setup</U><BR>Set up the network settings as follows. Here we assume
+there are four machines: drizzle (the master), rain (slave 1) and
+mist (slave 2).<BR><BR>drizzle (master)<BR><FONT FACE="monospace">eth0
+10.1.1.110&nbsp; #connection to outside world; This is your ethernet
+address on your global network</FONT><BR><FONT FACE="monospace">eth1
+10.1.2.1 &nbsp;&nbsp; #data connection for DSPs</FONT><BR><FONT FACE="monospace">eth2
+10.1.3.1 &nbsp;&nbsp; #local network</FONT><BR><FONT FACE="monospace">netmask
+255.255.255.0</FONT><BR><FONT FACE="monospace">gateway your_gateway
+(e.g. 10.1.1.1 for us)</FONT><BR><FONT FACE="monospace">name server
+your_nameserver (also 10.1.1.1 for us)</FONT><BR><BR>rain (slave
+1)<BR><FONT FACE="monospace">eth0 10.1.2.2 &nbsp;&nbsp;&nbsp; #data
+connection to DSPs</FONT><BR><FONT FACE="monospace">eth1 10.1.3.2 &nbsp;&nbsp;&nbsp;
+#connection to drizzle</FONT><BR><FONT FACE="monospace">netmask
+255.255.255.0</FONT><BR><FONT FACE="monospace">gateway
+10.1.3.1</FONT><BR><FONT FACE="monospace">gateway device eth1</FONT><BR><FONT FACE="monospace">name
+server 10.1.3.1</FONT><BR><BR>mist (slave 2)<BR><FONT FACE="monospace">eth0
+10.1.2.3 &nbsp;&nbsp;&nbsp; #data connection for DSPs</FONT><BR><FONT FACE="monospace">eth1
+10.1.2.3 &nbsp;&nbsp;&nbsp; #connection to drizzle</FONT><BR><FONT FACE="monospace">netmask
+255.255.255.0</FONT><BR><FONT FACE="monospace">gateway
+10.1.3.1</FONT><BR><FONT FACE="monospace">gateway device eth1</FONT><BR><FONT FACE="monospace">name
+server 10.1.3.1</FONT><BR><BR><BR>Once the networking setup is
+complete, boot each machine into linux.<BR><BR>Edit /etc/hosts on
+each machine to include the other machines and the DSPs. &nbsp;It is
+best not to put the 10.1.2.x addresses for the computers in the
+/etc/hosts file.<BR><BR>/etc/hosts should look something like
+this:<BR><FONT FACE="monospace">127.0.0.1 localhost<BR><BR>10.1.3.1
+drizzle</FONT><BR><FONT FACE="monospace">10.1.3.2 rain</FONT><BR><FONT FACE="monospace">10.1.3.3
+mist</FONT><BR><FONT FACE="monospace">10.1.3.4 fog</FONT><BR><BR><BR><FONT FACE="monospace">10.1.2.10
+dsp0</FONT><BR><FONT FACE="monospace">10.1.2.11 dsp1</FONT><BR><FONT FACE="monospace">10.1.2.12
+dsp2</FONT><BR><FONT FACE="monospace">10.1.2.13 dsp3</FONT><BR><FONT FACE="monospace">10.1.2.14
+dsp4</FONT><BR><FONT FACE="monospace">10.1.2.15 dsp5</FONT><BR><FONT FACE="monospace">10.1.2.16
+dsp6</FONT><BR><FONT FACE="monospace">10.1.2.17 dsp7</FONT><BR><FONT FACE="monospace">10.1.2.18
+dsp8<BR>10.1.2.254 fakedsp</FONT> 
+</P>
+<P>Note that it is essential that you have fakedsp listed.&nbsp; As
+UDP packets are not acknowledged, your ethernet switch can lose track
+of the location of the computers and start broadcasting packets to
+all ports after some time (in our case about 9 minutes).&nbsp; The
+code prevents this by sending empty packets to fakedsp once a minute.</P>
+<P><A NAME="Kernel_Networking_Setup:"></A><BR><U>Kernel Networking
+Setup</U><BR><BR>As superuser, add the following four lines to
+/etc/sysctl.conf:<BR><BR><FONT FACE="monospace">net.core.rmem_max=8388607</FONT><BR><FONT FACE="monospace">net.core.rmem_default=8388607</FONT><BR><FONT FACE="monospace">net.core.wmem_max=8388607</FONT><BR><FONT FACE="monospace">net.core.wmem_default=8388607
+</FONT><BR><BR>Alternatively, you can open /etc/rc.d/rc.local in a
+text editor and add the following lines at the end:<BR><BR><FONT FACE="monospace">sysctl
+-w net.core.rmem_max=8388607</FONT><BR><FONT FACE="monospace">sysctl
+-w net.core.rmem_default=8388607</FONT><BR><FONT FACE="monospace">sysctl
+-w net.core.wmem_max=8388607</FONT><BR><FONT FACE="monospace">sysctl
+-w net.core.wmem_default=8388607</FONT></P>
+<P>These settings increases the socket buffer read and write sizes so
+that we will not lose data if any of the programs fall temporarily
+behind.&nbsp; 
+</P>
+<P><A NAME="Direct_Rendering_Check:"></A><BR><FONT SIZE=3><U>Direct
+Rendering Check</U></FONT><BR>Open up a terminal window and run the
+glxinfo program. There should be a line near the top of the output
+that says<BR><BR><FONT FACE="monospace">Direct Rendering: Yes<BR><BR></FONT>If
+so, try runningglxgears and look at the framerate that the program
+reports. You should see &gt; 500 frames/sec (ideally you'll see a few
+thousand or more).</P>
+<P>If not, you need to get it working by installing the correct
+driver for your card. 
+</P>
+<P><A NAME="NFS_Setup"></A><BR><BR><BR><BR><BR><FONT SIZE=4>NFS
+Setup</FONT><BR>Now set up the shared filesystems. The home directory
+(/home/lorenlab for us) should be exported from drizzle and nfs
+mounted by the other systems. &nbsp;The following assumes you are
+making these changes in the main text files. &nbsp;You can also make
+them using the control panel for your distribution (drakconf for
+Mandriva).<BR><BR>Edit /etc/exports on drizzle to be<BR><BR><FONT FACE="monospace">/home
+rain(rw,no_root_sqaush,sync) mist(rw,no_root_squash,sync)
+fog(rw,no_root_squash,sync)</FONT><BR><FONT FACE="monospace">/usr/local
+rain(rw,no_root_sqaush,sync) mist(rw,no_root_squash,sync)
+fog(rw,no_root_squash,sync)</FONT><BR><BR>Add the following line to
+/etc/fstab on rain, mist, and fog:<BR><BR><FONT FACE="monospace">drizzle:/home
+/home nfs rw,suid,bg 1 1</FONT><BR><FONT FACE="monospace">drizzle:/usr/local
+/usr/local nfs rw,suid,bg 1 1</FONT> <BR><BR>Now set up the data
+directory exports so you can copy the data off the system. Edit
+/etc/exports on the non-RT slaves to be 
+</P>
+<P><FONT FACE="monospace">/data drizzle(rw,no_root_squash,sync)</FONT>
+</P>
+<P>Add the following lines to /etc/fstab on drizzle:</P>
+<P><FONT FACE="monospace">mist:/data /mistdata nfs rw,suid,bg 1
+1</FONT><BR><FONT FACE="monospace">rain:/data /raindata nfs
+rw,suid,bg 1 1</FONT></P>
+<P>In a terminal window on drizzle, create those directories:</P>
+<P><FONT FACE="monospace">mkdir /mistdata</FONT><BR><FONT FACE="monospace">mkdir
+/raindata<BR><BR><BR></FONT><BR><BR><BR><FONT SIZE=5>Installing and
+Compiling the NSpike Code (without DSPs)</FONT><BR><BR>The NSpike
+code has two debug modes, and you should first get the code working
+in the debug modes before you try to interact with the DSPs. &nbsp;Note
+that you will need to have set up networking correctly as described
+in the computer setup section before the code can be run on multiple
+machines. You will also need to have nfs exported /home and
+/usr/local directories that are available on all machines. All of the
+commands below assume that “.” (the current directory) is in your
+path. If it is not, add a “./” before each local command (e.g.
+make and configure). 
+</P>
+<P>First, unpack the compressed tar archive in the directory where
+you would like it to live. On our systems we store the source in
+/home/lorenlab/, so the commands are 
+</P>
+<P><FONT FACE="monospace">cd /home/lorenlab</FONT><BR><FONT FACE="monospace">tar
+xvzf NSpike_x.x.x.tgz<BR>ln -s NSpike_.x.x.x NSpike</FONT> 
+</P>
+<P>This will create the NSpike_x.x.x directory, a link called NSpike
+and the various subdirectories. 0</P>
+<P>If you plan to use video, you will need to install the mpeg
+encoding library on the computer that you will be using to compile
+the code (this is normally the master computer). The version of this
+library used for the code is included in the tar archive and is
+called “libfame-0.9.1.tar.gz”. libfame also exists in rpm form
+for most linux distributions, so if possible, download the rpm and
+install it. If not, not that the version of libfame provided doesn't
+compile on 64 bit systems. If you have a 32 bit system, you may want
+to move the libfake-0.9.1.tar.gz file somewhere else to unpack it
+(/usr/src for example). Unpack the archive and compile it (more
+detail instructions are in the INSTALL file that is extracted into
+the libfame-0.9.1 directory). <FONT FACE="monospace">tar xvzf
+libfame-0.9.1.tar.gz</FONT><BR><FONT FACE="monospace">cd
+libfame-0.9.1</FONT><BR>If you are on intel system that supports the
+MMX instruction set, run<BR><BR><FONT FACE="monospace">configure</FONT><BR><BR>If
+you are on an AMD system (the type we use), use 
+</P>
+<P><FONT FACE="monospace">configure --disable-mmx</FONT></P>
+<P>next, become root and enter</P>
+<P><FONT FACE="monospace">make install</FONT> 
+</P>
+<P STYLE="text-indent: 0.5in"><BR>Return to the directory where you
+installed nspike (for us /home/lorenlab/NSpike).&nbsp;<BR><BR>First
+examine the file “spike_defines.h” in the include subdirectory.
+Near the top of the file you will see a line that says&nbsp;<BR><FONT FACE="monospace"><BR>#define
+NO_DSP_DEBUG</FONT></P>
+<P>When that line is present (e.g. not commented out) the code will
+compile without the sections that interact with the DSPs. Make sure
+this line is not commented out (e.g. it should look exactly as it
+does above).<BR><BR>Below that line you will see another line that
+says<BR><BR><FONT FACE="monospace">#define NO_POS_DEBUG</FONT><BR><BR>When
+that line is present the code will compile without the sections that
+interact with the framegrabber card. &nbsp;return to the nspike base
+directory and run the QT Makefile generating utility 
+</P>
+<P STYLE="text-indent: 0.5in"><BR><BR>
+</P>
+<P><FONT FACE="monospace">qmake</FONT></P>
+<P>to create the local Makefile. This depends on having qt installed,
+so if this doesn't work, make sure that the qt and qt development
+libraries are installed. Now do<BR><BR><FONT FACE="monospace">makeallclean</FONT>
+<BR><BR>to get rid of old files and<BR><FONT FACE="monospace"><BR>make</FONT>
+</P>
+<P>to compile the main program. This will compile the nspike code in
+the NSpike base directory and some, but not all of the code in the
+Modules subdirectory. You should see a few warnings but no errors.
+The warnings result from the -Wall compiler flag and can be ignored.
+If there are errors, they are most likely due to the absence of
+libraries that are necessary, and you will have to track these down
+and install them. 
+</P>
+<P>NOTE: For reasons that are not clear to me, the make utility does
+not always properly detect cases when the header files (e.g.
+spike_defines.h) are changed, so after changing a header file, make
+sure to do “makeallclean” and then “make” or “makeall”. 
+</P>
+<P>Now change to the Modules subdirectory and configure the makefile:
+<BR><BR><FONT FACE="monospace">cd Modules</FONT><BR><FONT FACE="monospace">configure</FONT><BR><BR>If
+configure gives errors they are once again likely to be due to the
+absence of necessary libraries. Once it works it will generates the
+local makefile for the modules using Makefile.am as the automake
+template file. <BR><BR>If you are not using video you can copy
+Makefile.am.novideo to Makefile.am:<BR><BR><FONT FACE="monospace">cp
+Makefile.am.novideo Makefile.am<BR><BR></FONT>Now run<BR><BR>&nbsp;
+<BR><FONT FACE="monospace">automake<BR>make<BR><BR></FONT>to compile
+the modules. <BR><BR>When both nspike and the modules have been
+compiled, go back to the Nspike directory and install the code in
+<B>/usr/local/nspike</B> by running the makeallinstall script as
+root. Note that for future reference, the makeall script is available
+to compile both nspike and the modules in one command. <BR><BR><FONT FACE="monospace">cd
+/home/lorenlab/Nspike </FONT><BR><FONT FACE="monospace">makeallinstall</FONT></P>
+<P>Check to see that the follow files exist in /<B>usr/local/nspike</B>
+(Note that the “*” after each file means that it is executable
+and is not part of the name): 
+</P>
+<P><FONT FACE="monospace">ls /usr/local/nspike<BR><BR></FONT>should
+produce a listing like this:<BR><FONT FACE="monospace"><BR>nspike
+spike_behav spike_fixpos spike_process_posdata</FONT><BR><FONT FACE="monospace">nspike_matlab
+spike_daq spike_matlab spike_rgbcolor</FONT><BR><FONT FACE="monospace">spike_extract
+spike_posdaq spike_save_data<BR><BR><BR><BR><BR></FONT><BR><BR>
+</P>
+<HR>
+<P STYLE="margin-bottom: 0in"><A NAME="Running_the_NSpike_Code_without_RT-Linux"></A>
+<FONT SIZE=5>Running the NSpike Code</FONT></P>
+<P STYLE="page-break-before: always"><BR>Make sure that
+/usr/local/nspike is in your path. <BR><BR><BR><BR>
+</P>
+<P><A NAME="NSpike_Configuration_files"></A><FONT SIZE=4>NSpike
+Configuration files</FONT> 
+</P>
+<P>The majority of the program configuration is specified in the
+configuration files. nspikeconfig is the default name of the main
+configuration file. The various options for each item are given
+within that file.<BR>&nbsp;<BR>NOTE: at the moment, while it is
+possible to save configuration files within the main program, those
+saved configuration files can only be edited (and then used) if you
+delete the binary characters at the beginning and end. The program
+write out all files using the zlib compression library, and the
+header and final binary code need to go away if the contents of the
+file change. If you edit the file without removing the necessary
+characters and then try to run the program with the new
+configuration, it will die with a segmentation fault.</P>
+<P>To get the program working, you will need to designate a master
+machine and some number (0-n) of slave machines. That designation,
+along with port numbers for communication between the machines, is
+given near the top of configuration file. 
+</P>
+<P>If you have 1 or more slaves, note that they will not begin
+acquisition until they recieve a message from the master, and
+similarly, exiting from the program requires exiting on the master
+machine.<BR><BR>The NSpike directory has a number of example
+configuration files which are named “nspikeconfig#”. These files
+are internally documented (comments begin with '%') and contain all
+of the configuration information to set datatypes, channel numbers,
+position tracking variables and behavior / digital IO variables.&nbsp;
+</P>
+<P><A NAME="Running_the_Program_on_One_Computer"></A><FONT SIZE=4>Running
+the Program on One Computer</FONT></P>
+<P><A NAME="Running_the_Program_on_Two_Networked"></A>First modify
+all of the nspikeconfig* files, changing the names of the machine(s)
+to fit your local setup. For nspikeconfig1-2, there is only one
+machine. For nspikeconfig3-4 there are two machines, so make sure to
+change all instances in both files to the two machines on your
+network.<BR>Start in the NSpike directory and try the software with
+“nspikeconfig1”:<BR><FONT FACE="monospace"><BR>nspike</FONT>
+–<FONT FACE="monospace">config nspikeconfig1<BR><BR></FONT>You will
+see quite a bit of output, as shown below. &nbsp;This is normal, but
+can be changed so that each program sends output to its own
+configuration file by changing the #define STATUSFILE in
+<B>NSpike/include/spike_defines.h</B>.&nbsp; The module numbers refer
+to numbers for each program defined in
+<B>NSpike/include/spike_defines.h.<BR><BR></B><FONT FACE="monospace">spike_main:
+Reading config file</FONT><BR><FONT FACE="monospace">machine num 0,
+type 0</FONT><BR><FONT FACE="monospace">Launching modules</FONT><BR><FONT FACE="monospace">spike
+main program getting client /tmp/spike_message_16_to_14</FONT><BR><FONT FACE="monospace">spike_daq:
+starting</FONT><BR><FONT FACE="monospace">spike_daq: starting
+messaging</FONT><BR><FONT FACE="monospace">module 12 starting server
+/tmp/spike_message_16_to_12</FONT><BR><FONT FACE="monospace">spike_save_data:
+starting messaging</FONT><BR><FONT FACE="monospace">module 14
+starting server /tmp/spike_message_16_to_14</FONT><BR><FONT FACE="monospace">module
+14 starting display client /tmp/spike_message_14_to_16</FONT><BR><FONT FACE="monospace">spike
+main program got client /tmp/spike_message_16_to_14</FONT><BR><FONT FACE="monospace">spike
+main program getting client /tmp/spike_message_16_to_12</FONT><BR><FONT FACE="monospace">spike
+main program got client /tmp/spike_message_16_to_12</FONT><BR><FONT FACE="monospace">spike
+main program getting server /tmp/spike_message_14_to_16</FONT><BR><FONT FACE="monospace">module
+12 starting display client /tmp/spike_message_12_to_16</FONT><BR><FONT FACE="monospace">spike
+main program got server /tmp/spike_message_14_to_16</FONT><BR><FONT FACE="monospace">spike
+main program getting server /tmp/spike_message_12_to_16</FONT><BR><FONT FACE="monospace">spike
+main program got server /tmp/spike_message_12_to_16</FONT><BR><FONT FACE="monospace">getting
+data server /tmp/spike_data_12_to_16 from 12</FONT><BR><FONT FACE="monospace">sent
+message for data server /tmp/spike_data_12_to_16</FONT><BR><FONT FACE="monospace">program
+12 got message 8, socket name /tmp/spike_data_12_to_16, protocol 0,
+type 1, connection from virga 12 to virga 16</FONT><BR><FONT FACE="monospace">sending
+START_NETWORK_SERVER to 14 for 16 to 14 DATA socket</FONT><BR><FONT FACE="monospace">getting
+client server /tmp/spike_data_16_to_14 from 16</FONT><BR><FONT FACE="monospace">program
+14 got message 7, socket name /tmp/spike_data_16_to_14, protocol 0,
+type 1, connection from virga 16 to virga 14</FONT><BR><FONT FACE="monospace">sending
+START_NETWORK_SERVER to 14 for 12 to 14 DATA socket</FONT><BR><FONT FACE="monospace">sending
+START_NETWORK_CLIENT to 12 for 12 to 14 DATA socket</FONT><BR><FONT FACE="monospace">Waiting
+for CONNECTION_ESTABLISHED message on 14</FONT><BR><FONT FACE="monospace">got
+CONNECTION ESTABLISHED message from 14</FONT><BR><FONT FACE="monospace">program
+14 got message 7, socket name /tmp/spike_data_12_to_14, protocol 0,
+type 1, connection from virga 12 to virga 14</FONT><BR><FONT FACE="monospace">Waiting
+for CONNECTION_ESTABLISHED message on 12</FONT><BR><FONT FACE="monospace">program
+12 got message 8, socket name /tmp/spike_data_12_to_14, protocol 0,
+type 1, connection from virga 12 to virga 14</FONT><BR><FONT FACE="monospace">program
+12 got message 2, socket name , protocol 0, type 0, connection from&nbsp;
+0 to&nbsp; 0</FONT><BR><FONT FACE="monospace">program 12 sending out
+CONNECTION ESTABLISHED message to main program </FONT><BR><FONT FACE="monospace">Finished
+establishing messaging in program 12</FONT><BR><FONT FACE="monospace">program
+14 got message 2, socket name , protocol 0, type 0, connection from&nbsp;
+0 to&nbsp; 0</FONT><BR><FONT FACE="monospace">program 14 sending out
+CONNECTION ESTABLISHED message to main program </FONT><BR><FONT FACE="monospace">Finished
+establishing messaging in program 14</FONT><BR><FONT FACE="monospace">got
+CONNECTION ESTABLISHED message from 12</FONT><BR><FONT FACE="monospace">Finished
+establishing messaging in program 16</FONT><BR><FONT FACE="monospace">Sending
+system config</FONT><BR><FONT FACE="monospace">QLayout &quot;unnamed&quot;
+added to SpikeMainForm &quot;unnamed&quot;, which already has a
+layout</FONT><BR><FONT FACE="monospace">Programming DSPs</FONT><BR><FONT FACE="monospace">Programming
+Master DSP</FONT><BR><FONT FACE="monospace">Programming Aux DSP
+1</FONT><BR><FONT FACE="monospace">Programming Aux DSP 2</FONT><BR><FONT FACE="monospace">Programed
+DSPs</FONT><BR><FONT FACE="monospace">Status message: Clock
+Reset</FONT><BR><FONT FACE="monospace">Starting
+acquisition</FONT><BR><FONT FACE="monospace">Acquistion started</FONT><BR><BR>&nbsp;You
+should now have&nbsp;a simulated EEG display with 24 channels. Every
+channel should have a 8 or so Hz sinewave on it. If it doesn’t
+work, the problem is likely to be in your modification to the config
+file, and you should carefully look through the output of the program
+to identify any errors it caught. To quit, select &quot;Quit&quot;
+from the Master menu.<BR><BR>Similarly,<BR><FONT FACE="monospace"><BR>nspike
+–config nspikeconfig2</FONT><BR><BR>should bring up a simulated
+spike display with four tetrodes per screen (6 total) and the
+opportunity to switch between spiking and continuous modes using the
+tabs near the bottom of the window. The data are once again a
+simulated sine wave, so the spike windows show the part of the sine
+wave above threshold. &nbsp;<BR><BR><BR><BR><BR><BR><FONT SIZE=4>Running
+the Program on Two Networked Computers<BR><BR></FONT>Now you should
+test the networking between machines. Run<BR><FONT FACE="monospace"><BR>nspike
+–config nspikeconfig3</FONT> <BR><BR>on both the master and a slave
+machine (the names must, of course, match the names you put into
+nspikeconfig3, and you will need to run it from a directory where you
+can see spikeconfig3 on both machines e.g. /home/lorenlab/NSpike for
+us). You should see 8 channels of EEG on the master and simulated
+spike data on the slave. 
+</P>
+<P>Finally, try 
+</P>
+<P><FONT FACE="monospace">nspike –config nspikeconfig4</FONT><BR><BR>on
+the master and<BR>&nbsp;</P>
+<P>You should get a position and EEG display on the master.&nbsp;</P>
+<HR>
+<P><A NAME="Collecting_Data_with_the_NSpike_Hardware"></A><A NAME="Setting_up_Your_Configuration_File"></A><A NAME="DSP_Channel_Mapping"></A>
+<BR><FONT SIZE=5>Collecting Data with the NSpike Hardware and
+Software<BR></FONT><BR><FONT SIZE=4><BR><BR>Setting up Your
+Configuration File<BR></FONT><BR>As discussed above, the
+configuration files set most of the parameters associated with data
+collection.&nbsp; The remaining parameters (e.g. the number of points
+to collect when a threshold crossing is detected) are defined in the
+spike_defines.h file in the <B>include</B> subdirectory.&nbsp; If you
+want to change those parameters, substantial recoding of a number of
+files will be required.&nbsp; <BR><BR>An example of an actual
+configuration file for a microdrive with 8 tetrodes (6 spike
+tetrodes, one eeg tetrode, and one reference tetrode) is in the
+franklab8tetconfig file.&nbsp; This configuration file sets the
+master (snow) to display 7 channels of EEG data (one channel from
+each tetrode with the exception of the reference), position data from
+the frame-grabber on the rtslave (graupel) and behavioral data
+(digital I/O) from the UEI card on graupel.&nbsp; Hail, the non-rt
+slave, processes spike data from the 6 spike tetrodes (24 channels of
+data total).&nbsp; Here we go through the most complex parts of the
+configuration file, the mapping from the tetrodes on the animal to
+the dsp channels and the specification of channels for each
+machine.<BR><BR>To understand the mapping it is important to know
+that each channel of input on the front end Amplifier box corresponds
+to 1 of 127 channels on the fiber optic bus.&nbsp; These channels
+(refered to as DSP channels) are numbered 0 to 126, and each Aux DSP
+has access to all of these channels and can filter and send out up
+data from and arbitrary set of up to 16 of these channels at 30 KHz
+per channel (the fixed sampling rate of the A/D box).&nbsp; The
+&quot;electmap&quot; lines in the configuration file define the
+relationship between individual input channels and DSP channels.&nbsp;
+This mapping is given in the DSP Channel Mapping section
+below.<BR><BR><BR><BR><FONT SIZE=4>DSP Channel Mapping<BR><BR></FONT><FONT SIZE=3>Looking
+down into the inputs to the preamplifies, the dsp channels for each
+pin on each Mill-max connector are as follows: <BR><IMG SRC="headstage.png" NAME="graphics5" ALT="headstage map" ALIGN=BOTTOM WIDTH=900 HEIGHT=1050 BORDER=0><BR></FONT><BR>Notes:
+<BR><BR>The above mappings can also be applied to the connectors on
+the top of the microdrive array, omitting the +V pin which only goes
+into the preamplifier.<BR><BR>The Group Number corresponds to the
+number of the&nbsp;row of connectors (Mill-max and SMA or a single
+DB-37) on the front of the Amplifier box.<BR><BR>The J1-8
+designations refer to the SMA connectors on the front panel of the
+Amplifier box.<BR><BR>DSP Channel 127 is the block count, which
+counts the high work of the current sample number (16 bit). &nbsp;This
+channel is used by the DSPs to remain synchronized and is not used
+for neural data.&nbsp;&nbsp; <BR><BR><BR>Alternatively, from the
+front of the Amplifier box, the Mill-max pin numbers and their
+associated DSP channls are as follows:<BR><IMG SRC="millmaxpinout.png" NAME="graphics6" ALT="mill max pinout" ALIGN=BOTTOM WIDTH=600 HEIGHT=104 BORDER=0><BR><BR><BR>
+</P>
+<CENTER>
+	<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border: 1.00pt solid #000000; padding: 0.02in 0.08in">DSP
+				Channel 
+				</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: 1.00pt solid #000000; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0.02in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				Group Number</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: 1.00pt solid #000000; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0.02in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				Mill-max</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				00</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				22</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				01</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				14</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				02</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				6</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				03</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J1</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				04</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				22</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				05</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				14</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				06</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				6</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				07</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J1</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				08</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				22</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				09</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				14</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				10</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				6</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				11</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J1</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				12</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				22</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				13</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				14</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				14</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				6</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				15</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J1</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				16</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				21</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				17</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				13</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				18</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				5</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				19</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J4</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				20</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				21</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				21</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				13</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				22</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				5</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				23</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J4</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				24</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				21</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				25</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				13</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				26</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				5</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				27</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J4</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				28</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				21</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				29</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				13</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				30</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				5</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				31</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J4</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				32</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				23</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				33</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				15</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				34</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				7</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				35</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J7</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				36</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				23</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				37</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				15</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				38</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				7</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				39</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J7</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				40</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				23</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				41</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				15</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				42</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				7</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				43</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J7</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				44</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				23</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				45</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				15</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				46</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				7</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				47</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J7</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				48</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				24</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				49</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				16</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				50</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				8</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				51</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J5</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				52</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				24</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				53</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				16</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				54</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				8</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				55</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J5</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				56</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				24</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				57</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				16</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				58</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				8</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				59</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J5</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				60</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				24</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				61</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				16</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				62</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				8</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				63</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J5</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				64</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				26</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				65</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				18</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				66</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				10</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				67</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J8</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				68</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				26</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				69</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				18</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				70</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				10</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				71</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J8</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				72</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				26</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				73</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				18</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				74</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				10</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				75</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				J8</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				76</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				26</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				77</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				18</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				78</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				10</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				79</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				80</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				25</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				81</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				17</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				82</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				9</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				83</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				84</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				25</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				85</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				17</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				86</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				9</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				87</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				88</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				25</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				89</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				17</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				90</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				9</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				91</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				92</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				25</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				93</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				17</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				94</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				9</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				95</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				96</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				27</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				97</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				19</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				98</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				11</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				99</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				100</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				27</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				101</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				19</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				102</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				11</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				103</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				104</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				27</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				105</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				19</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				106</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				11</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				107</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				108</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				27</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				109</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				19</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				110</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				11</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				111</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				112</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				28</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				113</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				20</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				114</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				12</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				115</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				1</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				116</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				28</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				117</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				20</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				118</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				12</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				119</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				2</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				120</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				28</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				121</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				20</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				122</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				12</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				123</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				3</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				124</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				28</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				125</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				20</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				126</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				4</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				12</P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: 1.00pt solid #000000; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0.08in; padding-right: 0.08in">
+				127</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				&nbsp;</P>
+			</TD>
+			<TD WIDTH=118>
+				<P STYLE="border-top: none; border-bottom: 1.00pt solid #000000; border-left: none; border-right: 1.00pt solid #000000; padding-top: 0in; padding-bottom: 0.02in; padding-left: 0in; padding-right: 0.08in">
+				Block count</P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<P><A NAME="Electmap_Section_of_Config_File"></A><FONT SIZE=4>Electmap
+Section of Config File</FONT></P>
+<P>The electmap section of franklab8tetconfig is shown below:</P>
+<P><FONT FACE="monospace">%&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+electrode&nbsp; channel#&nbsp; dsp_channel</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 96</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 80</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 32</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+1&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 3&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 16</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 112</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 64</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 48</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+2&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 3&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 0</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 97</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 81</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 33</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+3&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 17</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+4&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 113</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+4&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 65</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+4&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 49</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+4&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;
+&nbsp;&nbsp; &nbsp; 1</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+5&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 98</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+5&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 82</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+5&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 34</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+5&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 18</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+6&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 114</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+6&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 66</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+6&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 50</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+6&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 2</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+7&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 99</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+7&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 1&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 83</FONT><BR><FONT FACE="monospace">electmap&nbsp;&nbsp;&nbsp;
+8&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 115</FONT></P>
+<P>There is one entry (row) for each electrode wire that is connected
+to the input side of your preamp.&nbsp; The ground is pin 2 of the
+mill-max connector, and is hard wired. 
+</P>
+<P>The electrode number column contains the numbers you have assigned
+to your tetrodes.&nbsp; This must start with 1, but all other numbers
+are 0 based.&nbsp; It should be possible to skip electrode numbers,
+although we have not tested this. 
+</P>
+<P>The channel number column indicates the channel (eg. wire) within
+each tetrode.&nbsp; For tetrodes that will be used for spike data
+there are a total of 4 channels (0, 1, 2 and 3).&nbsp; For us, EEG
+tetrodes have two connected channels (e.g. tetrode 7, channels 0 and
+1) and reference tetrodes have a single channel (e.g. tetrode 8,
+channel 0).&nbsp; 
+</P>
+<P><A NAME="Hostname_and_Channel_Section_of_Config"></A>The DSP
+channel number column indicates the number of the dsp channel that
+contains data from the specified channel of the specified electrode.&nbsp;
+This is derived from the channel map above. <BR><BR><BR><BR><BR><FONT SIZE=4>Hostname
+and Channel Section of Config File</FONT><BR>&nbsp;The next sections
+of the file specify the order in which channels are to be processed
+and displayed on each machine.<BR><BR>Each machine that gets data
+from the dsp should have it's own section that begins with
+<BR><FONT FACE="monospace"><BR>hostname&nbsp;&nbsp; &nbsp;&nbsp;
+machine_name</FONT><BR><BR>Follwing that line, there should be a set
+of channel definitions.&nbsp; The first line of each definition is
+the channel number, which specifies where this channel will be
+displayed on the computer.&nbsp; \<BR><BR>Channel numbers</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Must start at 0 
+	</P>
+	<LI><P>Must not skip any numbers 
+	</P>
+</UL>
+<P>Thus, for the seven channels of EEG data processed by the master
+machine in franklab8tetconfig, the channel numbers go from 0 to
+6.<BR><BR>If you are collecting EEG/LFP data, each tetrode should
+have a single entry where you have chosen a single channel from that
+tetrode for EEG data.&nbsp; If you specify multiple channels from the
+same tetrode the data will not extract correctly, so ...
+don't.<BR><BR>Channel 1 is specified as follows:<BR>&nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">channel &nbsp;&nbsp;&nbsp; 1</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">dspnum&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 1</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">dspchan&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;
+112</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">refelect&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp; 8</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">refchan&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">number&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 2</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">electchan&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+0</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">depth
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 0</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">thresh &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp; 40</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">maxdispval&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+1000</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">filter
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; 300&nbsp;&nbsp;&nbsp;
+6000</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">color&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 0<BR><BR></FONT>This means that
+the second trace (channel 0 is the first trace) that will be
+displayed will be processed by dsp 1 and corresponds to tetrode 2,
+channel 0, which is dsp channel 112.<BR><BR><BR>If you are collecting
+spike data from tetrodes, each set of four channels (in order) should
+correspond to the four channels from a single tetrode, and thus they
+should all have the same <BR><FONT FACE="monospace">number</FONT>
+entry but should have <FONT FACE="monospace">electchan</FONT> numbers
+that are 0, 1, 2 or 3.&nbsp; <BR><BR>e.g. <BR><FONT FACE="monospace">%
+tetrode 1</FONT><BR>&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">channel
+&nbsp;&nbsp;&nbsp; 0</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">dspnum&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+2</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">dspchan&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; 96</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">refelect&nbsp;&nbsp;&nbsp; &nbsp; 8</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">refchan&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; 0</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">number&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+1</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">electchan&nbsp;&nbsp;&nbsp;&nbsp;
+0</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">...<BR><BR></FONT>&nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">channel &nbsp;&nbsp;&nbsp; 1</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">dspnum&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 2</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">dspchan&nbsp;&nbsp;&nbsp; &nbsp; 80</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">refelect&nbsp;&nbsp;&nbsp;&nbsp;
+8</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">refchan&nbsp;&nbsp;&nbsp;
+&nbsp; 0</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">number&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; 1</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">electchan&nbsp;&nbsp;&nbsp; 1</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">...</FONT><BR><BR>&nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">channel &nbsp;&nbsp;&nbsp; 2</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">dspnum&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 2</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">dspchan&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 32</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">refelect&nbsp;&nbsp;&nbsp;
+&nbsp; 8</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">refchan&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; 0</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">number&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+1</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">electchan&nbsp;&nbsp;&nbsp;&nbsp;
+2</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">...</FONT><BR><BR>&nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">channel &nbsp;&nbsp;&nbsp; 3</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">dspnum&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 2</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">dspchan&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 16</FONT><BR>&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; <FONT FACE="monospace">refelect&nbsp;&nbsp;&nbsp;
+&nbsp; 8</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">refchan&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp; 0</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+<FONT FACE="monospace">number&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+1</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">electchan&nbsp;&nbsp;&nbsp;&nbsp;
+3</FONT><BR>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <FONT FACE="monospace">...</FONT><BR><BR>These
+channels should also all have the same depth (and, for scientific
+reasons, the same filter settings) but can have different thresholds,
+maximum displayed values, and colors. 
+</P>
+<P><A NAME="Using_the_NSpike_GUI"></A><FONT SIZE=4>Using the NSpike
+GUI</FONT></P>
+<P><A NAME="Menus"></A><A NAME="Master_Menu_Items"></A>&nbsp;<BR><FONT SIZE=4>Menus</FONT><BR><BR>Master
+Menu Items (Available only on the Master machine):</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Toggle Acquisition 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Turns acquisition on or off.&nbsp;
+		Disabled when data are being saved 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Clear All 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Clears the screens, including the
+		projection windows, on all non-rt machines. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Start All Save / Stop All Save</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Starts or stops saving data to
+		disk on all systems 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Open All Files / Close all Files</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Opens or closes files on all
+		systems 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Save Config File 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Writes a config file with all
+		current settings to disk.&nbsp; You can then start nspike with this
+		configuration file to pick up where you left off.&nbsp; Note that
+		if you want to edit this file by hand, you must remove the binary
+		characters at the beginning and end. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Reset Clocks 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Resets the sample counter on the
+		master DSP and the RT system. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Test Sync 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Checks the sample count and the
+		time on the RT system and reports agreement or disagreement.&nbsp; 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Audio Settings 
+	</P>
+	<UL>
+		<LI><P ALIGN=LEFT STYLE="margin-bottom: 0in">Brings up a window
+		that allows for control of the master DSPs analog outputs: 
+		</P>
+		<UL>
+			<LI><P STYLE="margin-bottom: 0in">Linked determines whether the
+			two channels share settings 
+			</P>
+			<LI><P STYLE="margin-bottom: 0in">The gain determines the digital
+			multiplier applied to the signal before it is converted to analog.
+						</P>
+			<LI><P STYLE="margin-bottom: 0in">The cutoff determines the value
+			for a digital diode-emulator which will remove any signals below
+			the cutoff and reduce the magnitude of signal above the cutoff by
+			the cutoff. &nbsp;This emulates the noise reduction switch on
+			Grass Audio monitors. 
+			</P>
+			<LI><P STYLE="margin-bottom: 0in">Mute turns off the analog
+			output. 
+			</P>
+			<LI><P STYLE="margin-bottom: 0in">The delay is the delay in ms for
+			the analog output signal in case you want to better synchronize
+			the audio and the display. &nbsp;We have found this unnecessary. 
+			</P>
+			<LI><P STYLE="margin-bottom: 0in">Close closes the window. 
+			</P>
+		</UL>
+		<LI><P STYLE="margin-bottom: 0in">Note that to listen to or view a
+		channel from one of the Analog outputs of the Master DSP you will
+		need to select that channel from the tetrode window screen. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Quit 
+	</P>
+	<UL>
+		<LI><P>Exits out of NSpike on all systems.&nbsp; This is only
+		available if there is no open file. 
+		</P>
+	</UL>
+</UL>
+<P><A NAME="File_Menu_Items"></A>&nbsp;&nbsp;&nbsp; <BR><BR>File Menu
+Items (Available on all machines):</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Local Start Save / Local Stop Save</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Turns on or off saving to disk on
+		this machine only. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Open Local File / Close Local File
+		</P>
+	<UL>
+		<LI><P>Opens or closes a data file on this system only. 
+		</P>
+	</UL>
+</UL>
+<P><A NAME="Display_Menu_Items"></A><BR>Display Menu Items (Available
+on all machines):</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Redraw 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Redraws the current screen
+		without erasing projection windows.</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Clear 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Redraws the current screen and
+		erases projection windows / spike overlay. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">EEG Trace Length 
+	</P>
+	<UL>
+		<LI><P>Set the length of the displayed EEG traces in seconds.&nbsp;
+		Minimum 0.000001 sec, maximum 99 seconds. 
+		</P>
+	</UL>
+</UL>
+<P><A NAME="Behavior_Menu_Items"></A><BR>Digital IO Menu Items
+(Available only on digital IO system):</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Trigger Output 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Turns on a digital output for a
+		length of time and then turns it off.&nbsp; The length of time can
+		be set using the Calibrate Outputs menu item. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Behavioral Programs 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Brings up a list of programs,
+		specified in the configuration file, that can be run.&nbsp; These
+		programs establish messaging with either spike_behav (UEI digital
+		IO card on RT system) or with the main program (main DSP digital
+		IO).&nbsp; Example programs can be found in the <B>NSpike/Behavior</B>
+		directory and additional documentation for creating behavior
+		programs is below. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Set Outputs 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Allows the user to set the length
+		of time to turn on an output when the Trigger output or Pulse
+		button is pressed. &nbsp;Also allows the user to raise individual
+		outputs. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Send Message to User Program 
+	</P>
+	<UL>
+		<LI><P>Brings up an input window where the user can send a string
+		to the running behavioral program. 
+		</P>
+	</UL>
+</UL>
+<P><A NAME="PositionMenu"></A>Position Menu Items (Available only on
+position system): 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Toggle Position Output 
+	</P>
+	<UL>
+		<LI><P>If selected, the current center of mass of tracked pixels is
+		displayed in the status window.&nbsp;&nbsp; The behavioral program
+		gets this information at 30 Hz from the RT system, and this toggle
+		makes it easier to write behavioral programs where outputs are
+		turned on when the animal is in a particular position. 
+		</P>
+	</UL>
+</UL>
+<P><A NAME="Tetrode_Menu_Items"></A><BR>Tetrode Settings Items
+(Available only on spike systems):<BR><BR>This menu allows you to tie
+together settings across tetrodes, so that a change on one tetrode is
+propogated to all tetrodes on this machine.&nbsp; 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Common Reference 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Propogate changes in the
+		reference to all tetrodes on this machine, and to all other
+		machines that process data from the same tetrodes (e.g. the EEG
+		system) 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Common Thresh 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Propogate changes in the
+		threshold to all tetrodes on this machine. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Common Max. Disp. Val. 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Propogate changes in the maximum
+		displayed value (the value corresponding to a point at the top of
+		the spike window) to all tetrodes on this machine 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Common Filters 
+	</P>
+	<UL>
+		<LI><P>Propogate changes in the high or low pass filter settings to
+		all tetrodes on this machine. 
+		</P>
+	</UL>
+</UL>
+<P><A NAME="Status_Information"></A><BR><BR><BR><BR><FONT SIZE=4>Status
+Information</FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Time display 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">The current time is displayed in
+		the upper right hand corner.&nbsp; Note that because there is a
+		slight delay involved in transmitting position frames from the RT
+		system, you may occasionally see an apparent backwards shift in the
+		time.&nbsp; This is not an indication of a problem if you have
+		verified that the systems are synchronized using Test Sync from the
+		Master Menu. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">System and File Status 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">The top gray regions near the
+		bottom of the page displays status messages which can be cleared by
+		clicking on the &quot;Clear Status&quot; message.</P>
+		<LI><P STYLE="margin-bottom: 0in">The next region displays
+		information about the file, including it's name, current size, the
+		time of the last disk operation, and the amount of free space on
+		the disk. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Window tabs 
+	</P>
+	<UL>
+		<LI><P>In spike mode you can toggle between windows displaying
+		either four tetrodes, a single, full screen tetrode, or, if disk is
+		off, a continuous version of the tetrode data.&nbsp; 
+		</P>
+	</UL>
+</UL>
+<P><A NAME="Continuous_Mode_Display"></A><BR><BR><BR><BR><FONT SIZE=4>Continuous
+Mode Display</FONT><BR><BR>A snapshot of the Continuous / Position
+mode looks like this:&nbsp; 
+<IMG SRC="EEG_Position_Screen.jpg" NAME="graphics7" ALT="EEG Position Screen" ALIGN=BOTTOM WIDTH=1250 HEIGHT=995 BORDER=0>
+</P>
+<P>The two sections with sine waves show simulated EEG data, and the
+upper right section shows simulated position data.&nbsp; 
+</P>
+<P>The numbers in large font are derived from the <FONT FACE="monospace">number</FONT>
+specified in the config file.&nbsp; <BR><BR>Each button next to the
+number displays</P>
+<P>Clicking on a button (e.g. the button for tetrode 14) brings up
+the following window:<BR><IMG SRC="EEG_Settings_Window.jpg" NAME="graphics8" ALT="EEG Settings Window" ALIGN=BOTTOM WIDTH=491 HEIGHT=171 BORDER=0>&nbsp;<BR>This
+window allows you to change the settings for this tetrode. 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">The channel spin box lets you set
+	which channel of the tetrode is being displayed.&nbsp; Thus, you
+	have selected a tetrode with four channels, the channel can be 0, 1,
+	2 or 3.&nbsp; 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">The depth allows you to enter the
+	depth in 12ths of a turn of an 0-80 screew and displays the
+	corresponding depth in mm. &nbsp;If you want a different depth
+	conversion, change&nbsp; 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">The Reference button, when
+	pressed, causes changes in the reference on this channel to be
+	applied to all channels on this machine.&nbsp; When the button is
+	up, as depicted above, reference changes are local to the current
+	channel. 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">The reference and reference chan
+		spin box allow you to select the reference tetrode and the channel
+		within that tetrode. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in"><I>Note that changes in the
+		reference for a given tetrode are propogated to all computers, such
+		that a change on one computer automatically changes the reference
+		on all computer.</I> 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">The Max Disp button and the
+	corresponding input set the size of the trace, in µV.&nbsp; When
+	the button is depressed, the trace size is changed for all channels
+	on this computer, but not for channels on other computers. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">The Filter spin boxes determine
+	the high pass and low pass filters.&nbsp; As for the Max Disp
+	button, when the Filter button is depressed, the filter settings are
+	changes for all channels on this computer.&nbsp; 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Next and Previous move you to the
+	next or previous channel on this computer. 
+	</P>
+	<LI><P>Close closes the window. 
+	</P>
+</UL>
+<P><A NAME="Spike_Mode_Display"></A><BR><BR><BR><FONT SIZE=4>Spike
+Mode Display<BR><IMG SRC="Spike_Window.jpg" NAME="graphics9" ALT="Spike Mode Window" ALIGN=BOTTOM WIDTH=1250 HEIGHT=994 BORDER=0><BR><BR></FONT><FONT SIZE=3>This
+tab of the spike mode window shows four tetrodes at a time.&nbsp; Any
+wave form that exceeds the threshold (yellow line) on any one of the
+four channels is displayed on all four, and a point representing the
+peak amplitude on each pair of channels is plotted in each of the six
+projection boxes.&nbsp; The left row of boxes represent channel 0 vs.
+1, 0 vs. 2 and 0 vs. 3, while the right row represents 1 vs. 2, 1 vs.
+3, and 2 vs. 3.&nbsp; <BR><BR>The top gray area above the waveform
+windows shows</FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>Tetrode number (top
+	left)</FONT> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>Depth.&nbsp; Enter
+	depths in 12ths of a turn of an 0-80 screw (top right). </FONT>
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>Reference tetrode and
+	channel (bottom left).</FONT> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>Overlay button</FONT>
+		</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>If selected, the
+		tetrode waveforms are displayed on top of one another.</FONT> 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>Full Screen Button</FONT>
+		</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>If pressed, you will
+		switch to the Full Screen Tetrode tab which will display the
+		selected tetrode.</FONT> 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>Clear Proj.&nbsp;
+	button</FONT> 
+	</P>
+	<UL>
+		<LI><P><FONT SIZE=3>If pressed the projection windows will be
+		cleared.</FONT> 
+		</P>
+	</UL>
+</UL>
+<P>The bottom gray area below the waveform windows shows the settings
+for each channel.</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">The M row shows the maximum
+	displayed value. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">The T row shows the threshold for
+	each channel. 
+	</P>
+	<LI><P>The F row shows the high and low pass filters. 
+	</P>
+</UL>
+<P>When the M, T or F buttons are depressed, changes in the
+corresponding setting will be propogated to all channels of the
+tetrode.&nbsp; When the buttons are not depressed, changes are local
+to the changed channel. <FONT SIZE=3><BR><BR>Note that the maximum
+displayed value (MDV) sets the size of the traces in both the spike
+and projection windows.&nbsp; This setting does not affect data
+storage, however, so traces that exceed the MDV are not trucated on
+disk, and increases in the MDV will allow a redraw of the projection
+windows to include points that were previously too large.&nbsp;
+<BR><BR><BR>Audio buttons</FONT></P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><FONT SIZE=3>These buttons allow
+	the user to select the channels that are converted to an analog
+	signal and output from the master DSP.&nbsp; </FONT>
+	</P>
+	<LI><P><FONT SIZE=3>The left button is for digital output 0 and the
+	right for digital output 1.</FONT></P>
+</UL>
+<P><A NAME="Collecting_Data"></A><FONT SIZE=3><BR><BR><BR><FONT SIZE=4>Collecting
+Data<BR></FONT><BR>The following represents the sequence we use to
+collect data:</FONT></P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">Turn on the power to the Amplifier
+	and the A/D box by toggling the switch on the FlyBat box. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Turn on the power to the DSPs 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Start nspike on the master and
+	slaves 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Start nspike_rt on the RT system 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Select the appropriate camera.&nbsp;
+	<BR>Note that it is essential to stop acquisition before switching
+	cameras. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Check light levels / position
+	threshold so that only the diodes on the head exceed a threshold (We
+	like a threshold around 225 - 240).</P>
+	<LI><P STYLE="margin-bottom: 0in">Enter depths on all tetrodes 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Check / adjust references,
+	thresholds and filters 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Reset clocks 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Check&nbsp; time synchronization 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Open files on all machines 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Start save on all machines 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Collect Data 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Stop save on all machines 
+	</P>
+	<LI><P>Close files on all machines 
+	</P>
+</OL>
+<P><A NAME="Extracting_Data_from_NSpike"></A><A NAME="Working_with_Extracted_Data"></A>
+...This list could also include launching behavior programs and/or
+triggering digital outputs.<BR><BR><BR><BR><BR><BR><BR><FONT SIZE=5>Extracting
+Data from NSpike<BR><BR></FONT><FONT SIZE=3>Once you have finished
+collecting data you will need to extract it from the data file or
+files. &nbsp;To do so, we usually move the data to its own directory
+on a separate workstation. &nbsp;We then run<BR><BR></FONT><FONT FACE="monospace">nspike_extract
+-all datafilename<BR><BR></FONT>on each data file. &nbsp;<BR><FONT FACE="monospace"><BR>nspike_extract
+<BR></FONT><BR>will give you a list of available options for
+extraction. &nbsp;<BR><BR><BR><BR><BR><FONT SIZE=5>Working with
+Extracted Data<BR><BR></FONT>Once extracted, the data are stored in
+files with relatively straight forward formats. &nbsp;Note that all
+timestamps are in 100 µsec units, so there are 10000 timestamps per
+second.<BR><BR><U>Spike data:</U><BR>&nbsp;&nbsp;&nbsp; Spike data
+are stored in .tt files which are extracted into subdirectores, one
+per tetrode. &nbsp;Tetrode #2, at a depth of 110, would be in a file
+called 02-110/02-110.tt. &nbsp;Within the tt file there is an ASCII
+header which starts with <BR>%%BEGINHEADER<BR>and ends with
+<BR>%%ENDHEADER<BR>followed by binary records of each spike. &nbsp;Each
+spikes is stored as follows:<BR>timestamp&nbsp;&nbsp;&nbsp; unsigned
+integeter (32 bit)<BR>data&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp; 160 signed shorts<BR><BR>The file readtt.m in the <B>Matlab
+</B>subdirectory will read in all of the spikes from a
+ttfile.<BR><BR><BR><U>Continuous Data (EEG or LFP)</U>:<BR>&nbsp;&nbsp;&nbsp;
+Continuous data are stored in a .eeg file, so the data from tetrode
+#2 at depth 110 is stored in 02-110.eeg. &nbsp;The continuous data
+have a header similar to that of the tt files, followed by data
+records with the following format:<BR>timestamp&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+unsigned integer (32 bit)<BR>nsamples&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;
+int<BR>sampling_rate&nbsp;&nbsp; double<BR>samples&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; nspikes signed shorts<BR><BR>The mex
+code readeeg.c in the Matlab directory will read in the eeg data from
+a file. &nbsp;Compile within matlab as follows:<BR><BR><FONT FACE="monospace">mex
+-o readeeg readeeg.c fileiomat.c</FONT><BR><BR><U>Position Data:</U><BR>&nbsp;&nbsp;&nbsp;
+Position data are extracted to&nbsp;two files, named as the directory
+name where the extraction occured (e.g. rat5day1) followed by .mpeg
+or .postimestamp. &nbsp;The .mpeg file is a normal mpeg file that can
+be played with any mpeg player. &nbsp;The .postimestamp file has the
+complete header from the data file followed by a list of timestamps
+(all unsigned integers), one for each frame of the mpeg. &nbsp;We use
+nspike_fixpos to compute the locations of the large and small diode
+arrays on our animals' heads. &nbsp;See the top of spike_fixpos.c for
+usage.<BR><BR><BR><U>Digital IO Data</U><BR>&nbsp;&nbsp;&nbsp;
+Digital IO data are extracted in text format to a file that is named
+as the currect directory followed by .dio (e.g. rat5day1.dio). &nbsp;This
+corresponds to the -diotext option for extraction. &nbsp;The file
+contains two colums. &nbsp;Column 1 is the timestamp and Column 2 is
+the state of the all digitial IO lines at that time. &nbsp;<BR><BR><BR><U>Event
+Data</U><BR>&nbsp;&nbsp;&nbsp; Events (disk on only at this moment)
+are written to disk, and the event type is given in spike_defines.h.
+&nbsp;Other events will be written to disk in the
+future.<BR><BR><BR><U>Configuration Data</U><BR>&nbsp;&nbsp;&nbsp;
+Each datafile also has a header which is the configuration file used
+to collect those data. &nbsp;This is extracted to
+datafilename.config.</P>
+<HR>
+<P STYLE="margin-bottom: 0in"><A NAME="Troubleshooting"></A><FONT SIZE=5>Troubleshooting</FONT><BR><BR>Problem:</P>
+<P STYLE="margin-left: 0.42in; margin-bottom: 0in">The NSpike code
+fails to start with an error that indicates there is a problem
+opening a socket on a particular port.</P>
+<P STYLE="margin-bottom: 0in"><BR>Solution:&nbsp;&nbsp; 
+</P>
+<P STYLE="margin-left: 0.42in">Change the port number in the config
+file to some other unused port and run kspike to kill off the other
+processes.<BR>We have had problems with the Gnome window manager not
+allowing us to open ports, so you may want to avoid using Gnome for
+nspike.<BR><BR><BR>
+</P>
+<P ALIGN=LEFT STYLE="margin-bottom: 0in">Problem:</P>
+<P ALIGN=LEFT STYLE="margin-left: 0.42in; margin-bottom: 0in">The
+NSpike code fails to start with an error that indicates there is a
+problem looking up a machine number.</P>
+<P ALIGN=LEFT STYLE="margin-bottom: 0in"><BR>Solution:&nbsp;&nbsp; 
+</P>
+<P ALIGN=LEFT STYLE="margin-left: 0.42in">Check the config file to
+make sure that the machine on which the error was seen is listed as
+either master or a type of slave.<BR><BR><BR>
+</P>
+<P ALIGN=LEFT STYLE="margin-left: 0.42in; margin-bottom: 0in"><BR>
+</P>
+<P ALIGN=LEFT STYLE="margin-bottom: 0in">Problem:</P>
+<P ALIGN=LEFT STYLE="margin-left: 0.42in; margin-bottom: 0in">The
+NSpike code hangs after the line <BR><FONT FACE="monospace">Programming
+DSPs</FONT></P>
+<P ALIGN=LEFT STYLE="margin-bottom: 0in"><BR>Solution:&nbsp;&nbsp; 
+</P>
+<P ALIGN=LEFT STYLE="margin-left: 0.42in">There is an error
+communicating with the DSPs.&nbsp; This probably means that the
+network that the DSPs are on is down or that the DSPs are not powered
+up.&nbsp; You may need to kill (kspike) and then restart the
+software.<BR><BR><BR>
+</P>
+<P STYLE="margin-bottom: 0in">Problem: 
+</P>
+<P STYLE="margin-left: 0.42in">The NSpike code reports very large
+numbers of lost packets and / or hangs.</P>
+<P STYLE="margin-bottom: 0in">Solution:</P>
+<P STYLE="margin-left: 0.42in; margin-bottom: 0in">&nbsp;This appears
+to occur on some systems and not others, and results from broadcast
+messages (usually ARP requests) on the DSP network. &nbsp;If this
+happens on your machine, do the following:<BR>Add the following lines
+to
+sysctl.conf:<BR><BR><FONT FACE="monospace">net.ipv4.neigh.eth1.mcast_solicit=0</FONT><BR><FONT FACE="monospace">net.ipv4.neigh.eth1.ucast_solicit=1</FONT><BR><FONT FACE="monospace">net.ipv4.conf.default.forwarding=0<BR><BR></FONT>where
+you replace eth1 with the name of the ethernet interface on each
+machine that communicates with the DSPs. &nbsp;Our sysctl.conf is in
+the <B>NSpike </B>directory for reference.<BR><BR>Move the setupnet
+script to <B>/usr/local/bin</B> (or some other directory in root's
+path). &nbsp;Modify the script to select the DSP ethernet interface
+on each machine. &nbsp;Become root and run this script each time the
+DSPs are turned on.<BR><BR>That combination fixes the problem for us.
+</P>
+<HR>
+<P STYLE="margin-bottom: 0in"><A NAME="Working_with_the_NSpike_Code"></A>
+<FONT SIZE=5>Working with the NSpike Code</FONT><FONT SIZE=4><BR><BR>To
+be written....</FONT> 
+</P>
+</BODY>
+</HTML>

@@ -1,0 +1,22 @@
+
+
+Compiling:
+1. run "./configure" 
+    (perhaps with the --bindir=/usr/local/nspike option)
+    (perhaps with the --enable-nspike-fixpos=true option)
+
+2. run "cd src-gui; qmake; cd .." (to generate QT specific files)
+  NOTE: if you are on certain systems (e.g., Mandriva), it seems
+  that setting update-alternatives with co-installations of qt3
+  and qt4 does not propagate all necessary environmental
+  variables. So, you'll need to run:
+  "export "QTDIR=/usr/lib/qt3"; qmake", where "/usr/lib/qt3" is
+  the directory of the qt3 installation as reported by the
+  configure script.
+
+3. run "make"
+
+4. run "make install" (to install binaries into PATH)
+
+5. optionally, copy "nspikecalfile" and "nspike_rgbcolor" from
+    "data/" into "/usr/local/nspike"
