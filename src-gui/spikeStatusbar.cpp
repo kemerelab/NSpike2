@@ -40,14 +40,10 @@ SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
     QString s;
 
     QFont f( "SansSerif", 12, QFont::Normal );
-    QFont f2( "SansSerif", 10, QFont::Normal );
 
     clear = new QPushButton("Clear Status", this, "ClearStatus");
     connect(clear, SIGNAL( clicked() ), this, SLOT(clearStatus()) );
-    clear->setFont(f2);
-    //grid->addMultiCellWidget(clear, 0, 0, 0, 0);
     addPermanentWidget(clear);
-
 
     message = new QLabel("test", this, 0);
     message->setFont(f);

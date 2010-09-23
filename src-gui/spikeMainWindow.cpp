@@ -78,7 +78,6 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
     this->ntabs = 1;
     w = new QWidget* [this->ntabs];
     spikeGLPane = new SpikeGLPane* [this->ntabs];
-    //w[0] = new QWidget(qtab);
     w[0] = new QWidget();
     hbox = new QHBoxLayout(w[0]);
     if (sysinfo.datatype[sysinfo.machinenum] & CONTINUOUS) {
@@ -232,7 +231,7 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
    * of the EEG screen for reasons I don't understand, so we have to stick it
    * in the upper right hand corner for the moment */
   timeLabel->setFixedHeight(20);
-  timeLabel->setFont(QFont( "SansSerif", 14, QFont::Normal ));
+  timeLabel->setFont(QFont( "TypeWriter", 12, QFont::Normal ));
   qtab->setCornerWidget(timeLabel,Qt::BottomRightCorner);
   setCentralWidget(qtab);
 

@@ -603,15 +603,15 @@ SpikeTetInfo::SpikeTetInfo(QWidget *parent, int electNum,
 
     QFont f( "SansSerif", 8, QFont::Normal );
     QFont fs( "SansSerif", 7, QFont::Normal );
-    QFont fb( "SansSerif", 10, QFont::Normal );
+    QFont fb( "TypeWriter", 10, QFont::Normal );
     if (fullScreenElect) {
 	f = QFont( "SansSerif", 16, QFont::Normal );
 	fs = QFont( "SansSerif", 12, QFont::Normal );
-	fb = QFont( "SansSerif", 20, QFont::Normal );
+	fb = QFont( "TypeWriter", 20, QFont::Normal );
     }
     
     /* create the tetrode number label */
-    QString s = QString("Tetrode %1").arg(ch->number);
+    QString s = QString("Tetrode %1").arg((int) ch->number, 2);
     tetNumLabel = new QLabel("tetNumLabel", this, 0);
     tetNumLabel->setText(s);
     tetNumLabel->setFont(fb);
@@ -912,21 +912,17 @@ SpikeEEGButton::SpikeEEGButton(QWidget *parent, int chanNum):
 
     ch = sysinfo.channelinfo[sysinfo.machinenum] + chanNum;
 
-    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "SpikeEEGButtonLayout");
-
     QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
     QSizePolicy p2(QSizePolicy::Ignored, QSizePolicy::Ignored, FALSE);
 
-    QFont fs( "SansSerif", 8, QFont::Normal );
-    QFont fvs( "SansSerif", 6, QFont::Normal );
-    QFont fl( "SansSerif", 14, QFont::Normal );
+    QFont fs( "TypeWriter", 8, QFont::Normal );
+    QFont fvs( "TypeWriter", 6, QFont::Normal );
+    QFont fl( "TypeWriter", 14, QFont::Normal );
 
 
-    //QSpacerItem *qspace1 = new QSpacerItem(2, 2, QSizePolicy::Minimum);
-    //grid->addMultiCell(qspace1, 0, 0, 0, 5, 0); 
     /* create the tetrode number label */
-    QString s = QString("%1").arg(ch->number);
-    tetNumLabel = new QLabel("tetNumLabel", this, 0);
+    QString s = QString("%1").arg((int)ch->number,2,10,QLatin1Char('0'));
+    tetNumLabel = new QLabel("tetNumLabel", this);
     tetNumLabel->setText(s);
     if (sysinfo.nchannels[sysinfo.machinenum] > 64) {
 	tetNumLabel->setFont(fvs);
@@ -938,6 +934,11 @@ SpikeEEGButton::SpikeEEGButton(QWidget *parent, int chanNum):
 	tetNumLabel->setFont(fl);
     }
     tetNumLabel->setSizePolicy(p);
+
+    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "SpikeEEGButtonLayout");
+    //QHBoxLayout *hlayout = new QHBoxLayout;
+
+    //hlayout->addWidget(tetNumLabel);
     grid->addMultiCellWidget(tetNumLabel, 1, 3, 0, 1);
 
     /* create the button */
@@ -946,9 +947,8 @@ SpikeEEGButton::SpikeEEGButton(QWidget *parent, int chanNum):
     
     /* add the button to the global button group */
     grid->addMultiCellWidget(chInfo, 1, 3, 2, 5);
+    //hlayout->addWidget(chInfo);
     dispinfo.EEGButtonGroup->addButton(chInfo, chanNum);
-
-
 }
 
 SpikeEEGButton::~SpikeEEGButton() {
@@ -1049,10 +1049,10 @@ SpikeEEGDialog::SpikeEEGDialog(QWidget* parent, const char* name, bool modal,
     QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
 
     QFont fs( "SansSerif", 10, QFont::Normal );
-    QFont fb( "SansSerif", 18, QFont::Normal );
+    QFont fb( "TypeWriter", 18, QFont::Normal );
 
     /* create the tetrode number label */
-    QString s = QString("%1").arg(ch->number);
+    QString s = QString("%1").arg((int)ch->number,2);
     tetNumLabel = new QLabel("tetNumLabel", this, 0);
     tetNumLabel->setText(s);
     tetNumLabel->setFont(fb);
