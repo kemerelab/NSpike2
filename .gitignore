@@ -2,11 +2,12 @@
 autom4te.cache/*
 */.moc/*
 */.obj/*
-*/.deps/*
 */.ui/*
 *.o
+*.Po
 *.a
 *~
+*/.deps
 autom4te.cache
 
 src-extract/nspike_extract
