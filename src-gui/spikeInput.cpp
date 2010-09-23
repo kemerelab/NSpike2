@@ -1458,13 +1458,8 @@ SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
 
     QString s;
 
-    //Q3GridLayout *grid = new Q3GridLayout(this, 2, 10, 0, 0, "spikeInfoLayout");
-
-    //QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
-    //QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
-
-    QFont f( "SansSerif", 16, QFont::Normal );
-    QFont f2( "SansSerif", 12, QFont::Normal );
+    QFont f( "SansSerif", 12, QFont::Normal );
+    QFont f2( "SansSerif", 10, QFont::Normal );
 
     clear = new QPushButton("Clear Status", this, "ClearStatus");
     connect(clear, SIGNAL( clicked() ), this, SLOT(clearStatus()) );
@@ -1472,31 +1467,37 @@ SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
     //grid->addMultiCellWidget(clear, 0, 0, 0, 0);
     addPermanentWidget(clear);
 
+
     message = new QLabel("test", this, 0);
     message->setFont(f);
     message->setText("");
-    //grid->addMultiCellWidget(message, 0, 0, 1, 9);
     addPermanentWidget(message,3);
 
-    fileStatus = new QLabel(this);
+    QWidget *FileDiskStatus = new QWidget(this);
+    QGridLayout *statusLayout = new QGridLayout(FileDiskStatus);
+
+    fileStatus = new QLabel(FileDiskStatus);
     fileStatus->setFont(f);
-    addPermanentWidget(fileStatus);
-    //grid->addMultiCellWidget(fileStatus, 1, 1, 0, 4);
+    //addPermanentWidget(fileStatus);
+    statusLayout->addWidget(fileStatus,0,0,1,1);
 
-    fileSize = new QLabel(this);
+    fileSize = new QLabel(FileDiskStatus);
     fileSize->setFont(f);
-    addPermanentWidget(fileSize);
-    //grid->addMultiCellWidget(fileSize, 1, 1, 5, 5);
+    //addPermanentWidget(fileSize);
+    statusLayout->addWidget(fileSize,0,1,1,1);
 
-    diskStatus = new QLabel(this);
+    diskStatus = new QLabel(FileDiskStatus);
     diskStatus->setFont(f);
-    addPermanentWidget(diskStatus);
-    //grid->addMultiCellWidget(diskStatus, 1, 1, 6, 8);
+    //addPermanentWidget(diskStatus);
+    statusLayout->addWidget(diskStatus,1,0,1,1);
 
-    diskFree = new QLabel(this);
+    diskFree = new QLabel(FileDiskStatus);
     diskFree->setFont(f);
-    addPermanentWidget(diskFree);
-    //grid->addMultiCellWidget(diskFree, 1, 1, 9, 9); 
+    //addPermanentWidget(diskFree);
+    statusLayout->addWidget(diskFree,1,1,1,1);
+
+    FileDiskStatus->setLayout(statusLayout);
+    addPermanentWidget(FileDiskStatus);
 }
 
 

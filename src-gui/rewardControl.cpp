@@ -81,7 +81,6 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
     grid0->addMultiCellWidget(fileSave, 0, 0, 1, 1);
 
     nWellsLabel = new QLabel("Number of Wells", w, "nwells label", 0);
-    prevLabel = new QLabel(QString("Previous Well"), w, "prev label", 0);
     grid0->addMultiCellWidget(nWellsLabel, 1, 1, 0, 0);
     nWells = new QSpinBox(1, MAX_WELLS, 1, w, "Number of Wells");
     grid0->addMultiCellWidget(nWells, 1, 1, 1, 1);
