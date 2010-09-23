@@ -8,6 +8,7 @@
 
 #include "rewardControl.h"
 #include "spikeInput.h"
+#include "spikeStatusbar.h"
 
 #include <QtGui>
 #include <q3textedit.h>

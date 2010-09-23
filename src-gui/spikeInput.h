@@ -291,25 +291,6 @@ class SpikePosInfo: public QWidget {
 };
 
 
-class SpikeInfo: public QStatusBar {
-  Q_OBJECT
-
-  public:
-    SpikeInfo(QWidget* parent);
-    ~SpikeInfo();
-    void updateInfo(void);
-
-    QPushButton *clear;
-    QLabel    *message;
-    QLabel    *fileStatus;
-    QLabel    *fileSize;
-    QLabel    *diskStatus;
-    QLabel    *diskFree;
-
-    public slots:
-      void  clearStatus();
-};
-
 class SpikeAudio: public QDialog {
   Q_OBJECT
 

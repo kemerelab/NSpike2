@@ -6,6 +6,8 @@ autom4te.cache/*
 */.ui/*
 *.o
 *.a
+*~
+autom4te.cache
 
 src-extract/nspike_extract
 src-extract/nspike_postimestamp

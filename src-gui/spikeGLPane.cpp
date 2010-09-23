@@ -51,9 +51,6 @@ SpikeGLPane::SpikeGLPane(QWidget *parent, int paneNum,  int nElect) :
     this->setFocusPolicy(Qt::StrongFocus);
     this->setEnabled(1);
 
-    /* create the status window and the file and disk info widget */
-    //spikeInfo = new SpikeInfo(this);
-
     /* create a set of spikeTetInputs and Infos for the tetrode displays */
     spikeTetInput = new SpikeTetInput* [nElect];
     spikeTetInfo = new SpikeTetInfo* [nElect];
@@ -84,9 +81,6 @@ SpikeGLPane::SpikeGLPane(QWidget *parent, int paneNum, bool fullScreenElect) :
     EEGPane = FALSE;
     posPane = FALSE;
 
-    /* create the status window and the file and disk info widget */
-    //spikeInfo = new SpikeInfo(this);
-
     this->nElect = 1;
     spikeTetInput = new SpikeTetInput* [nElect];
     spikeTetInfo = new SpikeTetInfo* [nElect];
@@ -109,9 +103,6 @@ SpikeGLPane::SpikeGLPane(int paneNum, QWidget *parent, const char *name,
     spikePane = FALSE;
     singleSpikePane = FALSE;
     EEGPane = TRUE;
-
-    /* create the status window and the file and disk info widget */
-    //spikeInfo = new SpikeInfo(this);
 
     this->nElect = 0;
     /* create the EEG buttons */
@@ -471,7 +462,6 @@ void SpikeGLPane::resizeGL(int w, int h)
   tmppoint.x = X_MIN;
   tmppoint.y = Y_MIN;
   GLToWindow(tmppoint, geom, &x, &y, 1.0, 1.0); 
-  //this->spikeInfo->setGeometry(x, y - ysize, xsize, ysize); 
 
   prevW = w;
   prevH = h;
@@ -504,12 +494,9 @@ void SpikeGLPane::updateAllInfo(void)
     if (neegchan2) {
   this->spikeEEGInfo[1]->updateAll();
     }
-    //this->spikeInfo->updateInfo();
 }
 
 void SpikeGLPane::updateInfo(void) 
 {
-    /* Update the widgets at the bottom of the screen */
-    //this->spikeInfo->updateInfo();
 }
 

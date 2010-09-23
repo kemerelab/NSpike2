@@ -9,7 +9,6 @@
 #include "spike_defines.h"
 #include "spikeInput.h"
 
-
 class SpikeGLPane : public QGLWidget {
     Q_OBJECT
 
@@ -20,7 +19,6 @@ class SpikeGLPane : public QGLWidget {
         SpikeGLPane(int paneNum = 0, QWidget *parent = 0, const char *name = "", int neegchan1 = 0, 
 			int neegchan2 = 0, bool posPane = FALSE);
         ~SpikeGLPane();    
-	//SpikeInfo 	*spikeInfo;
 	SpikeTetInput 	**spikeTetInput;
 	SpikeTetInfo 	**spikeTetInfo;
 	SpikeEEGInfo 	**spikeEEGInfo;
