@@ -10,6 +10,7 @@
 *.Po
 *.a
 *~
+*.swp
 Makefile
 Makefile.in
 config.*
