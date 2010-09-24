@@ -32,6 +32,8 @@
 #include <sstream>
 #include <qmessagebox.h>
 
+extern DigIOInfo digioinfo;
+
 RippleTab::RippleTab (QWidget *parent)
   : QWidget(parent)
 {

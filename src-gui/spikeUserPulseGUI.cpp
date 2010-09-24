@@ -38,6 +38,8 @@
 #include <qmessagebox.h>
 #include "qinputdialog.h"
 
+extern DigIOInfo digioinfo;
+
 
 PulseFileTab::PulseFileTab (QWidget *parent)
   : QWidget(parent)

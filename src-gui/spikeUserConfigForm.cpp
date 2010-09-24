@@ -22,6 +22,9 @@
 //Added by qt3to4:
 #include <Q3GridLayout>
 
+
+extern DigIOInfo digioinfo;
+
 /*
  *  Constructs a ConfigForm as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.

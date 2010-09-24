@@ -19,7 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef GUI_TESTING
 #include "spikecommon.h"
+#endif
+
 #include "spikeUserGUI.h"
 //#include "spike_main.h"
 
@@ -29,12 +32,27 @@
 #include <Q3PopupMenu>
 #include <Q3GridLayout>
 
+#ifndef GUI_TESTING
 extern DisplayInfo dispinfo;
 extern SysInfo sysinfo;
 extern NetworkInfo netinfo;
 extern DigIOInfo digioinfo;
 extern MatlabInfo matlabinfo;
 extern void  SendDAQUserMessage(int message, char *data, int datalen);
+#else
+DigIOInfo digioinfo;
+SysInfo sysinfo;
+void  SendDAQUserMessage(int message, char *data, int datalen) {
+  qDebug("Sending DAQ User message %d",message);
+  return;
+}
+
+int SendMessage(int a, int messageID, const char *c, int d) {
+  qDebug("Sending message %d",messageID);
+  return 0;
+}
+  
+#endif
 
 DAQ_IO *daq_io_widget; // global, but created in laserControl
 
@@ -147,7 +165,9 @@ void laserControl::switchFunction(int whichProgram)
   else {
     if (!digioinfo.outputfd) {
       QMessageBox::warning(this,"No User Program","No user program is currently running");
+#ifndef GUI_TESTING
       return;
+#endif
     }
 
     if (qtab->id(qtab->visibleWidget()) == 0) { // current widget is config tab
@@ -200,6 +220,12 @@ DAQ_IO::DAQ_IO (QWidget *parent)
 
     ChannelStrings = new QStringList;
 
+#ifdef GUI_TESTING
+    sysinfo.machinenum = 0;
+    sysinfo.nchannels[0] = 1;
+    sysinfo.channelinfo[0][1].number = 1;
+    sysinfo.channelinfo[0][1].electchan = 0;
+#endif
     /* go through all of the channels on this machine and add them one by one */
     for (int i = 0; i < sysinfo.nchannels[sysinfo.machinenum]; i++) {
         s = QString("%1 / %2")
@@ -239,10 +265,14 @@ void DAQ_IO::checkUserProgramStatus(void)
 {
   int oldUserProgram = UserProgramRunning;
 
+#ifdef GUI_TESTING
+  UserProgramRunning = 1;
+#else
   if (digioinfo.inputfd)  // user program is running
     UserProgramRunning = digioinfo.currentprogram;
   else
     UserProgramRunning = -1;
+#endif
 
   if (UserProgramRunning != oldUserProgram)
     emit changedUserProgramStatus(UserProgramRunning);

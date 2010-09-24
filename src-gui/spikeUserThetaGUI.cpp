@@ -31,6 +31,7 @@
 #include <sstream>
 #include <qmessagebox.h>
 
+extern DigIOInfo digioinfo;
 
 ThetaTab::ThetaTab (QWidget *parent)
   : QWidget(parent)

@@ -15,6 +15,7 @@
 #include <QtGui>
 #include <Q3GridLayout>
 
+extern DigIOInfo digioinfo;
 
 /*
  *  Constructs a StimForm as a child of 'parent', with the

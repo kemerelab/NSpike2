@@ -30,6 +30,8 @@
 #include <sstream>
 #include <qmessagebox.h>
 
+extern DigIOInfo digioinfo;
+
 
 LatencyTab::LatencyTab (QWidget *parent)
   : QWidget(parent)

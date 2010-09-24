@@ -4,19 +4,21 @@
 #include "spikeGLPane.h"
 #include "spike_dsp.h"
 #include "spike_main.h"
+
 #include "spike_userprogram_defines.h"
 
 #include <QtGui>
 #include <q3widgetstack.h>
 #include <q3textedit.h>
+#include <q3buttongroup.h>
 
 #define DEFAULT_TMP_PULSE_COMMANDS_FILE "/tmp/tmp_pulse_commands"
 
-extern DigIOInfo digioinfo;
-extern SysInfo sysinfo;
 extern void  SendDAQUserMessage(int message, char *data, int datalen);
 
+#ifndef GUI_TESTING
 extern void StartDigIOProgram(int prognum);
+#endif
 
 class DAQ_IO : public QWidget {
 	Q_OBJECT
@@ -69,7 +71,9 @@ public slots:
     void updateStatus(int);
     void updateStimPins(void);
     void updateCmPerPix(void);
+#ifndef GUI_TESTING
     void runProgram(void) {StartDigIOProgram(UserProgramCombo->currentItem());};
+#endif
     void changeStimChanDisplay(int ch) {StimChan->setCurrentItem(ch);};
 
 protected:
