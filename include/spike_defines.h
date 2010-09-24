@@ -34,8 +34,6 @@
 #define PI	3.14159265358979
 #define TWOPI	6.28318530717959
 
-
-
 /* system types */
 #define MASTER	 	0
 #define SLAVE		1
@@ -51,7 +49,9 @@
 /* the maximum number of DSPS.  Note that if you change this you will have to
  * remove or add definitions to keep the number of defined DSPS equal to
  * MAX_DSPS */
-#define MAX_DSPS		13
+#define MAX_DSPS		11
+// #define MAX_DSPS		13
+
 #define MAX_CHAN_PER_DSP	16
 #define MAX_ELECT_PER_DSP	(MAX_CHAN_PER_DSP / NCHAN_PER_ELECTRODE)
 #define DSP_BASE_SAMP_RATE	((int) 30000)
@@ -81,21 +81,31 @@
 #define DSP8			8
 #define DSP9			9
 
-#ifdef DIO_ON_MASTER_DSP
-#define DSPDIO			DSP0 // the DSP that handles digital and analog IO
-#else
-#define DSPDIO			10 // the DSP that handles digital and analog IO
-#endif
+// #ifdef DIO_ON_MASTER_DSP
+// #define DSPDIO			DSP0 // the DSP that handles digital and analog IO
+// #else
+// #define DSPDIO			10 // the DSP that handles digital and analog IO
+// #endif
+// 
+// #define DSP0ECHO		11 // the echo port for DSP0
+// #define DSPDIOECHO		12 // the echo port for DSPDIO
+// #define SPIKE_POSDAQ		13
+// #define	SPIKE_DAQ		14
+// #define	SPIKE_PROCESS_POSDATA	15
+// #define	SPIKE_SAVE_DATA		16
+// #define	SPIKE_MATLAB		17
+// #define	SPIKE_MAIN		18
+// #define MAX_MODULE_ID		18
 
-#define DSP0ECHO		11 // the echo port for DSP0
-#define DSPDIOECHO		12 // the echo port for DSPDIO
-#define SPIKE_POSDAQ		13
-#define	SPIKE_DAQ		14
-#define	SPIKE_PROCESS_POSDATA	15
-#define	SPIKE_SAVE_DATA		16
-#define	SPIKE_MATLAB		17
-#define	SPIKE_MAIN		18
-#define MAX_MODULE_ID		18
+#define DSPDIO			DSP0 // the DSP that handles digital and analog IO
+#define DSP0ECHO		10 // the echo port for DSP0
+#define SPIKE_POSDAQ		11
+#define	SPIKE_DAQ		12
+#define	SPIKE_PROCESS_POSDATA	13
+#define	SPIKE_SAVE_DATA		14
+#define	SPIKE_MATLAB		15
+#define	SPIKE_MAIN		16
+#define MAX_MODULE_ID		16
 
 #define NAUDIO_OUTPUTS		2  // there are currently 2 analog outputs on the DSPs
 

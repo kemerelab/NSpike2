@@ -347,6 +347,7 @@ void rewardControl::createLogicTab(int n)
 	inputBit[i] = new QSpinBox(0, MAX_BITS, 1, w, "Input Bit");
 	grid1->addMultiCellWidget(inputBit[i], 3, 3, col, col);
 	triggerHigh[i] = new QRadioButton("Trigger High", w, 0);
+  triggerHigh[i]->setAutoExclusive(false);
 	grid1->addMultiCellWidget(triggerHigh[i], 4, 4, col, col);
 	outputBit[i] = new QSpinBox(0, MAX_BITS, 1, w, "Output Bit");
 	grid1->addMultiCellWidget(outputBit[i], 5, 5, col, col);
