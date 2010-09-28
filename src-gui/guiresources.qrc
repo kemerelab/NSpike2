@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>images/pulselength.png</file>
+    <file>images/npulses.png</file>
+    <file>images/period.png</file>
+</qresource>
+</RCC>

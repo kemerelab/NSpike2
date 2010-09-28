@@ -5,6 +5,26 @@
 
 #define DEFAULT_TMP_PULSE_COMMANDS_FILE "/tmp/tmp_pulse_commands"
 
+class StimConfigureWidget : public QWidget
+{
+  Q_OBJECT
+
+public:
+  StimConfigureWidget(const QString &title = "Group Box",QWidget *parent = 0);
+
+public slots:
+
+private:
+  QGroupBox *groupBox;
+  QGroupBox *multiPulseGroup;
+  QDoubleSpinBox *pulseLengthSpinBox;
+  QDoubleSpinBox *nPulsesSpinBox;
+  QDoubleSpinBox *sequenceFrequencySpinBox;
+  QDoubleSpinBox *sequencePeriodSpinBox;
+
+protected:
+};
+
 
 class StimConfigTab : public QWidget
 {
@@ -16,11 +36,12 @@ public:
 public slots:
 
 private:
-  QGroupBox *createStimAGroup();
-  QGroupBox *createStimBGroup();
+  StimConfigureWidget *stimConfigA;
+  StimConfigureWidget *stimConfigB;
 
 protected:
 };
+
 
 
 #endif
