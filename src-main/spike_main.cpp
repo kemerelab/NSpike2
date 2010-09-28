@@ -600,7 +600,7 @@ void SQCompat::spikeProcessMessages(void)
                 break;
               default:
                 // fprintf(stderr, "unknown message type from user program %d.\n", message);
-                ((laserControl *)dispinfo.userguiptr)->msgFromUser(message, (char *)tmpdatabuf);
+                ((DIOInterface *)dispinfo.userguiptr)->msgFromUser(message, (char *)tmpdatabuf);
                 break;
             }
           }

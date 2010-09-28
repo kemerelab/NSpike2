@@ -21,6 +21,8 @@ SOURCES += spikeUserPulseGUI.cpp
 SOURCES += spikeUserStimForm.cpp 
 SOURCES += spikeUserConfigForm.cpp
 HEADERS += spikeUserGUI.h 
+SOURCES += userConfigureStimulators.cpp
+HEADERS += userConfigureStimulators.h
 QT += qt3support
 
 unix {

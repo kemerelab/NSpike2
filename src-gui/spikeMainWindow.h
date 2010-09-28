@@ -177,7 +177,7 @@ class SpikeMainWindow : public QMainWindow {
     QMenu    *tetrodeSettingsMenu;
 
     SpikeInfo *spikeInfo;
-    laserControl  *laserC;
+    DIOInterface *laserC;
 
     int        	eegtab;
     bool		rewardGUIOn;

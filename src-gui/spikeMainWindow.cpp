@@ -818,7 +818,7 @@ void SpikeMainWindow::launchUserGUI(void)
 {
     char tmpstring[200];
     if (strncmp(sysinfo.usergui, "stim", 4) == 0) {
-        dispinfo.userguiptr = new laserControl();
+        dispinfo.userguiptr = new DIOInterface();
     }
     else {
   sprintf(tmpstring,"Unknown user gui program %s", sysinfo.usergui);

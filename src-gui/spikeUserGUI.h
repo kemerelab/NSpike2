@@ -16,9 +16,7 @@
 
 extern void  SendDAQUserMessage(int message, char *data, int datalen);
 
-#ifndef GUI_TESTING
 extern void StartDigIOProgram(int prognum);
-#endif
 
 class DAQ_IO : public QWidget {
 	Q_OBJECT
@@ -44,7 +42,7 @@ public slots:
 
 };
 
-extern DAQ_IO *daq_io_widget; // global, but created in laserControl
+extern DAQ_IO *daq_io_widget; // global, but created in DIOInterface
 
 
 class ConfigForm : public QWidget
@@ -71,9 +69,7 @@ public slots:
     void updateStatus(int);
     void updateStimPins(void);
     void updateCmPerPix(void);
-#ifndef GUI_TESTING
     void runProgram(void) {StartDigIOProgram(UserProgramCombo->currentItem());};
-#endif
     void changeStimChanDisplay(int ch) {StimChan->setCurrentItem(ch);};
 
 protected:
@@ -252,14 +248,14 @@ protected slots:
 };
 
 
-class laserControl : public QDialog {
+class DIOInterface : public QDialog {
 	Q_OBJECT
 
 public:
-  laserControl(QWidget *parent = 0, 
+  DIOInterface(QWidget *parent = 0, 
    const char *name = 0, bool model = FALSE, 
    Qt::WFlags fl = 0);
-  ~laserControl();
+  ~DIOInterface();
   void msgFromUser(int msg, char *data) { daq_io_widget->msgFromUser(msg,data); }
 public slots:
   void  switchFunction(int);
@@ -269,7 +265,8 @@ protected:
 
   /* Control tabs */
   Q3ButtonGroup *indexGroup;
-  Q3WidgetStack     	*qtab;
+  // Q3WidgetStack     	*qtab;
+  QTabWidget *qtab;
 
   QWidget *ConfigWidget;
   PulseFileTab *pulseFileTabWidget;

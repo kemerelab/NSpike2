@@ -19,11 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef GUI_TESTING
 #include "spikecommon.h"
-#endif
 
 #include "spikeUserGUI.h"
+#include "userConfigureStimulators.h"
 //#include "spike_main.h"
 
 #include <QtGui>
@@ -32,31 +31,16 @@
 #include <Q3PopupMenu>
 #include <Q3GridLayout>
 
-#ifndef GUI_TESTING
-extern DisplayInfo dispinfo;
+// extern DisplayInfo dispinfo;
+// extern NetworkInfo netinfo;
+// extern MatlabInfo matlabinfo;
 extern SysInfo sysinfo;
-extern NetworkInfo netinfo;
 extern DigIOInfo digioinfo;
-extern MatlabInfo matlabinfo;
 extern void  SendDAQUserMessage(int message, char *data, int datalen);
-#else
-DigIOInfo digioinfo;
-SysInfo sysinfo;
-void  SendDAQUserMessage(int message, char *data, int datalen) {
-  qDebug("Sending DAQ User message %d",message);
-  return;
-}
 
-int SendMessage(int a, int messageID, const char *c, int d) {
-  qDebug("Sending message %d",messageID);
-  return 0;
-}
-  
-#endif
+DAQ_IO *daq_io_widget; // global, but created in DIOInterface
 
-DAQ_IO *daq_io_widget; // global, but created in laserControl
-
-laserControl::laserControl(QWidget* parent, 
+DIOInterface::DIOInterface(QWidget* parent, 
 	const char* name, bool modal, Qt::WFlags fl)
     : QDialog( parent, name, modal, fl)
 {
@@ -69,113 +53,67 @@ laserControl::laserControl(QWidget* parent,
 
     daq_io_widget = new DAQ_IO(this);
 
-    //c QGridLayout *mainGrid = new QGridLayout(this, 100, 100, 0, 0, "maingrid");
-    Q3GridLayout *mainGrid = new Q3GridLayout(this, 1, 3, 0, 5, "maingrid");
-
-    Q3GridLayout *indexGrid = new Q3GridLayout(this, 6, 1, 0, 0, "indexgrid");
-    mainGrid->addLayout(indexGrid,0,0);
-
-    indexGroup = new Q3ButtonGroup(this, "name");
-    indexGroup->setExclusive(TRUE);
-
-    QPushButton *IndexConfig = new QPushButton("System Config", this, "name");
-    IndexConfig->setToggleButton(TRUE);
-    IndexConfig->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Ignored);
-    indexGrid->addWidget(IndexConfig, 0, 0); 
-    indexGroup->insert(IndexConfig,0);
-
-    QPushButton *IndexTriggerPulses = new QPushButton("Trigger Pulses", this, "name");
-    IndexTriggerPulses->setToggleButton(TRUE);
-    IndexTriggerPulses->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Ignored);
-    indexGrid->addWidget(IndexTriggerPulses, 1, 0); 
-    indexGroup->insert(IndexTriggerPulses,1);
-
-    QPushButton *IndexPulsesFromFile = new QPushButton("Pulses From File", this, "name");
-    IndexPulsesFromFile->setToggleButton(TRUE);
-    IndexPulsesFromFile->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Ignored);
-    indexGrid->addWidget(IndexPulsesFromFile, 2, 0); 
-    indexGroup->insert(IndexPulsesFromFile,2);
-
-    QPushButton *IndexThetaPhaseStim = new QPushButton("Theta Phase", this, "name");
-    IndexThetaPhaseStim->setToggleButton(TRUE);
-    IndexThetaPhaseStim->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Ignored);
-    indexGrid->addWidget(IndexThetaPhaseStim, 3, 0); 
-    indexGroup->insert(IndexThetaPhaseStim,3);
-
-    QPushButton *IndexRippleDisruption = new QPushButton("Ripple Disruption", this, "name");
-    IndexRippleDisruption->setToggleButton(TRUE);
-    IndexRippleDisruption->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Ignored);
-    indexGrid->addWidget(IndexRippleDisruption, 4, 0); 
-    indexGroup->insert(IndexRippleDisruption,4);
-
-    QPushButton *IndexTestLatency = new QPushButton("Test Latency", this, "name");
-    IndexTestLatency->setToggleButton(TRUE);
-    IndexTestLatency->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Ignored);
-    indexGrid->addWidget(IndexTestLatency, 5, 0); 
-    indexGroup->insert(IndexTestLatency,5);
-
-    for (i = 1; i <= 5; i++)
-      indexGroup->find(i)->setEnabled(FALSE);
     connect(daq_io_widget,SIGNAL(userProgramRunning(bool)),this,SLOT(enableTabs(bool)));
 
-    mainGrid->setColStretch(0,2);
-    mainGrid->setColStretch(1,0);
-    mainGrid->setColStretch(2,10);
+    qtab = new QTabWidget(this);
+    qtab->setUsesScrollButtons(false);
 
-    // Create a multitabbed window
-    qtab = new Q3WidgetStack(this, "name");
-    mainGrid->addWidget(qtab, 0, 2);
-
-    connect(indexGroup, SIGNAL(clicked(int)), this, SLOT(switchFunction(int)));
-
-    /*
-     * =========================================================
-     * Tab 1: Trigger laser using the pulse specified 
-     * =========================================================
-     */
+    connect(qtab, SIGNAL(currentChanged(int)), this, SLOT(switchFunction(int)));
 
     ConfigWidget = new ConfigForm(this);
-    qtab->addWidget(ConfigWidget,0);
+    qtab->addTab(ConfigWidget,"Global Settings");
 
-    qtab->addWidget(new StimForm(this),1);
+    qtab->addTab(new StimConfigTab(this), "Configure Stimulators");
+
+    qtab->addTab(new QWidget(this), "Output-Only Experiments");
+    qtab->addTab(new StimForm(this),"Trigger Pulses");
+
+    qtab->addTab(new RippleTab(this), "Real-time Feedback Experiments");
+
+    /*
+    qtab->addTab(new StimForm(this),"Trigger Pulses");
 
     pulseFileTabWidget = new PulseFileTab(this);
-    qtab->addWidget(pulseFileTabWidget,2);
+    qtab->addTab(pulseFileTabWidget,"Pulses From File");
 
-    qtab->addWidget(new ThetaTab(this),3);
+    qtab->addTab(new ThetaTab(this),"Theta Phase");
 
-    qtab->addWidget(new RippleTab(this),4);
-    //connect(this, SIGNAL(switchToTab(int)), qtab->widget(4), SLOT(tabShown(int)));
+    qtab->addTab(new RippleTab(this),"Ripple Disruption");
 
-    qtab->addWidget(new LatencyTab(this),5);
+    qtab->addTab(new LatencyTab(this),"Test Latency");
+    */
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(qtab);
+
+    setLayout(layout);
 
     show();
 }
 
-laserControl::~laserControl() 
+DIOInterface::~DIOInterface() 
 {
 }
 
-void laserControl::switchFunction(int whichProgram)
+void DIOInterface::switchFunction(int whichProgram)
 {
 
   if (whichProgram == 0) {
-      qtab->raiseWidget(whichProgram);
   }
   else {
     if (!digioinfo.outputfd) {
-      QMessageBox::warning(this,"No User Program","No user program is currently running");
+      QMessageBox::warning(this,"No User Program","No user program appears to be running (messaging established)");
 #ifndef GUI_TESTING
       return;
 #endif
     }
 
+    /*
     if (qtab->id(qtab->visibleWidget()) == 0) { // current widget is config tab
       ((ConfigForm *)(qtab->visibleWidget()))->updateStimPins(); // update stim pins before we leave
       daq_io_widget->updateChan(daq_io_widget->StimChan);
     }
-
-    qtab->raiseWidget(whichProgram);
+    */
 
     switch (whichProgram) {
       case 1:
@@ -200,9 +138,9 @@ void laserControl::switchFunction(int whichProgram)
 
 }
 
-void laserControl::enableTabs(bool enable)
+void DIOInterface::enableTabs(bool enable)
 {
-  if (enable) {
+  /*if (enable) {
     for (int i = 1; i <= 5; i++)
       indexGroup->find(i)->setEnabled(TRUE);
   }
@@ -210,6 +148,7 @@ void laserControl::enableTabs(bool enable)
     for (int i = 1; i <= 5; i++)
       indexGroup->find(i)->setEnabled(FALSE);
   }
+  */
 }
 
 
@@ -220,12 +159,6 @@ DAQ_IO::DAQ_IO (QWidget *parent)
 
     ChannelStrings = new QStringList;
 
-#ifdef GUI_TESTING
-    sysinfo.machinenum = 0;
-    sysinfo.nchannels[0] = 1;
-    sysinfo.channelinfo[0][1].number = 1;
-    sysinfo.channelinfo[0][1].electchan = 0;
-#endif
     /* go through all of the channels on this machine and add them one by one */
     for (int i = 0; i < sysinfo.nchannels[sysinfo.machinenum]; i++) {
         s = QString("%1 / %2")
