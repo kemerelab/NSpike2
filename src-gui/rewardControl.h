@@ -64,6 +64,8 @@ class rewardControl : public QDialog {
 
   protected slots:
     void reject();
+    void resetRewardCounters(void); 
+
 
   protected:
     void 		loadFile(void);
@@ -80,8 +82,6 @@ class rewardControl : public QDialog {
 
     void 		writeRewardConfig(QString fileName);
     void 		readRewardConfig(QString fileName);
-
-    void    resetRewardCounters(void); 
 
     QVector<int>    rewardCounter;
 
