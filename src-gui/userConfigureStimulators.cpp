@@ -55,10 +55,6 @@ QGroupBox *StimConfigTab::createStimAGroup()
   ParametersLayout->addRow("Period",sequencePeriodSpinBox);
 
   groupBox->setLayout(ParametersLayout);
-  groupBox->setPalette(QPalette(Qt::darkBlue));
-  QPalette p = groupBox->palette()
-  p.setColor(grpControls->backgroundRole(),
-      QColor(0,255,255));
 
   return groupBox;
 }
