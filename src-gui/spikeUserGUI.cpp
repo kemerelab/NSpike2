@@ -23,6 +23,7 @@
 
 #include "spikeUserGUI.h"
 #include "userConfigureStimulators.h"
+#include "userOutputOnlyTab.h"
 //#include "spike_main.h"
 
 #include <QtGui>
@@ -65,7 +66,7 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     qtab->addTab(new StimConfigTab(this), "Configure Stimulators");
 
-    qtab->addTab(new QWidget(this), "Output-Only Experiments");
+    qtab->addTab(new StimOutputOnlyTab(this), "Output-Only Experiments");
     qtab->addTab(new StimForm(this),"Trigger Pulses");
 
     qtab->addTab(new RippleTab(this), "Real-time Feedback Experiments");

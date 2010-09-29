@@ -1,23 +1,3 @@
-/*
- * spikeUserGUI.cpp: the qt object for user program interfaces
- *
- * Copyright 2008 Loren M. Frank
- *
- * This program is part of the nspike data acquisition package.
- * nspike is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * nspike is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with nspike; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #include "spikecommon.h"
 #include "spikeUserGUI.h"
@@ -43,13 +23,25 @@ StimConfigTab::StimConfigTab (QWidget *parent)
 
     QGridLayout *layout = new QGridLayout;
     layout->addWidget(explanation,0,0,1,3);
-    QLabel *labelA = new QLabel("A");
+    
+    QPushButton *labelA = new QPushButton("A");
     layout->addWidget(labelA,1,0);
+    labelA->setCheckable(true);
+    labelA->setChecked(true);
     layout->addWidget(stimConfigA,1,1);
 
-    QLabel *labelB = new QLabel("B");
+    QPushButton *labelB = new QPushButton("B");
     layout->addWidget(labelB,2,0);
+    labelB->setCheckable(true);
+    labelB->setChecked(false);
     layout->addWidget(stimConfigB,2,1);
+    stimConfigB->setEnabled(false);
+
+    QButtonGroup *stimulatorSelectButtonGroup = new QButtonGroup;
+    stimulatorSelectButtonGroup->addButton(labelA,0);
+    stimulatorSelectButtonGroup->addButton(labelB,1);
+    stimulatorSelectButtonGroup->setExclusive(false);
+    connect(stimulatorSelectButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(selectStimulator(void)));
 
     QFont font;
     font.setPointSize(32);
@@ -60,6 +52,23 @@ StimConfigTab::StimConfigTab (QWidget *parent)
     setLayout(layout);
 
 }
+
+void StimConfigTab::selectStimulator(void)
+{
+  //stimConfigA->setEnabled(stimulatorSelectButtonGroup->button(0)->isChecked());
+  //stimConfigB->setEnabled(stimulatorSelectButtonGroup->button(1)->isChecked());
+
+  //if (stimulatorSelectButtonGroup->button(0)->isChecked())
+    //qDebug("Button A is checked");
+  //if (stimulatorSelectButtonGroup->button(1)->isChecked())
+    //qDebug("Button B is checked");
+  qDebug("Hmm");
+  //if (stimulatorSelectButtonGroup->button(0) == 0)
+    //qDebug("Hrm");
+
+  return;
+}
+
 
 StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   : QWidget(parent)
@@ -81,9 +90,11 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   sequencePeriodSpinBox = new QDoubleSpinBox();
   sequencePeriodSpinBox->setAlignment(Qt::AlignRight);
   sequencePeriodSpinBox->setSuffix(" ms");
+  sequencePeriodSpinBox->setRange(1,5000);
   connect(sequencePeriodSpinBox, SIGNAL(valueChanged(double)), this, SLOT(periodChanged(void)));
   sequenceFrequencySpinBox = new QSpinBox();
   sequenceFrequencySpinBox->setAlignment(Qt::AlignRight);
+  sequenceFrequencySpinBox->setRange(0.2,200);
   sequenceFrequencySpinBox->setSuffix(" Hz");
   connect(sequenceFrequencySpinBox, SIGNAL(valueChanged(int)), this, SLOT(frequencyChanged(void)));
 
@@ -124,6 +135,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   pulsePeriodGraphic->setPixmap(QPixmap(":/images/period.png"));
   multiPulseLayout->addWidget(pulsePeriodGraphic,0,2,2,1, Qt::AlignCenter);
   multiPulseGroup->setLayout(multiPulseLayout);
+  multiPulseGroup->setEnabled(false);
 
   parametersLayout->addWidget(multiPulseGroup,3,0,1,3,Qt::AlignRight);
 
@@ -149,6 +161,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   stimPinControlsLayout->addWidget(secondaryStimPinLabel,2,0,
       Qt::AlignRight | Qt::AlignVCenter);
   stimPinControlsLayout->addWidget(secondaryStimPinSpinBox,2,1);
+  ableBiphasicStimulation(false);
 
   QGroupBox *stimPinControlsGroup = new QGroupBox("Stimulation Pins");
   stimPinControlsGroup->setLayout(stimPinControlsLayout);
@@ -173,6 +186,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   // Load defaults
   // Update state (number of pulses->period, biphasic->secondary stim)
 }
+
 
 void StimConfigureWidget::frequencyChanged(void)
 {

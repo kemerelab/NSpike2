@@ -13,6 +13,8 @@ SOURCES += ../spikeUserConfigForm.cpp
 HEADERS += ../spikeUserGUI.h 
 SOURCES += ../userConfigureStimulators.cpp
 HEADERS += ../userConfigureStimulators.h 
+SOURCES += ../userOutputOnlyTab.cpp
+HEADERS += ../userOutputOnlyTab.h 
 RESOURCES += ../guiresources.qrc
 QT += qt3support
 

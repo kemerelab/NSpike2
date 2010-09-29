@@ -43,10 +43,12 @@ public:
   StimConfigTab(QWidget *parent = 0);
 
 public slots:
+  void selectStimulator(void);
 
 private:
   StimConfigureWidget *stimConfigA;
   StimConfigureWidget *stimConfigB;
+  QButtonGroup *stimulatorSelectButtonGroup;
 
 protected:
 };
