@@ -13,14 +13,21 @@ public:
   StimConfigureWidget(const QString &title = "Group Box",QWidget *parent = 0);
 
 public slots:
+  void frequencyChanged(void);
+  void periodChanged(void);
+  void ablePulseSequence(void);
+
+  void ableBiphasicStimulation(int);
 
 private:
-  QGroupBox *groupBox;
-  QGroupBox *multiPulseGroup;
   QDoubleSpinBox *pulseLengthSpinBox;
-  QDoubleSpinBox *nPulsesSpinBox;
-  QDoubleSpinBox *sequenceFrequencySpinBox;
+  QSpinBox *nPulsesSpinBox;
+  QSpinBox *sequenceFrequencySpinBox;
   QDoubleSpinBox *sequencePeriodSpinBox;
+
+  QSpinBox *primaryStimPinSpinBox;
+  QSpinBox *secondaryStimPinSpinBox;
+  QCheckBox *biphasicCheckBox;
 
 protected:
 };

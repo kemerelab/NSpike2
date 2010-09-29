@@ -53,50 +53,163 @@ StimConfigTab::StimConfigTab (QWidget *parent)
 StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   : QWidget(parent)
 {
-  groupBox = new QGroupBox(title);
+  QGroupBox *groupBox = new QGroupBox(title);
   //groupBox->setStyleSheet("border: 2px solid gray; border-radius: 5px;"); 
 
   pulseLengthSpinBox = new QDoubleSpinBox();
-  nPulsesSpinBox = new QDoubleSpinBox();
-  sequenceFrequencySpinBox = new QDoubleSpinBox();
-  sequencePeriodSpinBox = new QDoubleSpinBox();
+  pulseLengthSpinBox->setSuffix(" ms");
+  pulseLengthSpinBox->setAlignment(Qt::AlignRight);
+  pulseLengthSpinBox->setDecimals(1);
+  pulseLengthSpinBox->setRange(0.1,5);
+  //connect(pulseLengthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(periodChanged(void)));
 
-  QGridLayout *parametersLayout = new QGridLayout;
-  parametersLayout->addWidget(new QLabel("Pulse Length"), 0, 0);
-  parametersLayout->addWidget(pulseLengthSpinBox, 0, 1);
+  nPulsesSpinBox = new QSpinBox();
+  nPulsesSpinBox->setRange(1,10);
+  nPulsesSpinBox->setAlignment(Qt::AlignRight);
+  connect(nPulsesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(ablePulseSequence(void)));
+
+  sequencePeriodSpinBox = new QDoubleSpinBox();
+  sequencePeriodSpinBox->setAlignment(Qt::AlignRight);
+  sequencePeriodSpinBox->setSuffix(" ms");
+  connect(sequencePeriodSpinBox, SIGNAL(valueChanged(double)), this, SLOT(periodChanged(void)));
+  sequenceFrequencySpinBox = new QSpinBox();
+  sequenceFrequencySpinBox->setAlignment(Qt::AlignRight);
+  sequenceFrequencySpinBox->setSuffix(" Hz");
+  connect(sequenceFrequencySpinBox, SIGNAL(valueChanged(int)), this, SLOT(frequencyChanged(void)));
+
+  QLabel *pulseLengthLabel = new QLabel("Pulse Length");
+  pulseLengthLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
   QLabel *pulseLengthGraphic = new QLabel;
   pulseLengthGraphic->setPixmap(QPixmap(":/images/pulselength.png"));
-  pulseLengthGraphic->setAlignment(Qt::AlignHCenter);
-  parametersLayout->addWidget(pulseLengthGraphic, 0, 2);
+  pulseLengthGraphic->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
-  parametersLayout->addWidget(new QLabel("# of Pulses"),1,0);
-  parametersLayout->addWidget(nPulsesSpinBox, 1, 1);
+  QLabel *nPulsesLabel = new QLabel("# of Pulses");
+  nPulsesLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+  QGridLayout *parametersLayout = new QGridLayout;
+
   QLabel *nPulsesGraphic = new QLabel;
   nPulsesGraphic->setPixmap(QPixmap(":/images/npulses.png"));
-  nPulsesGraphic->setAlignment(Qt::AlignHCenter);
-  parametersLayout->addWidget(nPulsesGraphic, 1, 2);
+  nPulsesGraphic->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 
+  parametersLayout->setColumnStretch(0,1);
+  parametersLayout->setColumnStretch(3,1);
+  parametersLayout->setColumnStretch(4,1);
+  parametersLayout->addWidget(pulseLengthLabel, 0, 1);
+  parametersLayout->addWidget(pulseLengthSpinBox, 0, 2);
+  parametersLayout->addWidget(pulseLengthGraphic, 0, 3);
+  parametersLayout->setRowMinimumHeight(1, 10);
 
-  multiPulseGroup = new QGroupBox;
+  parametersLayout->addWidget(nPulsesLabel,2,1);
+  parametersLayout->addWidget(nPulsesSpinBox, 2, 2);
+  parametersLayout->addWidget(nPulsesGraphic, 2, 3);
+
+  QLabel *sequencePeriodLabel = new QLabel("Period");
+  sequencePeriodLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+  QLabel *sequenceFrequencyLabel = new QLabel("Frequency");
+  sequenceFrequencyLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+  
+  /* For multi-pulse sequences, control frequency or period of
+   * pulses in stimulation train. */
+  QGroupBox *multiPulseGroup = new QGroupBox;
   QGridLayout *multiPulseLayout = new QGridLayout;
-  multiPulseLayout->addWidget(new QLabel("Period"),0,0);
+  multiPulseLayout->addWidget(sequencePeriodLabel,0,0);
   multiPulseLayout->addWidget(sequencePeriodSpinBox, 0, 1);
 
-  multiPulseLayout->addWidget(new QLabel("Frequency"),1,0);
+  multiPulseLayout->addWidget(sequenceFrequencyLabel,1,0);
   multiPulseLayout->addWidget(sequenceFrequencySpinBox,1,1);
   multiPulseGroup->setLayout(multiPulseLayout);
 
-  parametersLayout->addWidget(multiPulseGroup,2,0,1,2);
+  parametersLayout->addWidget(multiPulseGroup,3,1,1,2);
   QLabel *pulsePeriodGraphic = new QLabel;
   pulsePeriodGraphic->setPixmap(QPixmap(":/images/period.png"));
   pulsePeriodGraphic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-  parametersLayout->addWidget(pulsePeriodGraphic, 2,2);
+  parametersLayout->addWidget(pulsePeriodGraphic, 3,3);
+
+  /* For each stimulator, we need one and potentially two (if
+   * biphasic) pin masks. */
+  primaryStimPinSpinBox = new QSpinBox();
+  primaryStimPinSpinBox->setAlignment(Qt::AlignRight);
+  primaryStimPinSpinBox->setRange(0,63);
+  //primaryStimPinMask->setPrefix("0x");
+  QLabel *primaryStimPinLabel = new QLabel("Primary");
+  primaryStimPinLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+  biphasicCheckBox = new QCheckBox("Biphasic Stimulation");
+  connect(biphasicCheckBox, SIGNAL(stateChanged(int)), this, SLOT(ableBiphasicStimulation(int)));
+
+  secondaryStimPinSpinBox = new QSpinBox();
+  secondaryStimPinSpinBox->setAlignment(Qt::AlignRight);
+  secondaryStimPinSpinBox->setRange(0,63);
+  secondaryStimPinSpinBox->setEnabled(false);
+  QLabel *secondaryStimPinLabel = new QLabel("Second");
+  secondaryStimPinLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+  QGridLayout *stimPinControlsLayout = new QGridLayout;
+  stimPinControlsLayout->addWidget(primaryStimPinLabel,0,0);
+  stimPinControlsLayout->addWidget(primaryStimPinSpinBox,0,1);
+  stimPinControlsLayout->addWidget(biphasicCheckBox,1,1);
+  stimPinControlsLayout->addWidget(secondaryStimPinLabel,2,0);
+  stimPinControlsLayout->addWidget(secondaryStimPinSpinBox,2,1);
+  QGroupBox *portControlsGroup = new QGroupBox("Stimulation Pins");
+  portControlsGroup->setLayout(stimPinControlsLayout);
+  portControlsGroup->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+  portControlsGroup->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
+  parametersLayout->addWidget(portControlsGroup,0,5,4,1);
+
 
   groupBox->setLayout(parametersLayout);
 
-  QHBoxLayout *layout = new QHBoxLayout;
-  layout->addWidget(groupBox);
+  QGridLayout *layout = new QGridLayout;
+  layout->addWidget(groupBox,0,1);
+  layout->setColumnStretch(0,1);
+  layout->setColumnStretch(1,10);
+  layout->setColumnStretch(2,1);
 
   setLayout(layout);
+}
+
+void StimConfigureWidget::frequencyChanged(void)
+{
+  sequencePeriodSpinBox->blockSignals(true);
+  sequencePeriodSpinBox->setValue(10000/sequenceFrequencySpinBox->value());
+  sequencePeriodSpinBox->blockSignals(false);
+  //updateStimData();
+    return;
+}
+
+void StimConfigureWidget::periodChanged(void)
+{
+  sequenceFrequencySpinBox->blockSignals(true);
+  sequenceFrequencySpinBox->setValue(1000/sequencePeriodSpinBox->value());
+  sequenceFrequencySpinBox->blockSignals(false);
+  //updateStimData();
+    return;
+}
+
+void StimConfigureWidget::ablePulseSequence(void)
+{
+  if (nPulsesSpinBox->value() > 1) {
+    sequenceFrequencySpinBox->setEnabled(true);
+    sequencePeriodSpinBox->setEnabled(true);
+  }
+  else {
+    sequenceFrequencySpinBox->setEnabled(false);
+    sequencePeriodSpinBox->setEnabled(false);
+  }
+    return;
+}
+
+void StimConfigureWidget::ableBiphasicStimulation(int state)
+{
+  if (state) {
+    secondaryStimPinSpinBox->setEnabled(true);
+  }
+  else {
+    secondaryStimPinSpinBox->setEnabled(false);
+  }
+    return;
 }
 
