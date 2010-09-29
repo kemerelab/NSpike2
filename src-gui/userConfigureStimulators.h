@@ -22,11 +22,13 @@ public slots:
 private:
   QDoubleSpinBox *pulseLengthSpinBox;
   QSpinBox *nPulsesSpinBox;
+  QGroupBox *multiPulseGroup;
   QSpinBox *sequenceFrequencySpinBox;
   QDoubleSpinBox *sequencePeriodSpinBox;
 
   QSpinBox *primaryStimPinSpinBox;
   QSpinBox *secondaryStimPinSpinBox;
+  QLabel *secondaryStimPinLabel;
   QCheckBox *biphasicCheckBox;
 
 protected:
