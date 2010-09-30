@@ -24,7 +24,7 @@
 #include "spikeUserGUI.h"
 #include "userConfigureStimulators.h"
 #include "userOutputOnlyTab.h"
-//#include "spike_main.h"
+#include "userRealtimeFeedbackTab.h"
 
 #include <QtGui>
 #include <q3listbox.h>
@@ -32,9 +32,6 @@
 #include <Q3PopupMenu>
 #include <Q3GridLayout>
 
-// extern DisplayInfo dispinfo;
-// extern NetworkInfo netinfo;
-// extern MatlabInfo matlabinfo;
 extern SysInfo sysinfo;
 extern DigIOInfo digioinfo;
 extern void  SendDAQUserMessage(int message, char *data, int datalen);
@@ -64,12 +61,27 @@ DIOInterface::DIOInterface(QWidget* parent,
     ConfigWidget = new ConfigForm(this);
     qtab->addTab(ConfigWidget,"Global Settings");
 
-    qtab->addTab(new StimConfigTab(this), "Configure Stimulators");
+    StimConfigTab *stimConfigTab = new StimConfigTab(this);
+    qtab->addTab(stimConfigTab, "Configure Stimulators");
 
-    qtab->addTab(new StimOutputOnlyTab(this), "Output-Only Experiments");
-    qtab->addTab(new StimForm(this),"Trigger Pulses");
+    StimOutputOnlyTab *stimOutputOnlyTab = new StimOutputOnlyTab(this);
+    qtab->addTab(stimOutputOnlyTab, "Output-Only Experiments");
+    connect(stimConfigTab, SIGNAL(activeStimulatorChanged(int)), 
+        stimOutputOnlyTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
+    connect(stimOutputOnlyTab->stimulatorSelectComboBox, 
+        SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
 
-    qtab->addTab(new RippleTab(this), "Real-time Feedback Experiments");
+
+    //qtab->addTab(new StimForm(this),"Trigger Pulses");
+
+    //qtab->addTab(new RippleTab(this), "Real-time Feedback Experiments");
+    RealtimeFeedbackTab *realtimeFeedbackTab = new RealtimeFeedbackTab(this);
+    qtab->addTab(realtimeFeedbackTab, "Real-time Feedback Experiments");
+    connect(stimConfigTab, SIGNAL(activeStimulatorChanged(int)), 
+        realtimeFeedbackTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
+    connect(realtimeFeedbackTab->stimulatorSelectComboBox, 
+        SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
+
 
     /*
     qtab->addTab(new StimForm(this),"Trigger Pulses");

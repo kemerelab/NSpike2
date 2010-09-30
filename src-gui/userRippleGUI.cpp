@@ -39,95 +39,112 @@ RippleTab::RippleTab (QWidget *parent)
 {
     QString s;
 
-    Q3GridLayout *grid = new Q3GridLayout(this, 10, 6, 20, -1, "grid 1");
+    QGridLayout *layout = new QGridLayout;
 
-    grid->addMultiCellWidget(new QLabel("Tetrode / channel", this), 0, 0, 0, 4);
+    // QComboBox *stimulatorSelectComboBox = new QComboBox;
+    // stimulatorSelectComboBox->addItem("None");
+    // stimulatorSelectComboBox->addItem("A");
+    // stimulatorSelectComboBox->addItem("B");
+    // stimulatorSelectComboBox->addItem("Both (Alternating)");
+
+    layout->addWidget(new QLabel("Tetrode / channel", this), 0,
+        0, 1, 2, Qt::AlignRight);
     StimChan = new QComboBox( false, this, "Channel Combo Box" );
     StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
-    grid->addMultiCellWidget(StimChan, 0, 0, 3, 3);
+    layout->addWidget(StimChan, 0, 2);
     connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
     connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
     connect(StimChan, SIGNAL(activated(int)), this, SLOT(updateRippleData(void)));
 
-    grid->addMultiCellWidget(new QLabel("Pulse Length (100 us units)", this), 1, 1, 0, 2);
+    layout->addWidget(new QLabel("Pulse Length (100 us units)",
+          this), 1, 0, 1, 2, Qt::AlignRight);
     pulse_len = new QSpinBox (0, 10000, 1, this, "Pulse Length");
     pulse_len->setValue(DIO_RT_DEFAULT_PULSE_LEN);
-    grid->addMultiCellWidget(pulse_len, 1, 1, 3, 3);
+    layout->addWidget(pulse_len, 1, 2);
     connect(pulse_len, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
 
-    grid->addMultiCellWidget(new QLabel("Rip. Coeff 1", this), 2, 2, 0, 1);
+    layout->addWidget(new QLabel("Rip. Coeff 1", this), 2, 0, 1,
+        2, Qt::AlignRight);
     ripCoeff1 = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_COEFF1), this);
     ripCoeff1->setValidator(new QDoubleValidator(this));
     ripCoeff1->setAlignment(Qt::AlignRight);
-    grid->addMultiCellWidget(ripCoeff1, 2, 2, 2, 2);
+    layout->addWidget(ripCoeff1, 2, 2);
     connect(ripCoeff1, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
 
-    grid->addMultiCellWidget(new QLabel("Rip. Coeff 2", this), 2, 2, 3, 4);
+    layout->addWidget(new QLabel("Rip. Coeff 2", this),
+        2, 3, 1, 2, Qt::AlignRight);
     ripCoeff2 = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_COEFF2), this);
     ripCoeff2->setValidator(new QDoubleValidator(this));
     ripCoeff2->setAlignment(Qt::AlignRight);
-    grid->addMultiCellWidget(ripCoeff2, 2, 2, 5, 5);
+    layout->addWidget(ripCoeff2, 2, 5);
     connect(ripCoeff2, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
 
-    grid->addMultiCellWidget(new QLabel("Ripple Threshold (sd)", this), 3, 3, 0, 1);
+    layout->addWidget(new QLabel("Ripple Threshold (sd)", this),
+        3, 0, 1, 2, Qt::AlignRight);
     ripThresh = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_THRESHOLD), this);
     ripThresh->setValidator(new QDoubleValidator(this));
     ripThresh->setAlignment(Qt::AlignRight);
-    grid->addMultiCellWidget(ripThresh, 3, 3, 2, 2);
+    layout->addWidget(ripThresh, 3, 2);
     connect(ripThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
 
-    grid->addMultiCellWidget(new QLabel("Lockout period (usec)", this), 3, 3, 3, 4);
+    layout->addWidget(new QLabel("Lockout period (usec)", this),
+        3, 3, 1, 2, Qt::AlignRight);
     lockoutPeriod = new QSpinBox (0, 20000, 1, this);
     lockoutPeriod->setValue(DIO_RT_DEFAULT_RIPPLE_LOCKOUT);
-    grid->addMultiCellWidget(lockoutPeriod, 3, 3, 5, 5);
+    layout->addWidget(lockoutPeriod, 3, 5);
     connect(lockoutPeriod, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
 
-    grid->addMultiCellWidget(new QLabel("Time Delay (msec)", this), 4, 4, 0, 1);
+    layout->addWidget(new QLabel("Time Delay (msec)", this), 4,
+        0, 1, 2, Qt::AlignRight);
     timeDelay = new QSpinBox (0, 10000, DIO_RT_DEFAULT_RIPPLE_TIME_DELAY, this, "Time Delay");
     timeDelay->setValue(0);
-    grid->addMultiCellWidget(timeDelay, 4, 4, 2, 2);
+    layout->addWidget(timeDelay, 4, 2);
     connect(timeDelay, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
 
-    grid->addMultiCellWidget(new QLabel("Jitter (msec)", this), 4, 4, 4, 4);
+    layout->addWidget(new QLabel("Jitter (msec)", this), 4, 4,
+        Qt::AlignRight);
     timeJitter = new QSpinBox (0, 10000, DIO_RT_DEFAULT_RIPPLE_JITTER, this, "Time Jitter");
     timeJitter->setValue(0);
-    grid->addMultiCellWidget(timeJitter, 4, 4, 5, 5);
+    layout->addWidget(timeJitter, 4, 5);
     connect(timeJitter, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
 
-    grid->addMultiCellWidget(new QLabel("Maximum speed (cm/s)", this), 5, 5, 0, 1);
+    layout->addWidget(new QLabel("Maximum speed (cm/s)", this),
+        5, 0, 1, 2, Qt::AlignRight);
     speedThresh = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH), this);
     speedThresh->setValidator(new QDoubleValidator(this));
     speedThresh->setAlignment(Qt::AlignRight);
-    grid->addMultiCellWidget(speedThresh, 5, 5, 2, 2);
+    layout->addWidget(speedThresh, 5, 2);
     connect(speedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
 
     statusBox = new QLabel("<b>Status:</b>", this);
     //statusBox->setFrameStyle(QFrame::Box | QFrame::Plain);
-    grid->addMultiCellWidget(statusBox, 6, 7, 1, 3);
+    layout->addWidget(statusBox, 6, 1, 2, 2);
     connect(daq_io_widget, SIGNAL(rippleStatusUpdate(RippleStatusMsg)), this, SLOT(updateRippleStatus(RippleStatusMsg)));
 
     enableButton = new QPushButton("Enable Stimulation", this);
     enableButton->setToggleButton(TRUE);
     enableButton->setEnabled(false);
-    grid->addMultiCellWidget(enableButton, 6, 6, 5, 5);
+    layout->addWidget(enableButton, 6, 5);
     connect(enableButton, SIGNAL(toggled(bool)), this, SLOT(enableRipStim(bool)));
 
     startButton = new QPushButton("Start", this, "start");
     startButton->setToggleButton(TRUE);
     startButton->setEnabled(false);
-    grid->addMultiCellWidget(startButton, 9, 9, 1, 1);
+    layout->addWidget(startButton, 9, 1);
     connect(startButton, SIGNAL(toggled(bool)), this, 
 	    SLOT(startRTData(bool)));
 
     stopButton = new QPushButton("Stop", this, "stop");
     stopButton->setToggleButton(TRUE);
-    grid->addMultiCellWidget(stopButton, 9, 9, 4, 4); 
+    layout->addWidget(stopButton, 9, 4);
     connect(stopButton, SIGNAL(toggled(bool)), this, 
 	    SLOT(stopRTData(bool)));
 
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(checkRippleStatus()));
+
+    setLayout(layout);
 }
 
 void RippleTab::updateRippleData(void)

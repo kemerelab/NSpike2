@@ -9,42 +9,48 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
 {
   QGridLayout *layout = new QGridLayout;
 
+  stimulatorSelectComboBox = new QComboBox;
+  stimulatorSelectComboBox->addItem("None");
+  stimulatorSelectComboBox->addItem("A");
+  stimulatorSelectComboBox->addItem("B");
+  stimulatorSelectComboBox->addItem("Both (Alternating)");
 
-  QComboBox *stimulatorSelectComboBox = new QComboBox;
-  stimulatorSelectComboBox->addItem("Stimulator A");
-  stimulatorSelectComboBox->addItem("Stimulator B");
-  stimulatorSelectComboBox->addItem("Alternate Stimulators");
-  //stimulatorSelectComboBox->setSizePolicy(QSizePolicy::Maximum,
-      //QSizePolicy::Preferred);
-  layout->addWidget(stimulatorSelectComboBox,0,0,1,3);
+  // Signals/Slots for stimulatorSelectComboBox are connected in
+  //  main GUI code to StimConfigTab.
+  layout->addWidget(new QLabel("Active Stimulator"),0,0, 
+      Qt::AlignRight | Qt::AlignVCenter);
+  layout->addWidget(stimulatorSelectComboBox,0,1);
 
   layout->addWidget(new QLabel("Number of pulse trains"), 1, 0,
-      Qt::AlignRight | Qt::AlignVCenter);
+      1,1, Qt::AlignRight | Qt::AlignTop);
+
+  QVBoxLayout *nTrainsLayout = new QVBoxLayout;
 
   QSpinBox *nTrainsSpinBox = new QSpinBox();
   nTrainsSpinBox->setAlignment(Qt::AlignRight);
   nTrainsSpinBox->setRange(1,200);
-  layout->addWidget(nTrainsSpinBox, 1, 1);
+  nTrainsLayout->addWidget(nTrainsSpinBox);
+  QPushButton *continuousButton = new QPushButton("Continuous");
+  nTrainsLayout->addWidget(continuousButton);
 
-  QPushButton *continuousButton = new QPushButton("Contiuous");
-  layout->addWidget(continuousButton,1,2);
+  layout->addLayout(nTrainsLayout,1,1);
 
-  layout->addWidget(new QLabel("Inter-train Interval"), 2, 0,
+  layout->addWidget(new QLabel("Inter-train Interval"), 3, 0,
       Qt::AlignRight | Qt::AlignVCenter);
   QSpinBox *trainIntervalSpinBox = new QSpinBox();
   trainIntervalSpinBox->setAlignment(Qt::AlignRight);
   trainIntervalSpinBox->setSuffix(" ms");
   trainIntervalSpinBox->setRange(500, 50000);
-  layout->addWidget(trainIntervalSpinBox, 2, 1);
+  layout->addWidget(trainIntervalSpinBox, 3, 1);
 
   QPushButton *stimSingleButton = new QPushButton("Trigger Single Pulse Sequence");
-  layout->addWidget(stimSingleButton,4,0);
+  layout->addWidget(stimSingleButton,5,0);
 
   QPushButton *startStimButton = new QPushButton("Start Pulse Sequence");
-  layout->addWidget(startStimButton,4,1);
+  layout->addWidget(startStimButton,5,1);
 
   QPushButton *abortStimButton = new QPushButton("Abort Pulse Sequence");
-  layout->addWidget(abortStimButton,4,2);
+  layout->addWidget(abortStimButton,5,2);
 
   setLayout(layout);
 

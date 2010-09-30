@@ -12,6 +12,7 @@ class StimOutputOnlyTab : public QWidget
 public:
   StimOutputOnlyTab (QWidget *parent);
 
+  QComboBox *stimulatorSelectComboBox;
 
 public slots:
 

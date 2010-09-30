@@ -45,10 +45,16 @@ public:
 public slots:
   void selectStimulator(void);
 
+  void setActiveStimulator(int);
+
+signals:
+  void activeStimulatorChanged(int);
+
 private:
   StimConfigureWidget *stimConfigA;
   StimConfigureWidget *stimConfigB;
-  QButtonGroup *stimulatorSelectButtonGroup;
+  QPushButton *stimulatorAButton;
+  QPushButton *stimulatorBButton;
 
 protected:
 };

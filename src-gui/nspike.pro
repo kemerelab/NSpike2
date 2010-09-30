@@ -15,7 +15,7 @@ SOURCES += spikeStatusbar.cpp
 HEADERS += spikeStatusbar.h
 SOURCES += spikeUserGUI.cpp
 SOURCES += spikeUserThetaGUI.cpp 
-SOURCES += spikeUserRippleGUI.cpp
+SOURCES += userRippleGUI.cpp
 SOURCES += spikeUserLatencyGUI.cpp 
 SOURCES += spikeUserPulseGUI.cpp
 SOURCES += spikeUserStimForm.cpp 
@@ -25,6 +25,8 @@ SOURCES += userConfigureStimulators.cpp
 HEADERS += userConfigureStimulators.h
 SOURCES += userOutputOnlyTab.cpp
 HEADERS += userOutputOnlyTab.h
+SOURCES += userRealtimeFeedbackTab.cpp
+HEADERS += userRealtimeFeedbackTab.h
 RESOURCES += guiresources.qrc
 QT += qt3support
 

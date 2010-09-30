@@ -24,30 +24,27 @@ StimConfigTab::StimConfigTab (QWidget *parent)
     QGridLayout *layout = new QGridLayout;
     layout->addWidget(explanation,0,0,1,3);
     
-    QPushButton *labelA = new QPushButton("A");
-    layout->addWidget(labelA,1,0);
-    labelA->setCheckable(true);
-    labelA->setChecked(true);
+    stimulatorAButton = new QPushButton("A");
+    layout->addWidget(stimulatorAButton,1,0);
+    stimulatorAButton->setCheckable(true);
+    stimulatorAButton->setChecked(true);
     layout->addWidget(stimConfigA,1,1);
 
-    QPushButton *labelB = new QPushButton("B");
-    layout->addWidget(labelB,2,0);
-    labelB->setCheckable(true);
-    labelB->setChecked(false);
+    stimulatorBButton = new QPushButton("B");
+    layout->addWidget(stimulatorBButton,2,0);
+    stimulatorBButton->setCheckable(true);
+    stimulatorBButton->setChecked(false);
     layout->addWidget(stimConfigB,2,1);
     stimConfigB->setEnabled(false);
 
-    QButtonGroup *stimulatorSelectButtonGroup = new QButtonGroup;
-    stimulatorSelectButtonGroup->addButton(labelA,0);
-    stimulatorSelectButtonGroup->addButton(labelB,1);
-    stimulatorSelectButtonGroup->setExclusive(false);
-    connect(stimulatorSelectButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(selectStimulator(void)));
+    connect(stimulatorAButton, SIGNAL(clicked(bool)), this, SLOT(selectStimulator(void)));
+    connect(stimulatorBButton, SIGNAL(clicked(bool)), this, SLOT(selectStimulator(void)));
 
     QFont font;
     font.setPointSize(32);
     //font.setBold(true);
-    labelA->setFont(font);
-    labelB->setFont(font);
+    stimulatorAButton->setFont(font);
+    stimulatorBButton->setFont(font);
 
     setLayout(layout);
 
@@ -55,19 +52,28 @@ StimConfigTab::StimConfigTab (QWidget *parent)
 
 void StimConfigTab::selectStimulator(void)
 {
-  //stimConfigA->setEnabled(stimulatorSelectButtonGroup->button(0)->isChecked());
-  //stimConfigB->setEnabled(stimulatorSelectButtonGroup->button(1)->isChecked());
+  stimConfigA->setEnabled(stimulatorAButton->isChecked());
+  stimConfigB->setEnabled(stimulatorBButton->isChecked());
 
-  //if (stimulatorSelectButtonGroup->button(0)->isChecked())
-    //qDebug("Button A is checked");
-  //if (stimulatorSelectButtonGroup->button(1)->isChecked())
-    //qDebug("Button B is checked");
-  qDebug("Hmm");
-  //if (stimulatorSelectButtonGroup->button(0) == 0)
-    //qDebug("Hrm");
+  emit activeStimulatorChanged(stimulatorAButton->isChecked() +
+      2*((int)stimulatorBButton->isChecked()));
 
+  qDebug("Emitting activeStimulatorChanged signal");
   return;
 }
+
+void StimConfigTab::setActiveStimulator(int which)
+{
+  qDebug("Received setActiveStimulator signal %d",which);
+
+  stimulatorAButton->setChecked(which & 0x01);
+  stimulatorBButton->setChecked(which & 0x02);
+
+  stimConfigA->setEnabled(stimulatorAButton->isChecked());
+  stimConfigB->setEnabled(stimulatorBButton->isChecked());
+  return;
+}
+
 
 
 StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
@@ -165,7 +171,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
 
   QGroupBox *stimPinControlsGroup = new QGroupBox("Stimulation Pins");
   stimPinControlsGroup->setLayout(stimPinControlsLayout);
-  stimPinControlsGroup->setStyleSheet("QGroupBox{border: 2px solid navy;border-radius: 5px; margin-top: 1ex;}" \
+  stimPinControlsGroup->setStyleSheet("QGroupBox::enabled{border: 2px solid navy;border-radius: 5px; margin-top: 1ex;}" \
                 "QGroupBox::title{subcontrol-origin: margin; subcontrol-position:top center; padding: 0 3px;}");
   parametersLayout->addWidget(stimPinControlsGroup,0,4,4,1,
       Qt::AlignHCenter | Qt::AlignTop);
