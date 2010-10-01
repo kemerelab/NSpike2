@@ -82,6 +82,11 @@ DIOInterface::DIOInterface(QWidget* parent,
     connect(realtimeFeedbackTab->stimulatorSelectComboBox, 
         SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
 
+    qtab->addTab(new ThetaTab(this),"Theta Phase");
+
+    qtab->addTab(new RippleTab(this),"Ripple Disruption");
+
+    qtab->addTab(new LatencyTab(this),"Test Latency");
 
     /*
     qtab->addTab(new StimForm(this),"Trigger Pulses");
