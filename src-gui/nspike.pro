@@ -6,28 +6,31 @@ HEADERS += ../include/spike_main.h
 HEADERS	+= spikeGLPane.h 
 SOURCES += spikeGLPane.cpp 
 SOURCES += spikeMainWindow.cpp 
-SOURCES += rewardControl.cpp
-HEADERS += rewardControl.h
 HEADERS += spikeMainWindow.h 
 SOURCES += spikeInput.cpp 
 HEADERS += spikeInput.h 
 SOURCES += spikeStatusbar.cpp
 HEADERS += spikeStatusbar.h
+
+SOURCES += rewardControl.cpp
+HEADERS += rewardControl.h
+
+# SOURCES += spikeUserThetaGUI.cpp 
+# SOURCES += userRippleGUI.cpp
+# SOURCES += spikeUserLatencyGUI.cpp 
+# SOURCES += spikeUserPulseGUI.cpp
+# SOURCES += spikeUserStimForm.cpp 
+
 SOURCES += spikeUserGUI.cpp
-SOURCES += spikeUserThetaGUI.cpp 
-SOURCES += userRippleGUI.cpp
-SOURCES += spikeUserLatencyGUI.cpp 
-SOURCES += spikeUserPulseGUI.cpp
-SOURCES += spikeUserStimForm.cpp 
+HEADERS += spikeUserGUI.h 
 SOURCES += userMainConfig.cpp
 HEADERS += userMainConfig.h
-HEADERS += spikeUserGUI.h 
 SOURCES += userConfigureStimulators.cpp
-HEADERS += userConfigureStimulators.h
+HEADERS += userConfigureStimulators.h 
 SOURCES += userOutputOnlyTab.cpp
-HEADERS += userOutputOnlyTab.h
+HEADERS += userOutputOnlyTab.h 
 SOURCES += userRealtimeFeedbackTab.cpp
-HEADERS += userRealtimeFeedbackTab.h
+HEADERS += ../userRealtimeFeedbackTab.h 
 RESOURCES += guiresources.qrc
 QT += qt3support
 
@@ -42,3 +45,5 @@ CONFIG	+= debug qt warn_on release opengl thread staticlib
 LANGUAGE	= C++
 #The following line was inserted by qt3to4
 QT +=  opengl 
+
+
