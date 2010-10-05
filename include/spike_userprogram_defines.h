@@ -1,6 +1,10 @@
 #ifndef __SPIKE_USERPROGRAM_DEFINES_H__
 #define __SPIKE_USERPROGRAM_DEFINES_H__
 
+#define DEFAULT_MODE -1
+#define OUTPUT_ONLY_MODE 0
+#define REALTIME_FEEDBACK_MODE 1
+
 // Laser control commands
 #define DIO_PULSE_SEQ		300    // the message contains text with 
 					//a series of pulse sequences

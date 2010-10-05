@@ -100,3 +100,12 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   layout->addWidget(algorithmParametersGroupBox,Qt::AlignCenter);
   setLayout(layout);
 }
+
+/*
+    grid->addMultiCellWidget(new QLabel("Timing/RT IO Tetrode / channel:", this), 4, 4, 1, 2);
+    StimChan = new QComboBox( FALSE, this, "Timer Channel Combo Box" );
+    StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
+    grid->addMultiCellWidget(StimChan, 4, 4, 3, 3);
+    connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
+    connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
+*/

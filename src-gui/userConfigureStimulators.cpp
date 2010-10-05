@@ -22,19 +22,23 @@ StimConfigTab::StimConfigTab (QWidget *parent)
     explanation->setIndent(30);
 
     QGridLayout *layout = new QGridLayout;
-    layout->addWidget(explanation,0,0,1,3);
+    layout->addWidget(explanation,0,0,1,2);
     
     stimulatorAButton = new QPushButton("A");
-    layout->addWidget(stimulatorAButton,1,0);
+    layout->addWidget(stimulatorAButton,1,0,Qt::AlignRight);
     stimulatorAButton->setCheckable(true);
     stimulatorAButton->setChecked(true);
-    layout->addWidget(stimConfigA,1,1);
+    stimulatorAButton->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
+    stimulatorAButton->setStyleSheet("QPushButton::checked{color: green;}");
+    layout->addWidget(stimConfigA,1,1,Qt::AlignLeft);
 
     stimulatorBButton = new QPushButton("B");
-    layout->addWidget(stimulatorBButton,2,0);
+    layout->addWidget(stimulatorBButton,2,0,Qt::AlignRight);
     stimulatorBButton->setCheckable(true);
     stimulatorBButton->setChecked(false);
-    layout->addWidget(stimConfigB,2,1);
+    stimulatorBButton->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
+    stimulatorBButton->setStyleSheet("QPushButton::checked{color: green;}");
+    layout->addWidget(stimConfigB,2,1,Qt::AlignLeft);
     stimConfigB->setEnabled(false);
 
     connect(stimulatorAButton, SIGNAL(clicked(bool)), this, SLOT(selectStimulator(void)));
@@ -42,9 +46,11 @@ StimConfigTab::StimConfigTab (QWidget *parent)
 
     QFont font;
     font.setPointSize(32);
-    //font.setBold(true);
+    font.setBold(true);
     stimulatorAButton->setFont(font);
     stimulatorBButton->setFont(font);
+
+    layout->setColumnStretch(1,1);
 
     setLayout(layout);
 
@@ -173,15 +179,8 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   stimPinControlsGroup->setLayout(stimPinControlsLayout);
   stimPinControlsGroup->setStyleSheet("QGroupBox::enabled{border: 2px solid navy;border-radius: 5px; margin-top: 1ex;}" \
                 "QGroupBox::title{subcontrol-origin: margin; subcontrol-position:top center; padding: 0 3px;}");
-  parametersLayout->addWidget(stimPinControlsGroup,0,4,4,1,
+  parametersLayout->addWidget(stimPinControlsGroup,0,3,4,1,
       Qt::AlignHCenter | Qt::AlignTop);
-
-  parametersLayout->setColumnStretch(0,2);
-  parametersLayout->setColumnStretch(1,2);
-  parametersLayout->setColumnStretch(2,2);
-  parametersLayout->setColumnStretch(3,1);
-  parametersLayout->setColumnStretch(4,2);
-
 
   groupBox->setLayout(parametersLayout);
 
@@ -236,3 +235,35 @@ void StimConfigureWidget::ableBiphasicStimulation(int state)
     return;
 }
 
+/*
+void ConfigForm::updateStimPins(void)
+{
+  int data[2];
+
+  int stimPin1 = PortSpinBox->value();
+  int stimPin2 = Port2SpinBox->value();
+
+  if (digioinfo.outputfd) {
+    if (BiphasicButton->isOn()) {
+      // set biphasic and 2 pins
+      data[0] = stimPin1;
+      data[1] = stimPin2;
+      if ((data[0] / 16) != (data[1] / 16))
+QMessageBox::warning(this,"Invalid Stimulation Ports","Stimulation ports for stim 1 and 2 must be the same. Stim Pin 1 port assumed.");
+      SendDAQUserMessage(DIO_SET_BIPHASIC_STIM_PINS, (char *) data, 2*sizeof(int));
+      fprintf(stderr,"Sent pins\n");
+    }
+    else {
+      // set single activation pin
+      data[0] = stimPin1;
+      SendDAQUserMessage(DIO_SET_SINGLE_STIM_PIN, (char *) data, sizeof(int));
+      fprintf(stderr,"Sent pin\n");
+    }
+
+  }
+  else {
+    QMessageBox::warning(this,"No User Program","No user program is currently running");
+  }
+}
+
+*/

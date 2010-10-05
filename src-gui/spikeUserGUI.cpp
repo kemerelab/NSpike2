@@ -22,6 +22,7 @@
 #include "spikecommon.h"
 
 #include "spikeUserGUI.h"
+#include "userMainConfig.h"
 #include "userConfigureStimulators.h"
 #include "userOutputOnlyTab.h"
 #include "userRealtimeFeedbackTab.h"
@@ -58,47 +59,44 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     connect(qtab, SIGNAL(currentChanged(int)), this, SLOT(switchFunction(int)));
 
-    ConfigWidget = new ConfigForm(this);
-    qtab->addTab(ConfigWidget,"Global Settings");
+    mainConfigTab = new MainConfigTab(this);
+    qtab->insertTab(mainConfigTab,"Global Settings", MAIN_CONFIG_TAB);
+    connect(mainConfigTab->modeButtonGroup, SIGNAL(buttonClicked(int)), this,
+        SLOT(changeOperatingMode(int)));
 
     StimConfigTab *stimConfigTab = new StimConfigTab(this);
-    qtab->addTab(stimConfigTab, "Configure Stimulators");
+    qtab->insertTab(stimConfigTab, "Configure Stimulators",
+        CONFIG_STIMULATORS_TAB);
 
-    StimOutputOnlyTab *stimOutputOnlyTab = new StimOutputOnlyTab(this);
-    qtab->addTab(stimOutputOnlyTab, "Output-Only Experiments");
+    stimOutputOnlyTab = new StimOutputOnlyTab(this);
+    qtab->insertTab(stimOutputOnlyTab, "Output-Only Experiments",
+        OUTPUT_ONLY_TAB);
     connect(stimConfigTab, SIGNAL(activeStimulatorChanged(int)), 
         stimOutputOnlyTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(stimOutputOnlyTab->stimulatorSelectComboBox, 
         SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
 
-
-    //qtab->addTab(new StimForm(this),"Trigger Pulses");
-
-    //qtab->addTab(new RippleTab(this), "Real-time Feedback Experiments");
-    RealtimeFeedbackTab *realtimeFeedbackTab = new RealtimeFeedbackTab(this);
-    qtab->addTab(realtimeFeedbackTab, "Real-time Feedback Experiments");
+    realtimeFeedbackTab = new RealtimeFeedbackTab(this);
+    qtab->insertTab(realtimeFeedbackTab, "Real-time Feedback Experiments", 
+        REALTIME_FEEDBACK_TAB);
     connect(stimConfigTab, SIGNAL(activeStimulatorChanged(int)), 
         realtimeFeedbackTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(realtimeFeedbackTab->stimulatorSelectComboBox, 
         SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
 
-    qtab->addTab(new ThetaTab(this),"Theta Phase");
+    stimConfigTab->selectStimulator(); // synchronize initial stim display
 
-    qtab->addTab(new RippleTab(this),"Ripple Disruption");
+    //qtab->addTab(new ThetaTab(this),"Theta Phase");
 
-    qtab->addTab(new LatencyTab(this),"Test Latency");
+    //qtab->addTab(new RippleTab(this),"Ripple Disruption");
+
+    //qtab->addTab(new LatencyTab(this),"Test Latency");
 
     /*
     qtab->addTab(new StimForm(this),"Trigger Pulses");
 
     pulseFileTabWidget = new PulseFileTab(this);
     qtab->addTab(pulseFileTabWidget,"Pulses From File");
-
-    qtab->addTab(new ThetaTab(this),"Theta Phase");
-
-    qtab->addTab(new RippleTab(this),"Ripple Disruption");
-
-    qtab->addTab(new LatencyTab(this),"Test Latency");
     */
 
     QHBoxLayout *layout = new QHBoxLayout;
@@ -106,11 +104,34 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     setLayout(layout);
 
+    changeOperatingMode(DEFAULT_MODE);
     show();
 }
 
 DIOInterface::~DIOInterface() 
 {
+}
+
+void DIOInterface::changeOperatingMode(int mode)
+{
+  switch (mode) {
+  case OUTPUT_ONLY_MODE: 
+    qtab->setTabEnabled(OUTPUT_ONLY_TAB,true);
+    qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,false);
+    // enable output only mode tab
+    break;
+  case REALTIME_FEEDBACK_MODE: 
+    // enable realtime feedback mode tab
+    qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,true);
+    qtab->setTabEnabled(OUTPUT_ONLY_TAB,false);
+    break;
+  case DEFAULT_MODE:
+  default:
+    // disable all mode tabs
+    qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,false);
+    qtab->setTabEnabled(OUTPUT_ONLY_TAB,false);
+    break;
+  }
 }
 
 void DIOInterface::switchFunction(int whichProgram)
@@ -128,7 +149,7 @@ void DIOInterface::switchFunction(int whichProgram)
 
     /*
     if (qtab->id(qtab->visibleWidget()) == 0) { // current widget is config tab
-      ((ConfigForm *)(qtab->visibleWidget()))->updateStimPins(); // update stim pins before we leave
+      ((MainConfigTab *)(qtab->visibleWidget()))->updateStimPins(); // update stim pins before we leave
       daq_io_widget->updateChan(daq_io_widget->StimChan);
     }
     */
@@ -158,15 +179,6 @@ void DIOInterface::switchFunction(int whichProgram)
 
 void DIOInterface::enableTabs(bool enable)
 {
-  /*if (enable) {
-    for (int i = 1; i <= 5; i++)
-      indexGroup->find(i)->setEnabled(TRUE);
-  }
-  else {
-    for (int i = 1; i <= 5; i++)
-      indexGroup->find(i)->setEnabled(FALSE);
-  }
-  */
 }
 
 

@@ -6,13 +6,18 @@
 #include "spike_main.h"
 
 #include "spike_userprogram_defines.h"
+#include "userMainConfig.h"
+#include "userOutputOnlyTab.h"
+#include "userRealtimeFeedbackTab.h"
 
 #include <QtGui>
-#include <q3widgetstack.h>
 #include <q3textedit.h>
-#include <q3buttongroup.h>
 
 #define DEFAULT_TMP_PULSE_COMMANDS_FILE "/tmp/tmp_pulse_commands"
+#define MAIN_CONFIG_TAB 0
+#define CONFIG_STIMULATORS_TAB 1
+#define OUTPUT_ONLY_TAB 2
+#define REALTIME_FEEDBACK_TAB 3
 
 extern void  SendDAQUserMessage(int message, char *data, int datalen);
 
@@ -45,40 +50,38 @@ public slots:
 extern DAQ_IO *daq_io_widget; // global, but created in DIOInterface
 
 
-class ConfigForm : public QWidget
-{
-    Q_OBJECT
+class DIOInterface : public QDialog {
+	Q_OBJECT
 
 public:
-    ConfigForm( QWidget* parent = 0, const char* name = 0, Qt::WFlags fl = 0 );
-    ~ConfigForm();
-
-    QComboBox* UserProgramCombo;
-    QPushButton* RunUserProgramButton;
-    QLabel* UserProgramStatus;
-
-    QComboBox* StimChan;
-
-    QLineEdit* CmPerPix;
-
-    QSpinBox* PortSpinBox;
-    QSpinBox* Port2SpinBox;
-    QPushButton* BiphasicButton;
+  DIOInterface(QWidget *parent = 0, 
+   const char *name = 0, bool model = FALSE, 
+   Qt::WFlags fl = 0);
+  ~DIOInterface();
+  void msgFromUser(int msg, char *data) { daq_io_widget->msgFromUser(msg,data); }
 
 public slots:
-    void updateStatus(int);
-    void updateStimPins(void);
-    void updateCmPerPix(void);
-    void runProgram(void) {StartDigIOProgram(UserProgramCombo->currentItem());};
-    void changeStimChanDisplay(int ch) {StimChan->setCurrentItem(ch);};
+  void  switchFunction(int);
+  void  enableTabs(bool);
+  void  changeOperatingMode(int);
 
 protected:
+  int         	ntabs;
 
-protected slots:
+  /* Control tabs */
+  Q3ButtonGroup *indexGroup;
+  // Q3WidgetStack     	*qtab;
+  QTabWidget *qtab;
+
+  MainConfigTab *mainConfigTab;
+  //PulseFileTab *pulseFileTabWidget;
+  StimOutputOnlyTab *stimOutputOnlyTab;
+  RealtimeFeedbackTab *realtimeFeedbackTab;
+signals:
 
 };
 
-
+/*
 class PulseFileTab : public QWidget
 {
   Q_OBJECT
@@ -246,32 +249,6 @@ protected:
 protected slots:
 
 };
-
-
-class DIOInterface : public QDialog {
-	Q_OBJECT
-
-public:
-  DIOInterface(QWidget *parent = 0, 
-   const char *name = 0, bool model = FALSE, 
-   Qt::WFlags fl = 0);
-  ~DIOInterface();
-  void msgFromUser(int msg, char *data) { daq_io_widget->msgFromUser(msg,data); }
-public slots:
-  void  switchFunction(int);
-  void  enableTabs(bool);
-protected:
-  int         	ntabs;
-
-  /* Control tabs */
-  Q3ButtonGroup *indexGroup;
-  // Q3WidgetStack     	*qtab;
-  QTabWidget *qtab;
-
-  QWidget *ConfigWidget;
-  PulseFileTab *pulseFileTabWidget;
-signals:
-
-};
+*/
 
 #endif
