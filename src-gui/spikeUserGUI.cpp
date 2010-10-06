@@ -64,6 +64,9 @@ DIOInterface::DIOInterface(QWidget* parent,
     connect(mainConfigTab->modeButtonGroup, SIGNAL(buttonClicked(int)), this,
         SLOT(changeOperatingMode(int)));
 
+    connect(mainConfigTab->loadSettingsButton, SIGNAL(clicked(void)), this, SLOT(loadSettings(void)));
+    connect(mainConfigTab->saveSettingsButton, SIGNAL(clicked(void)), this, SLOT(saveSettings(void)));
+
     StimConfigTab *stimConfigTab = new StimConfigTab(this);
     qtab->insertTab(stimConfigTab, "Configure Stimulators",
         CONFIG_STIMULATORS_TAB);
@@ -84,17 +87,7 @@ DIOInterface::DIOInterface(QWidget* parent,
     connect(realtimeFeedbackTab->stimulatorSelectComboBox, 
         SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
 
-    stimConfigTab->selectStimulator(); // synchronize initial stim display
-
-    //qtab->addTab(new ThetaTab(this),"Theta Phase");
-
-    //qtab->addTab(new RippleTab(this),"Ripple Disruption");
-
-    //qtab->addTab(new LatencyTab(this),"Test Latency");
-
     /*
-    qtab->addTab(new StimForm(this),"Trigger Pulses");
-
     pulseFileTabWidget = new PulseFileTab(this);
     qtab->addTab(pulseFileTabWidget,"Pulses From File");
     */
@@ -104,7 +97,14 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     setLayout(layout);
 
+    // Can we auto start user program here?
+
+    mainConfigTab->initializeValues();
+
+    stimConfigTab->selectStimulator(); // synchronize initial stim display
+
     changeOperatingMode(DEFAULT_MODE);
+
     show();
 }
 
@@ -132,6 +132,18 @@ void DIOInterface::changeOperatingMode(int mode)
     qtab->setTabEnabled(OUTPUT_ONLY_TAB,false);
     break;
   }
+}
+
+void DIOInterface::loadSettings(void) {
+  QString settingsFilename = QFileDialog::getOpenFileName(this, 
+      QString("Open Stimulator Settings"));
+  qDebug() << "User looking for settings in" << settingsFilename;
+}
+
+void DIOInterface::saveSettings(void) {
+  QString settingsFilename = QFileDialog::getSaveFileName(this, 
+      QString("Save Stimulator Settings"));
+  qDebug() << "User  wanting to save settings in" << settingsFilename;
 }
 
 void DIOInterface::switchFunction(int whichProgram)

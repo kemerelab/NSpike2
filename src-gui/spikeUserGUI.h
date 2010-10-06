@@ -64,6 +64,8 @@ public slots:
   void  switchFunction(int);
   void  enableTabs(bool);
   void  changeOperatingMode(int);
+  void  loadSettings(void);
+  void  saveSettings(void);
 
 protected:
   int         	ntabs;

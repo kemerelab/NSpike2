@@ -20,10 +20,14 @@ public:
     QPushButton *realtimeFeedbackModePushButton;
     QLineEdit* CmPerPix;
 
+    QPushButton *loadSettingsButton;
+    QPushButton *saveSettingsButton;
+
 public slots:
     void updateStatus(int);
     void updateCmPerPix(void);
     void runProgram(void);
+    void initializeValues(void);
 
 protected:
 
