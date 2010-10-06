@@ -30,7 +30,8 @@ HEADERS += userConfigureStimulators.h
 SOURCES += userOutputOnlyTab.cpp
 HEADERS += userOutputOnlyTab.h 
 SOURCES += userRealtimeFeedbackTab.cpp
-HEADERS += ../userRealtimeFeedbackTab.h 
+HEADERS += userRealtimeFeedbackTab.h 
+
 RESOURCES += guiresources.qrc
 QT += qt3support
 

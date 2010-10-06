@@ -64,11 +64,11 @@ DIST_SOURCES = $(nspike_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/lorenlab/NSpike/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/lorenlab/NSpike/missing --run tar
-AUTOCONF = ${SHELL} /home/lorenlab/NSpike/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/lorenlab/NSpike/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/lorenlab/NSpike/missing --run automake-1.11
+ACLOCAL = ${SHELL} /home/ckemere/Code/NSpike2/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/ckemere/Code/NSpike2/missing --run tar
+AUTOCONF = ${SHELL} /home/ckemere/Code/NSpike2/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/ckemere/Code/NSpike2/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/ckemere/Code/NSpike2/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -96,7 +96,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lz -lm -lavcodec -lGL 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/lorenlab/NSpike/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/ckemere/Code/NSpike2/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = NSpike
@@ -107,16 +107,16 @@ PACKAGE_TARNAME = nspike
 PACKAGE_URL = 
 PACKAGE_VERSION = 2.0.0
 PATH_SEPARATOR = :
-QTDIR = /usr/lib/qt4
+QTDIR = /usr/share/qt4
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = 
 VERSION = 2.0.0
-abs_builddir = /home/lorenlab/NSpike/src-main
-abs_srcdir = /home/lorenlab/NSpike/src-main
-abs_top_builddir = /home/lorenlab/NSpike
-abs_top_srcdir = /home/lorenlab/NSpike
+abs_builddir = /home/ckemere/Code/NSpike2/src-main
+abs_srcdir = /home/ckemere/Code/NSpike2/src-main
+abs_top_builddir = /home/ckemere/Code/NSpike2
+abs_top_srcdir = /home/ckemere/Code/NSpike2
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -136,7 +136,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/lorenlab/NSpike/install-sh
+install_sh = ${SHELL} /home/ckemere/Code/NSpike2/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -160,13 +160,13 @@ nspike_SOURCES = spike_main.cpp spike_dsp.cpp \
     ../src-modules/spike_message.cpp \
     ../src-modules/spike_config.cpp
 
-nspike_LDFLAGS = -L /usr/lib/qt4/lib 
+nspike_LDFLAGS = -L /usr/share/qt4/lib 
 nspike_LDADD = ../src-gui/libnspike.a -lpthread -lGLU -lGL -lQt3Support -lQtOpenGL -lQtGui -lQtCore
 AM_CPPFLAGS = -pipe -D_REENTRANT -Wall -W -DQT_NO_DEBUG -DQT_QT3SUPPORT_LIB -DQT3_SUPPORT -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED $(all_includes) 
 INCLUDES = -I../include -I../src-gui \
--I/usr/lib/qt4/mkspecs/linux-g++ -I. -I/usr/lib/qt4/include/QtCore \
--I/usr/lib/qt4/include/QtGui -I/usr/lib/qt4/include/QtOpenGL \
--I/usr/lib/qt4/include/Qt3Support -I/usr/lib/qt4/include
+-I/usr/share/qt4/mkspecs/linux-g++ -I. -I/usr/share/qt4/include/QtCore \
+-I/usr/share/qt4/include/QtGui -I/usr/share/qt4/include/QtOpenGL \
+-I/usr/share/qt4/include/Qt3Support -I/usr/share/qt4/include
 
 # -I/usr/share/qt4/mkspecs/linux-g++ -I. -I/usr/include/qt4/QtCore \
 # -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtOpenGL \

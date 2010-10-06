@@ -97,11 +97,11 @@ DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/lorenlab/NSpike/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/lorenlab/NSpike/missing --run tar
-AUTOCONF = ${SHELL} /home/lorenlab/NSpike/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/lorenlab/NSpike/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/lorenlab/NSpike/missing --run automake-1.11
+ACLOCAL = ${SHELL} /home/ckemere/Code/NSpike2/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/ckemere/Code/NSpike2/missing --run tar
+AUTOCONF = ${SHELL} /home/ckemere/Code/NSpike2/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/ckemere/Code/NSpike2/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/ckemere/Code/NSpike2/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -129,7 +129,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lz -lm -lavcodec -lGL 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/lorenlab/NSpike/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/ckemere/Code/NSpike2/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = NSpike
@@ -140,16 +140,16 @@ PACKAGE_TARNAME = nspike
 PACKAGE_URL = 
 PACKAGE_VERSION = 2.0.0
 PATH_SEPARATOR = :
-QTDIR = /usr/lib/qt4
+QTDIR = /usr/share/qt4
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = 
 VERSION = 2.0.0
-abs_builddir = /home/lorenlab/NSpike
-abs_srcdir = /home/lorenlab/NSpike
-abs_top_builddir = /home/lorenlab/NSpike
-abs_top_srcdir = /home/lorenlab/NSpike
+abs_builddir = /home/ckemere/Code/NSpike2
+abs_srcdir = /home/ckemere/Code/NSpike2
+abs_top_builddir = /home/ckemere/Code/NSpike2
+abs_top_srcdir = /home/ckemere/Code/NSpike2
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -169,7 +169,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/lorenlab/NSpike/install-sh
+install_sh = ${SHELL} /home/ckemere/Code/NSpike2/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -191,8 +191,10 @@ top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = configure include/*.h src-gui/nspike.pro \
-	src-gui/Makefile.am src-gui/*.h src-gui/*.cpp data Doc \
-	DSPLowLevelCode kspike setupnet autogen.sh
+	src-gui/Makefile.am src-gui/*.h src-gui/*.cpp src-gui/images/* \
+	src-gui/guiresources.qrc src-gui/testing/*.cpp \
+	src-gui/testing/*.pro data Doc DSPLowLevelCode kspike setupnet \
+	autogen.sh
 SUBDIRS = src-modules src-fixpos src-extract src-user src-gui src-main 
 all: all-recursive
 

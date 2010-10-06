@@ -191,8 +191,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = configure include/*.h src-gui/nspike.pro \
-	src-gui/Makefile.am src-gui/*.h src-gui/*.cpp data Doc \
-	DSPLowLevelCode kspike setupnet autogen.sh
+	src-gui/Makefile.am src-gui/*.h src-gui/*.cpp src-gui/images/* \
+	src-gui/guiresources.qrc src-gui/testing/*.cpp \
+	src-gui/testing/*.pro data Doc DSPLowLevelCode kspike setupnet \
+	autogen.sh
 SUBDIRS = src-modules src-fixpos src-extract src-user src-gui src-main 
 all: all-recursive
 
