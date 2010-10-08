@@ -1,4 +1,4 @@
-#include "laser_defines.h"
+#include "stimcontrol_defines.h"
 
 void ByteSwap(unsigned short *sptr, int nelem);
 

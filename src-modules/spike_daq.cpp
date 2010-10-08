@@ -29,7 +29,7 @@
 
 #include "spikecommon.h"
 #include "spike_dio.h"
-#include "spike_userprogram_defines.h"
+#include "spike_stimcontrol_defines.h"
 
 void daqexit(int status);
 void getspike(short *data);

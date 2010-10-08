@@ -1,4 +1,4 @@
-send_dsp_commands.o: send_dsp_commands.cpp laser_defines.h \
+send_dsp_commands.o: send_dsp_commands.cpp stimcontrol_defines.h \
  ../include/spikecommon.h /usr/include/stdio.h /usr/include/features.h \
  /usr/include/bits/predefs.h /usr/include/sys/cdefs.h \
  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
@@ -52,7 +52,7 @@ send_dsp_commands.o: send_dsp_commands.cpp laser_defines.h \
  ../include/spike_matlab.h ../include/spike_dio.h \
  ../include/spike_userprogram_defines.h
 
-laser_defines.h:
+stimcontrol_defines.h:
 
 ../include/spikecommon.h:
 

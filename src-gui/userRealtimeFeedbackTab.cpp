@@ -2,7 +2,6 @@
 #include "spikecommon.h"
 #include "userRealtimeFeedbackTab.h"
 #include "spikeUserGUI.h"
-//#include "spike_userprogram_defines.h"
 
 RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   : QWidget(parent)

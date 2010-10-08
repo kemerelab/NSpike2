@@ -2,7 +2,7 @@
 #include "spikecommon.h"
 #include "spike_dio.h"
 
-#include "laser_defines.h"
+#include "stimcontrol_defines.h"
 #include "spike_userprogram_defines.h"
 
 /* Globals: */
@@ -150,6 +150,8 @@ int main(int argc, char **argv)
         case DIO_SET_CM_PER_PIX:
           cmPerPix = ((double*)messagedata)[0];
           fprintf(stderr,"rt_user: Setting cm/pix = %f.\n",cmPerPix);
+          break;
+        case DIO_SET_STIM_PARAMETERS:
           break;
         case DIO_SET_SINGLE_STIM_PIN:
           biphasicStim = 0;

@@ -1,7 +1,7 @@
 #include "spikecommon.h"
 #include "spike_dio.h"
 
-#include "laser_defines.h"
+#include "stimcontrol_defines.h"
 #include "spike_userprogram_defines.h"
 
 extern DaqToUserInfo           daq_to_user_info;
@@ -53,8 +53,6 @@ void ProcessData(unsigned short *usptr, DSPInfo *dptr)
             break;
           case STATE_RIPPLE_STIM:
             stim = ProcessRippleData((double) ((short) *usptr));
-            // if ((stim > 0) && (realtimeProcessingEnabled)) {
-            // // push realtimeProcessing into ProcessRippleData
             if ((stim > 0) && (realtimeProcessingEnabled)) {
               PulseLaserCommand(rippleStimPulseCmd, PULSE_IMMEADIATELY);
             }
@@ -96,8 +94,7 @@ void ProcessTimestamp( void )
     fprintf(stderr,"\n\nrt_user: next command timestamp %d (%d) (%d)\n", 
        nextPulseCmd->start_samp_timestamp/3, last_future_timestamp/3, timestamp);
     PulseLaserCommand(*nextPulseCmd); // send current next command
-    SendMessage(outputfd, DIO_PULSE_SEQ_STEP, (char *) &(nextPulseCmd->line),  sizeof(int)); 
-    // fprintf(stderr,"rt_user: sending DIO_PULSE_SEQ_STEP line %d\n", nextPulseCmd->line);
+    SendMessage(outputfd, DIO_PULSE_SEQ_STEP, (char *) &(nextPulseCmd->line),  sizeof(int));  // send info back to user program
 
     last_future_timestamp = nextPulseCmd->start_samp_timestamp;
     next_samp_timestamp = last_future_timestamp + PulseCommandLength(*nextPulseCmd);
@@ -106,18 +103,14 @@ void ProcessTimestamp( void )
     while (nextPulseCmd->type == 'd') {
       next_samp_timestamp += nextPulseCmd->delay * SAMP_TO_TIMESTAMP;
       nextPulseCmd++;
-      // fprintf(stderr,"rt_user: deleted delay\n");
     }
 
-    if (nextPulseCmd->type == 'r') {
+    if (nextPulseCmd->type == 'r') 
       nextPulseCmd = pulseArray;
-      // fprintf(stderr,"rt_user: should be wrapping around.\n");
-    }
 
 
     if (nextPulseCmd->type == 0) { // end of file
       SendMessage(outputfd, DIO_PULSE_SEQ_EXECUTED, NULL, 0); 
-      // fprintf(stderr,"rt_user: sending DIO_PULSE_SEQ_EXECUTED \n");
       return;
     }
     nextPulseCmd->start_samp_timestamp = next_samp_timestamp;

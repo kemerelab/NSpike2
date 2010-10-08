@@ -1,5 +1,5 @@
 
-#include "laser_defines.h"
+#include "stimcontrol_defines.h"
 
 int SendStartDIOCommand(void)
     /* write data to the dsp. data must contain < 24 words */

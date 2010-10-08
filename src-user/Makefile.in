@@ -44,8 +44,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_user_program_OBJECTS = laser.$(OBJEXT) pulseFunctions.$(OBJEXT) \
-	laser_process.$(OBJEXT) send_dsp_commands.$(OBJEXT) \
+am_user_program_OBJECTS = stimcontrol_main.$(OBJEXT) \
+	generate_pulse_functions.$(OBJEXT) \
+	stimcontrol_process.$(OBJEXT) send_dsp_commands.$(OBJEXT) \
 	ripple_process.$(OBJEXT) spike_message.$(OBJEXT)
 user_program_OBJECTS = $(am_user_program_OBJECTS)
 user_program_DEPENDENCIES =
@@ -159,10 +160,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-user_program_SOURCES = laser.cpp \
-                    pulseFunctions.cpp laser_process.cpp \
+user_program_SOURCES = stimcontrol_main.cpp \
+                    generate_pulse_functions.cpp stimcontrol_process.cpp \
                     send_dsp_commands.cpp ripple_process.cpp \
-                    filtercoeffs.h laser_defines.h \
+                    filtercoeffs.h stimcontrol_defines.h \
                     @top_srcdir@/src-modules/spike_message.cpp
 
 user_program_LDADD = -lm
@@ -248,12 +249,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/laser.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/laser_process.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pulseFunctions.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/generate_pulse_functions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ripple_process.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/send_dsp_commands.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spike_message.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stimcontrol_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stimcontrol_process.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

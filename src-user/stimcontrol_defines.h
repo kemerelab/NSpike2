@@ -1,5 +1,5 @@
-#ifndef __LASER_DEFINES_H__
-#define __LASER_DEFINES_H__
+#ifndef __STIMCONTROL_DEFINES_H__
+#define __STIMCONTROL_DEFINES_H__
 /* the following include files must be present in all behavioral programs */
 #include "spikecommon.h"
 #include "spike_dio.h"

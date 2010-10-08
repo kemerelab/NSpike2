@@ -5,7 +5,7 @@
 #include "spike_dsp.h"
 #include "spike_main.h"
 
-#include "spike_userprogram_defines.h"
+#include "spike_stimcontrol_defines.h"
 #include "userMainConfig.h"
 #include "userOutputOnlyTab.h"
 #include "userRealtimeFeedbackTab.h"

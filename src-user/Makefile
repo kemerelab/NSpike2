@@ -44,8 +44,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_user_program_OBJECTS = laser.$(OBJEXT) pulseFunctions.$(OBJEXT) \
-	laser_process.$(OBJEXT) send_dsp_commands.$(OBJEXT) \
+am_user_program_OBJECTS = stimcontrol_main.$(OBJEXT) \
+	generate_pulse_functions.$(OBJEXT) \
+	stimcontrol_process.$(OBJEXT) send_dsp_commands.$(OBJEXT) \
 	ripple_process.$(OBJEXT) spike_message.$(OBJEXT)
 user_program_OBJECTS = $(am_user_program_OBJECTS)
 user_program_DEPENDENCIES =
@@ -67,11 +68,11 @@ DIST_SOURCES = $(user_program_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/ckemere/Code/NSpike2/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/ckemere/Code/NSpike2/missing --run tar
-AUTOCONF = ${SHELL} /home/ckemere/Code/NSpike2/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/ckemere/Code/NSpike2/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/ckemere/Code/NSpike2/missing --run automake-1.11
+ACLOCAL = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run tar
+AUTOCONF = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -99,7 +100,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lz -lm -lavcodec -lGL 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/ckemere/Code/NSpike2/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = NSpike
@@ -116,10 +117,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 2.0.0
-abs_builddir = /home/ckemere/Code/NSpike2/src-user
-abs_srcdir = /home/ckemere/Code/NSpike2/src-user
-abs_top_builddir = /home/ckemere/Code/NSpike2
-abs_top_srcdir = /home/ckemere/Code/NSpike2
+abs_builddir = /home/ckemere/Code/NSpike_2.0.0/src-user
+abs_srcdir = /home/ckemere/Code/NSpike_2.0.0/src-user
+abs_top_builddir = /home/ckemere/Code/NSpike_2.0.0
+abs_top_srcdir = /home/ckemere/Code/NSpike_2.0.0
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -139,7 +140,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/ckemere/Code/NSpike2/install-sh
+install_sh = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -159,10 +160,10 @@ target_alias =
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-user_program_SOURCES = laser.cpp \
-                    pulseFunctions.cpp laser_process.cpp \
+user_program_SOURCES = stimcontrol_main.cpp \
+                    generate_pulse_functions.cpp stimcontrol_process.cpp \
                     send_dsp_commands.cpp ripple_process.cpp \
-                    filtercoeffs.h laser_defines.h \
+                    filtercoeffs.h stimcontrol_defines.h \
                     ../src-modules/spike_message.cpp
 
 user_program_LDADD = -lm
@@ -248,12 +249,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/laser.Po
-include ./$(DEPDIR)/laser_process.Po
-include ./$(DEPDIR)/pulseFunctions.Po
+include ./$(DEPDIR)/generate_pulse_functions.Po
 include ./$(DEPDIR)/ripple_process.Po
 include ./$(DEPDIR)/send_dsp_commands.Po
 include ./$(DEPDIR)/spike_message.Po
+include ./$(DEPDIR)/stimcontrol_main.Po
+include ./$(DEPDIR)/stimcontrol_process.Po
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

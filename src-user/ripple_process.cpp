@@ -1,7 +1,7 @@
 #include "spikecommon.h"
 #include "spike_dio.h"
 
-#include "laser_defines.h"
+#include "stimcontrol_defines.h"
 #include "spike_userprogram_defines.h"
 
 #include "filtercoeffs.h"
