@@ -188,19 +188,26 @@ SpikeAudioButton::SpikeAudioButton(QWidget *parent, int chan, int output, bool f
     /* create an audio selection button. This button turns yellow when active 
      * and calls UpdateAudio(chan) to update the audio output of the system */
     /* set this to be a toggle button */
-    this->setToggleButton(TRUE);
+    setToggleButton(true);
 
     if (this->fullScreenElect) {
-	/* add this button the fsaudioButton button group */
-	dispinfo.fsaudioGroup[output]->insert(this);
+      /* add this button the fsaudioButton button group */
+      dispinfo.fsaudioGroup[output]->insert(this);
     }
     else {
-	/* add this button the fsaudioButton button group */
-	dispinfo.audioGroup[output]->insert(this);
+      /* add this button the fsaudioButton button group */
+      dispinfo.audioGroup[output]->insert(this);
     }
 
     /* connect the stateChanged signal to the color and the output */
-    connect(this, SIGNAL(toggled(bool)), this, SLOT(changeStatus(bool))); 
+    connect(this, SIGNAL(clicked(bool)), this, SLOT(setAudio())); 
+    //connect(this, SIGNAL(toggled(bool)), this, SLOT(changeStatus(bool))); 
+
+    if (output == 0)
+      setStyleSheet("QPushButton::checked{color: yellow;}");
+    if (output == 1)
+      setStyleSheet("QPushButton::checked{color: green;}");
+
 }
 
 SpikeAudioButton::~SpikeAudioButton() {
@@ -209,63 +216,28 @@ SpikeAudioButton::~SpikeAudioButton() {
 void SpikeAudioButton::setAudio() {
     ChannelInfo *ch;
 
-    if (dispinfo.fullscreenelect != -1) {
-	ch = sysinfo.channelinfo[sysinfo.machinenum] + 
-	    dispinfo.fullscreenelect * NCHAN_PER_ELECTRODE + this->chan;
+    if (dispinfo.fullscreenelect != -1) { // fullscreen mode
+      /* if we are in full screen mode, the channel number refers to the
+       * number within the tetrode, not the absolute channel, so we need to
+       * calculate the actual channel number */
+      ch = sysinfo.channelinfo[sysinfo.machinenum] + 
+        dispinfo.fullscreenelect * NCHAN_PER_ELECTRODE + this->chan;
     }
     else {
-	ch = sysinfo.channelinfo[sysinfo.machinenum] + this->chan;
+      ch = sysinfo.channelinfo[sysinfo.machinenum] + this->chan;
     }
 
-    if (this->isOn()) {
-	/* if we are in full screen mode, the channel number refers to the
-	 * number within the tetrode, not the absolute channel, so we need to
-	 * calculate the actual channel number */
-	cdspinfo.audiochan[this->output].dspchan = ch->dspchan;
-	SetAudio(this->output, ch, 1);
+    if (this->isChecked()) {
+      cdspinfo.audiochan[this->output].dspchan = ch->dspchan;
+      SetAudio(this->output, ch, 1);
     }
     else {
-	/* the button was just toggled off. This only happens when the user has
-	 * clicked on another audio button on this machine */
-	//cdspinfo.audiochan[this->output].dspchan = -1;
+      /* the button was just toggled off. This only happens when the user has
+       * clicked on another audio button on this machine */
+      //cdspinfo.audiochan[this->output].dspchan = -1;
     }
-    this->updateButton();
+    //this->updateButton();
 }
-
-void SpikeAudioButton::updateButton() {
-    ChannelInfo *ch;
-
-
-    /* if we are in full screen mode, the channel number refers to the
-     * number within the tetrode, not the absolute channel, so we need to
-     * calculate the actual channel number */
-    if (dispinfo.fullscreenelect != -1) {
-	ch = sysinfo.channelinfo[sysinfo.machinenum] + 
-	    dispinfo.fullscreenelect * NCHAN_PER_ELECTRODE + this->chan;
-    }
-    else {
-	ch = sysinfo.channelinfo[sysinfo.machinenum] + this->chan;
-    }
-
-    /* if this channel is selected, set it to be on, and otherwise set it to be
-     * off.  This is redundant with
-     * setAudio() above, but necessary for the case when the audio button on
-     * another machine is clicked and we need to turn off the local button */
-    if (this->isOn() && (cdspinfo.audiochan[this->output].dspchan == 
-	    ch->dspchan)) {
-	if (this->output == 0) {
-	    this->setPaletteBackgroundColor("yellow");
-	}
-	else {
-	    this->setPaletteBackgroundColor("green");
-	}
-    }
-    else {
-	//this->setPaletteBackgroundColor("lightgray");
-    }
-    return;
-}
-
 
 SpikeTetInput::SpikeTetInput(QWidget *parent, int electNum, 
 	bool fullScreenElect) 
@@ -496,62 +468,65 @@ void SpikeTetInput::highFiltUpdate(int chanNum, unsigned short newVal) {
 
 void SpikeTetInput::updateTetInput(void) 
 {
-    int i, chnum ;
-    bool enabled = 1;
-    ChannelInfo *ch;
-    QString s;
+  int i, chnum ;
+  bool enabled = 1;
+  ChannelInfo *ch;
+  QString s;
 
-
-    chnum = electNum * NCHAN_PER_ELECTRODE;
-    ch = sysinfo.channelinfo[sysinfo.machinenum] + electNum * 
-	NCHAN_PER_ELECTRODE;
-    /* copy the values from the channelinfo structure to this structure */
-    for (i = 0; i < NCHAN_PER_ELECTRODE; i++, ch++, chnum++) {
-	/* if this is a full screen electrode, we need to update the channel
-	 * numbers of the buttons */
-	if (this->fullScreenElect) {
-	    maxdispval[i]->chanNum = chnum;
-	    thresh[i]->chanNum = chnum;
-	    lowfilt[i]->chanNum = chnum;
-	    highfilt[i]->chanNum = chnum;
-	}
-	s = QString("%1").arg(ch->maxdispval);
-	maxdispval[i]->setText(s);
-	s = QString("%1").arg(ch->thresh);
-	thresh[i]->setText(s);
-	this->lowfilt[i]->setValue(ch->lowfilter);
-	highfilt[i]->setValue(ch->highfilter);
-	if (cdspinfo.audiochan[0].dspchan == ch->dspchan) {
-	    this->audio1[i]->setOn(TRUE);
-	}
-	else {
-	    this->audio1[i]->setOn(FALSE);
-	}
-	if (cdspinfo.audiochan[1].dspchan == ch->dspchan) {
-	    this->audio2[i]->setOn(TRUE);
-	}
-	else {
-	    this->audio2[i]->setOn(FALSE);
-	}
-	this->audio1[i]->updateButton();
-	this->audio2[i]->updateButton();
-    }
-    /* check to see if the file is open, and if so disable the filters */
-    if (sysinfo.fileopen) {
-	enabled = 0;
-    }
-    for (i = 0; i < NCHAN_PER_ELECTRODE; i++) {
-	lowfilt[i]->setEnabled(enabled);
-	highfilt[i]->setEnabled(enabled);
-    }
-    /* if this is a full screen electrode, we need to copy the status of the
-     * buttons from the multiple tetrode window */
+  chnum = electNum * NCHAN_PER_ELECTRODE;
+  ch = sysinfo.channelinfo[sysinfo.machinenum] + electNum * 
+    NCHAN_PER_ELECTRODE;
+  /* copy the values from the channelinfo structure to this structure */
+  for (i = 0; i < NCHAN_PER_ELECTRODE; i++, ch++, chnum++) {
+    /* if this is a full screen electrode, we need to update the channel
+     * numbers of the buttons */
     if (this->fullScreenElect) {
-	mdvSelectAll->setOn(dispinfo.spikeTetInput[electNum]->mdvSelectAll->isOn());
-	tSelectAll->setOn(dispinfo.spikeTetInput[electNum]->tSelectAll->isOn());
-	fSelectAll->setOn(dispinfo.spikeTetInput[electNum]->fSelectAll->isOn());
+      maxdispval[i]->chanNum = chnum;
+      thresh[i]->chanNum = chnum;
+      lowfilt[i]->chanNum = chnum;
+      highfilt[i]->chanNum = chnum;
     }
-    return;
+    s = QString("%1").arg(ch->maxdispval);
+    maxdispval[i]->setText(s);
+    s = QString("%1").arg(ch->thresh);
+    thresh[i]->setText(s);
+    this->lowfilt[i]->setValue(ch->lowfilter);
+    highfilt[i]->setValue(ch->highfilter);
+    if (cdspinfo.audiochan[0].dspchan == ch->dspchan) {
+      //this->audio1[i]->setOn(TRUE);
+      this->audio1[i]->setChecked(true);
+    }
+    else {
+      //this->audio1[i]->setOn(FALSE);
+      this->audio1[i]->setChecked(false);
+    }
+    if (cdspinfo.audiochan[1].dspchan == ch->dspchan) {
+      //this->audio2[i]->setOn(TRUE);
+      this->audio2[i]->setChecked(true);
+    }
+    else {
+      //this->audio2[i]->setOn(FALSE);
+      this->audio2[i]->setChecked(false);
+    }
+    //this->audio1[i]->updateButton();
+    //this->audio2[i]->updateButton();
+  }
+  /* check to see if the file is open, and if so disable the filters */
+  if (sysinfo.fileopen) {
+    enabled = 0;
+  }
+  for (i = 0; i < NCHAN_PER_ELECTRODE; i++) {
+    lowfilt[i]->setEnabled(enabled);
+    highfilt[i]->setEnabled(enabled);
+  }
+  /* if this is a full screen electrode, we need to copy the status of the
+   * buttons from the multiple tetrode window */
+  if (this->fullScreenElect) {
+    mdvSelectAll->setOn(dispinfo.spikeTetInput[electNum]->mdvSelectAll->isOn());
+    tSelectAll->setOn(dispinfo.spikeTetInput[electNum]->tSelectAll->isOn());
+    fSelectAll->setOn(dispinfo.spikeTetInput[electNum]->fSelectAll->isOn());
+  }
+  return;
 }
 
 void SpikeTetInput::copyValues(SpikeTetInput *src) {

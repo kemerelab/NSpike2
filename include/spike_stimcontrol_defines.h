@@ -20,6 +20,9 @@
 #define DIO_STOP_RT_FEEDBACK 2200
 #define DIO_START_RT_FEEDBACK 2201
 
+#define DIO_RT_ENABLE 2300
+#define DIO_RT_DISABLE 2301
+
 #define DIO_PULSE_SEQ		300    // the message contains text with 
 					//a series of pulse sequences
 #define DIO_PULSE_SEQ_START	301

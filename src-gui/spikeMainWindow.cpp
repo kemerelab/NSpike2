@@ -140,27 +140,23 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
      * and one extra screen for the continuous data */
     this->ntabs = (int) ceil((float) sysinfo.nelectrodes / NELECT_PER_SCREEN) + 2; 
     /* create a button group for the audio buttons */
+    /* remember - the NSpike master has TWO audio outs, so two
+     * audio groups! */ 
     audioGroup1 = new QButtonGroup(this);
-    /* set the audio buttons so that only one can be on at a time */
-    audioGroup1->setExclusive(TRUE);
+    audioGroup1->setExclusive(TRUE); // only one can be on at a time
     dispinfo.audioGroup[0] = audioGroup1;
 
-    /* create a button group for the audio buttons */
     audioGroup2 = new QButtonGroup(this);
-    /* set the audio buttons so that only one can be on at a time */
-    audioGroup2->setExclusive(TRUE);
+    audioGroup2->setExclusive(TRUE); // only one on at a time
     dispinfo.audioGroup[1] = audioGroup2;
 
     /* create a button group for the full screen audio buttons */
     fsaudioGroup1 = new QButtonGroup(this);
-    /* set the audio buttons so that only one can be on at a time */
-    fsaudioGroup1->setExclusive(TRUE);
+    fsaudioGroup1->setExclusive(TRUE); // only one on at a time
     dispinfo.fsaudioGroup[0] = fsaudioGroup1;
 
-    /* create a button group for the fullscreen audio buttons */
     fsaudioGroup2 = new QButtonGroup(this);
-    /* set the audio buttons so that only one can be on at a time */
-    fsaudioGroup2->setExclusive(TRUE);
+    fsaudioGroup2->setExclusive(TRUE); // only one on at a time
     dispinfo.fsaudioGroup[1] = fsaudioGroup2;
 
     /* create the EEG Button group */

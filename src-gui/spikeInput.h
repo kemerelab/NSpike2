@@ -68,13 +68,11 @@ class SpikeAudioButton : public QPushButton {
     int output;
     bool fullScreenElect;
 
-    public slots:
-      void      changeStatus(bool on) { setAudio(); on = 0;}
+  public slots:
+    //void  changeStatus(bool on) { setAudio(); on = 0;}
+    void  setAudio(void);
 
   public:
-    void    setAudio();
-    void    updateButton();
-
 };
 
 
