@@ -2,7 +2,7 @@
 #include "spike_dio.h"
 
 #include "stimcontrol_defines.h"
-#include "spike_userprogram_defines.h"
+#include "spike_stimcontrol_defines.h"
 
 extern DaqToUserInfo           daq_to_user_info;
 extern u32 timestamp; // global timestamp tracking
@@ -28,7 +28,10 @@ void ProcessData(unsigned short *usptr, DSPInfo *dptr)
 
   static int flag = 1;
 
-  if (state < 300) // not processing data
+  if (stimcontrolMode == DIO_RTMODE_OUTPUT_ONLY) // not processing data
+    return;
+
+  if (stimcontrolMode == DIO_RTMODE_DEFAULT) // not processing data
     return;
 
   //if (realtimeProcessingEnabled == 0) // start button not pushed
@@ -42,8 +45,8 @@ void ProcessData(unsigned short *usptr, DSPInfo *dptr)
   for (i = 0; i < dptr->nsamp; i++) {
     for (j = 0; j < dptr->nchan; j++, usptr++) {
       if (daq_to_user_info.channels[dptr->dspchan[j]]) {
-        switch (state) {
-          case STATE_THETA_STIM:
+        switch (stimcontrolMode) {
+          case DIO_RTMODE_THETA:
             curr_timestamp = timestamp + (i * DSP_BASE_SAMP_RATE) / dptr->samprate / SAMP_TO_TIMESTAMP;
             stim_timestamp = ProcessThetaData((double) ((short) *usptr), curr_timestamp);
             if ((stim_timestamp > 0) && (realtimeProcessingEnabled)) {
@@ -51,13 +54,13 @@ void ProcessData(unsigned short *usptr, DSPInfo *dptr)
               PulseLaserCommand(thetaStimPulseCmd);
             }
             break;
-          case STATE_RIPPLE_STIM:
+          case DIO_RTMODE_RIPPLE_DISRUPT:
             stim = ProcessRippleData((double) ((short) *usptr));
             if ((stim > 0) && (realtimeProcessingEnabled)) {
               PulseLaserCommand(rippleStimPulseCmd, PULSE_IMMEADIATELY);
             }
             break;
-          case STATE_LATENCY_TEST:
+          case DIO_RTMODE_LATENCY_TEST:
             stim = ProcessLatencyData((short) *usptr);
             if ((stim > 0) && (realtimeProcessingEnabled)) {
               PulseLaserCommand(latencyTestPulseCmd, PULSE_IMMEADIATELY);
@@ -75,7 +78,6 @@ void ProcessData(unsigned short *usptr, DSPInfo *dptr)
 void InitPulseArray( void)
 {
   last_future_timestamp = 0;
-  pulseArray[0].type = 0;
   pulseArray[0].start_samp_timestamp = 0;
   nextPulseCmd = &pulseArray[0];
 }
@@ -83,52 +85,40 @@ void InitPulseArray( void)
 void ProcessTimestamp( void )
 {
 
-  u32 next_samp_timestamp;
-
-  if ((nextPulseCmd->type == 0) || (nextPulseCmd->start_samp_timestamp == 0))
+  if ((nextPulseCmd->line == -1 ) || (nextPulseCmd->start_samp_timestamp == 0))
     return;
 
 
   if ( (timestamp * SAMP_TO_TIMESTAMP > last_future_timestamp) && 
        (timestamp > nextPulseCmd->start_samp_timestamp/3 - 500) ){ // consider sending another command
-    fprintf(stderr,"\n\nrt_user: next command timestamp %d (%d) (%d)\n", 
-       nextPulseCmd->start_samp_timestamp/3, last_future_timestamp/3, timestamp);
+    fprintf(stderr,"\n\nrt_user: next command timestamp %d (%d) (%d)\n", nextPulseCmd->start_samp_timestamp/3, last_future_timestamp/3, timestamp);
     PulseLaserCommand(*nextPulseCmd); // send current next command
     SendMessage(outputfd, DIO_PULSE_SEQ_STEP, (char *) &(nextPulseCmd->line),  sizeof(int));  // send info back to user program
 
     last_future_timestamp = nextPulseCmd->start_samp_timestamp;
-    next_samp_timestamp = last_future_timestamp + PulseCommandLength(*nextPulseCmd);
-    nextPulseCmd++;
 
-    while (nextPulseCmd->type == 'd') {
-      next_samp_timestamp += nextPulseCmd->delay * SAMP_TO_TIMESTAMP;
-      nextPulseCmd++;
+    if (nextPulseCmd->n_repeats > 0) {
+      nextPulseCmd->n_repeats--;
+      nextPulseCmd->pre_delay = 0;
+      nextPulseCmd->start_samp_timestamp = last_future_timestamp +
+        PulseCommandLength(*nextPulseCmd) +
+        nextPulseCmd->inter_frame_delay;
+      return;
     }
 
-    if (nextPulseCmd->type == 'r') 
-      nextPulseCmd = pulseArray;
+    nextPulseCmd++;
 
-
-    if (nextPulseCmd->type == 0) { // end of file
+    if (nextPulseCmd->line == -1) { // end of file
       SendMessage(outputfd, DIO_PULSE_SEQ_EXECUTED, NULL, 0); 
       return;
     }
-    nextPulseCmd->start_samp_timestamp = next_samp_timestamp;
-
+    else {
+      nextPulseCmd->start_samp_timestamp = last_future_timestamp + 
+        PulseCommandLength(*nextPulseCmd) +
+        nextPulseCmd->pre_delay;
+    }
   }
 
-}
-
-PulseCommand GenerateSimplePulseCmd(int pulse_length) {
-  PulseCommand pCmd;
-
-  pCmd.type = 'p';
-  pCmd.repetitions = 1;
-  pCmd.frequency = 100;
-  pCmd.pulse_width = pulse_length;
-  pCmd.start_samp_timestamp = 0;
-
-  return pCmd;
 }
 
 void InitTheta(void) 
@@ -136,8 +126,6 @@ void InitTheta(void)
   thetaStimParameters.pulse_length = DIO_RT_DEFAULT_PULSE_LEN;
   thetaStimParameters.vel_thresh = DIO_RT_DEFAULT_THETA_VEL;
   thetaStimParameters.filt_delay = DIO_RT_DEFAULT_THETA_FILTER_DELAY;
-
-  thetaStimPulseCmd = GenerateSimplePulseCmd(thetaStimParameters.pulse_length);
 }
 
 u32 ProcessThetaData(double d, u32 t) {return 0;}
@@ -146,8 +134,6 @@ u32 ProcessThetaData(double d, u32 t) {return 0;}
 void InitLatency(void)
 {
   latencyTestParameters.pulse_length = DIO_RT_DEFAULT_PULSE_LEN;
-  latencyTestPulseCmd = GenerateSimplePulseCmd(latencyTestParameters.pulse_length);
-  PrepareStimCommand(latencyTestPulseCmd);
 }
 
 int ProcessLatencyData(short d)
@@ -170,7 +156,7 @@ int ProcessLatencyData(short d)
 }
 
 void ResetRealtimeProcessing(void) {
-  switch (state) {
+  switch (stimcontrolMode) {
     case STATE_THETA_STIM:
       break;
     case STATE_RIPPLE_STIM:

@@ -57,8 +57,6 @@ DIOInterface::DIOInterface(QWidget* parent,
     qtab = new QTabWidget(this);
     qtab->setUsesScrollButtons(false);
 
-    connect(qtab, SIGNAL(currentChanged(int)), this, SLOT(switchFunction(int)));
-
     mainConfigTab = new MainConfigTab(this);
     qtab->insertTab(mainConfigTab,"Global Settings", MAIN_CONFIG_TAB);
     connect(mainConfigTab->modeButtonGroup, SIGNAL(buttonClicked(int)), this,
@@ -146,53 +144,9 @@ void DIOInterface::saveSettings(void) {
   qDebug() << "User  wanting to save settings in" << settingsFilename;
 }
 
-void DIOInterface::switchFunction(int whichProgram)
-{
-
-  if (whichProgram == 0) {
-  }
-  else {
-    if (!digioinfo.outputfd) {
-      QMessageBox::warning(this,"No User Program","No user program appears to be running (messaging established)");
-#ifndef GUI_TESTING
-      return;
-#endif
-    }
-
-    /*
-    if (qtab->id(qtab->visibleWidget()) == 0) { // current widget is config tab
-      ((MainConfigTab *)(qtab->visibleWidget()))->updateStimPins(); // update stim pins before we leave
-      daq_io_widget->updateChan(daq_io_widget->StimChan);
-    }
-    */
-
-    switch (whichProgram) {
-      case 1:
-        SendDAQUserMessage(DIO_REQUEST_SIMPLE_STIMS, NULL, 0);
-        break;
-      case 2:
-        SendDAQUserMessage(DIO_REQUEST_PULSE_FILE, NULL, 0);
-        break;
-      case 3: //theta stim
-        SendDAQUserMessage(DIO_REQUEST_THETA_STIM, NULL, 0);
-        break;
-      case 4: //ripple disrupt
-        SendDAQUserMessage(DIO_REQUEST_RIPPLE_DISRUPT, NULL, 0);
-        break;
-      case 5: //test latency
-        SendDAQUserMessage(DIO_REQUEST_LATENCY_TEST, NULL, 0);
-        break;
-      default:
-        break;
-    }
-  }
-
-}
-
 void DIOInterface::enableTabs(bool enable)
 {
 }
-
 
 DAQ_IO::DAQ_IO (QWidget *parent)
   : QWidget(parent)
@@ -265,7 +219,7 @@ void DAQ_IO::msgFromUser (int msg, char *data) {
       emit pulseFileFinished();
       fprintf(stderr,"Got DIO_PULSE_SEQ_EXECUTED\n");
       break;
-    case DIO_RT_RIPPLE_STATUS :
+    case DIO_RT_STATUS_RIPPLE_DISRUPT:
       emit rippleStatusUpdate(*((RippleStatusMsg *)data));
       break;
     default:

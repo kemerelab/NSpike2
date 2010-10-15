@@ -3,7 +3,7 @@
 /* the following include files must be present in all behavioral programs */
 #include "spikecommon.h"
 #include "spike_dio.h"
-#include "spike_userprogram_defines.h"
+#include "spike_stimcontrol_defines.h"
 
 #define ONTIME  3500  // all messages are an on message followed by an off message 3500 time steps (0.35 sec) later
 
@@ -32,14 +32,16 @@
 
 
 typedef struct _PulseCommand {
-    char type;
     int line;
-    int pulse_width; // in 100 us?
-    float frequency; // in Hz
-    int repetitions;
-    int delay; // in ms
-    int is_part_of_sequence;
+    int pre_delay; // in ticks; automatically zeroed after first
+    int pulse_width; // in ticks (10 kHz)
+    int inter_pulse_delay; // in ticks
+    int n_pulses;
     u32 start_samp_timestamp;
+    int is_biphasic;
+    uint64_t pin1mask, pin2mask;
+    int inter_frame_delay; // in ticks;
+    int n_repeats;
 } PulseCommand;
 
 typedef struct {
@@ -79,13 +81,10 @@ extern fd_set                  readfds;  // the set of readable fifo file descri
 extern int                     maxfds;
 extern int         outputfd; // the file descriptor for output to the spike behav program
 
-extern int state; // global program mode determinator
+extern int stimcontrolMode; // global program mode determinator
 
 extern u32 timestamp; // global timestamp tracking
 
-extern unsigned short pin1;
-extern unsigned short pin2;
-extern int biphasicStim;
 extern unsigned short laserPort;
 
 extern int commandCached;
@@ -102,12 +101,6 @@ void PrepareStimCommand(PulseCommand pulseCmd);
 extern ThetaStimParameters thetaStimParameters;
 extern RippleStimParameters rippleStimParameters;
 extern LatencyTestParameters latencyTestParameters;
-
-extern PulseCommand thetaStimPulseCmd;
-extern PulseCommand rippleStimPulseCmd;
-extern PulseCommand latencyTestPulseCmd;
-
-PulseCommand GenerateSimplePulseCmd(int pulse_length);
 
 void InitTheta(void);
 u32 ProcessThetaData(double d, u32 t);

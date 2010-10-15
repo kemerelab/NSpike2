@@ -1,48 +1,38 @@
-#ifndef __SPIKE_USERPROGRAM_DEFINES_H__
-#define __SPIKE_USERPROGRAM_DEFINES_H__
+#ifndef __SPIKE_STIMCONTROL_DEFINES_H__
+#define __SPIKE_STIMCONTROL_DEFINES_H__
 
 #define DEFAULT_MODE -1
 #define OUTPUT_ONLY_MODE 0
 #define REALTIME_FEEDBACK_MODE 1
 
-// Laser control commands
+#define DIO_STIMCONTROL_MODE 100
+
+#define DIO_RTMODE_OUTPUT_ONLY 2000
+#define DIO_RTMODE_DEFAULT 2001
+#define DIO_RTMODE_LATENCY_TEST 2002
+#define DIO_RTMODE_THETA 2003
+#define DIO_RTMODE_RIPPLE_DISRUPT 2004
+
+#define DIO_SET_RT_STIM_PARAMS 101
+#define DIO_SET_RT_FEEDBACK_PARAMS 102
+#define DIO_SET_CM_PER_PIX 103
+
+#define DIO_STOP_RT_FEEDBACK 2200
+#define DIO_START_RT_FEEDBACK 2201
+
 #define DIO_PULSE_SEQ		300    // the message contains text with 
 					//a series of pulse sequences
 #define DIO_PULSE_SEQ_START	301
 #define DIO_PULSE_SEQ_STOP	302
-#define DIO_PULSE_SEQ_STEP	303  // a single command has been exec'd
-#define DIO_PULSE_SEQ_EXECUTED	304  // the complete file has been exec'd
 
-#define DIO_PULSE_SEQ_RESTART	304
+#define DIO_QUERY_RT_FEEDBACK_STATUS 400
+#define DIO_RT_STATUS_RIPPLE_DISRUPT 404
+
+#define DIO_PULSE_SEQ_STEP	411  // a single command has been exec'd
+#define DIO_PULSE_SEQ_EXECUTED	412  // the complete file has been exec'd
+
+#define DIO_PULSE_SEQ_RESTART	305
 					// has been executed
-
-#define DIO_SET_SINGLE_STIM_PIN 900
-#define DIO_SET_BIPHASIC_STIM_PINS 901
-
-#define DIO_SET_CM_PER_PIX 902
-
-#define DIO_REQUEST_SIMPLE_STIMS 330
-#define DIO_REQUEST_PULSE_FILE 340
-
-#define DIO_REQUEST_THETA_STIM 350
-#define DIO_SET_RT_THETA_PARAMS 351
-#define DIO_THETA_STIM_START	352	// start phase extraction / processing
-#define DIO_THETA_STIM_STOP	353	// stop phase extraction / processing
-
-#define DIO_REQUEST_RIPPLE_DISRUPT 360
-#define DIO_SET_RT_RIPPLE_PARAMS 361
-#define DIO_RIPPLE_STIM_START	362	// start extraction / processing
-#define DIO_RIPPLE_STIM_STOP	363	// stop extraction / processing
-#define DIO_QUERY_RT_RIPPLE_STATUS 364
-#define DIO_RT_RIPPLE_STATUS 365
-
-#define DIO_REQUEST_LATENCY_TEST 370
-#define DIO_SET_RT_LATENCY_TEST_PARAMS 371
-#define DIO_LATENCY_TEST_START	372	// start phase extraction / processing
-#define DIO_LATENCY_TEST_STOP	373	// start phase extraction / processing
-
-#define DIO_RT_ENABLE		320	// start continuous data transfer to user program
-#define DIO_RT_DISABLE		321	// stop continuous data transfer to user program
 
 #define DIO_RT_DEFAULT_PULSE_LEN 10
 

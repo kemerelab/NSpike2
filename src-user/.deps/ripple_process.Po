@@ -49,7 +49,7 @@ ripple_process.o: ripple_process.cpp ../include/spikecommon.h \
  ../include/spike_dsp.h ../include/spike_dio.h \
  ../include/spike_functions.h ../include/spike_rtl.h \
  ../include/spike_matlab.h ../include/spike_dio.h stimcontrol_defines.h \
- ../include/spike_userprogram_defines.h filtercoeffs.h
+ ../include/spike_stimcontrol_defines.h filtercoeffs.h
 
 ../include/spikecommon.h:
 
@@ -263,6 +263,6 @@ ripple_process.o: ripple_process.cpp ../include/spikecommon.h \
 
 stimcontrol_defines.h:
 
-../include/spike_userprogram_defines.h:
+../include/spike_stimcontrol_defines.h:
 
 filtercoeffs.h:

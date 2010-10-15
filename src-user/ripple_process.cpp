@@ -2,7 +2,7 @@
 #include "spike_dio.h"
 
 #include "stimcontrol_defines.h"
-#include "spike_userprogram_defines.h"
+#include "spike_stimcontrol_defines.h"
 
 #include "filtercoeffs.h"
 
@@ -36,7 +36,7 @@ void InitRipple(void)
   rippleStimParameters.lockout = DIO_RT_DEFAULT_RIPPLE_LOCKOUT;
   rippleStimParameters.speed_threshold = DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH;
 
-  rippleStimPulseCmd = GenerateSimplePulseCmd(rippleStimParameters.pulse_length);
+  //rippleStimPulseCmd = GenerateSimplePulseCmd(rippleStimParameters.pulse_length);
 
   ResetRippleData();
 }
@@ -205,7 +205,7 @@ void sendRippleStatusUpdate (void) {
   status.sincelast = timeSinceLast;
   status.isRunning = realtimeProcessingEnabled;
   status.ratSpeed = ratSpeed;
-  SendMessage(outputfd, DIO_RT_RIPPLE_STATUS, (char *) &(status),  sizeof(RippleStatusMsg)); 
+  SendMessage(outputfd, DIO_RT_STATUS_RIPPLE_DISRUPT, (char *) &(status),  sizeof(RippleStatusMsg)); 
 }
 
 

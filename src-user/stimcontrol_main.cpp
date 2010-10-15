@@ -3,7 +3,7 @@
 #include "spike_dio.h"
 
 #include "stimcontrol_defines.h"
-#include "spike_userprogram_defines.h"
+#include "spike_stimcontrol_defines.h"
 
 /* Globals: */
 DaqToUserInfo           daq_to_user_info;
@@ -16,11 +16,9 @@ int     outputfd; // the file descriptor for output to the spike behav program
 
 u32 timestamp; // global timestamp tracking
 
-int state = STATE_SINGLE_PULSE_COMMANDS;
+int stimcontrolMode = DIO_RTMODE_DEFAULT;
 
-unsigned short pin1 = DEFAULT_LASER_PIN;
-unsigned short pin2 = DEFAULT_LASER_PIN_2;
-int biphasicStim = 0;
+PulseCommand rtStimPulseCmd;
 
 double ratSpeed = 0.0; // global measure of rat speed
 
@@ -114,21 +112,6 @@ int main(int argc, char **argv)
           }
           ProcessTimestamp();
 
-          /*
-          // Check timing of timestamp packets 
-          // answer - by default they come roughly every 193 samples, 
-          // note this is adjustable with the config file option [dspsampperpacket  1 2] 
-          tsdiff = timestamp - oldts;
-          avgtsdiff = avgtsdiff + (tsdiff - avgtsdiff)/100;
-          stdtsdiff = stdtsdiff + ( abs(tsdiff - avgtsdiff) - stdtsdiff )/100;
-          oldts = timestamp;
-          if (counter++ > 10) {
-            counter = 0;
-            fprintf(stderr,"Moving average timestamp diff: %f (%f); Last: %d\n",
-                avgtsdiff, stdtsdiff, tsdiff);
-          }
-          */
-
           break;
         default:
           break;
@@ -141,7 +124,7 @@ int main(int argc, char **argv)
       message = GetMessage(inputfd, (char *) messagedata, &messagedatalen, 0);
       switch(message) {
         case DIO_EVENT:
-          /* a behavioral event contains three unsigned in. The first
+          /* a behavioral event contains three unsigned ints. The first
            * is a timestamp indicating when the output should be set (0 for
            * immediately) and the second is the output to set */
           break;
@@ -151,86 +134,66 @@ int main(int argc, char **argv)
           cmPerPix = ((double*)messagedata)[0];
           fprintf(stderr,"rt_user: Setting cm/pix = %f.\n",cmPerPix);
           break;
-        case DIO_SET_STIM_PARAMETERS:
+        case DIO_STIMCONTROL_MODE:
+          memcpy((char *)&stimcontrolMode, messagedata,
+              sizeof(int));
+          switch (stimcontrolMode) {
+            case DIO_RTMODE_OUTPUT_ONLY:
+              fprintf(stderr,"rt_user: Received request to do output only stimulation.\n");
+              break;
+            case DIO_RTMODE_THETA:
+              InitTheta();
+              fprintf(stderr,"rt_user: Received request to do theta stimulation.\n");
+              break;
+            case DIO_RTMODE_RIPPLE_DISRUPT:
+              InitRipple();
+              fprintf(stderr,"rt_user: Received request to do ripple disruption.\n");
+              break;
+            case DIO_RTMODE_LATENCY_TEST:
+              InitRipple();
+              fprintf(stderr,"rt_user: Received request to do latency test.\n");
+              break;
+            case DIO_RTMODE_DEFAULT:
+            default:
+              fprintf(stderr,"rt_user: Entering realtime feedback mode with no operation.\n");
+              break;
+          }
           break;
-        case DIO_SET_SINGLE_STIM_PIN:
-          biphasicStim = 0;
-          laserPort = ((int*)messagedata)[0] / 16;
-          pin1 = (unsigned short) (0x01 << (((int*)messagedata)[0] % 16));
-          fprintf(stderr,"rt_user: Setting  stim pin = %d [PORT %d].\n",pin1,laserPort);
+        case DIO_SET_RT_STIM_PARAMS:
+          memcpy((char *)&rtStimPulseCmd, messagedata,
+              sizeof(PulseCommand));
+          PrepareStimCommand(rtStimPulseCmd);
           break;
-        case DIO_SET_BIPHASIC_STIM_PINS:
-          biphasicStim = 1;
-          laserPort = ((int*)messagedata)[0] / 16;
-          pin1 = (unsigned short) (0x01 << (((int*)messagedata)[0] % 16));
-          pin2 = (unsigned short) (0x01 << (((int*)messagedata)[1] % 16));
-          fprintf(stderr,"rt_user: Setting biphasic stim A = %d, B = %d [PORT %d].\n",pin1, pin2, laserPort);
+        case DIO_SET_RT_FEEDBACK_PARAMS:
+          //memcpy((char *)&rtStimParameters, messagedata,
+              //sizeof(rtStimParameters));
           break;
-        case DIO_REQUEST_PULSE_FILE:
-        case DIO_REQUEST_SIMPLE_STIMS:
-          fprintf(stderr,"rt_user: Received request to do pulse file stimulation.\n");
-          state = STATE_PULSE_FILE;
+        case DIO_QUERY_RT_FEEDBACK_STATUS:
+          switch (stimcontrolMode) {
+            case DIO_RTMODE_RIPPLE_DISRUPT:
+              sendRippleStatusUpdate();
+              break;
+            case DIO_RTMODE_OUTPUT_ONLY:
+            case DIO_RTMODE_THETA:
+            case DIO_RTMODE_LATENCY_TEST:
+            case DIO_RTMODE_DEFAULT:
+            default:
+              fprintf(stderr,"rt_user: Recieved status query.\n");
+              break;
+          }
           break;
-        case DIO_REQUEST_THETA_STIM:
-          InitTheta();
-          fprintf(stderr,"rt_user: Received request to do theta stimulation.\n");
-          state = STATE_THETA_STIM;
-          break;
-        case DIO_REQUEST_RIPPLE_DISRUPT:
-          InitRipple();
-          fprintf(stderr,"rt_user: Received request to do ripple disruption.\n");
-          state = STATE_RIPPLE_STIM;
-          break;
-        case DIO_REQUEST_LATENCY_TEST:
-          InitLatency();
-          fprintf(stderr,"rt_user: Received request to do latency test.\n");
-          state = STATE_LATENCY_TEST;
-          break;
-        case DIO_SET_RT_THETA_PARAMS:
-          memcpy((char *)&thetaStimParameters, messagedata,
-              sizeof(ThetaStimParameters));
-          fprintf(stderr,"rt_user: Received theta stim parameters.\n");
-          thetaStimPulseCmd = GenerateSimplePulseCmd(thetaStimParameters.pulse_length);
-          PrepareStimCommand(thetaStimPulseCmd);
-          break;
-        case DIO_SET_RT_RIPPLE_PARAMS:
-          memcpy((char *)&rippleStimParameters, messagedata,
-              sizeof(RippleStimParameters));
-          fprintf(stderr,"rt_user: Received ripple stim parameters.\n");
-          fprintf(stderr,"rt_user: Lockout: %d\n", rippleStimParameters.lockout);
-          fprintf(stderr,"rt_user: Speed threshold: %f\n", rippleStimParameters.speed_threshold);
-          rippleStimPulseCmd = GenerateSimplePulseCmd(rippleStimParameters.pulse_length);
-          PrepareStimCommand(rippleStimPulseCmd);
-          break;
-        case DIO_SET_RT_LATENCY_TEST_PARAMS:
-          memcpy((char *)&latencyTestParameters, messagedata,
-              sizeof(LatencyTestParameters));
-          fprintf(stderr,"rt_user: Received latency test parameters.\n");
-          fprintf(stderr,"rt_user: Latency threshold set to %d\n", latencyTestParameters.thresh);
-          fprintf(stderr,"rt_user: Latency pulsewidth set to %d\n", latencyTestParameters.pulse_length);
-          latencyTestPulseCmd = GenerateSimplePulseCmd(latencyTestParameters.pulse_length);
-          PrepareStimCommand(latencyTestPulseCmd);
-          break;
-        case DIO_QUERY_RT_RIPPLE_STATUS:
-          sendRippleStatusUpdate();
-          fprintf(stderr,"rt_user: Recieved ripple status query.\n");
-          break;
-        case DIO_THETA_STIM_START:
-        case DIO_RIPPLE_STIM_START:
-        case DIO_LATENCY_TEST_START:
+        case DIO_START_RT_FEEDBACK:
           realtimeProcessingEnabled = 1;
-          fprintf(stderr,"rt_user: Received Realtime START command (state = %d)......\n", state);
+          fprintf(stderr,"rt_user: Received Realtime START command (state = %d)......\n", stimcontrolMode);
           break;
-        case DIO_THETA_STIM_STOP:
-        case DIO_RIPPLE_STIM_STOP:
-        case DIO_LATENCY_TEST_STOP:
+        case DIO_STOP_RT_FEEDBACK:
           realtimeProcessingEnabled = 0;
           fprintf(stderr,"rt_user: Received Realtime STOP command......\n");
           break;
         case DIO_PULSE_SEQ:
-          ParsePulseFile((char *)messagedata, pulseArray);
-          nextPulseCmd = pulseArray;
-          nextPulseCmd->start_samp_timestamp = 0; // wait for start
+          //ParsePulseFile((char *)messagedata, pulseArray);
+          //nextPulseCmd = pulseArray;
+          //nextPulseCmd->start_samp_timestamp = 0; // wait for start
           break;
         case DIO_PULSE_SEQ_START:
           pending = 1;
@@ -238,18 +201,7 @@ int main(int argc, char **argv)
           break;
         case DIO_PULSE_SEQ_STOP:
           fprintf(stderr,"rt_user: Received STOP command\n");
-          if (nextPulseCmd->type == 0) { // end of file
-                  nextPulseCmd = pulseArray;
-          }
-          else {
-             nextPulseCmd->start_samp_timestamp = 0;
-             // skip through end of pulse sequence
-             if (nextPulseCmd->is_part_of_sequence == 1) {
-               while (nextPulseCmd->is_part_of_sequence == 1)
-                 nextPulseCmd++;
-               nextPulseCmd->start_samp_timestamp = 0;
-             }
-          }
+          nextPulseCmd->start_samp_timestamp = 0;
           break;
         case SETUP_DAQ_TO_USER:
           /* copy daq_to_user_dsps array into sysinfo structure */
