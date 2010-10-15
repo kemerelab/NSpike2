@@ -434,8 +434,8 @@ int main()
 #ifndef NO_VIDEO_DEBUG
 			stop_capturing();
 #endif
-			SendMessage(client_message[SPIKE_MAIN].fd, ACQUISITION_STOPPED, 
-				    NULL, 0);
+			SendMessage(client_message[SPIKE_MAIN].fd, ACQUISITION_STOPPED, NULL, 0);
+
 			break;
 		    case START_ACQUISITION:
 			sysinfo.acq = 1;

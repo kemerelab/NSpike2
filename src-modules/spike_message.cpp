@@ -1014,834 +1014,831 @@ int InitializeMasterSlaveNetworkMessaging(void)
 
 
 int StartNetworkMessaging(SocketInfo *server_message, 
-        SocketInfo *client_message, SocketInfo *server_data, 
+        SocketInfo *client_message, 
+        SocketInfo *server_data, 
         SocketInfo *client_data)
 {
-    int         i;
-    //int j;
-    int                mini, dini;
-    int                mouti, douti;
-    int                currentminconn;
-    int                currentmoutconn;
-    int                currentdinconn;
-    int                currentdoutconn;
-    int                slavenum;
-    int                fdtmp;
-    int         data[1000];
-    int                datalen;
-    int         message;
-    //int                tmpnum;
-    //char         *name;
-    char         tmpstring[80];
-    int         done = 0;
-    fd_set                readfds;  // the set of readable fifo file descriptors 
-    //struct timeval        timeout;
-    int                        maxfds;
-    int         optval;
-    socklen_t         optlen;
-    
-    SocketInfo        *c;
-  
-    /* As all modules run this, the first thing to do is set the
-     * sysinfo.machinenum variable */
-    sysinfo.machinenum = GetMachineNum(netinfo.myname);
+  int  i;
+  //int j;
+  int  mini, dini;
+  int  mouti, douti;
+  int  currentminconn;
+  int  currentmoutconn;
+  int  currentdinconn;
+  int  currentdoutconn;
+  int  slavenum;
+  int  fdtmp;
+  int  data[1000];
+  int  datalen;
+  int  message;
 
-    /* zero out the fds for the arrays */
+  char tmpstring[80];
+  int  done = 0;
+  fd_set readfds;  // the set of readable fifo file descriptors 
+  int  maxfds;
+  int  optval;
+  socklen_t  optlen;
+
+  SocketInfo *c;
+
+  /* As all modules run this, the first thing to do is set the
+   * sysinfo.machinenum variable */
+  sysinfo.machinenum = GetMachineNum(netinfo.myname);
+
+  /* zero out the fds for the arrays */
+  for (i = 0; i < MAX_CONNECTIONS; i++) {
+    server_message[i].fd = 0;
+    server_data[i].fd = 0;
+    client_message[i].fd = 0;
+    client_data[i].fd = 0;
+  }
+
+  /* this messaging is orchastrated by the master system, so if we are the
+   * master and we are within the main program, go through the list of 
+   * messages and send out commands to the slaves to start their messaging 
+   * and if we are a slave we wait for messages from the master */ 
+
+  /* all of the resulting file descriptors go into the client or server 
+   * data/message arrays with the index into the arrays determined as
+   * follows:
+   * Internal messaging / data indeces 1 to MAX_SOCKETS for all possible 
+   * internal  messages. 
+   *                 E.g. a message to the display program would be
+   *                 client_message[SPIKE_MAIN]
+   *
+   * External messages / data indeces MAX_SOCKETS+1 and up. The index
+   * incremented by one in each program for each new data or message socket
+   * it needs to set up.*/
+
+  /* We first check to see if this is the main program (SPIKE_MAIN) and if
+   * so we start up clients for each of our subsidiary modules, as these
+   * modules have started servers waiting for this program. We then start up
+   * servers that connect to the clients that the modules have started. 
+   * This will allow us to communicate with all of the modules for 
+   * subsequent messages */
+  if (sysinfo.program_type == SPIKE_MAIN) {
     for (i = 0; i < MAX_CONNECTIONS; i++) {
-        server_message[i].fd = 0;
-        server_data[i].fd = 0;
-        client_message[i].fd = 0;
-        client_data[i].fd = 0;
+      /* note that we need to ignore these connections below */
+      c = netinfo.conn + i;
+      if ((c->fromid == SPIKE_MAIN) && 
+          (strcmp(c->to, netinfo.myname) == 0) && 
+          (c->type == MESSAGE) && 
+          (c->protocol == UNIX)) {
+        fprintf(STATUSFILE, "spike main program getting client %s\n", c->name);
+        /* get the file descriptor */
+        c->fd = GetClientSocket(c->name);
+        /* copy this connection's information into the client_message
+         * structure. This is an internal message, so the index is the
+         * toid*/
+        c->ind = c->toid;
+        memcpy(client_message + c->ind, c, sizeof(SocketInfo));
+        fprintf(STATUSFILE, "spike main program got client %s\n", c->name);
+      }
     }
-
-    /* this messaging is orchastrated by the master system, so if we are the
-     * master and we are within the main program, go through the list of 
-     * messages and send out commands to the slaves to start their messaging 
-     * and if we are a slave we wait for messages from the master */ 
-
-    /* all of the resulting file descriptors go into the client or server 
-     * data/message arrays with the index into the arrays determined as
-     * follows:
-     * Internal messaging / data indeces 1 to MAX_SOCKETS for all possible 
-     * internal  messages. 
-     *                 E.g. a message to the display program would be
-     *                 client_message[SPIKE_MAIN]
-     *
-     * External messages / data indeces MAX_SOCKETS+1 and up. The index
-     * incremented by one in each program for each new data or message socket
-     * it needs to set up.*/
-
-    /* We first check to see if this is the main program (SPIKE_MAIN) and if
-     * so we start up clients for each of our subsidiary modules, as these
-     * modules have started servers waiting for this program. We then start up
-     * servers that connect to the clients that the modules have started. 
-     * This will allow us to communicate with all of the modules for 
-     * subsequent messages */
-    if (sysinfo.program_type == SPIKE_MAIN) {
-        for (i = 0; i < MAX_CONNECTIONS; i++) {
-            /* note that we need to ignore these connections below */
-            c = netinfo.conn + i;
-            if ((c->fromid == SPIKE_MAIN) && 
-                (strcmp(c->to, netinfo.myname) == 0) && 
-                (c->type == MESSAGE) && 
-                (c->protocol == UNIX)) {
-                fprintf(STATUSFILE, "spike main program getting client %s\n", c->name);
-                /* get the file descriptor */
-                c->fd = GetClientSocket(c->name);
-                /* copy this connection's information into the client_message
-                 * structure. This is an internal message, so the index is the
-                 * toid*/
-                c->ind = c->toid;
-                memcpy(client_message + c->ind, c, sizeof(SocketInfo));
-                fprintf(STATUSFILE, "spike main program got client %s\n", c->name);
-            }
+    for (i = 0; i < MAX_CONNECTIONS; i++) {
+      /* note that we need to ignore these connections below */
+      c = netinfo.conn + i;
+      if ((c->toid == SPIKE_MAIN) && 
+          (strcmp(c->from, netinfo.myname) == 0) && 
+          (c->type == MESSAGE) && 
+          (c->protocol == UNIX)) {
+        fprintf(STATUSFILE, "spike main program getting server %s\n", c->name);
+        /* get the file descriptor */
+        if ((c->fd = GetServerSocket(c->name)) == -1) {
+          fprintf(stderr, "program %d: Error in StartNetworkMessaging on %s\n", sysinfo.program_type, c->name);
+          return -1;
         }
-        for (i = 0; i < MAX_CONNECTIONS; i++) {
-            /* note that we need to ignore these connections below */
-            c = netinfo.conn + i;
-            if ((c->toid == SPIKE_MAIN) && 
-                (strcmp(c->from, netinfo.myname) == 0) && 
-                (c->type == MESSAGE) && 
-                (c->protocol == UNIX)) {
-                fprintf(STATUSFILE, "spike main program getting server %s\n", c->name);
-                /* get the file descriptor */
-                if ((c->fd = GetServerSocket(c->name)) == -1) {
-                    fprintf(stderr, "program %d: Error in StartNetworkMessaging on %s\n", sysinfo.program_type, c->name);
-                    return -1;
-                }
-                fprintf(STATUSFILE, "spike main program got server %s\n", c->name);
-                /* copy this connection's information into the client_message
-                 * structure. This is an internal message so the index is the
-                 * fromid */
-                c->ind = c->fromid;
-                memcpy(server_message + c->ind, c, sizeof(SocketInfo));
-            }
-        }
-        /* now we go through the list of connections and start up all of the
-         * data servers and clients */
-        /* first start the data connections to this program. These are internal
-         * messages, so c->fromid = c->ind*/  
-        for (i = 0; i < MAX_CONNECTIONS; i++) {
-            c = netinfo.conn + i;
-            if ((strcmp(c->to, netinfo.myname) == 0) && 
-                (strcmp(c->from, netinfo.myname) == 0) && 
-                (c->toid == SPIKE_MAIN) && 
-                (c->type == DATA) && 
-                (c->protocol == UNIX)) {
-                fprintf(STATUSFILE, "getting data server %s from %d\n", c->name,
-                        c->fromid);
-                /* this is an internal data socket, so the index is the fromid*/
-                c->ind = c->fromid;
-                SendMessage(client_message[c->ind].fd,
-                       START_NETWORK_CLIENT, (char *) c, sizeof(SocketInfo));
-                fprintf(STATUSFILE, "sent message for data server %s\n", c->name);
-                /* get the file descriptor */
-                if ((c->fd = GetServerSocket(c->name)) == -1) {
-                    fprintf(stderr, "program %d: Error in StartNetworkMessaging on %s\n", sysinfo.program_type, c->name);
-                    return -1;
-                }
-                /* copy this connection's information into the client_message
-                 * structure */
-                memcpy(server_data + c->ind, c, sizeof(SocketInfo));
-            }
-        }
-        for (i = 0; i < MAX_CONNECTIONS; i++) {
-            /* note that we need to ignore these connections below */
-            c = netinfo.conn + i;
-            if ((strcmp(c->to, netinfo.myname) == 0) && 
-                (strcmp(c->from, netinfo.myname) == 0) && 
-                (c->toid != SPIKE_MAIN) && 
-                (c->type == DATA) && 
-                (c->protocol == UNIX)) {
-                /* send out messages to the two client programs to start a
-                 * client and a server if the client is not SPIKE_MAIN*/
-                /* these are internal messages so the indeces are set by the
-                 * modules themselves */ 
-                fprintf(STATUSFILE, "sending START_NETWORK_SERVER to %d for %d to %d DATA socket\n", c->toid, c->fromid, c->toid);
-                SendMessage(client_message[c->toid].fd,
-                       START_NETWORK_SERVER, (char *) c, sizeof(SocketInfo));
-		if (c->fromid == SPIKE_MAIN) {
-		    fprintf(STATUSFILE, "getting client server %s from %d\n", 
-			    c->name, c->fromid);
-		    if ((c->fd = GetClientSocket(c->name)) == -1) {
-			fprintf(stderr, "program %d: Error in StartNetworkMessaging on %s\n", sysinfo.program_type, c->name);
-			return -1;
-		    }
-		    /* copy this connection's information into the client_message
-		     * structure */
-		    memcpy(client_data + c->toid, c, sizeof(SocketInfo));
-		}
-		else {
-		    fprintf(STATUSFILE, "sending START_NETWORK_CLIENT to %d for %d to %d DATA socket\n", c->fromid, c->fromid, c->toid);
-		    SendMessage(client_message[c->fromid].fd,
-			   START_NETWORK_CLIENT, (char *) c, sizeof(SocketInfo));
-		}
-            }
-        }
+        fprintf(STATUSFILE, "spike main program got server %s\n", c->name);
+        /* copy this connection's information into the client_message
+         * structure. This is an internal message so the index is the
+         * fromid */
+        c->ind = c->fromid;
+        memcpy(server_message + c->ind, c, sizeof(SocketInfo));
+      }
     }
-    /* Now we handle the rest of the messages. At this point we only need to
-     * worry about UDP and TCPIP protocol messages, as we've already started up
-     * all of the internal UNIX messages */
-    currentminconn = MAX_SOCKETS;
-    currentmoutconn = MAX_SOCKETS;
-    currentdinconn = MAX_SOCKETS;
-    currentdoutconn = MAX_SOCKETS;
-    if ((sysinfo.program_type == SPIKE_MAIN) & 
-        (sysinfo.system_type[sysinfo.machinenum] == MASTER)) {
-        /* set the external current connection number to MAX_SOCKETS so that 
-         * we don't overlap with internal module socket indeces */
-        for (i = 0; i < netinfo.nconn; i++) {
-            c = netinfo.conn + i;
-            /* we first check to see if the message is to or from this module*/
-            if ((c->fromid == SPIKE_MAIN) && 
-                    (strcmp(c->from, netinfo.myname) == 0)) {
-                /* check the connection protocol */
-                if (c->protocol == UDP) {
-                    /* start up a UDP client to send data or messages to the specified
-                     * server. Currently this is used only to send messages to the DSP boxes */
-                    if (c->type == MESSAGE) {
-			fprintf(stderr, "getting UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
-                        if ((c->fd = GetUDPClientSocket(c->to, c->port)) == -1) {
-                            fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
-                            return -1;
-                        }
-                        /* check to see if the slot for this message is already
-                         * filled */
-                        if (client_message[c->toid].fd == 0) {
-                            /* this slot is not filled, so we will use it */
-                            c->ind = c->toid;
-                        }
-                        else {
-                            c->ind = currentmoutconn++;
-                        }
-                        memcpy(client_message + c->ind, c, sizeof(SocketInfo));
-                    } 
-                    else if (c->type == DATA) {
-                        if ((c->fd = GetUDPClientSocket(c->to, c->port)) == 0) {
-                            fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
-                            return -1;
-                        }
-                        /* check to see if the slot for this message is already
-                         * filled */
-                        if (client_message[c->toid].fd == 0) {
-                            /* this slot is not filled, so we will use it */
-                            c->ind = c->toid;
-                        }
-                        else {
-                            c->ind = currentmoutconn++;
-                        }
-                        memcpy(client_data + c->ind, c, sizeof(SocketInfo));
-                    }
-                }
-                else if (c->protocol == TCPIP) {
-                    if (c->type == MESSAGE) {
-                        /* send a message to the client to start a server and 
-                         * start up a TCPIP client to send data to the 
-                         * specified server */ 
-                        /* (look up the slave number for the source machine */
-                        slavenum = GetSlaveNum(c->to);
-                        /* we need to send a message to the target machine to 
-                         * start its client, and once that's done we can start 
-                         * the local server */
-                        fprintf(STATUSFILE, "spike_main: sending START_NETWORK_SERVER message to slave %d for TCPIP connection from %s %d to %s %d on port %d\n", slavenum, c->from, c->fromid, c->to, c->toid, c->port);
-                        SendMessage(netinfo.slavefd[slavenum], 
-                                   START_NETWORK_SERVER, (char *) c,
-                                   sizeof(SocketInfo));
-                        if ((c->fd = GetTCPIPClientSocket(c->to, c->port)) 
-                                == -1) {
-                            fprintf(STATUSFILE, "Error opening TCPIP message client socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                            return -1;
-                        }
-                        if (client_message[c->toid].fd == 0) {
-                            /* this slot is not filled, so we will use it */
-                            c->ind = c->toid;
-                        }
-                        else {
-                            c->ind = currentmoutconn++;
-                        }
-                        memcpy(client_message + c->ind, c, sizeof(SocketInfo));
-                        fprintf(STATUSFILE, "Established TCPIP message client socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                    }
-                    else if (c->type == DATA) {
-                        fprintf(STATUSFILE, "Error in network config file: TCPIP DATA client socket from %s %d to %s %d on port %d is not currently supported.\n", c->from, c->fromid, c->to, c->toid, c->port);
-                    }
-                }
+    /* now we go through the list of connections and start up all of the
+     * data servers and clients */
+    /* first start the data connections to this program. These are internal
+     * messages, so c->fromid = c->ind*/  
+    for (i = 0; i < MAX_CONNECTIONS; i++) {
+      c = netinfo.conn + i;
+      if ((strcmp(c->to, netinfo.myname) == 0) && 
+          (strcmp(c->from, netinfo.myname) == 0) && 
+          (c->toid == SPIKE_MAIN) && 
+          (c->type == DATA) && 
+          (c->protocol == UNIX)) {
+        fprintf(STATUSFILE, "getting data server %s from %d\n", c->name,
+            c->fromid);
+        /* this is an internal data socket, so the index is the fromid*/
+        c->ind = c->fromid;
+        SendMessage(client_message[c->ind].fd,
+            START_NETWORK_CLIENT, (char *) c, sizeof(SocketInfo));
+        fprintf(STATUSFILE, "sent message for data server %s\n", c->name);
+        /* get the file descriptor */
+        if ((c->fd = GetServerSocket(c->name)) == -1) {
+          fprintf(stderr, "program %d: Error in StartNetworkMessaging on %s\n", sysinfo.program_type, c->name);
+          return -1;
+        }
+        /* copy this connection's information into the client_message
+         * structure */
+        memcpy(server_data + c->ind, c, sizeof(SocketInfo));
+      }
+    }
+    for (i = 0; i < MAX_CONNECTIONS; i++) {
+      /* note that we need to ignore these connections below */
+      c = netinfo.conn + i;
+      if ((strcmp(c->to, netinfo.myname) == 0) && 
+          (strcmp(c->from, netinfo.myname) == 0) && 
+          (c->toid != SPIKE_MAIN) && 
+          (c->type == DATA) && 
+          (c->protocol == UNIX)) {
+        /* send out messages to the two client programs to start a
+         * client and a server if the client is not SPIKE_MAIN*/
+        /* these are internal messages so the indeces are set by the
+         * modules themselves */ 
+        fprintf(STATUSFILE, "sending START_NETWORK_SERVER to %d for %d to %d DATA socket\n", c->toid, c->fromid, c->toid);
+        SendMessage(client_message[c->toid].fd, START_NETWORK_SERVER, (char *) c, sizeof(SocketInfo));
+        if (c->fromid == SPIKE_MAIN) {
+          fprintf(STATUSFILE, "getting client server %s from %d\n", 
+              c->name, c->fromid);
+          if ((c->fd = GetClientSocket(c->name)) == -1) {
+            fprintf(stderr, "program %d: Error in StartNetworkMessaging on %s\n", sysinfo.program_type, c->name);
+            return -1;
+          }
+          /* copy this connection's information into the client_message
+           * structure */
+          memcpy(client_data + c->toid, c, sizeof(SocketInfo));
+        }
+        else {
+          fprintf(STATUSFILE, "sending START_NETWORK_CLIENT to %d for %d to %d DATA socket\n", c->fromid, c->fromid, c->toid);
+          SendMessage(client_message[c->fromid].fd,
+              START_NETWORK_CLIENT, (char *) c, sizeof(SocketInfo));
+        }
+      }
+    }
+  }
+  /* Now we handle the rest of the messages. At this point we only need to
+   * worry about UDP and TCPIP protocol messages, as we've already started up
+   * all of the internal UNIX messages */
+  currentminconn = MAX_SOCKETS;
+  currentmoutconn = MAX_SOCKETS;
+  currentdinconn = MAX_SOCKETS;
+  currentdoutconn = MAX_SOCKETS;
+  if ((sysinfo.program_type == SPIKE_MAIN) & 
+      (sysinfo.system_type[sysinfo.machinenum] == MASTER)) {
+    /* set the external current connection number to MAX_SOCKETS so that 
+     * we don't overlap with internal module socket indeces */
+    for (i = 0; i < netinfo.nconn; i++) {
+      c = netinfo.conn + i;
+      /* we first check to see if the message is to or from this module*/
+      if ((c->fromid == SPIKE_MAIN) && 
+          (strcmp(c->from, netinfo.myname) == 0)) {
+        /* check the connection protocol */
+        if (c->protocol == UDP) {
+          /* start up a UDP client to send data or messages to the specified
+           * server. Currently this is used only to send messages to the DSP boxes */
+          if (c->type == MESSAGE) {
+            fprintf(stderr, "getting UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
+            if ((c->fd = GetUDPClientSocket(c->to, c->port)) == -1) {
+              fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
+              return -1;
             }
-            else if ((c->toid == SPIKE_MAIN) && 
-                    (strcmp(c->to, netinfo.myname) == 0)) {
-                if (c->protocol == UDP) {
-                    /* start up a UDP server to read data on the specified port 
-                     * and put the relevant information in the server_message 
-                     * or server_data structure */ 
-                    if (c->type == DATA) {
-                        if ((c->fd = GetUDPServerSocket(c->port)) == 0) {
-                            fprintf(STATUSFILE, "Error opening UDP server socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                            return -1;
-                        }
-                        if (server_data[c->fromid].fd == 0) {
-                            /* this slot is not filled, so we will use it */
-                            c->ind = c->fromid;
-                        }
-                        else {
-                            c->ind = currentdinconn++;
-                        }
-                        memcpy(server_data + c->ind, c, sizeof(SocketInfo));
-                    }
-                    else {
-                        fprintf(STATUSFILE, "Error in network config file: UDP data socket from %s %d to %s %d on port %d is an invalid connection type\n", c->from, c->fromid, c->to, c->toid, c->port);
-                        return -1;
-                    }
-                }
-                else if (c->protocol == TCPIP) { 
-                    if (c->type == MESSAGE) {
-                        /* look up the slave number for the source machine */
-                        slavenum = GetSlaveNum(c->from);
-                        /* we need to send a message to the target machine to 
-                         * start it's client, and once that's done we can 
-                         * start the local server */
-                        fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for TCPIP message socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                        SendMessage(netinfo.slavefd[slavenum], 
-                                   START_NETWORK_CLIENT, (char *) c,
-                                   sizeof(SocketInfo));
-                        if ((c->fd = GetTCPIPServerSocket(c->port)) == -1) {
-                            fprintf(STATUSFILE, "program %d: Error getting TCPIP message socket from %s %d to %s %d on port %d\n", -1, c->from, c->fromid, c->to, c->toid, c->port);
-                            return -1;
-                        }
-                        if (server_message[c->fromid].fd == 0) {
-                            /* this slot is not filled, so we will use it */
-                            c->ind = c->fromid;
-                        }
-                        else {
-                            c->ind = currentminconn++;
-                        }
-                        memcpy(server_message + c->ind, c, sizeof(SocketInfo));
-                    }
-                    else if (c->type == DATA) {
-                        /* look up the slave number for the source machine */
-                        slavenum = GetSlaveNum(c->from);
-                        /* we need to send a message to the target machine to start
-                         * it's client, and once that's done we can start the local 
-                         * server */
-                        fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for TCPIP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                        SendMessage(netinfo.slavefd[slavenum], 
-                                   START_NETWORK_CLIENT, (char *) c,
-                                   sizeof(SocketInfo));
-                        if ((c->fd = GetTCPIPServerSocket(c->port)) == -1) {
-                            fprintf(STATUSFILE, "program %d: Error getting TCPIP data socket from %s %d to %s %d on port %d\n", -1, c->from, c->fromid, c->to, c->toid, c->port);
-                            return -1;
-                        }
-                        if (server_data[c->fromid].fd == 0) {
-                            /* this slot is not filled, so we will use it */
-                            c->ind = c->fromid;
-                        }
-                        else {
-                            c->ind = currentdinconn++;
-                        }
-                        memcpy(server_data + c->ind, c, sizeof(SocketInfo));
-                    }
-                }
+            /* check to see if the slot for this message is already
+             * filled */
+            if (client_message[c->toid].fd == 0) {
+              /* this slot is not filled, so we will use it */
+              c->ind = c->toid;
             }
             else {
-                /* this connection is between two other machines or between
-                 * modules.  If it is a connection between
-                 * two machines we  send them messages and wait for a reply  */
-                /* if the message is to or from a DSP machine, we only need to
-                 * tell the slave computer to start it's connection */
-                if ((c->toid >= DSP1) && (c->toid < MAX_DSPS)) {
-                    if (strcmp(c->from, netinfo.myname) == 0) {
-				        /* this is a connection from a local module, so we tell it 
-						 * to start its client */	
-			fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for UDP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-			SendMessage(client_message[c->fromid].fd,
-                               START_NETWORK_CLIENT, (char *) c, sizeof(SocketInfo));
-		    }
-		    else {
-			slavenum = GetSlaveNum(c->from);
-			fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for UDP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-			SendMessage(netinfo.slavefd[slavenum], 
-			    START_NETWORK_CLIENT, (char *) c,
-			    sizeof(SocketInfo));
-		    }
-		}
-                else if (strcmp(c->to, c->from) != 0) {
-                    /* this is a message between two machines, so we 
-                     * send them both messages. */
-                    if (strcmp(c->from, netinfo.myname) == 0) {
-			fprintf(STATUSFILE, "spike_main: Sending START_NETWORK_CLIENT message to local module %s %d\n", c->from, c->fromid);
-                        /* if this is from a module on this machine, send it a
-                         * message */
-                        SendMessage(client_message[c->fromid].fd,
-                                    START_NETWORK_CLIENT, (char *) c, 
-                                    sizeof(SocketInfo));
-                    }
-                    else {
-                        /* this is from a slave */
-			if (c->fromid >= MAX_DSPS) {
-			fprintf(STATUSFILE, "spike_main: Sending START_NETWORK_CLIENT message to remote machine %s %d\n", c->from, c->fromid);
-			    slavenum = GetSlaveNum(c->from);
-			    SendMessage(netinfo.slavefd[slavenum], 
-					START_NETWORK_CLIENT, (char *) c, 
-					sizeof(SocketInfo));
-			}
-                    }
-                    if (strcmp(c->to, netinfo.myname) == 0) {
-                        /* if this is to a module on this machine, send it a
-                         * message */
-                        fprintf(stderr, "spike_main: Sending START_NETWORK_SERVER message to local module %s %d\n", c->to, c->toid);
-                        fdtmp = server_message[c->toid].fd;
-                        SendMessage(client_message[c->toid].fd, 
-                                START_NETWORK_SERVER, (char *) c, 
-                                sizeof(SocketInfo));
-                    }
-                    else {
-                        slavenum = GetSlaveNum(c->to);
-                        fprintf(stderr, "spike_main: Sending START_NETWORK_SERVER message to remote module %s %d\n", c->to, c->toid);
-                        fdtmp = netinfo.masterfd[slavenum];
-                        SendMessage(netinfo.slavefd[slavenum], 
-                                    START_NETWORK_SERVER, (char *) c, 
-                                    sizeof(SocketInfo));
-                    }
-                    /* Now wait for a message from the server */
-                    fprintf(STATUSFILE, "waiting for connection established message from %s %d, slavenum %d\n", c->to, fdtmp, slavenum);
-                    if (!WaitForMessage(fdtmp, CONNECTION_ESTABLISHED, 15)) {
-                        fprintf(STATUSFILE, "Error establishing connection from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                        return -1;
-                    }
-                    else {
-                        fprintf(STATUSFILE, "Established connection from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                    }
-                }
+              c->ind = currentmoutconn++;
             }
+            memcpy(client_message + c->ind, c, sizeof(SocketInfo));
+          } 
+          else if (c->type == DATA) {
+            if ((c->fd = GetUDPClientSocket(c->to, c->port)) == 0) {
+              fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
+              return -1;
+            }
+            /* check to see if the slot for this message is already
+             * filled */
+            if (client_message[c->toid].fd == 0) {
+              /* this slot is not filled, so we will use it */
+              c->ind = c->toid;
+            }
+            else {
+              c->ind = currentmoutconn++;
+            }
+            memcpy(client_data + c->ind, c, sizeof(SocketInfo));
+          }
         }
-        /* now send out the CONNECTION ESTABLISHED message to all of our
-         * modules (except the UDP modules) */
-        for (i = MAX_CONNECTIONS; i >= 0; i--) {
+        else if (c->protocol == TCPIP) {
+          if (c->type == MESSAGE) {
+            /* send a message to the client to start a server and 
+             * start up a TCPIP client to send data to the 
+             * specified server */ 
+            /* (look up the slave number for the source machine */
+            slavenum = GetSlaveNum(c->to);
+            /* we need to send a message to the target machine to 
+             * start its client, and once that's done we can start 
+             * the local server */
+            fprintf(STATUSFILE, "spike_main: sending START_NETWORK_SERVER message to slave %d for TCPIP connection from %s %d to %s %d on port %d\n", slavenum, c->from, c->fromid, c->to, c->toid, c->port);
+            SendMessage(netinfo.slavefd[slavenum], 
+                START_NETWORK_SERVER, (char *) c,
+                sizeof(SocketInfo));
+            if ((c->fd = GetTCPIPClientSocket(c->to, c->port)) 
+                == -1) {
+              fprintf(STATUSFILE, "Error opening TCPIP message client socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+              return -1;
+            }
+            if (client_message[c->toid].fd == 0) {
+              /* this slot is not filled, so we will use it */
+              c->ind = c->toid;
+            }
+            else {
+              c->ind = currentmoutconn++;
+            }
+            memcpy(client_message + c->ind, c, sizeof(SocketInfo));
+            fprintf(STATUSFILE, "Established TCPIP message client socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+          }
+          else if (c->type == DATA) {
+            fprintf(STATUSFILE, "Error in network config file: TCPIP DATA client socket from %s %d to %s %d on port %d is not currently supported.\n", c->from, c->fromid, c->to, c->toid, c->port);
+          }
+        }
+      }
+      else if ((c->toid == SPIKE_MAIN) && 
+          (strcmp(c->to, netinfo.myname) == 0)) {
+        if (c->protocol == UDP) {
+          /* start up a UDP server to read data on the specified port 
+           * and put the relevant information in the server_message 
+           * or server_data structure */ 
+          if (c->type == DATA) {
+            if ((c->fd = GetUDPServerSocket(c->port)) == 0) {
+              fprintf(STATUSFILE, "Error opening UDP server socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+              return -1;
+            }
+            if (server_data[c->fromid].fd == 0) {
+              /* this slot is not filled, so we will use it */
+              c->ind = c->fromid;
+            }
+            else {
+              c->ind = currentdinconn++;
+            }
+            memcpy(server_data + c->ind, c, sizeof(SocketInfo));
+          }
+          else {
+            fprintf(STATUSFILE, "Error in network config file: UDP data socket from %s %d to %s %d on port %d is an invalid connection type\n", c->from, c->fromid, c->to, c->toid, c->port);
+            return -1;
+          }
+        }
+        else if (c->protocol == TCPIP) { 
+          if (c->type == MESSAGE) {
+            /* look up the slave number for the source machine */
+            slavenum = GetSlaveNum(c->from);
+            /* we need to send a message to the target machine to 
+             * start it's client, and once that's done we can 
+             * start the local server */
+            fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for TCPIP message socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+            SendMessage(netinfo.slavefd[slavenum], 
+                START_NETWORK_CLIENT, (char *) c,
+                sizeof(SocketInfo));
+            if ((c->fd = GetTCPIPServerSocket(c->port)) == -1) {
+              fprintf(STATUSFILE, "program %d: Error getting TCPIP message socket from %s %d to %s %d on port %d\n", -1, c->from, c->fromid, c->to, c->toid, c->port);
+              return -1;
+            }
+            if (server_message[c->fromid].fd == 0) {
+              /* this slot is not filled, so we will use it */
+              c->ind = c->fromid;
+            }
+            else {
+              c->ind = currentminconn++;
+            }
+            memcpy(server_message + c->ind, c, sizeof(SocketInfo));
+          }
+          else if (c->type == DATA) {
+            /* look up the slave number for the source machine */
+            slavenum = GetSlaveNum(c->from);
+            /* we need to send a message to the target machine to start
+             * it's client, and once that's done we can start the local 
+             * server */
+            fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for TCPIP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+            SendMessage(netinfo.slavefd[slavenum], 
+                START_NETWORK_CLIENT, (char *) c,
+                sizeof(SocketInfo));
+            if ((c->fd = GetTCPIPServerSocket(c->port)) == -1) {
+              fprintf(STATUSFILE, "program %d: Error getting TCPIP data socket from %s %d to %s %d on port %d\n", -1, c->from, c->fromid, c->to, c->toid, c->port);
+              return -1;
+            }
+            if (server_data[c->fromid].fd == 0) {
+              /* this slot is not filled, so we will use it */
+              c->ind = c->fromid;
+            }
+            else {
+              c->ind = currentdinconn++;
+            }
+            memcpy(server_data + c->ind, c, sizeof(SocketInfo));
+          }
+        }
+      }
+      else {
+        /* this connection is between two other machines or between
+         * modules.  If it is a connection between
+         * two machines we  send them messages and wait for a reply  */
+        /* if the message is to or from a DSP machine, we only need to
+         * tell the slave computer to start it's connection */
+        if ((c->toid >= DSP1) && (c->toid < MAX_DSPS)) {
+          if (strcmp(c->from, netinfo.myname) == 0) {
+            /* this is a connection from a local module, so we tell it 
+             * to start its client */	
+            fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for UDP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+            SendMessage(client_message[c->fromid].fd,
+                START_NETWORK_CLIENT, (char *) c, sizeof(SocketInfo));
+          }
+          else {
+            slavenum = GetSlaveNum(c->from);
+            fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for UDP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+            SendMessage(netinfo.slavefd[slavenum], 
+                START_NETWORK_CLIENT, (char *) c,
+                sizeof(SocketInfo));
+          }
+        }
+        else if (strcmp(c->to, c->from) != 0) {
+          /* this is a message between two machines, so we 
+           * send them both messages. */
+          if (strcmp(c->from, netinfo.myname) == 0) {
+            fprintf(STATUSFILE, "spike_main: Sending START_NETWORK_CLIENT message to local module %s %d\n", c->from, c->fromid);
+            /* if this is from a module on this machine, send it a
+             * message */
+            SendMessage(client_message[c->fromid].fd,
+                START_NETWORK_CLIENT, (char *) c, 
+                sizeof(SocketInfo));
+          }
+          else {
+            /* this is from a slave */
+            if (c->fromid >= MAX_DSPS) {
+              fprintf(STATUSFILE, "spike_main: Sending START_NETWORK_CLIENT message to remote machine %s %d\n", c->from, c->fromid);
+              slavenum = GetSlaveNum(c->from);
+              SendMessage(netinfo.slavefd[slavenum], 
+                  START_NETWORK_CLIENT, (char *) c, 
+                  sizeof(SocketInfo));
+            }
+          }
+          if (strcmp(c->to, netinfo.myname) == 0) {
+            /* if this is to a module on this machine, send it a
+             * message */
+            fprintf(stderr, "spike_main: Sending START_NETWORK_SERVER message to local module %s %d\n", c->to, c->toid);
+            fdtmp = server_message[c->toid].fd;
+            SendMessage(client_message[c->toid].fd, 
+                START_NETWORK_SERVER, (char *) c, 
+                sizeof(SocketInfo));
+          }
+          else {
+            slavenum = GetSlaveNum(c->to);
+            fprintf(stderr, "spike_main: Sending START_NETWORK_SERVER message to remote module %s %d\n", c->to, c->toid);
+            fdtmp = netinfo.masterfd[slavenum];
+            SendMessage(netinfo.slavefd[slavenum], 
+                START_NETWORK_SERVER, (char *) c, 
+                sizeof(SocketInfo));
+          }
+          /* Now wait for a message from the server */
+          fprintf(STATUSFILE, "waiting for connection established message from %s %d, slavenum %d\n", c->to, fdtmp, slavenum);
+          if (!WaitForMessage(fdtmp, CONNECTION_ESTABLISHED, 15)) {
+            fprintf(STATUSFILE, "Error establishing connection from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+            return -1;
+          }
+          else {
+            fprintf(STATUSFILE, "Established connection from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+          }
+        }
+      }
+    }
+    /* now send out the CONNECTION ESTABLISHED message to all of our
+     * modules (except the UDP modules) */
+    for (i = MAX_CONNECTIONS; i >= 0; i--) {
+      if ((server_message[i].fd) && 
+          (server_message[i].protocol != UDP)) {
+        SendMessage(client_message[i].fd, CONNECTION_ESTABLISHED, NULL, 0);
+        fprintf(STATUSFILE, "Waiting for CONNECTION_ESTABLISHED message on %d\n", i);
+        if (!WaitForMessage(server_message[i].fd, CONNECTION_ESTABLISHED, 5)) {
+          sprintf(tmpstring, "spike_main: Error establishing network connections on program %d\n", i);
+          fprintf(STATUSFILE, "%s\n", tmpstring);
+          return -1;
+          //DisplayMessage(tmpstring);
+        }
+        fprintf(STATUSFILE, "got CONNECTION ESTABLISHED message from %d\n", i);
+      }
+    }
+    /* now send a message to all the slaves telling them that the
+     * connections have been established */
+    for (i = 0; i < netinfo.nslaves; i++) {
+      SendMessage(netinfo.slavefd[i], CONNECTION_ESTABLISHED, 
+          NULL, 0);
+    }
+  }
+  else if ((sysinfo.program_type == SPIKE_MAIN) & 
+      (sysinfo.system_type[sysinfo.machinenum] == SLAVE)) {
+    /* this is a slave system, so we need to wait for a connection from the
+     * master and then send out the appropriate messages to our modules */
+    maxfds = netinfo.masterfd[netinfo.myindex] + 1;
+    while (!done) {
+      FD_ZERO(&readfds);
+      FD_SET(netinfo.masterfd[netinfo.myindex], &readfds);
+      select(maxfds+1, &readfds, NULL, NULL, NULL);
+      message = GetMessage(netinfo.masterfd[netinfo.myindex], 
+          (char *) data, &datalen, 0);
+      if (datalen > 0) {
+        c = (SocketInfo *) data;
+        fprintf(STATUSFILE, "program %d got message %d, socket name %s, protocol %d, type %d, connection from %s %d to %s %d\n",
+            sysinfo.program_type, message, c->name, 
+            c->protocol, c->type, c->from, c->fromid, c->to, c->toid);
+        if (message == -1) {
+          /* this only happens when a module has died unexpectedly,
+           * so we should exit */
+          fprintf(stderr, "Error: another program has died unexpectedly, exiting\n");
+          return -1;
+        }
+      }
+      else {
+        fprintf(STATUSFILE, "program %d got message %d\n", 
+            sysinfo.program_type, message);
+      }
+      switch(message) {
+        case START_NETWORK_CLIENT:
+          /* handle the DSP connection */
+          if (c->toid < MAX_DSPS) {
+            if ((c->fd = 
+                  GetUDPClientSocket(c->to, c->port)) == 0) {
+              fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
+              return -1;
+            }
+            memcpy(client_message + c->toid, c, 
+                sizeof(SocketInfo));
+            fprintf(STATUSFILE, "Opened UDP client socket from %s to %s on port %d, index %d\n", c->from, c->to, c->port, c->toid);
+          }
+          else {
+            fprintf(STATUSFILE, "program %d sending START_NETWORK_CLIENT message for connection from %s %d to %s %d\n", sysinfo.program_type, c->from, c->fromid, c->to, c->toid);
+            /* send a message to the client module */
+            SendMessage(client_message[c->fromid].fd, START_NETWORK_CLIENT,
+                (char *) c, sizeof(SocketInfo));
+          }
+          break;
+        case START_NETWORK_SERVER: 
+          fprintf(STATUSFILE, "program %d sending START_NETWORK_SERVER message for connection from %s %d to %s %d\n", sysinfo.program_type, c->from, c->fromid, c->to, c->toid);
+          /* send a message to the server module */
+          SendMessage(client_message[c->toid].fd, START_NETWORK_SERVER,
+              (char *) c, sizeof(SocketInfo));
+
+          if (WaitForMessage(server_message[c->toid].fd, 
+                CONNECTION_ESTABLISHED, 5)) {
+            /* send a connection established message to the master*/
+            SendMessage(netinfo.slavefd[netinfo.myindex], 
+                CONNECTION_ESTABLISHED, NULL, 0); 
+          }
+          break;
+        case CONNECTION_ESTABLISHED:
+          /* send out the CONNECTION ESTABLISHED message to the other
+           * modules and wait for the response. Note that this only
+           * goes out to non-UDP connected modules at the moment, as
+           * the DSPs are not set up to get these messages (????)*/
+          for (i = MAX_CONNECTIONS; i >= 0; i--) {
             if ((server_message[i].fd) && 
                 (server_message[i].protocol != UDP)) {
-                SendMessage(client_message[i].fd, CONNECTION_ESTABLISHED, NULL, 0);
-                fprintf(STATUSFILE, "Waiting for CONNECTION_ESTABLISHED message on %d\n", i);
-                if (!WaitForMessage(server_message[i].fd, CONNECTION_ESTABLISHED, 5)) {
-                    sprintf(tmpstring, "spike_main: Error establishing network connections on program %d\n", i);
-                    fprintf(STATUSFILE, "%s\n", tmpstring);
-                    return -1;
-                    //DisplayMessage(tmpstring);
-                }
-                fprintf(STATUSFILE, "got CONNECTION ESTABLISHED message from %d\n", i);
+              SendMessage(client_message[i].fd, CONNECTION_ESTABLISHED, NULL, 0);
+              if (!WaitForMessage(server_message[i].fd, CONNECTION_ESTABLISHED, 5)) {
+                sprintf(tmpstring, "spike_main: Error establishing network connections on program %d\n", i);
+                fprintf(STATUSFILE, "%s\n", tmpstring);
+                return -1;
+                //DisplayMessage(tmpstring);
+              }
             }
-        }
-        /* now send a message to all the slaves telling them that the
-         * connections have been established */
-        for (i = 0; i < netinfo.nslaves; i++) {
-            SendMessage(netinfo.slavefd[i], CONNECTION_ESTABLISHED, 
-                        NULL, 0);
-        }
+          }
+          /* send out the final connection established message to the
+           * master system */
+          SendMessage(netinfo.masterfd[netinfo.myindex], 
+              CONNECTION_ESTABLISHED, NULL, 0);
+
+          done = 1;
+          break;
+      }
     }
-    else if ((sysinfo.program_type == SPIKE_MAIN) & 
-        (sysinfo.system_type[sysinfo.machinenum] == SLAVE)) {
-        /* this is a slave system, so we need to wait for a connection from the
-         * master and then send out the appropriate messages to our modules */
-        maxfds = netinfo.masterfd[netinfo.myindex] + 1;
-        while (!done) {
-            FD_ZERO(&readfds);
-            FD_SET(netinfo.masterfd[netinfo.myindex], &readfds);
-            select(maxfds+1, &readfds, NULL, NULL, NULL);
-            message = GetMessage(netinfo.masterfd[netinfo.myindex], 
-                    (char *) data, &datalen, 0);
-            if (datalen > 0) {
-                c = (SocketInfo *) data;
-                fprintf(STATUSFILE, "program %d got message %d, socket name %s, protocol %d, type %d, connection from %s %d to %s %d\n",
-                    sysinfo.program_type, message, c->name, 
-                    c->protocol, c->type, c->from, c->fromid, c->to, c->toid);
-		if (message == -1) {
-		    /* this only happens when a module has died unexpectedly,
-		     * so we should exit */
-		    fprintf(stderr, "Error: another program has died unexpectedly, exiting\n");
-		    return -1;
-		}
+  }
+  else {
+    /* this is one of the subsidiary modules, so we start up a server for
+     * messages from SPIKE_MAIN and then wait for messages  */
+    /* we first need to get the name of the socket */
+    sprintf(server_message[SPIKE_MAIN].name, 
+        "/tmp/spike_message_%d_to_%d", SPIKE_MAIN,
+        sysinfo.program_type);
+    fprintf(STATUSFILE, "module %d starting server %s\n", 
+        sysinfo.program_type, server_message[SPIKE_MAIN].name);
+    if (((server_message[SPIKE_MAIN].fd) = GetServerSocket( server_message[SPIKE_MAIN].name)) == -1) {
+      fprintf(STATUSFILE, "Error starting server on %s", tmpstring);
+      return -1;
+    }
+    /* now we start up a client for
+     * messages to SPIKE_MAIN and then wait for messages  */
+    sprintf(client_message[SPIKE_MAIN].name, 
+        "/tmp/spike_message_%d_to_%d", sysinfo.program_type,
+        SPIKE_MAIN);
+    fprintf(STATUSFILE, "module %d starting display client %s\n", 
+        sysinfo.program_type, client_message[SPIKE_MAIN].name);
+    if (((client_message[SPIKE_MAIN].fd) = GetClientSocket(
+            client_message[SPIKE_MAIN].name)) == 0) {
+      fprintf(STATUSFILE, "Error starting server on %s", 
+          client_message[SPIKE_MAIN].name);
+      return -1;
+    }
+
+    maxfds = server_message[SPIKE_MAIN].fd + 1;
+    while (!done) {
+      FD_ZERO(&readfds);
+      FD_SET(server_message[SPIKE_MAIN].fd, &readfds);
+      select(maxfds+1, &readfds, NULL, NULL, NULL);
+      bzero((void *) data, 1000);
+      message = GetMessage(server_message[SPIKE_MAIN].fd, 
+          (char *) data, &datalen, 1);
+      c = (SocketInfo *) data;
+      fprintf(STATUSFILE, "program %d got message %d, socket name %s, protocol %d, type %d, connection from %s %d to %s %d\n",
+          sysinfo.program_type, message, c->name, c->protocol, c->type, c->from, c->fromid, c->to, c->toid);
+      if (message == -1) {
+        /* this only happens when a module has died unexpectedly,
+         * so we should exit */
+        fprintf(stderr, "Error: another module has died unexpectedly, exiting\n");
+        return -1;
+      }
+      switch(message) {
+        case START_NETWORK_CLIENT:
+          /* start the network client */
+          /* check the type of the connection */
+          if (c->protocol == UNIX) {
+            //fprintf(STATUSFILE, "about to get client socket %s\n", c->name);
+            /* start up a UNIX client to send data or messages to 
+             * the specified server. This is an internal message,
+             * so it's index is c->toid  */
+            if ((c->fd = GetClientSocket(c->name)) == 0) {
+              fprintf(STATUSFILE, "Error opening UNIX client socket %s \n", c->name);
+              return -1;
+            }
+            c->ind = c->toid;
+            if (c->type == MESSAGE) {
+              memcpy(client_message + c->ind, c, 
+                  sizeof(SocketInfo));
+            } 
+            else if (c->type == DATA) {
+              memcpy(client_data + c->ind, c, sizeof(SocketInfo));
             }
             else {
-                fprintf(STATUSFILE, "program %d got message %d\n", 
-                        sysinfo.program_type, message);
+              return -1;
             }
-            switch(message) {
-                case START_NETWORK_CLIENT:
-		    /* handle the DSP connection */
-		    if (c->toid < MAX_DSPS) {
-			if ((c->fd = 
-				  GetUDPClientSocket(c->to, c->port)) == 0) {
-			    fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
-			    return -1;
-			}
-			memcpy(client_message + c->toid, c, 
-				sizeof(SocketInfo));
-			fprintf(STATUSFILE, "Opened UDP client socket from %s to %s on port %d, index %d\n", c->from, c->to, c->port, c->toid);
-		    }
-		    else {
-			fprintf(STATUSFILE, "program %d sending START_NETWORK_CLIENT message for connection from %s %d to %s %d\n", sysinfo.program_type, c->from, c->fromid, c->to, c->toid);
-			/* send a message to the client module */
-			SendMessage(client_message[c->fromid].fd, START_NETWORK_CLIENT,
-				    (char *) c, sizeof(SocketInfo));
-		    }
-                    break;
-                case START_NETWORK_SERVER: 
-                    fprintf(STATUSFILE, "program %d sending START_NETWORK_SERVER message for connection from %s %d to %s %d\n", sysinfo.program_type, c->from, c->fromid, c->to, c->toid);
-                    /* send a message to the server module */
-                    SendMessage(client_message[c->toid].fd, START_NETWORK_SERVER,
-                                (char *) c, sizeof(SocketInfo));
-
-                    if (WaitForMessage(server_message[c->toid].fd, 
-                                CONNECTION_ESTABLISHED, 5)) {
-                        /* send a connection established message to the master*/
-                        SendMessage(netinfo.slavefd[netinfo.myindex], 
-                                CONNECTION_ESTABLISHED, NULL, 0); 
-                    }
-                    break;
-                case CONNECTION_ESTABLISHED:
-                    /* send out the CONNECTION ESTABLISHED message to the other
-                     * modules and wait for the response. Note that this only
-                     * goes out to non-UDP connected modules at the moment, as
-                     * the DSPs are not set up to get these messages (????)*/
-                    for (i = MAX_CONNECTIONS; i >= 0; i--) {
-                        if ((server_message[i].fd) && 
-                            (server_message[i].protocol != UDP)) {
-                            SendMessage(client_message[i].fd, CONNECTION_ESTABLISHED, NULL, 0);
-                            if (!WaitForMessage(server_message[i].fd, CONNECTION_ESTABLISHED, 5)) {
-                                sprintf(tmpstring, "spike_main: Error establishing network connections on program %d\n", i);
-                                fprintf(STATUSFILE, "%s\n", tmpstring);
-                                return -1;
-                                //DisplayMessage(tmpstring);
-                            }
-                        }
-                    }
-                    /* send out the final connection established message to the
-                     * master system */
-                    SendMessage(netinfo.masterfd[netinfo.myindex], 
-                            CONNECTION_ESTABLISHED, NULL, 0);
-
-                    done = 1;
-                    break;
+            //fprintf(STATUSFILE, "got UNIX socket %s\n", c->name);
+          }
+          else if (c->protocol == UDP) {
+            if (c->type == MESSAGE) {
+              if ((c->fd = 
+                    GetUDPClientSocket(c->to, c->port)) == 0) {
+                fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
+                return -1;
+              }
+              if (client_message[c->toid].fd == 0) {
+                /* this slot is not filled, so we will use it */
+                c->ind = c->toid;
+              }
+              else {
+                c->ind = currentmoutconn++;
+              }
+              memcpy(client_message + c->ind, c, 
+                  sizeof(SocketInfo));
+            } 
+            else if (c->type == DATA) {
+              fprintf(stderr, "starting UDP data client\n");
+              if ((c->fd = 
+                    GetUDPClientSocket(c->to, c->port)) == 0) {
+                fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
+                return -1;
+              }
+              if (client_data[c->toid].fd == 0) {
+                /* this slot is not filled, so we will use it */
+                c->ind = c->toid;
+              }
+              else {
+                c->ind = currentdoutconn++;
+              }
+              memcpy(client_data + c->ind, c, sizeof(SocketInfo));
             }
-        }
-    }
-    else {
-        /* this is one of the subsidiary modules, so we start up a server for
-         * messages from SPIKE_MAIN and then wait for messages  */
-        /* we first need to get the name of the socket */
-        sprintf(server_message[SPIKE_MAIN].name, 
-                "/tmp/spike_message_%d_to_%d", SPIKE_MAIN,
-                sysinfo.program_type);
-        fprintf(STATUSFILE, "module %d starting server %s\n", 
-                sysinfo.program_type, server_message[SPIKE_MAIN].name);
-        if (((server_message[SPIKE_MAIN].fd) = GetServerSocket(
-                        server_message[SPIKE_MAIN].name)) == -1) {
-            fprintf(STATUSFILE, "Error starting server on %s", tmpstring);
+            else {
+              return -1;
+            }
+          }
+          else if (c->protocol == TCPIP) {
+            /* start up a TCPIP client to send data to the specified
+             * server and send a message to the client to start a
+             * server. */
+            if (c->type == MESSAGE) {
+              if ((c->fd = 
+                    GetTCPIPClientSocket(c->to, c->port)) == -1){
+                fprintf(STATUSFILE, "Error opening TCPIP client message socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+                return -1;
+              }
+              fprintf(STATUSFILE, "program %d got TCP IP client message socket to %s, port %d\n", sysinfo.program_type, c->to, c->port);
+              if (client_message[c->toid].fd == 0) {
+                /* this slot is not filled, so we will use it */
+                c->ind = c->toid;
+              }
+              else {
+                c->ind = currentmoutconn++;
+              }
+              memcpy(client_message + c->ind, c, sizeof(SocketInfo));
+            } 
+            else if (c->type == DATA) {
+              if ((c->fd = GetTCPIPClientSocket(c->to, 
+                      c->port)) ==-1) {
+                fprintf(STATUSFILE, "Error opening TCPIP client data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+                return -1;
+              }
+              fprintf(STATUSFILE, "program %d got TCP IP client data socket to %s, port %d\n", sysinfo.program_type, c->to, c->port);
+              if (client_data[c->toid].fd == 0) {
+                /* this slot is not filled, so we will use it */
+                c->ind = c->toid;
+              }
+              else {
+                c->ind = currentdoutconn++;
+              }
+              memcpy(client_data + c->ind, c, sizeof(SocketInfo));
+            }
+          }
+          else {
+            fprintf(STATUSFILE, "Invalid connection protocol %d for socket from %s %d to %s %d on port %d\n", c->protocol, c->from, c->fromid, c->to, 
+                c->toid, c->port);
             return -1;
-        }
-        /* now we start up a client for
-         * messages to SPIKE_MAIN and then wait for messages  */
-        sprintf(client_message[SPIKE_MAIN].name, 
-                "/tmp/spike_message_%d_to_%d", sysinfo.program_type,
-                SPIKE_MAIN);
-        fprintf(STATUSFILE, "module %d starting display client %s\n", 
-                sysinfo.program_type, client_message[SPIKE_MAIN].name);
-        if (((client_message[SPIKE_MAIN].fd) = GetClientSocket(
-                        client_message[SPIKE_MAIN].name)) == 0) {
-            fprintf(STATUSFILE, "Error starting server on %s", 
-                    client_message[SPIKE_MAIN].name);
+          }
+          break;
+        case START_NETWORK_SERVER: 
+          /* start the network client */
+          /* check the type of the connection */
+          if (c->protocol == UNIX) {
+            /* start up a UNIX server to send data or messages to 
+             * the specified server.  */
+            c->ind = c->fromid;
+            if (c->type == MESSAGE) {
+              if ((c->fd = GetServerSocket(c->name)) == -1) {
+                fprintf(STATUSFILE, "Error opening UNIX server socket %s\n", c->name);
+                return -1;
+              }
+              memcpy(server_message + c->ind, c, sizeof(SocketInfo));
+            } 
+            else if (c->type == DATA) {
+              if ((c->fd = GetServerSocket(c->name)) == -1) {
+                fprintf(STATUSFILE, "Error opening UNIX server socket %s\n", c->name);
+                return -1;
+              }
+              memcpy(server_data + c->ind, c, sizeof(SocketInfo));
+            }
+            else {
+              return -1;
+            }
+          }
+          else if (c->protocol == UDP) {
+            /* start up a UDP server to send data or messages to the specified
+             * server. Currently this is not used */
+            if (c->type == MESSAGE) {
+              if ((c->fd = GetUDPServerSocket(c->port)) == 0) {
+                fprintf(STATUSFILE, "Error opening UDP server message socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+                return -1;
+              }
+              if (server_message[c->fromid].fd == 0) {
+                /* this slot is not filled, so we will use it */
+                c->ind = c->fromid;
+              }
+              else {
+                c->ind = currentminconn++;
+              }
+              memcpy(server_message + c->ind, c, sizeof(SocketInfo));
+            } 
+            else if (c->type == DATA) {
+              fprintf(stderr, "Starting UDP data server on port %d\n", c->port);
+              if ((c->fd = GetUDPServerSocket(c->port)) == 0) {
+                fprintf(STATUSFILE, "Error opening UDP server socket on port %d\n", c->port);
+                return -1;
+              }
+              if (server_data[c->fromid].fd == 0) {
+                /* this slot is not filled, so we will use it */
+                c->ind = c->fromid;
+              }
+              else {
+                c->ind = currentdinconn++;
+              }
+              memcpy(server_data + c->ind, c, sizeof(SocketInfo));
+            }
+            else {
+              return -1;
+            }
+          }
+          else if (c->protocol == TCPIP) {
+            /* start up a TCPIP server to send data to the specified
+             * server and send a message to the server to start a
+             * server. */
+            if (c->type == MESSAGE) {
+              if ((c->fd = GetTCPIPServerSocket(c->port))==-1) {
+                fprintf(STATUSFILE, "Error opening TCPIP server message socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+                return -1;
+              }
+              if (server_message[c->fromid].fd == 0) {
+                /* this slot is not filled, so we will use it */
+                c->ind = c->fromid;
+                fprintf(stderr, "ind = fromid = %d\n", c->ind);
+              }
+              else {
+                c->ind = currentminconn++;
+                fprintf(stderr, "ind = currentconn = %d\n", c->ind);
+              }
+              memcpy(server_message + c->ind, c, sizeof(SocketInfo));
+              fprintf(STATUSFILE, "program %d got TCP IP server message socket from %s, port %d, fd %d, ind %d\n", sysinfo.program_type, c->from, c->port, c->fd, c->ind);
+            } 
+            else if (c->type == DATA) {
+              if ((c->fd = GetTCPIPServerSocket(c->port))==-1) {
+                fprintf(STATUSFILE, "Error opening TCPIP server data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+                return -1;
+              }
+              fprintf(STATUSFILE, "program %d got TCP IP server data socket from %s, port %d, fd %d, ind %d\n", sysinfo.program_type, c->from, c->port, c->fd, c->ind);
+              if (server_data[c->fromid].fd == 0) {
+                /* this slot is not filled, so we will use it */
+                c->ind = c->fromid;
+              }
+              else {
+                c->ind = currentdinconn++;
+              }
+              memcpy(server_data + c->ind, c, sizeof(SocketInfo));
+            }
+          }
+          else {
+            fprintf(STATUSFILE, "Invalid connection type %d for server socket from %s to %s on port %d\n", c->type, c->from, c->to, c->port);
             return -1;
-        }
+          }
+          /* send a CONNECTION ESTABLISHED MESSAGE to the main
+           * program */
+          SendMessage(client_message[SPIKE_MAIN].fd, 
+              CONNECTION_ESTABLISHED, NULL, 0); 
+          /*if (sysinfo.program_type == SPIKE_BEHAV) {
+            fprintf(stderr, "spike_behav: connection type %d for server socket from %s %d to %s %d on port %d established\n", c->type, c->from, c->fromid, c->to, c->toid, c->port);
+            } */
 
-        maxfds = server_message[SPIKE_MAIN].fd + 1;
-        while (!done) {
-            FD_ZERO(&readfds);
-            FD_SET(server_message[SPIKE_MAIN].fd, &readfds);
-            select(maxfds+1, &readfds, NULL, NULL, NULL);
-            bzero((void *) data, 1000);
-            message = GetMessage(server_message[SPIKE_MAIN].fd, 
-                    (char *) data, &datalen, 1);
-            c = (SocketInfo *) data;
-            fprintf(STATUSFILE, "program %d got message %d, socket name %s, protocol %d, type %d, connection from %s %d to %s %d\n",
-                    sysinfo.program_type, message, c->name, c->protocol, c->type, c->from, c->fromid, c->to, c->toid);
-	    if (message == -1) {
-		/* this only happens when a module has died unexpectedly,
-		 * so we should exit */
-		fprintf(stderr, "Error: another module has died unexpectedly, exiting\n");
-		return -1;
-	    }
-            switch(message) {
-                case START_NETWORK_CLIENT:
-                    /* start the network client */
-                    /* check the type of the connection */
-                    if (c->protocol == UNIX) {
-                        //fprintf(STATUSFILE, "about to get client socket %s\n", c->name);
-                        /* start up a UNIX client to send data or messages to 
-                         * the specified server. This is an internal message,
-                         * so it's index is c->toid  */
-                        if ((c->fd = GetClientSocket(c->name)) == 0) {
-                            fprintf(STATUSFILE, "Error opening UNIX client socket %s \n", c->name);
-                            return -1;
-                        }
-                        c->ind = c->toid;
-                        if (c->type == MESSAGE) {
-                            memcpy(client_message + c->ind, c, 
-                                    sizeof(SocketInfo));
-                        } 
-                        else if (c->type == DATA) {
-                            memcpy(client_data + c->ind, c, sizeof(SocketInfo));
-                        }
-                        else {
-                            return -1;
-                        }
-                        //fprintf(STATUSFILE, "got UNIX socket %s\n", c->name);
-                    }
-                    else if (c->protocol == UDP) {
-                        if (c->type == MESSAGE) {
-                            if ((c->fd = 
-                                        GetUDPClientSocket(c->to, c->port)) == 0) {
-                                fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
-                                return -1;
-                            }
-                            if (client_message[c->toid].fd == 0) {
-                                /* this slot is not filled, so we will use it */
-                                c->ind = c->toid;
-                            }
-                            else {
-                                c->ind = currentmoutconn++;
-                            }
-                            memcpy(client_message + c->ind, c, 
-                                   sizeof(SocketInfo));
-                        } 
-                        else if (c->type == DATA) {
-                            fprintf(stderr, "starting UDP data client\n");
-                            if ((c->fd = 
-                                      GetUDPClientSocket(c->to, c->port)) == 0) {
-                                fprintf(STATUSFILE, "Error opening UDP client socket from %s to %s on port %d\n", c->from, c->to, c->port);
-                                return -1;
-                            }
-                            if (client_data[c->toid].fd == 0) {
-                                /* this slot is not filled, so we will use it */
-                                c->ind = c->toid;
-                            }
-                            else {
-                                c->ind = currentdoutconn++;
-                            }
-                            memcpy(client_data + c->ind, c, sizeof(SocketInfo));
-                        }
-                        else {
-                            return -1;
-                        }
-                    }
-                    else if (c->protocol == TCPIP) {
-                        /* start up a TCPIP client to send data to the specified
-                         * server and send a message to the client to start a
-                         * server. */
-                        if (c->type == MESSAGE) {
-                            if ((c->fd = 
-                                    GetTCPIPClientSocket(c->to, c->port)) == -1){
-                                fprintf(STATUSFILE, "Error opening TCPIP client message socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                                return -1;
-                            }
-                            fprintf(STATUSFILE, "program %d got TCP IP client message socket to %s, port %d\n", sysinfo.program_type, c->to, c->port);
-                            if (client_message[c->toid].fd == 0) {
-                                /* this slot is not filled, so we will use it */
-                                c->ind = c->toid;
-                            }
-                            else {
-                                c->ind = currentmoutconn++;
-                            }
-                            memcpy(client_message + c->ind, c, sizeof(SocketInfo));
-                        } 
-                        else if (c->type == DATA) {
-                            if ((c->fd = GetTCPIPClientSocket(c->to, 
-                                            c->port)) ==-1) {
-                                fprintf(STATUSFILE, "Error opening TCPIP client data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                                return -1;
-                            }
-                            fprintf(STATUSFILE, "program %d got TCP IP client data socket to %s, port %d\n", sysinfo.program_type, c->to, c->port);
-                            if (client_data[c->toid].fd == 0) {
-                                /* this slot is not filled, so we will use it */
-                                c->ind = c->toid;
-                            }
-                            else {
-                                c->ind = currentdoutconn++;
-                            }
-                            memcpy(client_data + c->ind, c, sizeof(SocketInfo));
-                        }
-                    }
-                    else {
-                        fprintf(STATUSFILE, "Invalid connection protocol %d for socket from %s %d to %s %d on port %d\n", c->protocol, c->from, c->fromid, c->to, 
-                                c->toid, c->port);
-                        return -1;
-                    }
-                    break;
-                case START_NETWORK_SERVER: 
-                    /* start the network client */
-                    /* check the type of the connection */
-                    if (c->protocol == UNIX) {
-                        /* start up a UNIX server to send data or messages to 
-                         * the specified server.  */
-                        c->ind = c->fromid;
-                        if (c->type == MESSAGE) {
-                            if ((c->fd = GetServerSocket(c->name)) == -1) {
-                                fprintf(STATUSFILE, "Error opening UNIX server socket %s\n", c->name);
-                                return -1;
-                            }
-                            memcpy(server_message + c->ind, c, sizeof(SocketInfo));
-                        } 
-                        else if (c->type == DATA) {
-                            if ((c->fd = GetServerSocket(c->name)) == -1) {
-                                fprintf(STATUSFILE, "Error opening UNIX server socket %s\n", c->name);
-                                return -1;
-                            }
-                            memcpy(server_data + c->ind, c, sizeof(SocketInfo));
-                        }
-                        else {
-                            return -1;
-                        }
-                    }
-                    else if (c->protocol == UDP) {
-                        /* start up a UDP server to send data or messages to the specified
-                         * server. Currently this is not used */
-                        if (c->type == MESSAGE) {
-                            if ((c->fd = GetUDPServerSocket(c->port)) == 0) {
-                                fprintf(STATUSFILE, "Error opening UDP server message socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                                return -1;
-                            }
-                            if (server_message[c->fromid].fd == 0) {
-                                /* this slot is not filled, so we will use it */
-                                c->ind = c->fromid;
-                            }
-                            else {
-                                c->ind = currentminconn++;
-                            }
-                            memcpy(server_message + c->ind, c, sizeof(SocketInfo));
-                        } 
-                        else if (c->type == DATA) {
-                            fprintf(stderr, "Starting UDP data server on port %d\n", c->port);
-                            if ((c->fd = GetUDPServerSocket(c->port)) == 0) {
-                                fprintf(STATUSFILE, "Error opening UDP server socket on port %d\n", c->port);
-                                return -1;
-                            }
-                            if (server_data[c->fromid].fd == 0) {
-                                /* this slot is not filled, so we will use it */
-                                c->ind = c->fromid;
-                            }
-                            else {
-                                c->ind = currentdinconn++;
-                            }
-                            memcpy(server_data + c->ind, c, sizeof(SocketInfo));
-                        }
-                        else {
-                            return -1;
-                        }
-                    }
-                    else if (c->protocol == TCPIP) {
-                        /* start up a TCPIP server to send data to the specified
-                         * server and send a message to the server to start a
-                         * server. */
-                        if (c->type == MESSAGE) {
-                            if ((c->fd = GetTCPIPServerSocket(c->port))==-1) {
-                                fprintf(STATUSFILE, "Error opening TCPIP server message socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                                return -1;
-                            }
-                            if (server_message[c->fromid].fd == 0) {
-                                /* this slot is not filled, so we will use it */
-                                c->ind = c->fromid;
-                                fprintf(stderr, "ind = fromid = %d\n", c->ind);
-                            }
-                            else {
-                                c->ind = currentminconn++;
-                                fprintf(stderr, "ind = currentconn = %d\n", c->ind);
-                            }
-                            memcpy(server_message + c->ind, c, sizeof(SocketInfo));
-                            fprintf(STATUSFILE, "program %d got TCP IP server message socket from %s, port %d, fd %d, ind %d\n", sysinfo.program_type, c->from, c->port, c->fd, c->ind);
-                        } 
-                        else if (c->type == DATA) {
-                            if ((c->fd = GetTCPIPServerSocket(c->port))==-1) {
-                                fprintf(STATUSFILE, "Error opening TCPIP server data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-                                return -1;
-                            }
-                            fprintf(STATUSFILE, "program %d got TCP IP server data socket from %s, port %d, fd %d, ind %d\n", sysinfo.program_type, c->from, c->port, c->fd, c->ind);
-                            if (server_data[c->fromid].fd == 0) {
-                                /* this slot is not filled, so we will use it */
-                                c->ind = c->fromid;
-                            }
-                            else {
-                                c->ind = currentdinconn++;
-                            }
-                            memcpy(server_data + c->ind, c, sizeof(SocketInfo));
-                        }
-                    }
-                    else {
-                        fprintf(STATUSFILE, "Invalid connection type %d for server socket from %s to %s on port %d\n", c->type, c->from, c->to, c->port);
-                        return -1;
-                    }
-                    /* send a CONNECTION ESTABLISHED MESSAGE to the main
-                     * program */
-                    SendMessage(client_message[SPIKE_MAIN].fd, 
-                            CONNECTION_ESTABLISHED, NULL, 0); 
-                    /*if (sysinfo.program_type == SPIKE_BEHAV) {
-                        fprintf(stderr, "spike_behav: connection type %d for server socket from %s %d to %s %d on port %d established\n", c->type, c->from, c->fromid, c->to, c->toid, c->port);
-                    } */
-
-                    break;
-                case CONNECTION_ESTABLISHED:
-                    /* return the connection established message to the main
-                     * program */
-                    fprintf(STATUSFILE, "program %d sending out CONNECTION ESTABLISHED message to main program \n", sysinfo.program_type);
-                    SendMessage(client_message[SPIKE_MAIN].fd, 
-                            CONNECTION_ESTABLISHED, NULL, 0); 
-                    done = 1;
-                    break;
-		case EXIT:
-		    /* this occurs only when the main program has failed to
-		     * start messaging correctly */
-		    fprintf(stderr, "Another module has died unexpectedly, exiting\n");
-		    return -1;
-            }
-        }
+          break;
+        case CONNECTION_ESTABLISHED:
+          /* return the connection established message to the main
+           * program */
+          fprintf(STATUSFILE, "program %d sending out CONNECTION ESTABLISHED message to main program \n", sysinfo.program_type);
+          SendMessage(client_message[SPIKE_MAIN].fd, 
+              CONNECTION_ESTABLISHED, NULL, 0); 
+          done = 1;
+          break;
+        case EXIT:
+          /* this occurs only when the main program has failed to
+           * start messaging correctly */
+          fprintf(stderr, "Another module has died unexpectedly, exiting\n");
+          return -1;
+      }
     }
-    /* now that everything is established, we go through all of the connections
-     * and set the maximum index. We also set the socket size for all data
-     * connections */
-    mini = dini = mouti = douti = 0;
-    optval = DATASOCKET_WRITE_BUFFER_SIZE;
-    optlen = sizeof(int);
-    for (i = 0; i < MAX_CONNECTIONS; i++) {
-        if (server_message[i].fd) {
-            netinfo.messageinfd[mini++] = i;
-        }
-        if (client_message[i].fd) {
-            netinfo.messageoutfd[mouti++] = i;
-        }
-        if (server_data[i].fd) {
-            /* add this connection to the incoming data list */
-            netinfo.datainfd[dini++] = i;
-            /* set the socket to have a large READ SIZE */
-            setsockopt(server_data[i].fd, SOL_SOCKET, SO_RCVBUF, 
-                       (void *) &optval, optlen);
-        }
-        if ((client_data[i].fd) && (client_data[i].toid >= MAX_DSPS)) {
-            /* add this connection to the outgoing data list if it is not to a DSP*/
-            netinfo.dataoutfd[douti++] = i;
-            /* set the socket to have a large WRITE SIZE */
-            setsockopt(server_data[i].fd, SOL_SOCKET, SO_SNDBUF, 
-                       (void *) &optval, optlen);
-            /* check to see if this is a message to a DSP, in which case we
-             * also want to add it to the datain list */
-            if (client_data[i].toid < MAX_DSPS) {
-                netinfo.datainfd[dini++] = i;
-            }
-        }
+  }
+  /* now that everything is established, we go through all of the connections
+   * and set the maximum index. We also set the socket size for all data
+   * connections */
+  mini = dini = mouti = douti = 0;
+  optval = DATASOCKET_WRITE_BUFFER_SIZE;
+  optlen = sizeof(int);
+  for (i = 0; i < MAX_CONNECTIONS; i++) {
+    if (server_message[i].fd) {
+      netinfo.messageinfd[mini++] = i;
     }
-    /* set the last element to be -1 for SetupFDList */
-    netinfo.messageinfd[mini] = -1;
-    netinfo.datainfd[dini] = -1;
-    netinfo.messageoutfd[mouti] = -1;
-    netinfo.dataoutfd[douti] = -1;
-    fprintf(STATUSFILE, "Finished establishing messaging in program %d\n", 
-            sysinfo.program_type);
-    return 1;
+    if (client_message[i].fd) {
+      netinfo.messageoutfd[mouti++] = i;
+    }
+    if (server_data[i].fd) {
+      /* add this connection to the incoming data list */
+      netinfo.datainfd[dini++] = i;
+      /* set the socket to have a large READ SIZE */
+      setsockopt(server_data[i].fd, SOL_SOCKET, SO_RCVBUF, 
+          (void *) &optval, optlen);
+    }
+    if ((client_data[i].fd) && (client_data[i].toid >= MAX_DSPS)) {
+      /* add this connection to the outgoing data list if it is not to a DSP*/
+      netinfo.dataoutfd[douti++] = i;
+      /* set the socket to have a large WRITE SIZE */
+      setsockopt(server_data[i].fd, SOL_SOCKET, SO_SNDBUF, 
+          (void *) &optval, optlen);
+      /* check to see if this is a message to a DSP, in which case we
+       * also want to add it to the datain list */
+      if (client_data[i].toid < MAX_DSPS) {
+        netinfo.datainfd[dini++] = i;
+      }
+    }
+  }
+  /* set the last element to be -1 for SetupFDList */
+  netinfo.messageinfd[mini] = -1;
+  netinfo.datainfd[dini] = -1;
+  netinfo.messageoutfd[mouti] = -1;
+  netinfo.dataoutfd[douti] = -1;
+  fprintf(STATUSFILE, "Finished establishing messaging in program %d\n", 
+      sysinfo.program_type);
+  return 1;
 }
 
 int GetSlaveNum(const char *name)

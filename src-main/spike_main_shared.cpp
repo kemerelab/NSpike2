@@ -152,33 +152,33 @@ int StartAcquisition(void)
 
 int StopModuleAcquisition(void)
 {
-    int i, id;
+  int i, id;
 
-    /* send out a stop acquisition message to each of the subprocesses */
-    i = 0;
-    while ((id = netinfo.messageoutfd[i]) != -1) {
-	if (strcmp(netinfo.myname, client_message[id].to) == 0) {
-	    SendMessage(client_message[id].fd, STOP_ACQUISITION, NULL, 0);
-	    if (!WaitForMessage(server_message[id].fd, ACQUISITION_STOPPED, 5)) {
-		sprintf(tmpstring, "spike_main: Error stopping acquisition on program %d\n", id);
-		fprintf(STATUSFILE, "%s\n", tmpstring);
-		DisplayStatusMessage(tmpstring);
-	    }
-	    else {
-	    }
-	}
-	i++;
+  /* send out a stop acquisition message to each of the subprocesses */
+  i = 0;
+  while ((id = netinfo.messageoutfd[i]) != -1) {
+    if (strcmp(netinfo.myname, client_message[id].to) == 0) {
+      SendMessage(client_message[id].fd, STOP_ACQUISITION, NULL, 0);
+      if (!WaitForMessage(server_message[id].fd, ACQUISITION_STOPPED, 5)) {
+        sprintf(tmpstring, "spike_main: Error stopping acquisition on program %d\n", id);
+        fprintf(STATUSFILE, "%s\n", tmpstring);
+        DisplayStatusMessage(tmpstring);
+      }
+      else {
+      }
     }
-    /* clear out all of the incoming data structures so that we can start
-     * afresh */
-    if (sysinfo.fileopen) {
-	/* output an event to the saving program */
-	event.timestamp = sysinfo.approxtime;
-	event.type = EVENT_ACQUISITION_STOPPED;
-	event.descript[0] = '\0';
-	SendMessage(client_data[SPIKE_SAVE_DATA].fd, EVENT, (char *) &event, sizeof(EventBuffer));
-    }
-    return 1;
+    i++;
+  }
+  /* clear out all of the incoming data structures so that we can start
+   * afresh */
+  if (sysinfo.fileopen) {
+    /* output an event to the saving program */
+    event.timestamp = sysinfo.approxtime;
+    event.type = EVENT_ACQUISITION_STOPPED;
+    event.descript[0] = '\0';
+    SendMessage(client_data[SPIKE_SAVE_DATA].fd, EVENT, (char *) &event, sizeof(EventBuffer));
+  }
+  return 1;
 }
 
 int StopModuleAcquisition(int modulenum)

@@ -59,8 +59,10 @@ int main() {
   int			imagesize;	// the number of pixels in the image
   int			ratpos[2];  // temporary variables for computing the estimate of the animal's position
   int 		i, j, id, i2, id2;
-  fd_set              readfds;  // the set of readable file descriptors
+  fd_set  readfds;  // the set of readable file descriptors
   int			maxfds = 0;
+
+  int fd_isset;
 
   int			size = SAVE_BUF_SIZE;
   int 		length;
@@ -104,8 +106,7 @@ int main() {
   }
 
   fprintf(STATUSFILE, "spike_process_posdata: starting messaging\n");
-  if (StartNetworkMessaging(server_message, client_message, server_data, 
-        client_data) < 0) {
+  if (StartNetworkMessaging(server_message, client_message, server_data, client_data) < 0) {
     fprintf(STATUSFILE, "spike_process_posdaq: Error starting network data messaging\n");
     processposexit(1);
   }
@@ -119,11 +120,9 @@ int main() {
       /* At the moment data are received only from SPIKE_POSDAQ */
       if (FD_ISSET(server_data[id].fd, &readfds)) {
         /* get a data buffer from the spike_posdaq module */
-        GetMessage(server_data[id].fd, (char *) bufferinfo, 
-        &messagedatalen, 1); 
+        GetMessage(server_data[id].fd, (char *) bufferinfo, &messagedatalen, 1); 
         /* get the data  */
-        GetMessage(server_data[id].fd, (char *) posbuf.image, 
-        &inbufsize, 1); 
+        GetMessage(server_data[id].fd, (char *) posbuf.image, &inbufsize, 1); 
         if (sysinfo.acq) {
           /* get the list of tracked pixels */
           inbufptr = posbuf.image;
@@ -162,21 +161,18 @@ int main() {
             posmpegbuf.size = encode_frame(); // returns ecdoded size
             if (SendPosMPEGBuffer(client_data[SPIKE_SAVE_DATA].fd, 
                                    &posmpegbuf) == -1) {
-              sprintf(tmpstring,
-                    "spike_process_posdata: unable to send buffer info to spike_save_data.");
+              sprintf(tmpstring, "spike_process_posdata: unable to send buffer info to spike_save_data.");
               fprintf(STATUSFILE, "%s\n", tmpstring);
               ErrorMessage(tmpstring, client_message);
             } 
-            
           }
+
           /* Now send the data to the target programs. Skip the save
           * program, as we have already sent the mpeg encoded data
           * there */
           i2 = 0;
           while ((id2 = netinfo.dataoutfd[i2]) != -1) {
-            if ((id2 != SPIKE_SAVE_DATA) && 
-                (SendPosBuffer(client_data[id2].fd, 
-                    &posbuf) == -1)) {
+            if ((id2 != SPIKE_SAVE_DATA) && (SendPosBuffer(client_data[id2].fd, &posbuf) == -1)) {
               sprintf(tmpstring,"spike_process_posdata: unable to send buffer info to %d.",id2);
               fprintf(STATUSFILE, "%s\n", tmpstring);
               ErrorMessage(tmpstring, client_message);
@@ -191,20 +187,17 @@ int main() {
           process a message if there is one */
     i = 0;
     while ((id = netinfo.messageinfd[i]) != -1) {
-      if (FD_ISSET(server_message[id].fd, &readfds)) {
-        message = GetMessage(server_message[id].fd, (char *)messagedata,
-        &messagedatalen, 0);
-        //fprintf(STATUSFILE, "spike_process_posdata: message %d from %d\n", message, id);
+      if (fd_isset = FD_ISSET(server_message[id].fd, &readfds)) {
+        message = GetMessage(server_message[id].fd, (char *)messagedata, &messagedatalen, 0);
+        //fprintf(STATUSFILE, "spike_process_posdata: message %d from %d [%d]\n", message, id, server_message[id].fd);
         switch(message) {
         case STOP_ACQUISITION:
           sysinfo.acq = 0;
-          SendMessage(client_message[SPIKE_MAIN].fd, 
-          ACQUISITION_STOPPED, NULL, 0);
+          SendMessage(client_message[SPIKE_MAIN].fd, ACQUISITION_STOPPED, NULL, 0);
           break;
         case START_ACQUISITION:
           sysinfo.acq = 1;
-          SendMessage(client_message[SPIKE_MAIN].fd, 
-          ACQUISITION_STARTED, NULL, 0);
+          SendMessage(client_message[SPIKE_MAIN].fd, ACQUISITION_STARTED, NULL, 0);
           break;
         case STOP_PROCESS:
           sysinfo.process = 0;
@@ -234,8 +227,6 @@ int main() {
         case OPEN_FILE:
           sysinfo.fileopen = 1;
           // Init encoder 
-
-
           break;
         case CLOSE_FILE:
           if (sysinfo.fileopen) {
@@ -301,7 +292,6 @@ int main() {
           open_encoder( iCodec, iWidth, iHeight, iQual, iGopSize, 
                         pYbuf, pUbuf, pVbuf,
                         pEncodeBuf, iEncodeBufSize);
-
           break;
         case EXIT:
           processposexit(0);        
