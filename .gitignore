@@ -14,6 +14,7 @@
 Makefile
 Makefile.in
 config.*
+aclocal.m4
 autom4te.cache/*
 autom4te.cache
 src-extract/nspike_extract
