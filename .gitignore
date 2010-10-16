@@ -20,6 +20,10 @@ autom4te.cache
 src-extract/nspike_extract
 src-extract/nspike_postimestamp
 src-gui/libnspike.a
+src-gui/qrc_guiresources.cpp
+src-gui/.moc/*
+src-gui/.ui/*
+src-gui/.obj/*
 src-main/nspike
 src-modules/nspike_matlab
 src-modules/spike_daq
