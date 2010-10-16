@@ -9,8 +9,11 @@ EXTRA_DIST += src-gui/nspike.pro src-gui/Makefile.am \
 EXTRA_DIST += src-gui/images/*
 EXTRA_DIST += src-gui/guiresources.qrc
 EXTRA_DIST += src-gui/testing/*.cpp src-gui/testing/*.pro
-EXTRA_DIST += data Doc DSPLowLevelCode
-EXTRA_DIST += kspike setupnet
+EXTRA_DIST += Doc DSPLowLevelCode
+#EXTRA_DIST += kspike setupnet
 EXTRA_DIST += autogen.sh
-SUBDIRS = src-modules src-fixpos src-extract src-user src-gui src-main 
+
+dist_bin_SCRIPTS = setupnet kspike
+
+SUBDIRS = src-modules src-fixpos src-extract src-user src-gui src-main data
 

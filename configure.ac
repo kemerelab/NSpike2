@@ -69,6 +69,7 @@ AC_CHECK_FUNCS([bzero floor gethostbyaddr gethostbyname gethostname gettimeofday
 AC_PROG_INSTALL
 
 AC_CONFIG_FILES([Makefile
+           data/Makefile
            src-modules/Makefile
            src-extract/Makefile
            src-fixpos/Makefile
