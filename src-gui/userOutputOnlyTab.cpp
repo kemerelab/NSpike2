@@ -2,7 +2,9 @@
 
 #include "spikecommon.h"
 #include "userOutputOnlyTab.h"
+#include "spikeUserGUI.h"
 
+extern DAQ_IO *daq_io_widget; // global
 
 StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
   : QWidget(parent)
@@ -45,12 +47,15 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
 
   QPushButton *stimSingleButton = new QPushButton("Trigger Single Pulse Sequence");
   layout->addWidget(stimSingleButton,5,0);
+  connect(stimSingleButton, SIGNAL(clicked()), daq_io_widget, SLOT(triggerSingleStim()));
 
   QPushButton *startStimButton = new QPushButton("Start Pulse Sequence");
   layout->addWidget(startStimButton,5,1);
+  connect(startStimButton, SIGNAL(clicked()), daq_io_widget, SLOT(startOutputOnlyStim()));
 
   QPushButton *abortStimButton = new QPushButton("Abort Pulse Sequence");
   layout->addWidget(abortStimButton,5,2);
+  connect(startStimButton, SIGNAL(clicked()), daq_io_widget, SLOT(abortOutputOnlyStim()));
 
   setLayout(layout);
 

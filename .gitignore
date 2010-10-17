@@ -32,3 +32,7 @@ src-modules/spike_posdaq
 src-modules/spike_process_posdata
 src-modules/spike_save_data
 src-user/user_program
+
+src-gui/testing/Makefile
+src-gui/testing/qrc_guiresources.cpp
+src-gui/testing/testUserGui

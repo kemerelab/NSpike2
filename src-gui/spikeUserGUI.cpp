@@ -228,3 +228,33 @@ void DAQ_IO::msgFromUser (int msg, char *data) {
   }
 }
 
+void DAQ_IO::triggerSingleOutput(void)
+{
+  qDebug("triggerSingleOutput signal received");
+}
+
+void DAQ_IO::startOutputOnlyStim(void)
+{
+  qDebug("startOutputOnlyStim signal received");
+}
+
+void DAQ_IO::abortOutputOnlyStim(void)
+{
+  qDebug("abortOutputOnlyStim signal received");
+}
+
+void DAQ_IO::enableRealtimeStim(void)
+{
+  qDebug("enableRealtimeStim signal received");
+}
+
+void DAQ_IO::startRealtimeStim(void)
+{
+  qDebug("startRealtimeStim signal received");
+}
+
+
+void DAQ_IO::stopRealtimeStim(void)
+{
+  qDebug("stopRealtimeStim signal received");
+}

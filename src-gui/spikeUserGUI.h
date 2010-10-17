@@ -45,6 +45,13 @@ public slots:
   void checkUserProgramStatus(void);
   void msgFromUser(int msg, char *data);
 
+  void triggerSingleOutput(void);
+  void startOutputOnlyStim(void);
+  void abortOutputOnlyStim(void);
+
+  void enableRealtimeStim(void);
+  void startRealtimeStim(void);
+  void stopRealtimeStim(void);
 };
 
 extern DAQ_IO *daq_io_widget; // global, but created in DIOInterface

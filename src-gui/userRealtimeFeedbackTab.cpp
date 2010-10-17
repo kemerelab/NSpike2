@@ -3,6 +3,8 @@
 #include "userRealtimeFeedbackTab.h"
 #include "spikeUserGUI.h"
 
+extern DAQ_IO *daq_io_widget; // global
+
 RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   : QWidget(parent)
 {
@@ -29,6 +31,7 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
 
   QPushButton *realtimeEnableButton = new QPushButton("Enable Realtime");
   layout->addWidget(realtimeEnableButton,2,0,1,2,Qt::AlignCenter);
+  connect(realtimeEnableButton, SIGNAL(clicked()), daq_io_widget, SLOT(enableRealtimeStim()));
 
   status = new QLabel("waiting...");
   QGroupBox *statusGroupBox = new QGroupBox("Status");
@@ -40,9 +43,11 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
 
   QPushButton *startFeedbackButton = new QPushButton("Start Feedback");
   layout->addWidget(startFeedbackButton,5,0, Qt::AlignCenter);
+  connect(realtimeEnableButton, SIGNAL(clicked()), daq_io_widget, SLOT(startRealtimeStim()));
 
   QPushButton *stopFeedbackButton = new QPushButton("Stop Feedback");
   layout->addWidget(stopFeedbackButton,5,1, Qt::AlignCenter);
+  connect(realtimeEnableButton, SIGNAL(clicked()), daq_io_widget, SLOT(stopRealtimeStim()));
 
   QStackedWidget *algorithmAlternativesStack = new QStackedWidget;
   QLabel *noAlgorithm = new QLabel("Select a Feedback Control Algorithm");
