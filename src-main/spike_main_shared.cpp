@@ -1,6 +1,5 @@
 /*
- * spike_main_shared.cpp:  shared code used by spike_main, spike_main_rt and
- * spike_main_matlab
+ * spike_main_shared.cpp:  shared code used by spike_main
  *
  * Copyright 2005 Loren M. Frank
  *
@@ -230,74 +229,74 @@ int StopAcquisition(void)
 }
 
 
-void SendMatlabInfo(void)
-    /* send the matlabinfo structure to the slaves and the local modules. This
+void SendUserDataInfo(void)
+    /* send the userdatainfo structure to the slaves and the local modules. This
      * is only called by the master machine */
 {
    int i, id;
 
    for(i = 0; i < netinfo.nslaves; i++) {
-	SendMessage(netinfo.slavefd[i], MATLAB_INFO, (char *) &matlabinfo, 
-		    sizeof(MatlabInfo));
+	SendMessage(netinfo.slavefd[i], USER_DATA_INFO, (char *) &userdatainfo, 
+		    sizeof(UserDataInfo));
    }
-   /* now send the matlabinfo structure to all of the modules. Most of the 
+   /* now send the userdatainfo structure to all of the modules. Most of the 
     * modules will ignore this message. */
     i = 0;
     while ((id = netinfo.messageinfd[i++]) != -1) {
 	/* only send the message to the local modules */
 	if (strcmp(netinfo.myname, client_message[id].to) == 0) {
-	    SendMessage(client_message[id].fd, MATLAB_INFO, (char *)&matlabinfo,
-		    sizeof(MatlabInfo)); 
+	    SendMessage(client_message[id].fd, USER_DATA_INFO, (char *)&userdatainfo,
+		    sizeof(UserDataInfo)); 
 	}
     } 
     return;
 }
 
 
-int MatlabStartSave(void) 
+int UserDataStart(void) 
 {
     int i, id;
-   /* Send the MATLAB_START_SAVE message to all of the modules. Most of the 
+   /* Send the USER_DATA_START message to all of the modules. Most of the 
     * modules will ignore this message. */
     i = 0;
     while ((id = netinfo.messageinfd[i++]) != -1) {
 	/* only send the message to the local modules */
 	if (strcmp(netinfo.myname, client_message[id].to) == 0) {
-	    SendMessage(client_message[id].fd, MATLAB_START_SAVE, NULL, 0);
-	   /* if (!WaitForMessage(server_message[id].fd, MATLAB_SAVE_STARTED, 2)){
-		sprintf(tmpstring,"spike_main: Error starting matlab save, no response from module %d\n", id);
+	    SendMessage(client_message[id].fd, USER_DATA_START, NULL, 0);
+	   /* if (!WaitForMessage(server_message[id].fd, USER_DATA_STARTED, 2)){
+		sprintf(tmpstring,"spike_main: Error starting user data output, no response from module %d\n", id);
 		DisplayStatusMessage(tmpstring);
 		return 0;
 	    } */
 	}
     }
-    sysinfo.matlabon = 1;
+    sysinfo.userdataon = 1;
     FormatTS(timestring, sysinfo.approxtime);
-    sprintf(tmpstring,"Matlab output ON at appoximately %s", timestring);
+    sprintf(tmpstring,"User data output ON at appoximately %s", timestring);
     DisplayStatusMessage(tmpstring);
     return 1;
 } 
 
-int MatlabStopSave(void) 
+int UserDataStop(void) 
 {
     int i, id;
-   /* Send the MATLAB_STOP_SAVE message to all of the modules. Most of the 
+   /* Send the USER_DATA_STOP message to all of the modules. Most of the 
     * modules will ignore this message. */
     i = 0;
     while ((id = netinfo.messageinfd[i++]) != -1) {
 	/* only send the message to the local modules */
 	if (strcmp(netinfo.myname, client_message[id].to) == 0) {
-	    SendMessage(client_message[id].fd, MATLAB_STOP_SAVE, NULL, 0);
-	    /*if (!WaitForMessage(server_message[id].fd, MATLAB_SAVE_STOPPED, 2)){
-		sprintf(tmpstring,"spike_main: Error starting matlab save, no response from module %d\n", id);
+	    SendMessage(client_message[id].fd, USER_DATA_STOP, NULL, 0);
+	    /*if (!WaitForMessage(server_message[id].fd, USER_DATA_STOPPED, 2)){
+		sprintf(tmpstring,"spike_main: Error starting user data output, no response from module %d\n", id);
 		DisplayStatusMessage(tmpstring);
 		return 0;
 	    } */
 	}
     }
-    sysinfo.matlabon = 0;
+    sysinfo.userdataon = 0;
     FormatTS(timestring, sysinfo.approxtime);
-    sprintf(tmpstring,"Matlab output OFF at appoximately %s\n", timestring);
+    sprintf(tmpstring,"User data output OFF at appoximately %s\n", timestring);
     DisplayStatusMessage(tmpstring);
     return 1;
 }

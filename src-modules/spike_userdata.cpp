@@ -1,23 +1,23 @@
 /*
- * spike_matlab.cpp: Program for storing data from acquisition modules for
- * tranmission to Matlab.  
+ * spike_userdata.cpp: Program for storing data from acquisition modules for
+ * tranmission to UserData.  
  *
- * Eventually it will be possible to run the matlab interface in two ways, but
+ * Eventually it will be possible to run the userdata interface in two ways, but
  * currently only the second option below is supported:
  *
  * 1.  As a module on a separate (non-data acquisition) computer. In this case 
- * the user must start spike2_matlab which will start this program. The
- * computer this runs on must have MATLAB as its datatype
+ * the user must start spike2_userdata which will start this program. The
+ * computer this runs on must have USERDATA as its datatype
  *
  * 2.  As a module on the master or on a slave machine.  In this case the
  * program will be launched automatically on the system it is supposed to run 
  * on. In this case the datatype line in the main configuration file must have
- * MATLAB as one of the datatypes for the machine on which this program is to
- * run. No other machine should have matlab in the datatype line
+ * USERDATA as one of the datatypes for the machine on which this program is to
+ * run. No other machine should have userdata in the datatype line
  *
  * The program stores the incoming data in a cicularly
  * linked list of data buffers and sends out data whenever it can open a socket
- * to the Matlab mex file that connects to it.  Note that if more data come in
+ * to the UserData mex file that connects to it.  Note that if more data come in
  * than can be stored in the list of buffers, the oldest data is erased 
  *
  *
@@ -45,7 +45,7 @@
 /* Global variables */
 SysInfo 		sysinfo;
 NetworkInfo		netinfo;
-MatlabInfo		matlabinfo;
+UserDataInfo		userdatainfo;
 DSPInfo			*dptr;
 
 SocketInfo 		server_message[MAX_CONNECTIONS]; // the structure for the server messaging
@@ -53,28 +53,28 @@ SocketInfo 		client_message[MAX_CONNECTIONS]; // the structure for the client me
 SocketInfo 		server_data[MAX_CONNECTIONS]; // the structure for receiving data
 SocketInfo 		client_data[MAX_CONNECTIONS]; // the structure for sendin data (currently unused)
 
-struct MatlabDataBuffer {
+struct UserDataBuffer {
     char 	*data;
     char 	*dataptr;
     char 	*endptr;
     int		offset;
-    bool	send;	// TRUE if we should send this buffer to Matlab
-    MatlabDataBufferInfo bufferinfo;
-    struct MatlabDataBuffer *next;
+    bool	send;	// TRUE if we should send this buffer to UserData
+    UserDataBufferInfo bufferinfo;
+    struct UserDataBuffer *next;
 };
 
-void UpdateMatlabInfo(struct MatlabDataBuffer *buf);
-void ClearMatlabInfo(struct MatlabDataBuffer *buf);
-void matlabexit(int status);
+void UpdateUserDataInfo(struct UserDataBuffer *buf);
+void ClearUserDataInfo(struct UserDataBuffer *buf);
+void userdataexit(int status);
 void Usage(void);
 
 
 int main(int argc, char **argv) 
 {
-    MatlabDataBuffer	*buf, *nextbuf, *bufptr, *sendbuf;
+    UserDataBuffer	*buf, *nextbuf, *bufptr, *sendbuf;
     // we save the buffer index each time we increment the size of the buffer
-    int 		bufsize =  MATLAB_BUFFER_SIZE;
-    int			nbuffers = MATLAB_NUM_BUFFERS;
+    int 		bufsize =  USER_DATA_BUFFER_SIZE;
+    int			nbuffers = USER_DATA_NUM_BUFFERS;
     int			retrysec;
     int			socketsec;
     int			socketusec;
@@ -103,22 +103,22 @@ int main(int argc, char **argv)
 
     SysInfo		*systmp;
     SpikeBuffer		*stmp;
-    MatlabContBuffer	*mptr;
+    UserDataContBuffer	*mptr;
 
     u32			*u32ptr;
 
 
-    sysinfo.program_type = SPIKE_MATLAB;
+    sysinfo.program_type = SPIKE_USER_DATA;
 
-    fprintf(STATUSFILE, "spike_matlab: starting\n");
+    fprintf(STATUSFILE, "spike_userdata: starting\n");
 
     sysinfo.statusfile == NULL;
     if (STATUSFILE == NULL) {
 	/* open up the status file if it is not stderr*/
 	gethostname(tmpstring,80);
-	sprintf(filename, "spike_matlab_status_%s", tmpstring);
+	sprintf(filename, "spike_userdata_status_%s", tmpstring);
 	if ((STATUSFILE = fopen(filename, "w")) == NULL) {
-	    fprintf(stderr, "spike_matlab: error opening status file\n");
+	    fprintf(stderr, "spike_userdata: error opening status file\n");
 	    exit(-1);
 	}
     }
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 	    nbuffers = atoi(argv[++nxtarg]);
         }
         else {
-	    fprintf(stderr, "spike_matlab: unknown command line option %s, ignoring\n", argv[nxtarg]);
+	    fprintf(stderr, "spike_userdata: unknown command line option %s, ignoring\n", argv[nxtarg]);
 	    Usage();
         }
     }
@@ -141,18 +141,18 @@ int main(int argc, char **argv)
     if ((bufsize < 100000) || (nbuffers < 3)) {
 	Usage();
 	fprintf(stderr, "Using default values\n");
-    	bufsize =  MATLAB_BUFFER_SIZE;
-    	nbuffers = MATLAB_NUM_BUFFERS;
+    	bufsize =  USER_DATA_BUFFER_SIZE;
+    	nbuffers = USER_DATA_NUM_BUFFERS;
     }
 
 
     sysinfo.acq = 0;
-    sysinfo.matlabon = 0;
+    sysinfo.userdataon = 0;
 
     if (StartNetworkMessaging(server_message, client_message, server_data, 
 		client_data) < 0) {
-        fprintf(STATUSFILE, "spike_matlab: Error starting network data messaging\n");
-	matlabexit(1);
+        fprintf(STATUSFILE, "spike_userdata: Error starting network data messaging\n");
+	userdataexit(1);
     }
 
     /* set the retry times and the timeouts for checking for an open socket */
@@ -161,27 +161,27 @@ int main(int argc, char **argv)
     socketsec = 0;
 
     /* set the type of program we are in for messaging */
-    sysinfo.program_type = SPIKE_MATLAB;
+    sysinfo.program_type = SPIKE_USER_DATA;
 
     /* allocate the circularly linked list of data buffers */
-    buf = (struct MatlabDataBuffer *) malloc(sizeof(struct MatlabDataBuffer));
+    buf = (struct UserDataBuffer *) malloc(sizeof(struct UserDataBuffer));
     buf->data = (char *) calloc(bufsize, sizeof(char));
     buf->dataptr = buf->data;
     buf->endptr = buf->data + bufsize - 1;
     buf->offset = 0;
     buf->send = 1;
-    ClearMatlabInfo(buf);
+    ClearUserDataInfo(buf);
     bufptr = buf;
     /* create the rest of the buffers */
     for (i = 1; i < nbuffers; i++) {
-	nextbuf = (struct MatlabDataBuffer *) 
-	    		malloc(sizeof(struct MatlabDataBuffer));
+	nextbuf = (struct UserDataBuffer *) 
+	    		malloc(sizeof(struct UserDataBuffer));
 	nextbuf->data = (char *) calloc(bufsize, sizeof(char));
 	nextbuf->dataptr = nextbuf->data;
 	nextbuf->endptr = nextbuf->data + bufsize - 1;
 	nextbuf->offset = 0;
 	nextbuf->send = 0;
-	ClearMatlabInfo(nextbuf);
+	ClearUserDataInfo(nextbuf);
 	bufptr->next = nextbuf;
 	bufptr = bufptr->next;
     }
@@ -211,7 +211,7 @@ int main(int argc, char **argv)
 		message = GetMessage(server_data[i].fd, savebuf, &savebufsize, 
 			1);
 		    /* discard this data */
-		if (sysinfo.matlabon) {
+		if (sysinfo.userdataon) {
 		    /* check to see if adding the message on to the end of the
 		     * data buffer would push it past it's maximum size */
 		    if (bufptr->offset + savebufsize + sizeof(short) > 
@@ -225,13 +225,13 @@ int main(int argc, char **argv)
 			 * data */
 			if (bufptr == sendbuf) {
 			    sendbuf = sendbuf->next;
-			    StatusMessage("Warning: filled all matlab buffers",
+			    StatusMessage("Warning: filled all userdata buffers",
 				    client_message);
 			}
 			bufptr->send = 1;
 			bufptr->offset = 0;
 			bufptr->dataptr = bufptr->data;
-			UpdateMatlabInfo(bufptr);
+			UpdateUserDataInfo(bufptr);
 		    }
 		    switch(i) {
 		    case SPIKE_DAQ:
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
 			}
 			else if (message == CONTINUOUS_DATA) {
 			    datatype = CONTINUOUS_DATA_TYPE;
-			    mptr = (MatlabContBuffer *) savebuf;
+			    mptr = (UserDataContBuffer *) savebuf;
 			    for (j = 0; j < mptr->nchan; j++) {
 				bufptr->bufferinfo.ncontsamp[
 				    mptr->electnum[j]] += mptr->nsamp;
@@ -299,18 +299,18 @@ int main(int argc, char **argv)
 			SendMessage(client_message[SPIKE_MAIN].fd, ACQUISITION_STARTED, 
 				    NULL, 0);
 			break;
-                    case MATLAB_INFO:
-			/* get the matlabinfo structure */
-			memcpy((char *) &matlabinfo, messagedata,
-				sizeof(MatlabInfo));
-			/* we now update the matlabinfo of the current buffer */
-			UpdateMatlabInfo(bufptr);
+                    case USER_DATA_INFO:
+			/* get the userdatainfo structure */
+			memcpy((char *) &userdatainfo, messagedata,
+				sizeof(UserDataInfo));
+			/* we now update the userdatainfo of the current buffer */
+			UpdateUserDataInfo(bufptr);
 			break;
-		    case MATLAB_START_SAVE:
-			sysinfo.matlabon = 1;
+		    case USER_DATA_START:
+			sysinfo.userdataon = 1;
 			break;
-		    case MATLAB_STOP_SAVE:
-			sysinfo.matlabon = 0;
+		    case USER_DATA_STOP:
+			sysinfo.userdataon = 0;
 			/* move on to the next buffer so that we can start
 			 * fresh */
 			bufptr = bufptr->next;
@@ -324,7 +324,7 @@ int main(int argc, char **argv)
 			bufptr->send = 1;
 			bufptr->offset = 0;
 			bufptr->dataptr = bufptr->data;
-			UpdateMatlabInfo(bufptr);
+			UpdateUserDataInfo(bufptr);
 			break;
 		    case SYSTEM_INFO:
 			systmp = (SysInfo *) messagedata;
@@ -334,7 +334,7 @@ int main(int argc, char **argv)
 			dptr = sysinfo.dspinfo;
 			break;
 		    case EXIT:
-			matlabexit(0);		        
+			userdataexit(0);		        
 			break;
 		    default:
 			break;
@@ -343,7 +343,7 @@ int main(int argc, char **argv)
 	    id++;
 	}
 	/* if the specified length of time has passed, try to open a client to
-	 * send data to matlab */
+	 * send data to userdata */
 	gettimeofday(&tval, &tzone);
 	if (tval.tv_sec - lasttval.tv_sec > retrysec) {
 	    /* close the socket if it was open */
@@ -351,24 +351,24 @@ int main(int argc, char **argv)
 		close(fd);
 	    }
 	    /* we should try to send a buffer */
-	    //fprintf(stderr, "spike_matlab: trying to open Matlab socket\n");
-	    if ((fd = GetClientSocket(MATLAB_SOCKET_NAME, socketsec, 
+	    //fprintf(stderr, "spike_userdata: trying to open UserData socket\n");
+	    if ((fd = GetClientSocket(USER_DATA_SOCKET_NAME, socketsec, 
 			    socketusec)) > 0) {
 		/* we have sucessfully opened the socket, so we send the
 		 * data from the current buffer through and then close the
 		 * socket */
-		fprintf(stderr, "spike_matlab: opened Matlab socket, sending data\n");
+		fprintf(stderr, "spike_userdata: opened UserData socket, sending data\n");
 		/* we first get the information on what sort of data is in the
 		 * buffers and the total number of each type of buffer and send
 		 * that out first */
 		while (bufptr->send) {
 		    /* we first send the buffer information */
 		    if ((nwritten = write(fd, &bufptr->bufferinfo, 
-			    sizeof(MatlabDataBufferInfo))) != 
-			    sizeof(MatlabDataBufferInfo)) {
-		        fprintf(STATUSFILE, "Error: unable to write buffer information to Matlab\n");
+			    sizeof(UserDataBufferInfo))) != 
+			    sizeof(UserDataBufferInfo)) {
+		        fprintf(STATUSFILE, "Error: unable to write buffer information to UserData\n");
 		    }
-		    fprintf(stderr, "wrote MatlabDataBufferInfo, datalen to write = %d\n", bufptr->offset);
+		    fprintf(stderr, "wrote UserDataBufferInfo, datalen to write = %d\n", bufptr->offset);
 
 		    /* now write out the buffer */
 		    datalen = bufptr->offset;
@@ -383,7 +383,7 @@ int main(int argc, char **argv)
 			nwritten = write(fd, bufptr->dataptr, writesize);
 			bufptr->dataptr += nwritten;
 			if (nwritten == -1) {
-			   fprintf(STATUSFILE, "Error: unable to write complete buffer to Matlab\n");
+			   fprintf(STATUSFILE, "Error: unable to write complete buffer to UserData\n");
 			   break;
 			}
 			else {
@@ -394,12 +394,12 @@ int main(int argc, char **argv)
 		    bufptr->send = 0;
 		    bufptr->offset = 0;
 		    bufptr->dataptr = bufptr->data;
-		    ClearMatlabInfo(bufptr);
+		    ClearUserDataInfo(bufptr);
 		    /* move on to the next buffer */
 		    bufptr = bufptr->next;
-		    UpdateMatlabInfo(bufptr);
+		    UpdateUserDataInfo(bufptr);
 		}
-		fprintf(stderr, "spike_matlab: done writing data \n");
+		fprintf(stderr, "spike_userdata: done writing data \n");
 		/* we have sent all of the data, so we reset the timer */
 		lasttval.tv_sec = tval.tv_sec;
 	    }
@@ -413,13 +413,13 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void ClearMatlabInfo(struct MatlabDataBuffer *buf)
+void ClearUserDataInfo(struct UserDataBuffer *buf)
 {
-    MatlabDataBufferInfo *iptr;
+    UserDataBufferInfo *iptr;
     int i;
 
     /* set all the bytes in the structure to 0 to clear it out */
-    memset(&buf->bufferinfo, 0, sizeof(MatlabDataBufferInfo));
+    memset(&buf->bufferinfo, 0, sizeof(UserDataBufferInfo));
 
     /* set the starttime to be very large so that we can set it by looking for
      * a smaller time */
@@ -427,30 +427,30 @@ void ClearMatlabInfo(struct MatlabDataBuffer *buf)
     return;
 }
 
-void UpdateMatlabInfo(struct MatlabDataBuffer *buf)
-    /* combine the current matlab information with that already stored to
+void UpdateUserDataInfo(struct UserDataBuffer *buf)
+    /* combine the current userdata information with that already stored to
      * produce a complete list of the types of data and channels in the current
      * buffer */
 {
-    MatlabDataBufferInfo *iptr;
+    UserDataBufferInfo *iptr;
     int i;
 
     iptr = &buf->bufferinfo;
 
     /* copy the DSPInfo from sysinfo */
-    iptr->matlabinfo.savecont |= matlabinfo.savecont;
-    iptr->matlabinfo.savespike |= matlabinfo.savespike;
-    iptr->matlabinfo.savepos |= matlabinfo.savepos;
-    iptr->matlabinfo.savedigio |= matlabinfo.savedigio;
+    iptr->userdatainfo.savecont |= userdatainfo.savecont;
+    iptr->userdatainfo.savespike |= userdatainfo.savespike;
+    iptr->userdatainfo.savepos |= userdatainfo.savepos;
+    iptr->userdatainfo.savedigio |= userdatainfo.savedigio;
 
     for (i = 0; i < MAX_ELECTRODE_NUMBER; i++) {
-	iptr->matlabinfo.contelect[i] |= matlabinfo.contelect[i];
-	if (iptr->matlabinfo.contelect[i] && 
+	iptr->userdatainfo.contelect[i] |= userdatainfo.contelect[i];
+	if (iptr->userdatainfo.contelect[i] && 
 		(i > iptr->maxconttetnum)) {
 	    iptr->maxconttetnum = i;
 	}
-	iptr->matlabinfo.spikeelect[i] |= matlabinfo.spikeelect[i]; 
-	if (iptr->matlabinfo.spikeelect[i] && 
+	iptr->userdatainfo.spikeelect[i] |= userdatainfo.spikeelect[i]; 
+	if (iptr->userdatainfo.spikeelect[i] && 
 		(i > iptr->maxspiketetnum)) {
 	    iptr->maxspiketetnum = i;
 	}
@@ -458,7 +458,7 @@ void UpdateMatlabInfo(struct MatlabDataBuffer *buf)
     return;
 }
 
-void matlabexit(int status)
+void userdataexit(int status)
 {
    SendMessage(client_message[SPIKE_MAIN].fd, EXITING, NULL, 0);
    /* sleep so that all of the other programs have a chance to get the message*/
@@ -472,6 +472,6 @@ void matlabexit(int status)
 
 void Usage(void) 
 {
-    fprintf(stderr, "Usage: spike_matlab -config configfile -netconfig networkconfigfile [-bufsize #] [-nbuffers #]\n\bufsize must be > 100000\n\t nbufs must be >= 3\n");
+    fprintf(stderr, "Usage: spike_userdata -config configfile -netconfig networkconfigfile [-bufsize #] [-nbuffers #]\n\bufsize must be > 100000\n\t nbufs must be >= 3\n");
 }
 

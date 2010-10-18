@@ -1,6 +1,6 @@
 bin_PROGRAMS = spike_daq spike_posdaq \
 spike_process_posdata spike_save_data \
-nspike_matlab spike_matlab 
+nspike_userdata spike_userdata 
 
 spike_daq_SOURCES = spike_daq.cpp spike_message.cpp 
 spike_daq_LDADD = -lm 
@@ -18,9 +18,9 @@ spike_process_posdata_LDFLAGS = -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET
 spike_save_data_SOURCES = spike_save_data.cpp spike_message.cpp 
 spike_save_data_LDADD = -lz 
 
-nspike_matlab_SOURCES = spike_main_matlab.cpp spike_message.cpp spike_config.cpp
-nspike_matlab_LDADD = -lm -lz
+nspike_userdata_SOURCES = spike_main_userdata.cpp spike_message.cpp spike_config.cpp
+nspike_userdata_LDADD = -lm -lz
 
-spike_matlab_SOURCES = spike_matlab.cpp spike_message.cpp 
+spike_userdata_SOURCES = spike_userdata.cpp spike_message.cpp 
 
 INCLUDES = -I@top_srcdir@/include

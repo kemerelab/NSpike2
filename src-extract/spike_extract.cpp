@@ -54,7 +54,7 @@ ExtractInfo   extractinfo;
 SysInfo   sysinfo;
 NetworkInfo netinfo;
 DigIOInfo digioinfo;
-MatlabInfo  matlabinfo;
+UserDataInfo  userdatainfo;
 CommonDSPInfo cdspinfo;
 char    *tmpdata;
 char    datafilename[200];

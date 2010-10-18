@@ -34,7 +34,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = spike_daq$(EXEEXT) spike_posdaq$(EXEEXT) \
 	spike_process_posdata$(EXEEXT) spike_save_data$(EXEEXT) \
-	nspike_matlab$(EXEEXT) spike_matlab$(EXEEXT)
+	nspike_userdata$(EXEEXT) spike_userdata$(EXEEXT)
 subdir = src-modules
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -46,18 +46,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_nspike_matlab_OBJECTS = spike_main_matlab.$(OBJEXT) \
+am_nspike_userdata_OBJECTS = spike_main_userdata.$(OBJEXT) \
 	spike_message.$(OBJEXT) spike_config.$(OBJEXT)
-nspike_matlab_OBJECTS = $(am_nspike_matlab_OBJECTS)
-nspike_matlab_DEPENDENCIES =
+nspike_userdata_OBJECTS = $(am_nspike_userdata_OBJECTS)
+nspike_userdata_DEPENDENCIES =
 am_spike_daq_OBJECTS = spike_daq-spike_daq.$(OBJEXT) \
 	spike_daq-spike_message.$(OBJEXT)
 spike_daq_OBJECTS = $(am_spike_daq_OBJECTS)
 spike_daq_DEPENDENCIES =
-am_spike_matlab_OBJECTS = spike_matlab.$(OBJEXT) \
-	spike_message.$(OBJEXT)
-spike_matlab_OBJECTS = $(am_spike_matlab_OBJECTS)
-spike_matlab_LDADD = $(LDADD)
 am_spike_posdaq_OBJECTS = spike_posdaq.$(OBJEXT) \
 	spike_message.$(OBJEXT) spike_V4Lcapture.$(OBJEXT)
 spike_posdaq_OBJECTS = $(am_spike_posdaq_OBJECTS)
@@ -72,6 +68,10 @@ am_spike_save_data_OBJECTS = spike_save_data.$(OBJEXT) \
 	spike_message.$(OBJEXT)
 spike_save_data_OBJECTS = $(am_spike_save_data_OBJECTS)
 spike_save_data_DEPENDENCIES =
+am_spike_userdata_OBJECTS = spike_userdata.$(OBJEXT) \
+	spike_message.$(OBJEXT)
+spike_userdata_OBJECTS = $(am_spike_userdata_OBJECTS)
+spike_userdata_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -85,20 +85,20 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(nspike_matlab_SOURCES) $(spike_daq_SOURCES) \
-	$(spike_matlab_SOURCES) $(spike_posdaq_SOURCES) \
-	$(spike_process_posdata_SOURCES) $(spike_save_data_SOURCES)
-DIST_SOURCES = $(nspike_matlab_SOURCES) $(spike_daq_SOURCES) \
-	$(spike_matlab_SOURCES) $(spike_posdaq_SOURCES) \
-	$(spike_process_posdata_SOURCES) $(spike_save_data_SOURCES)
+SOURCES = $(nspike_userdata_SOURCES) $(spike_daq_SOURCES) \
+	$(spike_posdaq_SOURCES) $(spike_process_posdata_SOURCES) \
+	$(spike_save_data_SOURCES) $(spike_userdata_SOURCES)
+DIST_SOURCES = $(nspike_userdata_SOURCES) $(spike_daq_SOURCES) \
+	$(spike_posdaq_SOURCES) $(spike_process_posdata_SOURCES) \
+	$(spike_save_data_SOURCES) $(spike_userdata_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run tar
-AUTOCONF = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run automake-1.11
+ACLOCAL = ${SHELL} /home/loren/Src/NSpike2/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/loren/Src/NSpike2/missing --run tar
+AUTOCONF = ${SHELL} /home/loren/Src/NSpike2/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/loren/Src/NSpike2/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/loren/Src/NSpike2/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -126,7 +126,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lz -lm -lavcodec -lGL 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/loren/Src/NSpike2/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = NSpike
@@ -137,16 +137,16 @@ PACKAGE_TARNAME = nspike
 PACKAGE_URL = 
 PACKAGE_VERSION = 2.0.0
 PATH_SEPARATOR = :
-QTDIR = /usr/share/qt4
+QTDIR = /usr/lib/qt4
 RANLIB = ranlib
 SET_MAKE = 
-SHELL = /bin/bash
+SHELL = /bin/sh
 STRIP = 
 VERSION = 2.0.0
-abs_builddir = /home/ckemere/Code/NSpike_2.0.0/src-modules
-abs_srcdir = /home/ckemere/Code/NSpike_2.0.0/src-modules
-abs_top_builddir = /home/ckemere/Code/NSpike_2.0.0
-abs_top_srcdir = /home/ckemere/Code/NSpike_2.0.0
+abs_builddir = /home/loren/Src/NSpike2/src-modules
+abs_srcdir = /home/loren/Src/NSpike2/src-modules
+abs_top_builddir = /home/loren/Src/NSpike2
+abs_top_srcdir = /home/loren/Src/NSpike2
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -154,7 +154,7 @@ am__leading_dot = .
 am__quote = 
 am__tar = ${AMTAR} chof - "$$tardir"
 am__untar = ${AMTAR} xf -
-bindir = /usr/local/nspike
+bindir = ${exec_prefix}/bin
 build_alias = 
 builddir = .
 datadir = ${datarootdir}
@@ -166,7 +166,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/ckemere/Code/NSpike_2.0.0/install-sh
+install_sh = ${SHELL} /home/loren/Src/NSpike2/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -200,9 +200,9 @@ spike_process_posdata_LDADD = -lavcodec -lavutil -lm -lz
 spike_process_posdata_LDFLAGS = -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 spike_save_data_SOURCES = spike_save_data.cpp spike_message.cpp 
 spike_save_data_LDADD = -lz 
-nspike_matlab_SOURCES = spike_main_matlab.cpp spike_message.cpp spike_config.cpp
-nspike_matlab_LDADD = -lm -lz
-spike_matlab_SOURCES = spike_matlab.cpp spike_message.cpp 
+nspike_userdata_SOURCES = spike_main_userdata.cpp spike_message.cpp spike_config.cpp
+nspike_userdata_LDADD = -lm -lz
+spike_userdata_SOURCES = spike_userdata.cpp spike_message.cpp 
 INCLUDES = -I../include
 all: all-am
 
@@ -275,15 +275,12 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-nspike_matlab$(EXEEXT): $(nspike_matlab_OBJECTS) $(nspike_matlab_DEPENDENCIES) 
-	@rm -f nspike_matlab$(EXEEXT)
-	$(CXXLINK) $(nspike_matlab_OBJECTS) $(nspike_matlab_LDADD) $(LIBS)
+nspike_userdata$(EXEEXT): $(nspike_userdata_OBJECTS) $(nspike_userdata_DEPENDENCIES) 
+	@rm -f nspike_userdata$(EXEEXT)
+	$(CXXLINK) $(nspike_userdata_OBJECTS) $(nspike_userdata_LDADD) $(LIBS)
 spike_daq$(EXEEXT): $(spike_daq_OBJECTS) $(spike_daq_DEPENDENCIES) 
 	@rm -f spike_daq$(EXEEXT)
 	$(CXXLINK) $(spike_daq_OBJECTS) $(spike_daq_LDADD) $(LIBS)
-spike_matlab$(EXEEXT): $(spike_matlab_OBJECTS) $(spike_matlab_DEPENDENCIES) 
-	@rm -f spike_matlab$(EXEEXT)
-	$(CXXLINK) $(spike_matlab_OBJECTS) $(spike_matlab_LDADD) $(LIBS)
 spike_posdaq$(EXEEXT): $(spike_posdaq_OBJECTS) $(spike_posdaq_DEPENDENCIES) 
 	@rm -f spike_posdaq$(EXEEXT)
 	$(CXXLINK) $(spike_posdaq_OBJECTS) $(spike_posdaq_LDADD) $(LIBS)
@@ -293,6 +290,9 @@ spike_process_posdata$(EXEEXT): $(spike_process_posdata_OBJECTS) $(spike_process
 spike_save_data$(EXEEXT): $(spike_save_data_OBJECTS) $(spike_save_data_DEPENDENCIES) 
 	@rm -f spike_save_data$(EXEEXT)
 	$(CXXLINK) $(spike_save_data_OBJECTS) $(spike_save_data_LDADD) $(LIBS)
+spike_userdata$(EXEEXT): $(spike_userdata_OBJECTS) $(spike_userdata_DEPENDENCIES) 
+	@rm -f spike_userdata$(EXEEXT)
+	$(CXXLINK) $(spike_userdata_OBJECTS) $(spike_userdata_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -305,12 +305,12 @@ include ./$(DEPDIR)/spike_config.Po
 include ./$(DEPDIR)/spike_daq-spike_daq.Po
 include ./$(DEPDIR)/spike_daq-spike_message.Po
 include ./$(DEPDIR)/spike_ffmpegEncoder.Po
-include ./$(DEPDIR)/spike_main_matlab.Po
-include ./$(DEPDIR)/spike_matlab.Po
+include ./$(DEPDIR)/spike_main_userdata.Po
 include ./$(DEPDIR)/spike_message.Po
 include ./$(DEPDIR)/spike_posdaq.Po
 include ./$(DEPDIR)/spike_process_posdata.Po
 include ./$(DEPDIR)/spike_save_data.Po
+include ./$(DEPDIR)/spike_userdata.Po
 
 .cpp.o:
 	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

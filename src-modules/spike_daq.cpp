@@ -34,7 +34,7 @@
 void daqexit(int status);
 void getspike(short *data);
 int getcont(ContBuffer *contbuf);
-int MakeMatlabBuf(ContBuffer *cptr, MatlabContBuffer *mptr);
+int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *mptr);
 
 int tempnum = 0;
 
@@ -42,7 +42,7 @@ int tempnum = 0;
 SysInfo                 sysinfo;
 
 NetworkInfo        netinfo;
-MatlabInfo        matlabinfo;
+UserDataInfo        userdatainfo;
 SocketInfo         server_message[MAX_CONNECTIONS]; // the structure for receiving messages
 SocketInfo         client_message[MAX_CONNECTIONS]; // the structure for sending messages
 SocketInfo         client_data[MAX_CONNECTIONS]; // the structure for sending data;
@@ -78,7 +78,7 @@ int main()
     int                contbufsize[MAX_DSPS];
     int                nsamp[MAX_DSPS];
     int                datainc[MAX_DSPS];
-    MatlabContBuffer   matlabdata;
+    UserDataContBuffer   userdatadata;
     DataBuffer         *databufptr;
     DIOBuffer          diobuf;
     DSPInfo            *dptr;
@@ -119,7 +119,7 @@ int main()
 
 
     sysinfo.acq = 0;
-    sysinfo.matlabon = 0;
+    sysinfo.userdataon = 0;
 
     /* set the type of program we are in for messaging */
     sysinfo.program_type = SPIKE_DAQ;
@@ -150,7 +150,7 @@ int main()
     error = 0;
 
     sysinfo.acq = 0;
-    sysinfo.matlabon = 0;
+    sysinfo.userdataon = 0;
 
     sysinfo.daq_to_user.is_enabled = 0;
 
@@ -210,18 +210,18 @@ int main()
                         else if (sysinfo.datatype[sysinfo.machinenum] & CONTINUOUS){
                             i = 0;
                             while ((id = netinfo.dataoutfd[i++]) != -1) {
-                                if (client_data[id].toid != SPIKE_MATLAB) {
+                                if (client_data[id].toid != SPIKE_USER_DATA) {
                                     if (SendMessage(client_data[id].fd, 
                                            CONTINUOUS_DATA, (char *) 
                                            (contbuf + j), contbufsize[j])==-1) {
                                         error = 1;
                                     } 
                                 }
-                                else if (sysinfo.matlabon) {
-                                    msize = MakeMatlabBuf(contbuf + j, &matlabdata);
+                                else if (sysinfo.userdataon) {
+                                    msize = MakeUserDataBuf(contbuf + j, &userdatadata);
                                     if (SendMessage(client_data[id].fd, 
                                                 CONTINUOUS_DATA, (char *) 
-                                                &matlabdata, msize)==-1) {
+                                                &userdatadata, msize)==-1) {
                                         error = 1;
                                     } 
                                 }
@@ -387,18 +387,18 @@ int main()
                                         /* send the data on */
                                         j = 0;
                                         while ((id2 = netinfo.dataoutfd[j++]) != -1) {
-                                            if (client_data[id].toid != SPIKE_MATLAB) {
+                                            if (client_data[id].toid != SPIKE_USER_DATA) {
                                                 if (SendMessage(client_data[id2].fd, 
                                                             CONTINUOUS_DATA, (char *) cptr,
                                                             contbufsize[dspnum])== -1) {
                                                     error = 1;
                                                 } 
                                             }
-                                            else if (sysinfo.matlabon) {
-                                                msize = MakeMatlabBuf(cptr, &matlabdata);
+                                            else if (sysinfo.userdataon) {
+                                                msize = MakeUserDataBuf(cptr, &userdatadata);
                                                 if (SendMessage(client_data[id2].fd, 
                                                             CONTINUOUS_DATA, (char *) 
-                                                            &matlabdata,
+                                                            &userdatadata,
                                                             msize)== -1) {
                                                     error = 1;
                                                 } 
@@ -467,18 +467,18 @@ int main()
                             /* send the data on */
                             j = 0;
                             while ((id2 = netinfo.dataoutfd[j++]) != -1) {
-                                if (client_data[id2].toid != SPIKE_MATLAB) {
+                                if (client_data[id2].toid != SPIKE_USER_DATA) {
                                     if (SendMessage(client_data[id2].fd, 
                                                 CONTINUOUS_DATA, (char *) cptr,
                                                 contbufsize[dspnum])== -1) {
                                         error = 1;
                                     } 
                                 }
-                                else if (sysinfo.matlabon) {
-                                    msize = MakeMatlabBuf(cptr, &matlabdata);
+                                else if (sysinfo.userdataon) {
+                                    msize = MakeUserDataBuf(cptr, &userdatadata);
                                     if (SendMessage(client_data[id2].fd, 
                                                 CONTINUOUS_DATA, (char *) 
-                                                &matlabdata,
+                                                &userdatadata,
                                                 msize)== -1) {
                                         error = 1;
                                     } 
@@ -625,16 +625,16 @@ int main()
                              chnew->index;
                         memcpy(ch, chnew, sizeof(ChannelInfo));
                         break;
-                    case MATLAB_INFO:
-                        /* get the matlabinfo structure */
-                        memcpy((char *) &matlabinfo, messagedata,
-                                sizeof(MatlabInfo));
+                    case USER_DATA_INFO:
+                        /* get the userdatainfo structure */
+                        memcpy((char *) &userdatainfo, messagedata,
+                                sizeof(UserDataInfo));
                         break;
-                    case MATLAB_START_SAVE:
-                        sysinfo.matlabon = 1;
+                    case USER_DATA_START:
+                        sysinfo.userdataon = 1;
                         break;
-                    case MATLAB_STOP_SAVE:
-                        sysinfo.matlabon = 0;
+                    case USER_DATA_STOP:
+                        sysinfo.userdataon = 0;
                         break;
                     case OPEN_DAQ_TO_USER:
                         /* open socket (blocks until user program opens server) */
@@ -750,9 +750,9 @@ int getcont(ContBuffer *contbuf)
     return CONT_BUF_STATIC_SIZE + nchan * dptr->nsamp * sizeof(short);
 }
 
-int MakeMatlabBuf(ContBuffer *cptr, MatlabContBuffer *mptr) 
+int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *mptr) 
     /* create a continuous buffer with only the data that are supposed to be
-     * sent to matlab and return the size of the buffer */
+     * sent to userdata and return the size of the buffer */
 {
     short       *dataptr, *outdataptr;
     DSPInfo     *dptr;
@@ -770,7 +770,7 @@ int MakeMatlabBuf(ContBuffer *cptr, MatlabContBuffer *mptr)
     /* zero out the list of channels to save */
     memset((void *) savechan, 0, MAX_CHANNELS * sizeof(bool));
     for (j = 0; j < dptr->nchan; j++) {
-        if (matlabinfo.contelect[dptr->electinfo[j].number]) {
+        if (userdatainfo.contelect[dptr->electinfo[j].number]) {
             /* save this channel */
             savechan[j] = 1;
             /* note that the dsp channel is only correct when only one channel
@@ -783,7 +783,7 @@ int MakeMatlabBuf(ContBuffer *cptr, MatlabContBuffer *mptr)
     dataptr = cptr->data;
     outdataptr = mptr->data;
     mptr->nsamp = dptr->nsampout;
-    /* copy the channels to be saved into the matlabcontbuf
+    /* copy the channels to be saved into the userdatacontbuf
      * data buffer */
     for (i = 0; i < mptr->nsamp; i++) {
         for (j = 0; j < dptr->nchan; j++, dataptr++) {
@@ -793,7 +793,7 @@ int MakeMatlabBuf(ContBuffer *cptr, MatlabContBuffer *mptr)
         }
     }
     /* calculate and return the size */
-    sz = sizeof(MatlabContBuffer) - (MAX_CONT_BUF_SIZE - sizeof(short) *
+    sz = sizeof(UserDataContBuffer) - (MAX_CONT_BUF_SIZE - sizeof(short) *
 	 mptr->nsamp * mptr->nchan);
     return sz;
 
@@ -829,7 +829,7 @@ void ExtractSpikes(DataBuffer *databuf, int dspnum)
     short                 *tmpptr;                // a temporary pointer to the data
     ChannelInfo         *chanptr;                // a pointer to the channelinfo structure
     SpikeBuffer         spikebuf[MAX_SPIKES_PER_BUF];                // the data structure for extracted spikes
-    SpikeBuffer         matlabspikebuf[MAX_SPIKES_PER_BUF];                // the data structure for spikes that will be sent to Matlab
+    SpikeBuffer         userdataspikebuf[MAX_SPIKES_PER_BUF];                // the data structure for spikes that will be sent to UserData
     int                 nmatspikes;
     SpikeBuffer         *sptr;                // a pointer to the electrode data structure
     DSPInfo                *dptr;
@@ -967,25 +967,25 @@ void ExtractSpikes(DataBuffer *databuf, int dspnum)
     l = 0;
     if (snum) {
         while ((id = netinfo.dataoutfd[l++]) != -1) {
-            if (client_data[id].toid != SPIKE_MATLAB) {
+            if (client_data[id].toid != SPIKE_USER_DATA) {
                 //fprintf(stderr, "sending spike to %d\n", id);
                 if (SendMessage(client_data[id].fd, SPIKE_DATA, 
                         (char *) &spikebuf, sizeof(SpikeBuffer) * snum) 
                         == -1) {
                 } 
             }
-            else if (sysinfo.matlabon) {
+            else if (sysinfo.userdataon) {
                 for (i = 0; i < snum; i++) {
-                    if ((matlabinfo.spikeelect[spikebuf[snum].electnum])) {
-                        /* copy this spike to the matlab structure */
-                        memcpy(matlabspikebuf + nmatspikes++, spikebuf + i, 
+                    if ((userdatainfo.spikeelect[spikebuf[snum].electnum])) {
+                        /* copy this spike to the userdata structure */
+                        memcpy(userdataspikebuf + nmatspikes++, spikebuf + i, 
                                 sizeof(SpikeBuffer));
                     }
                 }
-                /* if any of the spikes should go to matlab, send them */
+                /* if any of the spikes should go to userdata, send them */
                 if (nmatspikes) {
                     SendMessage(client_data[id].fd, SPIKE_DATA, 
-                            (char *) matlabspikebuf, nmatspikes * sizeof(SpikeBuffer));
+                            (char *) userdataspikebuf, nmatspikes * sizeof(SpikeBuffer));
                 }
             }
         }

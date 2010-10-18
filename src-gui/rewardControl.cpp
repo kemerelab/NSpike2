@@ -31,7 +31,7 @@ extern DisplayInfo dispinfo;
 extern SysInfo sysinfo;
 extern NetworkInfo netinfo;
 extern DigIOInfo digioinfo;
-extern MatlabInfo matlabinfo;
+extern UserDataInfo userdatainfo;
 
 
 /* Reward control gui */
@@ -736,7 +736,7 @@ void setRewardsDialog::prevPort() {
 }
 
 
-matlabDialog::matlabDialog(QWidget* parent, 
+userDataDialog::userDataDialog(QWidget* parent, 
 	const char* name, bool modal, Qt::WFlags fl)
     : QDialog( parent, name, modal, fl)
 {
@@ -750,7 +750,7 @@ matlabDialog::matlabDialog(QWidget* parent,
     ncols = 2 * (sysinfo.maxelectnum / 16 + 1) + 1;
     midcol = ncols / 2 + 1;
 
-    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "matlabDialogLayout");
+    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "userDataDialogLayout");
 
     QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
     QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
@@ -760,14 +760,14 @@ matlabDialog::matlabDialog(QWidget* parent,
     posSelect = new QRadioButton("Save Position", this, "savePosButton");
     posSelect->setFont(fs);
     grid->addMultiCellWidget(posSelect, 0, 0, 0, midcol - 1);
-    if (matlabinfo.savepos) {
+    if (userdatainfo.savepos) {
 	posSelect->setChecked(TRUE);
     }
 
     digioSelect = new QRadioButton("Save Digital IO", this, "saveDigIOButton");
     digioSelect->setFont(fs);
     grid->addMultiCellWidget(digioSelect, 0, 0, midcol, ncols-1);
-    if (matlabinfo.savedigio) {
+    if (userdatainfo.savedigio) {
 	digioSelect->setChecked(TRUE);
     }
     
@@ -798,7 +798,7 @@ matlabDialog::matlabDialog(QWidget* parent,
 	tetSpikeSelect[i]->setFont(fs);
 	grid->addMultiCellWidget(tetSpikeSelect[i], row, row, col, 
 		col);
-	if (matlabinfo.spikeelect[i]) {
+	if (userdatainfo.spikeelect[i]) {
 	    tetSpikeSelect[i]->setChecked(TRUE);
 	}
 
@@ -806,7 +806,7 @@ matlabDialog::matlabDialog(QWidget* parent,
 	tetContSelect[i]->setFont(fs);
 	grid->addMultiCellWidget(tetContSelect[i], row, row, midcol + col, 
 		midcol + col);
-	if (matlabinfo.contelect[i]) {
+	if (userdatainfo.contelect[i]) {
 	    tetContSelect[i]->setChecked(TRUE);
 	}
     }
@@ -823,41 +823,41 @@ matlabDialog::matlabDialog(QWidget* parent,
     show();
 }
 
-void matlabDialog::setMatlabInfo() {
+void userDataDialog::setUserDataInfo() {
     int i;
-    /* use the state of the buttons to set the Matlab Info */
+    /* use the state of the buttons to set the user data info */
     if (posSelect->isChecked()) {
-	matlabinfo.savepos = TRUE;
+	userdatainfo.savepos = TRUE;
     }
     if (digioSelect->isChecked()) {
-	matlabinfo.savedigio = TRUE;
+	userdatainfo.savedigio = TRUE;
     }
-    matlabinfo.savecont = FALSE;
-    matlabinfo.savespike = FALSE;
+    userdatainfo.savecont = FALSE;
+    userdatainfo.savespike = FALSE;
     for (i = 1; i <= sysinfo.maxelectnum; i++) {
 	if (tetSpikeSelect[i]->isChecked()) {
-	    matlabinfo.spikeelect[i] = TRUE;
-	    matlabinfo.savespike = TRUE;
+	    userdatainfo.spikeelect[i] = TRUE;
+	    userdatainfo.savespike = TRUE;
 	}
 	else {
-	    matlabinfo.spikeelect[i] = FALSE;
+	    userdatainfo.spikeelect[i] = FALSE;
 	}
 	if (tetContSelect[i]->isChecked()) {
-	    matlabinfo.contelect[i] = TRUE;
-	    matlabinfo.savecont = TRUE;
+	    userdatainfo.contelect[i] = TRUE;
+	    userdatainfo.savecont = TRUE;
 	}
 	else {
-	    matlabinfo.contelect[i] = FALSE;
+	    userdatainfo.contelect[i] = FALSE;
 	}
     }
 
     /* now we need to send out these new settings to everyone */
-    SendMatlabInfo();
+    SendUserDataInfo();
     emit finished();
     return;
 }
 
-matlabDialog::~matlabDialog() {
+userDataDialog::~userDataDialog() {
 }
 
 

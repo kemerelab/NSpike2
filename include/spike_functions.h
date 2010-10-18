@@ -68,11 +68,6 @@ int ReprogramMasterDSP(char *filename);
 int ReprogramAuxDSPs(char *filename);
 int ReprogramLocalAuxDSPS(unsigned short *program);
 int GetAllDSPCodeRev(void);
-int WriteDSPData(short dspnum, unsigned short address, short n, 
-	unsigned short *data);
-int ReadDSPData(short dspnum, unsigned short address, short n, 
-	unsigned short *data);
-int GetDSPResponse(int dspnum, int n, unsigned short *data);
 
 int SendChannelInfo(ChannelInfo *ch, int slaveorig);
 

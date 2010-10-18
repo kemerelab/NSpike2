@@ -42,7 +42,7 @@ NetworkInfo     netinfo;
 DisplayInfo     dispinfo;
 DigIOInfo       digioinfo;
 CommonDSPInfo   cdspinfo;
-MatlabInfo      matlabinfo;
+UserDataInfo    userdatainfo;
 
 struct DisplayData *displaybuf;    // the buffer to be displayed next
 struct DisplayData *databuf;    // the buffer to be filled with data
@@ -252,8 +252,12 @@ int main(int argc, char **argv)
     }
     /* set the pointers to the state machine memory locations. We start
      * one instruction into the buffer so that we can leave the first
-     * instruction as a wait forever that we will jump back to once the
+     * instruction as a wait forever that we will jump back to once the 
      * state machine is done executing */
+    digioinfo.statemachinebaseaddr[0] = DIO_STATE0_BASE_ADDR;
+    digioinfo.statemachinebaseaddr[1] = DIO_STATE1_BASE_ADDR;
+    digioinfo.statemachinebaseaddr[2] = DIO_STATE2_BASE_ADDR;
+    digioinfo.statemachinebaseaddr[3] = DIO_STATE3_BASE_ADDR;
     digioinfo.statemachinebuffer[0] = DIO_STATE0_BUFFER_START + 1;
     digioinfo.statemachinebuffer[1] = DIO_STATE1_BUFFER_START + 1;
     digioinfo.statemachinebuffer[2] = DIO_STATE2_BUFFER_START + 1;
@@ -287,8 +291,8 @@ int main(int argc, char **argv)
     sprintf(command, "spike_process_posdata &");
     system(command); 
   }
-  if (sysinfo.datatype[sysinfo.machinenum] & MATLAB) {
-    sprintf(command, "spike_matlab &");
+  if (sysinfo.datatype[sysinfo.machinenum] & USERDATA) {
+    sprintf(command, "spike_userdata &");
     system(command); 
   }
 
@@ -320,9 +324,9 @@ int main(int argc, char **argv)
 #endif
   }
 
-  if (sysinfo.matlaboutput) {
-    fprintf(STATUSFILE, "Sending matlab config\n");
-    SendMatlabInfo();
+  if (sysinfo.userdataoutput) {
+    fprintf(STATUSFILE, "Sending userdata config\n");
+    SendUserDataInfo();
   }
 
   /* now set up the data buffers for display of spike or eeg traces */
@@ -731,16 +735,16 @@ void SQCompat::spikeProcessMessages(void)
                   SAVE_STOPPED, NULL, 0);
             }
             break;
-          case MATLAB_START_SAVE:
-            if (MatlabStartSave()) {
+          case USER_DATA_START:
+            if (UserDataStart()) {
               SendMessage(netinfo.slavefd[netinfo.myindex], 
-                  MATLAB_SAVE_STARTED, NULL, 0);
+                  USER_DATA_STARTED, NULL, 0);
             }
             break;
-          case MATLAB_STOP_SAVE:
-            if (MatlabStopSave()) {
+          case USER_DATA_STOP:
+            if (UserDataStart()) {
               SendMessage(netinfo.slavefd[netinfo.myindex], 
-                  SAVE_STOPPED, NULL, 0);
+                  USER_DATA_STOPPED, NULL, 0);
             }
             break;
           case CLEAR_SCREEN: 
@@ -919,6 +923,9 @@ void SQCompat::spikeProcessMessages(void)
      * be discarded by the switch, but serves to tell the switch which 
      * port this machine is on */
     SendMessage(client_message[DSP0ECHO].fd, MESSAGE, NULL, 0); 
+#ifndef DIO_ON_MASTER_DSP
+    SendMessage(client_message[DSPDIOECHO].fd, MESSAGE, NULL, 0); 
+#endif
     lastcommtime.tv_sec = computertime.tv_sec;
   }
   return;
@@ -2903,40 +2910,40 @@ void SetReference(int electnum, int refelect, int refchan)
 
 
 
-void MasterMatlabStartSave(void) 
+void MasterUserDataStart(void) 
 {
   int i, error = 0;
-  if (!sysinfo.matlabon) {
+  if (!sysinfo.userdataon) {
     /* send a message to the slaves to start saving */
     for(i = 0; i < netinfo.nslaves; i++) {
-      SendMessage(netinfo.slavefd[i], MATLAB_START_SAVE, NULL, 0);
+      SendMessage(netinfo.slavefd[i], USER_DATA_START, NULL, 0);
     }
     if (!error) {
       /* if we started the save on all of the slaves, start it here as well */ 
-      MatlabStartSave();
+      UserDataStart();
     }
     /* disable the settings menu item */
-    spikeMainWindow->matlabSettingsAction->setEnabled(false);
+    spikeMainWindow->userDataSettingsAction->setEnabled(false);
     /* disable the acquisition toggle menu item */
     spikeMainWindow->masterAcqAction->setEnabled(false); 
   }
 }
 
 
-void MasterMatlabStopSave(void)
+void MasterUserDataStop(void)
 {
   int i, error = 0;
-  if (sysinfo.matlabon) {
+  if (sysinfo.userdataon) {
     /* send a message to the slaves to stop saving */
     for(i = 0; i < netinfo.nslaves; i++) {
-      SendMessage(netinfo.slavefd[i], MATLAB_STOP_SAVE, NULL, 0);
+      SendMessage(netinfo.slavefd[i], USER_DATA_STOP, NULL, 0);
     }
     if (!error) {
       /* if we stopped the save on all of the slaves, stop it here as well */ 
-      MatlabStopSave();
+      UserDataStop();
     }
     /* enable the settings menu */
-    spikeMainWindow->matlabSettingsAction->setEnabled(true);
+    spikeMainWindow->userDataSettingsAction->setEnabled(true);
     /* enable the acquisition toggle menu item */
     spikeMainWindow->masterAcqAction->setEnabled(true); 
   }

@@ -641,8 +641,12 @@ int GetModuleID(char *modulename)
         return DSP8;
     else if (strcmp(modulename, "DSP9") == 0)
         return DSP9;
+    else if (strcmp(modulename, "DSPDIO") == 0)
+        return DSPDIO;
     else if (strcmp(modulename, "DSP0ECHO") == 0)
         return DSP0ECHO;
+    else if (strcmp(modulename, "DSPDIOECHO") == 0)
+        return DSPDIOECHO;
     else if (strcmp(modulename, "SPIKE_DAQ") == 0)
         return SPIKE_DAQ;
     else if (strcmp(modulename, "SPIKE_POSDAQ") == 0)
@@ -651,8 +655,8 @@ int GetModuleID(char *modulename)
         return SPIKE_PROCESS_POSDATA;
     else if (strcmp(modulename, "SPIKE_SAVE_DATA") == 0)
         return SPIKE_SAVE_DATA;
-    else if (strcmp(modulename, "SPIKE_MATLAB") == 0)
-        return SPIKE_MATLAB;
+    else if (strcmp(modulename, "SPIKE_USER_DATA") == 0)
+        return SPIKE_USER_DATA;
     else if (strcmp(modulename, "SPIKE_MAIN") == 0)
         return SPIKE_MAIN;
     else {
@@ -687,7 +691,7 @@ void SetupModuleMessaging(void)
     /* using the data type on each machine we set up the essential connections*/
 {
     int i, c, p;
-    int matlabind = -1;
+    int userdataind = -1;
 #ifndef NO_DSP_DEBUG
     int j;
 #endif
@@ -698,10 +702,10 @@ void SetupModuleMessaging(void)
     /* start at the first port in the list */
     p = 0;
     
-    /* check to see if there is a matlab system, and if so record it's index */
+    /* check to see if there is a user data system, and if so record it's index */
     for (i = 0; i <= netinfo.nslaves; i++) {
-        if (sysinfo.datatype[i] & MATLAB) {
-            matlabind = i;
+        if (sysinfo.datatype[i] & USERDATA) {
+            userdataind = i;
             break;
         }
     }
@@ -713,9 +717,9 @@ void SetupModuleMessaging(void)
 
     /* go through each machine in order. Note that machine 0 is the master */
     for (i = 0; i <= netinfo.nslaves; i++) {
-        if ((i != netinfo.rtslave) && (i != netinfo.matlabslave)) {
+        if ((i != netinfo.rtslave) && (i != netinfo.userdataslave)) {
             /* Common messaging connections on all but the RT and standalone
-             * MATLAB system */
+             * USERDATA system */
             /* MAIN to SAVE_DATA MESSAGE*/
             strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
             netinfo.conn[c].fromid = SPIKE_MAIN;
@@ -774,14 +778,14 @@ void SetupModuleMessaging(void)
             netinfo.conn[c].type = DATA;
             netinfo.conn[c++].protocol = UNIX;
 
-            if (matlabind != -1) {
-                /* MATLAB data connection */
+            if (userdataind != -1) {
+                /* User data connection */
                 strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
                 netinfo.conn[c].fromid = SPIKE_DAQ;
-                strcpy(netinfo.conn[c].to, netinfo.machinename[matlabind]);
-                netinfo.conn[c].toid = SPIKE_MATLAB;
+                strcpy(netinfo.conn[c].to, netinfo.machinename[userdataind]);
+                netinfo.conn[c].toid = SPIKE_USER_DATA;
                 netinfo.conn[c].type = DATA;
-                if (i == matlabind) {
+                if (i == userdataind) {
                     /* this is a local connection */
                     netinfo.conn[c++].protocol = UNIX;
                 }
@@ -828,16 +832,39 @@ void SetupModuleMessaging(void)
 		netinfo.conn[c++].protocol = UDP;
 		dspdataconn = 1; 
 	    }
-	    /* we need to create a connection to the echo port of the master
-	     * DSP so that we can send out packets once a minute to prevent the
-	     * switch from losing track of this machines location */
-	    strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
-	    netinfo.conn[c].fromid = SPIKE_MAIN;
-	    strcpy(netinfo.conn[c].to, "dsp0");
-	    netinfo.conn[c].toid = DSP0ECHO;
-	    netinfo.conn[c].type = MESSAGE;
-	    netinfo.conn[c].port = DSP_ECHO_PORT;
-	    netinfo.conn[c++].protocol = UDP;
+	    if (sysinfo.system_type[sysinfo.machinenum] == MASTER) {
+	       /* we need to create a connection to the echo port of the master
+	       * DSP so that we can send out packets once a minute to prevent the
+	       * switch from losing track of this machines location */
+	       strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
+	       netinfo.conn[c].fromid = SPIKE_MAIN;
+	       strcpy(netinfo.conn[c].to, "dsp0");
+	       netinfo.conn[c].toid = DSP0ECHO;
+	       netinfo.conn[c].type = MESSAGE;
+	       netinfo.conn[c].port = DSP_ECHO_PORT;
+	       netinfo.conn[c++].protocol = UDP;
+	        /* finally, if digital IO is handled by a separate DSP, we need to
+	         * create the connection from the master to that DSP */
+#ifndef DIO_ON_MASTER_DSP
+	        strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
+	        netinfo.conn[c].fromid = SPIKE_MAIN;
+	        strcpy(netinfo.conn[c].to, "dspdio");
+	        netinfo.conn[c].toid = DSPDIO;
+	        netinfo.conn[c].type = MESSAGE;
+	        netinfo.conn[c].port = DSP_MESSAGE_PORT;
+	        netinfo.conn[c++].protocol = UDP;
+	        /* we also need to create a connection to the echo port of the 
+	         * digio DSP so that we can send out packets once a minute to prevent the
+	         * switch from losing track of this machines location */
+	        strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
+	        netinfo.conn[c].fromid = SPIKE_MAIN;
+	        strcpy(netinfo.conn[c].to, "dspdio");
+	        netinfo.conn[c].toid = DSPDIOECHO;
+	        netinfo.conn[c].type = MESSAGE;
+	        netinfo.conn[c].port = DSP_ECHO_PORT;
+	        netinfo.conn[c++].protocol = UDP; 
+#endif
+	    }
 #endif
         }
 
@@ -910,12 +937,12 @@ void SetupModuleMessaging(void)
 
 
 
-            if (matlabind != -1) {
-                /* MATLAB data connection */
+            if (userdataind != -1) {
+                /* USERDATA data connection */
                 strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
                 netinfo.conn[c].fromid = SPIKE_POSDAQ;
-                strcpy(netinfo.conn[c].to, netinfo.machinename[matlabind]);
-                netinfo.conn[c].toid = SPIKE_MATLAB;
+                strcpy(netinfo.conn[c].to, netinfo.machinename[userdataind]);
+                netinfo.conn[c].toid = SPIKE_USER_DATA;
                 netinfo.conn[c].type = DATA;
                 /* this is a remote connection */
                 netinfo.conn[c].protocol = TCPIP;
@@ -924,17 +951,17 @@ void SetupModuleMessaging(void)
         }
 
 
-        if (sysinfo.datatype[i] & MATLAB) {
-            /* MAIN to MATLAB */
+        if (sysinfo.datatype[i] & USERDATA) {
+            /* MAIN to USERDATA */
             strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
             netinfo.conn[c].fromid = SPIKE_MAIN;
             strcpy(netinfo.conn[c].to, netinfo.machinename[i]);
-            netinfo.conn[c].toid = SPIKE_MATLAB;
+            netinfo.conn[c].toid = SPIKE_USER_DATA;
             netinfo.conn[c].type = MESSAGE;
             netinfo.conn[c++].protocol = UNIX;
-            /* MATLAB to MAIN */
+            /* USERDATA to MAIN */
             strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
-            netinfo.conn[c].fromid = SPIKE_MATLAB;
+            netinfo.conn[c].fromid = SPIKE_USER_DATA;
             strcpy(netinfo.conn[c].to, netinfo.machinename[i]);
             netinfo.conn[c].toid = SPIKE_MAIN;
             netinfo.conn[c].type = MESSAGE;
@@ -1868,7 +1895,7 @@ int GetMachineNum(const char *name)
     else {
         num = GetSlaveNum(name) + 1;
             if (num == 0) {
-            fprintf(stderr, "Error looking up machine number for %s\nThis is probably due to an error in the config file where this host is not listed as a master, slave, rtslave or matlabslave.\n", name);
+            fprintf(stderr, "Error looking up machine number for %s\nThis is probably due to an error in the config file where this host is not listed as a master, slave, rtslave or  user data slave.\n", name);
             return -1;
         }
         return num;

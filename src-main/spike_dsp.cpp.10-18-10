@@ -43,18 +43,12 @@ char tmpbuf[SAVE_BUF_SIZE];
 /* local functions */
 int ProgramAuxDSP(short dspnum);
 int ProgramMasterDSP(void);
-int ProgramDSPDIO(short dspnum);
 int ReprogramDSP(int dspnum, unsigned short *program);
 unsigned short GetDSPCodeRev(short dspnum);
 int ReadDSPProgram(char *filename, unsigned short *program);
 int GetLocalDSPCodeRev(unsigned short *tmpcoderev);
 void GetDSPLowFilterCoeff(short highpass, unsigned short *data);
 void GetDSPHighFilterCoeff(short lowpass, unsigned short *data);
-int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
-	short n, unsigned short *data);
-int ReadDSPData(short dspnum, unsigned short baseaddr, unsigned short address, 
-	short n, unsigned short *data);
-int GetDSPResponse(int dspnum, int n, unsigned short *data);
 void ByteSwap(unsigned short *sptr, int nelem);
 void ByteSwap(long *lptr, int nelem);
 
@@ -137,83 +131,64 @@ int ProgramMasterDSP(void)
 
     /* if we do digital IO, set up the ports and the state machine */
     if (sysinfo.datatype[sysinfo.machinenum] & DIGITALIO) {
-	ProgramDSPDIO(DSPDIO);
-    }
-    return 1;
-}
-
-int ProgramDSPDIO(short dspnum)
-{
-    unsigned short data[24];
-    int i, error = 0;
-
-    /* first set up the ports for input or output */
-    data[0] = 0;
-    for (i = 0; i < digioinfo.nports; i++) {
-	if (digioinfo.porttype[i] == OUTPUT_PORT) {
-	    data[0] |= 1 << i;
+	/* first set up the ports for input or output */
+	data[0] = 0;
+	for (i = 0; i < digioinfo.nports; i++) {
+	    if (digioinfo.porttype[i] == OUTPUT_PORT) {
+		data[0] |= 1 << i;
+	    }
 	}
-    }
-    if (!WriteDSPData(dspnum, DSP_SRAM, DIO_OUT_ENABLE, 1, data)) {
-	sprintf(tmpstring, "Error writing Digital IO port information to digital IO DSP");
-	DisplayErrorMessage(tmpstring);
-	error = 1;
-    }
+	if (!WriteDSPData(0, DIO_OUT_ENABLE, 1, data)) {
+	    sprintf(tmpstring, "Error writing Digital IO port information to master DSP");
+	    DisplayErrorMessage(tmpstring);
+	    error = 1;
+	}
 
-    /* Set all of the output port bits to be 0 */ 
-    data[0] = 0;
-    for (i = 0; i < digioinfo.nports; i++) {
-	if (digioinfo.porttype[i] == OUTPUT_PORT) {
-	    if (!WriteDSPData(dspnum, DSP_SRAM, DIO_OUT_1 + i, 1, data)) {
-		sprintf(tmpstring, "Error writing Digital IO port status to master DSP");
+	/* Set all of the output port bits to be 0 */ 
+	data[0] = 0;
+	for (i = 0; i < digioinfo.nports; i++) {
+	    if (digioinfo.porttype[i] == OUTPUT_PORT) {
+		if (!WriteDSPData(0, DIO_OUT_1 + i, 1, data)) {
+		    sprintf(tmpstring, "Error writing Digital IO port status to master DSP");
+		    DisplayErrorMessage(tmpstring);
+		    error = 1;
+		}
+	    }
+	}
+	
+	/* Set the mask for all of the ports to be 1's so that all changes are
+	 * reported on the used ports, and set the mask to be all zeron if there are 
+	 * unused ports*/
+	for (i = 0; i < MAX_DIO_PORTS; i++) {
+	    if (i < digioinfo.nports) {
+		data[0] = 0xFFFF;
+	    }
+	    else {
+		data[1] = 0;
+	    }
+	    if (!WriteDSPData(0, DIO_IN_1_MASK + i, 1, data)) {
+		sprintf(tmpstring, "Error writing Digital IO port mask to master DSP");
 		DisplayErrorMessage(tmpstring);
 		error = 1;
 	    }
 	}
-    }
-    
-    /* Set the mask for all of the ports to be 1's so that all changes are
-     * reported on the used ports, and set the mask to be all zeron if there are 
-     * unused ports*/
-    for (i = 0; i < MAX_DIO_PORTS; i++) {
-	if (i < digioinfo.nports) {
-	    data[0] = 0xFFFF;
+
+	/* Set the debounce time for the inputs to be 0 ms  */
+	data[0] = 0;
+	if (!WriteDSPData(0, DIO_IN_DEBOUNCE_TIME, 1, data)) {
+	    sprintf(tmpstring, "Error writing Digital IO input debounce time to master DSP");
+	    DisplayErrorMessage(tmpstring);
+	    error = 1;
 	}
-	else {
-	    data[1] = 0;
-	}
-	if (!WriteDSPData(dspnum, DSP_SRAM, DIO_IN_1_MASK + i, 1, data)) {
-	    sprintf(tmpstring, "Error writing Digital IO port mask to master DSP");
+
+	/* Enable the state machine */
+	data[0] = 1;
+	if (!WriteDSPData(0, DIO_STATE_ENABLE, 1, data)) {
+	    sprintf(tmpstring, "Error writing Digital IO state machine enable to master DSP");
 	    DisplayErrorMessage(tmpstring);
 	    error = 1;
 	}
     }
-
-    /* Set the debounce time for the inputs to be 0 ms  */
-    data[0] = 0;
-    if (!WriteDSPData(dspnum, DSP_SRAM, DIO_IN_DEBOUNCE_TIME, 1, data)) {
-	sprintf(tmpstring, "Error writing Digital IO input debounce time to master DSP");
-	DisplayErrorMessage(tmpstring);
-	error = 1;
-    }
-
-    /* Enable the state machine */
-    data[0] = 1;
-#ifdef DIO_ON_MASTER_DSP
-    if (!WriteDSPData(dspnum, DSP_SRAM, DIO_STATE_ENABLE, 1, data)) {
-	sprintf(tmpstring, "Error writing Digital IO state machine enable to master DSP");
-	DisplayErrorMessage(tmpstring);
-	error = 1;
-    }
-#else
-    for (i = 0; i < DIO_N_STATE_MACHINES; i++) {
-	if (!WriteDSPData(dspnum, DSP_SRAM, DIO_STATE0_ENABLE + i, 1, data)) {
-	    sprintf(tmpstring, "Error writing Digital IO state machine %d enable to master DSP, i");
-	    DisplayErrorMessage(tmpstring);
-	    error = 1;
-	}
-    }
-#endif
 
     if (error) {
         return 0;
@@ -240,19 +215,19 @@ int ProgramAuxDSP(short dspnum)
 
     /* set the PipeID */
     data[0] = dspnum;
-    WriteDSPData(dspnum, DSP_SRAM, PIPE_ID_ADDR, 1, data);
+    WriteDSPData(dspnum, PIPE_ID_ADDR, 1, data);
 
     /* set the number of channels per sample */
     data[0] = (unsigned short) dptr->nchan;
-    WriteDSPData(dspnum, DSP_SRAM, NUM_CHAN_ADDR, 1, data);
+    WriteDSPData(dspnum, NUM_CHAN_ADDR, 1, data);
 
     /* set the number of samples per block */
     data[0] = dptr->nsamp;
-    WriteDSPData(dspnum, DSP_SRAM, NUM_SAMPLES_ADDR, 1, data);
+    WriteDSPData(dspnum, NUM_SAMPLES_ADDR, 1, data);
 
     /* set the decimation factor */
     data[0] = DSP_BASE_SAMP_RATE / dptr->samprate;
-    WriteDSPData(dspnum, DSP_SRAM, DECIMATION_ADDR, 1, data);
+    WriteDSPData(dspnum, DECIMATION_ADDR, 1, data);
 
     /* set up all of the channels */
     ch = sysinfo.channelinfo[sysinfo.machinenum];
@@ -324,7 +299,7 @@ int StartDSPAcquisition(short dspnum)
 
     /* set to a number > SHRT_MAX to tell the dsp to send packets forever */
     data[0] = USHRT_MAX;
-    if (!WriteDSPData(dspnum, DSP_SRAM, BLOCKS_TO_SEND_ADDR, 1, data)) {
+    if (!WriteDSPData(dspnum, BLOCKS_TO_SEND_ADDR, 1, data)) {
 	return 0;
     }
     else {
@@ -339,7 +314,7 @@ int StopDSPAcquisition(short dspnum)
 
     /* set to 0 to indicate that it should stop sending packets */
     data[0] = 0;
-    if (!WriteDSPData(dspnum, DSP_SRAM, BLOCKS_TO_SEND_ADDR, 1, data)) {
+    if (!WriteDSPData(dspnum, BLOCKS_TO_SEND_ADDR, 1, data)) {
 	return 0;
     }
     else {
@@ -390,7 +365,7 @@ int SetAudio(int num, ChannelInfo *ch, int commandorigin)
 	}
         GetDSPHighFilterCoeff(ch->highfilter, data+4);
         GetDSPLowFilterCoeff(ch->lowfilter, data+14);
-        WriteDSPData(0, DSP_SRAM, CHANNEL_SETTINGS_ADDR + DSP_CHAN_ADDR_INC * num, 24, 
+        WriteDSPData(0, CHANNEL_SETTINGS_ADDR + DSP_CHAN_ADDR_INC * num, 24, 
                 data);
     }
     else if (commandorigin) {
@@ -521,8 +496,8 @@ int UpdateChannel(ChannelInfo *ch, int local)
     GetDSPHighFilterCoeff(ch->highfilter, data+4);
     GetDSPLowFilterCoeff(ch->lowfilter, data+14);
 
-    WriteDSPData(ch->dspnum, DSP_SRAM, CHANNEL_SETTINGS_ADDR + 
-	    DSP_CHAN_ADDR_INC * ch->dspind, 24, data);
+    WriteDSPData(ch->dspnum, CHANNEL_SETTINGS_ADDR + DSP_CHAN_ADDR_INC * 
+            ch->dspind, 24, data);
 
     /* check to see if this channel is selected for audio output, and if so 
      * update the audio */
@@ -552,7 +527,7 @@ int SetDSPAudioGain(int channel, short gain)
     cdspinfo.audiogain[channel] = gain;
     /* the gains from 0 to 128 should be mapped to 0 to 32767 */
     gain = (gain < 128) ? (gain * 128) : 32767;
-    WriteDSPData(0, DSP_SRAM, address, 1, (unsigned short *) &gain);
+    WriteDSPData(0, address, 1, (unsigned short *) &gain);
     return 1;
 }
 
@@ -570,9 +545,9 @@ int SetDSPAudioCutoff(int channel, short cutoff)
 	address2 = DAC_1_NEG_THRESH_ADDR;
     }
     cdspinfo.audiocutoff[channel] = cutoff;
-    WriteDSPData(0, DSP_SRAM, address1, 1, (unsigned short *) &cutoff);
+    WriteDSPData(0, address1, 1, (unsigned short *) &cutoff);
     cutoff = cutoff * -1;
-    WriteDSPData(0, DSP_SRAM, address2, 1, (unsigned short *) &cutoff);
+    WriteDSPData(0, address2, 1, (unsigned short *) &cutoff);
     return 1;
 }
 
@@ -589,7 +564,7 @@ int SetDSPAudioDelay(int channel, short delay)
     cdspinfo.audiodelay[channel] = delay;
     /* map the delay in ms to the number of samples */
     delay = delay * 30;
-    WriteDSPData(0, DSP_SRAM, address, 1, (unsigned short *) &delay);
+    WriteDSPData(0, address, 1, (unsigned short *) &delay);
     return 1;
 }
 
@@ -602,16 +577,16 @@ int DSPMuteAudio(int mute)
     if (mute) {
 	/* set the gain on both channels to 0 */
 	address = DAC_0_GAIN_ADDR;
-	WriteDSPData(0, DSP_SRAM, address, 1, &gain);
+	WriteDSPData(0, address, 1, &gain);
 	address = DAC_1_GAIN_ADDR;
-	WriteDSPData(0, DSP_SRAM, address, 1, &gain);
+	WriteDSPData(0, address, 1, &gain);
     }
     else {
 	/* set the gains to their normal values */
 	address = DAC_0_GAIN_ADDR;
-	WriteDSPData(0, DSP_SRAM, address, 1, (unsigned short *) &cdspinfo.audiogain[0]);
+	WriteDSPData(0, address, 1, (unsigned short *) &cdspinfo.audiogain[0]);
 	address = DAC_1_GAIN_ADDR;
-	WriteDSPData(0, DSP_SRAM, address, 1, (unsigned short *) &cdspinfo.audiogain[1]);
+	WriteDSPData(0, address, 1, (unsigned short *) &cdspinfo.audiogain[1]);
     }
     return 1;
 }
@@ -630,12 +605,12 @@ void ResetClock(void)
 	    StopAllAcquisition();
 	}
         data[0] = 0;
-        WriteDSPData(0, DSP_SRAM, SYNC_CONTROL_ADDR, 1, data);
+        WriteDSPData(0, SYNC_CONTROL_ADDR, 1, data);
         /* now send a message to the DSPs to reset their clocks */
         if (!error) {
             /* restart the counter and the 10 KHz outputs */
             data[0] = BIT0 | BIT1 | BIT2;
-            WriteDSPData(0, DSP_SRAM, SYNC_CONTROL_ADDR, 1, data);
+            WriteDSPData(0, SYNC_CONTROL_ADDR, 1, data);
             sprintf(tmpstring, "Resetting Clock");
             DisplayStatusMessage(tmpstring);
         }
@@ -677,11 +652,11 @@ u32 ReadDSPTimestamp(short dspnum)
 
     if (dspnum > 0) {
 	/* get the time from the specified Aux DSP */
-	ReadDSPData(dspnum, DSP_SRAM, SAMPLE_COUNT_LOW_ADDR, 2, tmpcount);
+	ReadDSPData(dspnum, SAMPLE_COUNT_LOW_ADDR, 2, tmpcount);
     }
     else {
 	/* Read in the three words */
-	ReadDSPData(dspnum, DSP_SRAM, MASTER_SAMPLE_COUNT_LOW_ADDR, 3, tmpcount);
+	ReadDSPData(dspnum, MASTER_SAMPLE_COUNT_LOW_ADDR, 3, tmpcount);
 	/* the middle work is the sync control, so overwrite it */
 	tmpcount[1] = tmpcount[2];
     }
@@ -963,156 +938,13 @@ void ChangeOutput(int output, int raise)
     digioinfo.raised[output] = raise;
     DisplayStatusMessage(tmpstring);
 
-    /*ReadDSPData(0, DSP_SRAM, DIO_OUT_1, 10, read_data);
+    /*ReadDSPData(0, DIO_OUT_1, 10, read_data);
     fprintf(stderr, "DIO_OUT/IN data: ");
     for (i = 0; i < 10; i++) {
 	fprintf(stderr, "%X ",read_data[i]);
     } */
 
     return;
-}
-
-#ifndef DIO_ON_MASTER_DSP
-int WriteArbWaveForm(unsigned short *wavefm, int len) 
-{
-    unsigned short tmplen = (unsigned short) len; 
-
-    /* check that the waveform length is within limits */
-    if (len > DIO_ARB_WAVE_LEN) {
-	sprintf(tmpstring, "Error: waveform length %d too long to write to digital IO state machine. Must be <= %d", len, DIO_ARB_WAVE_LEN);
-	DisplayErrorMessage(tmpstring);
-	return 0;
-    }
-    /* write out the waveform to the waveform generator */
-    if (!WriteDSPData(DSPDIO, DIO_ARB_WAVE_ADDR, 0, len, wavefm)) {
-	sprintf(tmpstring, "Error writing waveform to arbitrary waveform generator");
-	DisplayErrorMessage(tmpstring);
-	return 0;
-    }
-    /* write out the waveform length */
-    if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_LENGTH, 1, &tmplen)) {
-	sprintf(tmpstring, "Error writing waveform length for arbitrary waveform generator");
-	DisplayErrorMessage(tmpstring);
-	return 0;
-    }
-    ReadDSPData(DSPDIO, DSP_SRAM, DIO_ARB_LENGTH, 1, &tmplen);
-	    fprintf(stderr, "length %d\n", tmplen);
-    return SetArbPointer(0);
-}
-
-int SetArbPointer(unsigned short offset)
-    /* reset the arbitrary waveform generator's pointer to the beginning of the buffer */
-{
-    if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_POINTER, 1, &offset)) {
-	sprintf(tmpstring, "Error setting pointer to offset %d for arbitrary waveform generator", offset);
-	DisplayErrorMessage(tmpstring);
-	return 0;
-    }
-    return 1;
-}
-
-
-int SetArbAOutChan(unsigned short aout)
-    /* set the analog output for the arbitrary waveform generator */
-{
-    if ((aout != DIO_ARB_AOUT_CHANNEL_1) && (aout != DIO_ARB_AOUT_CHANNEL_2)){
-	sprintf(tmpstring, "Error: Analog output for arbitrary waveform generator must be %d or %d", DIO_ARB_AOUT_CHANNEL_1, DIO_ARB_AOUT_CHANNEL_2);
-	DisplayErrorMessage(tmpstring);
-	return 0;
-    }
-    if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_AOUT_CHANNEL, 1, &aout)) {
-	sprintf(tmpstring, "Error setting analog output of arbitrary waveform generator");
-	DisplayErrorMessage(tmpstring);
-	return 0;
-    }
-    return 1;
-}
-
-int EnableArb(unsigned short enable)
-    /* enable or disable the arbitrary waveform generator */
-{
-   if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_ENABLE, 1, &enable)) {
-	sprintf(tmpstring, "Error enabling or disabling arbitrary waveform generator");
-	DisplayErrorMessage(tmpstring);
-	return 0;
-   }
-   return 1;
-}
-
-int SetArbTrigger(unsigned short trigger)
-    /* set the trigger for the aritrary waveform generator */
-{
-   if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_TRIGGER, 1, &trigger)) {
-	sprintf(tmpstring, "Error setting trigger for arbitrary waveform generator to 0x%x", trigger);
-	DisplayErrorMessage(tmpstring);
-	return 0;
-   }
-   return 1;
-}
-
-#endif
-
-
-int ResetStateMachines()
-{
-    int i;
-    unsigned short addr;
-    unsigned short command[DIO_MAX_COMMAND_LEN];
-
-    /* reset each state machines to the beginning of its buffer and
-     * set its output to be 0 */
-    command[0] = 0;
-    for (i = 0; i <  DIO_N_STATE_MACHINES; i++) {
-	if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[i], 
-		    1, command)) {
-	    sprintf(tmpstring, "Error reseting Digital IO state machine pointer on master DSP");
-	    DisplayErrorMessage(tmpstring);
-	    return 0;
-	}
-	switch(i) {
-	    case 0:
-		addr = DIO_OUT_1;
-		break;
-	    case 1:
-		addr = DIO_OUT_2;
-		break;
-	    case 2:
-		addr = DIO_OUT_3;
-		break;
-	    case 3:
-		addr = DIO_OUT_4;
-		break;
-	}
-	/* set the output to be 0 */
-	if (!WriteDSPData(DSPDIO, DSP_SRAM, addr, 1, command)) {
-	    sprintf(tmpstring, "Error setting port %d to output 0", i);
-	    DisplayErrorMessage(tmpstring);
-	    return 0;
-	}
-    }
-
-/*    fprintf(stderr, "TEST: setting port 0 bit 8 high\n");
-    usleep(500000);
-    command[0] = O8;
-    addr = DIO_OUT_1;
-    if (!WriteDSPData(DSPDIO, DSP_SRAM, addr, 1, command)) {
-	sprintf(tmpstring, "Error setting port %d to output 0", i);
-	DisplayErrorMessage(tmpstring);
-	return 0;
-    }  */
-
-    /* TEST of arbitrary waveform generator */
-    /* create 1000 point ramp 
-    for (i = 0; i < 30000; i++) {
-	command[i] = i / 2;
-    }
-    WriteArbWaveForm(command, 30000);
-    SetArbAOutChan(DIO_ARB_AOUT_CHANNEL_2);
-    EnableArb(1);
-    SetArbTrigger(257); */
-
-
-    return 1;
 }
 
 int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int sendResetStateMachine)
@@ -1130,12 +962,37 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
     }
     /* check to see if this is a reset command */
     if (command[0] == DIO_RESET_STATE_MACHINES) {
-	if (ResetStateMachines()) {
-	    return 1 ;
+	/* reset each state machines to the beginning of its buffer and
+	 * set its output to be 0 */
+	command[0] = 0;
+	for (i = 0; i <  DIO_N_STATE_MACHINES; i++) {
+	    if (!WriteDSPData(0, digioinfo.statemachineptr[i], 1, command)) {
+		sprintf(tmpstring, "Error reseting Digital IO state machine pointer on master DSP");
+		DisplayErrorMessage(tmpstring);
+		return 0;
+	    }
+	    switch(i) {
+		case 0:
+		    addr = DIO_OUT_1;
+		    break;
+		case 1:
+		    addr = DIO_OUT_2;
+		    break;
+		case 2:
+		    addr = DIO_OUT_3;
+		    break;
+		case 3:
+		    addr = DIO_OUT_4;
+		    break;
+	    }
+	    /* set the output to be 0 */
+	    if (!WriteDSPData(0, addr, 1, command)) {
+		sprintf(tmpstring, "Error setting port %d to output 0", i);
+		DisplayErrorMessage(tmpstring);
+		return 0;
+	    }
 	}
-	else {
-	    return 0;
-	}
+	return 1;
     }
 
 
@@ -1163,29 +1020,22 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
     command[len++] = DIO_S_JUMP_ABS | 0;
 
     /* Now write the command to the DSP */
-    if (!WriteDSPData(DSPDIO, digioinfo.statemachinebaseaddr[s], 
-		digioinfo.statemachinebuffer[s], len, command)) {
+    if (!WriteDSPData(0, digioinfo.statemachinebuffer[s], len, command)) {
         sprintf(tmpstring, "Error writing digital IO command to master DSP");
         DisplayErrorMessage(tmpstring);
 	return 0;
     }
     
-    if (sendResetStateMachine == 1) {
+    if (sendResetStateMachine==1) {
       /* Finally, we reset the state machine pointer to the beginning of the 
        * new command, which is at offset 1 from the beginning of the buffer */
       command[0] = 1;
-      if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command)) {
+      if (!WriteDSPData(0, digioinfo.statemachineptr[s], 1, command)) {
           sprintf(tmpstring, "Error writing digital IO state machine pointer to master DSP");
           DisplayErrorMessage(tmpstring);
     return 0;
       }
     }
-    /* TEST: read back the pointer */
-    ReadDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command);
-	    fprintf(stderr, "pointer at %d\n", command[0]);
-    ReadDSPData(DSPDIO, digioinfo.statemachinebaseaddr[s], digioinfo.statemachinebuffer[s] + command[0] - 1, 1, command);
-	    fprintf(stderr, "contents of pointer: %x\n", command[0]);
-
 
     return 1;
 }
@@ -1196,7 +1046,7 @@ int NextDIOStateMachine(void)
      * all are busy */
 {
     unsigned short status[1];
-    if (ReadDSPData(DSPDIO, DSP_SRAM, DIO_STATE_AVAILABLE, 1, status) != 1) {
+    if (ReadDSPData(0, DIO_STATE_AVAILABLE, 1, status) != 1) {
 	sprintf(tmpstring, "Error reading Master DSP digital IO state pointer");
 	DisplayErrorMessage(tmpstring);
 	return DIO_STATE_MACHINES_BUSY;
@@ -1211,7 +1061,7 @@ int NextDIOStateMachine(void)
 
 int LookForDSPDIOResponse(void)
 {
-    if (!GetDSPResponse(DSPDIO, 0, NULL)) {
+    if (!GetDSPResponse(0, 0, NULL)) {
         sprintf(tmpstring, "No response from master DSP when asked");
         DisplayErrorMessage(tmpstring);
 	return 0;
@@ -1225,7 +1075,7 @@ int WriteDSPDIORestartStateMachine(int s)
   unsigned short command = 1;
     /* Finally, we reset the state machine pointer to the beginning of the 
      * new command, which is at offset 1 from the beginning of the buffer */
-    if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, &command)) {
+    if (!WriteDSPData(0, digioinfo.statemachineptr[s], 1, &command)) {
         sprintf(tmpstring, "Error writing digital IO state machine pointer to master DSP");
         DisplayErrorMessage(tmpstring);
 	return 0;
@@ -1233,88 +1083,74 @@ int WriteDSPDIORestartStateMachine(int s)
     return 1;
 }
 
-int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
-	short n, unsigned short *data)
+int WriteDSPData(short dspnum, unsigned short address, short n, 
+                 unsigned short *data)
     /* write data to the dsp. data must contain < 24 words */
 {
-    int 		size, writesize, totalsize, ntowrite;
-    unsigned short 	dataout[1000], offset;
-    int 		dspacq, acqmessage = 0;
+    int 		size;
+    unsigned short 	dataout[1000];
     (void) dspnum; // prevent compiler warnings
+    size = n*sizeof(unsigned short);
 
-    totalsize = n*sizeof(unsigned short);
+    /* create the programming command */
+    dataout[0] = DEVICE_CONTROL_ADDR;
+    dataout[1] = SHORT_WRITE;
+    dataout[2] = DSP_SRAM;
+    dataout[3] = address;
+    dataout[4] = size;
+    /* append data to the end of dataout */
+    memcpy(dataout + 5, data, size);
 
-    offset = address;
+    /* increment size to be the size of the full dataout array */
+    size += 5 * sizeof(unsigned short);
+    
+    ByteSwap(dataout, 5 + n);
 
 #ifdef NO_DSP_DEBUG
     //fprintf(stderr, "Data to DSP %d: %d shorts \n ", dspnum, n);
     return 1;
 #else
-    dspacq = 0;
-    do {
-	size = totalsize < MAX_SHORT_WRITE_SIZE ? totalsize : 
-	    MAX_SHORT_WRITE_SIZE;
-	/* create the programming command */
-	dataout[0] = DEVICE_CONTROL_ADDR;
-	dataout[1] = SHORT_WRITE;
-	dataout[2] = baseaddr;
-	dataout[3] = offset;
-	dataout[4] = size;
-	/* append data to the end of dataout */
-	memcpy(dataout + 5, data, size);
-
-	/* increment the data pointer to move past the data we've added */
-	ntowrite = size / sizeof(unsigned short);
-	data += ntowrite;
-	offset += ntowrite;
-
-	/* add five elements to include the command information */
-	ntowrite += 5;
-	/* increment size to be the size of the full dataout array */
-	writesize = ntowrite * sizeof(unsigned short);
-	ByteSwap(dataout, ntowrite);
-
-	/* if we have a connection to the dsp, create a single data buffer with the
-	 * write command */
-	if (client_message[dspnum].fd > 0) {
-	    /* check to see if the message is a start or stop acquisition 
-	     * message */
-	    acqmessage = 0;
-	    if (address == BLOCKS_TO_SEND_ADDR) {
-		acqmessage = 1;
-	    }
-	    /* if this is not check to see if 
-	     * 1) this is not the master dsp
-	     * 2) acquisition is on. 
-	     * If so, turn it off. This will do nothing if acquisition has already 
-	     * been stopped  */
-	    if ((dspnum != DSPDIO) && !acqmessage && sysinfo.dspacq) {
-		StopLocalAcq();
-		dspacq = 1;
-	    }
+    int 	dspacq, acqmessage = 0;
+    /* if we have a connection to the dsp, create a single data buffer with the
+     * write command */
+    if (client_message[dspnum].fd > 0) {
+	/* check to see if the message is a start or stop acquisition 
+	 * message */
+	acqmessage = 0;
+	if (address == BLOCKS_TO_SEND_ADDR) {
+	    acqmessage = 1;
 	}
+	/* if this is not check to see if 
+	 * 1) this is not the master dsp
+	 * 2) acquisition is on. 
+	 * If so, turn it off. This will do nothing if acquisition has already 
+	 * been stopped  */
+	dspacq = 0;
+	if ((dspnum > 0) && !acqmessage && sysinfo.dspacq) {
+	    StopLocalAcq();
+	    dspacq = 1;
+	}
+    }
 
-	/* send out the command */
-	do {
-	    if (write(client_message[dspnum].fd, dataout, writesize) != 
-		    writesize) {
-		sprintf(tmpstring, "Error sending message to dsp %d", dspnum);
-		DisplayErrorMessage(tmpstring);
-	    }
-	    usleep(DSP_PAUSE_USEC);
-	} while (!GetDSPResponse(dspnum, 0, NULL));
-	totalsize -= size;
-    } while (size > 0);
+    /* send out the command */
+    do {
+	if (write(client_message[dspnum].fd, dataout, size) != size) {
+	    sprintf(tmpstring, "Error sending message to dsp %d", dspnum);
+	    DisplayErrorMessage(tmpstring);
+	}
+	usleep(DSP_PAUSE_USEC);
+    } while (!GetDSPResponse(dspnum, 0, NULL));
+
     if (!acqmessage && dspacq) {
 	StartLocalAcq();
     }
-    return 1;
 #endif
+    return 1;
 }
 
 
-int ReadDSPData(short dspnum, unsigned short baseaddr, unsigned short address, 
-	short n, unsigned short *data)
+int ReadDSPData(short dspnum, unsigned short address, short n, 
+                unsigned short *data)
     /* write data to the dsp. data must contain < 24 words */
 {
     int 		size;
@@ -1327,7 +1163,7 @@ int ReadDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
     /* create the programming command */
     dataout[0] = DEVICE_CONTROL_ADDR;
     dataout[1] = SHORT_READ;
-    dataout[2] = baseaddr;
+    dataout[2] = DSP_SRAM;
     dataout[3] = address;
     dataout[4] = size;
 
@@ -1753,7 +1589,7 @@ unsigned short GetDSPCodeRev(short dspnum)
     unsigned short coderev[1];
 
     coderev[0] = 0;
-    ReadDSPData(dspnum, DSP_SRAM, DSP_CODE_REV_ADDR, 1, coderev);
+    ReadDSPData(dspnum, DSP_CODE_REV_ADDR, 1, coderev);
 #ifdef NO_DSP_DEBUG
     /* put in a fake revision number */
     coderev[0] = 1;

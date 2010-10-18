@@ -53,10 +53,10 @@ class SpikeMainWindow : public QMainWindow {
     void       masterCloseFiles() { masterCloseDataFiles(); };
     void       masterAudioSettings() { new SpikeAudio(this, "AudioDialog", 
         FALSE, 0);};
-    void       masterMatlabSaveOn() { MasterMatlabStartSave(); };
-    void       masterMatlabSaveOff() { MasterMatlabStopSave(); };
-    void       masterMatlabSettings() { new matlabDialog(this, 
-        "MatlabDialog", FALSE, 0);};
+    void       masterUserDataStart() { MasterUserDataStart(); };
+    void       masterUserDataStop() { MasterUserDataStop(); };
+    void       masterUserDataSettings() { new userDataDialog(this, 
+        "UserDataDialog", FALSE, 0);};
     void       masterResetClock() { ResetClock(); };
     void       masterReprogramMasterDSP() { reprogramDSPDialog(1); };
     void       masterReprogramAuxDSPs() { reprogramDSPDialog(0); };
@@ -108,6 +108,8 @@ class SpikeMainWindow : public QMainWindow {
     }
     void       outputToUserProgram() { getOutputToUserProgram(); };
     void       userProgramGUI() { launchUserGUI() ; };
+ //   void	setDataToUser() { new userDataGui(this, "User Data GUI", FALSE, 0); };
+    void       resetStateMachines() { ResetStateMachines(); };
     void    toggleUsesCompression();
     void    doCompressionSettingsDialog();
     void 	warnCompSettingsTakeEffect();
@@ -126,7 +128,7 @@ class SpikeMainWindow : public QMainWindow {
     QAction	*masterCloseFilesAction;
     QAction	*masterResetClockAction;
     QAction	*masterReprogramDSPSAction;
-    QAction	*matlabSettingsAction;
+    QAction	*userDataSettingsAction;
     QAction	*startSaveAction;
     QAction	*stopSaveAction;
     QAction	*openFileAction;

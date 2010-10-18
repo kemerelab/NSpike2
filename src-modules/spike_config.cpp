@@ -25,7 +25,7 @@
 
 extern SysInfo 		sysinfo;
 extern NetworkInfo 	netinfo;
-extern MatlabInfo 	matlabinfo;
+extern UserDataInfo 	userdatainfo;
 extern CommonDSPInfo 	cdspinfo;
 extern DigIOInfo 	digioinfo;
 
@@ -76,7 +76,7 @@ int ReadConfigFile(char *configfilename, int datafile)
 
     netinfo.nslaves = 0;
     netinfo.rtslave = -1;
-    netinfo.matlabslave = -1;
+    netinfo.userdataslave = -1;
     currentslave = 0;
     currentconn = 0;
     currentport = 0;
@@ -136,7 +136,7 @@ int ReadConfigFile(char *configfilename, int datafile)
             }
 	    else if ((strncmp(tmpbuf, "slave", 5) == 0) || 
 	             (strncmp(tmpbuf, "rtslave", 7) == 0) ||
-	             (strncmp(tmpbuf, "matlabslave", 11) == 0)) {
+	             (strncmp(tmpbuf, "userdataslave", 13) == 0)) {
 	        if (strncmp(tmpbuf, "slave", 5) == 0) {
 		    tmpptr = tmpbuf+6;
 		}
@@ -147,12 +147,12 @@ int ReadConfigFile(char *configfilename, int datafile)
 		     * we need to set it to the current slave numnber + 1 */
 		    netinfo.rtslave = currentslave + 1;
 		}
-		else if (strncmp(tmpbuf, "matlabslave", 11) == 0) {
+		else if (strncmp(tmpbuf, "userdataslave", 13) == 0) {
 		    tmpptr = tmpbuf+12;
-		    sysinfo.matlaboutput = 1;
-		    /* we use matlabslave to index into the machinename array, 
+		    sysinfo.userdataoutput = 1;
+		    /* we use userdataslave to index into the machinename array, 
 		     * so we need to set it to the current slave numnber + 1 */
-		    netinfo.matlabslave = currentslave + 1;
+		    netinfo.userdataslave = currentslave + 1;
 		}
 	        if ((netinfo.nslaves == 0) || (currentslave == netinfo.nslaves)) {
 		    fprintf(STATUSFILE, "spike_main: Error in slave section of  %s\n", configfilename);
@@ -291,9 +291,9 @@ int ReadConfigFile(char *configfilename, int datafile)
 			sysinfo.datatype[tmpint[0]] |= DIGITALIO;
 			tmp+=9;
 		    }
-		    else if (strncmp(tmp, "MATLAB", 6) == 0) {
-			sysinfo.datatype[tmpint[0]] |= MATLAB;
-			sysinfo.matlaboutput = 1;
+		    else if (strncmp(tmp, "USERDATA", 8) == 0) {
+			sysinfo.datatype[tmpint[0]] |= USERDATA;
+			sysinfo.userdataoutput = 1;
 			tmp+=6;
 		    }
 		    else {
@@ -529,26 +529,26 @@ int ReadConfigFile(char *configfilename, int datafile)
                 }
 	    }
 	    /* Matlab output */
-            else if (strncmp(tmp, "matlab", 6) == 0) {
+            else if (strncmp(tmp, "userdata", 6) == 0) {
 		tmp += 6;
 		tmpbool = NULL;
 		/* skip spaces until we get to the datatype string */
 		tmpint[0] = 0;
 		while (isspace(*tmp)) tmp++;
 		if (strncmp(tmp, "SPIKE", 5) == 0) {
-		    tmpbool = matlabinfo.spikeelect;
+		    tmpbool = userdatainfo.spikeelect;
 		    tmp+=6;
-		    matlabinfo.savespike = 1;
+		    userdatainfo.savespike = 1;
 		}
 		else if (strncmp(tmp, "CONTINUOUS", 10) == 0) {
-		    tmpbool = matlabinfo.contelect;
+		    tmpbool = userdatainfo.contelect;
 		    tmp+=11;
-		    matlabinfo.savecont = 1;
+		    userdatainfo.savecont = 1;
 		}
 		if (tmpbool) {
 		    /* it is a SPIKE or CONTINUOUS line */
 		    if (sscanf(tmp, "%d", tmpint) != 1) {
-			fprintf(stderr, "Error in config file: no electrode number on matlab line, ignoring\n");
+			fprintf(stderr, "Error in config file: no electrode number on userdata line, ignoring\n");
 		    }
 		    else {
 			/* set this electrode to be saved */
@@ -556,13 +556,13 @@ int ReadConfigFile(char *configfilename, int datafile)
 		    }
 		}
 		else if (strncmp(tmp, "POSITION", 8) == 0) {
-		    matlabinfo.savepos = 1;
+		    userdatainfo.savepos = 1;
 		}
 		else if (strncmp(tmp, "DIGITALIO", 8) == 0) {
-		    matlabinfo.savedigio = 1;
+		    userdatainfo.savedigio = 1;
 		}
 		else {
-		    fprintf(stderr, "Error in config file: no matlab datatype on line %s\n", tmpbuf);
+		    fprintf(stderr, "Error in config file: no userdata datatype on line %s\n", tmpbuf);
 		}
 	    }
 	    /* audio settings */
@@ -686,6 +686,10 @@ int ReadConfigFile(char *configfilename, int datafile)
             else if (strncmp(tmp, "electchan", 9) == 0) {
                 /* read in the channel number within the electrode */
                 sscanf(tmp+9, "%hd", &sysinfo.channelinfo[currentmachine][currentchannel].electchan);
+		if ((sysinfo.channelinfo[currentmachine][currentchannel].electchan >= NCHAN_PER_ELECTRODE) && (sysinfo.datatype[sysinfo.machinenum] == SPIKE)) {
+                    fprintf(stderr, "Error in config file for channel %d: SPIKE model requires <= %d channels per electrode\n", currentchannel, NCHAN_PER_ELECTRODE);
+		    return 0;
+		}
             }
             else if (strncmp(tmp, "dspnum", 6) == 0) {
                 /* read in the dsp for this channel */
@@ -841,8 +845,8 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 	if (sysinfo.datatype[i] & DIGITALIO) {
 	    gzprintf(outfile, "DIGITALIO\t");
 	}
-	if (sysinfo.datatype[i] & MATLAB) {
-	    gzprintf(outfile, "MATLAB\t");
+	if (sysinfo.datatype[i] & USERDATA) {
+	    gzprintf(outfile, "USERDATA\t");
 	}
 	gzprintf(outfile, "\n");
 	/* write out the default data directory */
@@ -904,24 +908,24 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 	/* clock source */
 	gzprintf(outfile, "dspclock\t%d\n", sysinfo.dspclock);
 
-	/* write out the matlab data */
-	if (matlabinfo.savepos) {
-	    gzprintf(outfile, "matlab\tPOSITION\t");
+	/* write out the userdata data */
+	if (userdatainfo.savepos) {
+	    gzprintf(outfile, "userdata\tPOSITION\t");
 	}
-	if (matlabinfo.savedigio) {
-	    gzprintf(outfile, "matlab\tDIGITALIO\t");
+	if (userdatainfo.savedigio) {
+	    gzprintf(outfile, "userdata\tDIGITALIO\t");
 	}
-	if (matlabinfo.savecont) {
+	if (userdatainfo.savecont) {
 	    for (i = 1; i < MAX_ELECTRODE_NUMBER; i++) {
-		if (matlabinfo.contelect[i]) {
-		    gzprintf(outfile, "matlab\tCONTINUOUS\t%d", i);
+		if (userdatainfo.contelect[i]) {
+		    gzprintf(outfile, "userdata\tCONTINUOUS\t%d", i);
 		}
 	    }
 	}
-	if (matlabinfo.savespike) {
+	if (userdatainfo.savespike) {
 	    for (i = 1; i < MAX_ELECTRODE_NUMBER; i++) {
-		if (matlabinfo.spikeelect[i]) {
-		    gzprintf(outfile, "matlab\tSPIKE\t%d", i);
+		if (userdatainfo.spikeelect[i]) {
+		    gzprintf(outfile, "userdata\tSPIKE\t%d", i);
 		}
 	    }
 	}
@@ -1151,6 +1155,7 @@ int SetDSPInfo(void)
             ch->dspind = dptr->nchan;
             /* set the number of the dsp channel that this handles and
              * increment the total number of channels on this dsp */
+	    dptr->channelinfochan[dptr->nchan] = ch->index;
             dptr->dspchan[dptr->nchan++] = ch->dspchan;
              /* check to see if we are on the same electrode as the previous
              * channel */

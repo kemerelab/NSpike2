@@ -55,7 +55,7 @@ int GetRatPos(unsigned char *buffer, u32 *ratx, u32 *raty, short *trackedx, shor
 SysInfo 		sysinfo;
 
 NetworkInfo		netinfo;
-MatlabInfo		matlabinfo;
+UserDataInfo		userdatainfo;
 SocketInfo 		server_message[MAX_CONNECTIONS]; // the structure for receiving messages
 SocketInfo 		server_data[MAX_CONNECTIONS]; // the structure for receiving messages
 SocketInfo 		client_message[MAX_CONNECTIONS]; // the structure for sending messages
@@ -103,8 +103,8 @@ int main()
     int 		i, j, id;
     int			tmpint;
 
-    /* tracked pixels buffer for matlab output */
-    short		*matlabdata;
+    /* tracked pixels buffer for userdata output */
+    short		*userdatadata;
     short		*trackedx;
     short		*trackedy;
     u32			ntracked;
@@ -119,7 +119,7 @@ int main()
 	int 		setfaketime = 0;
 
     sysinfo.acq = 0;
-    sysinfo.matlabon = 0;
+    sysinfo.userdataon = 0;
 
 
     /* set the type of program we are in for messaging */
@@ -217,19 +217,19 @@ int main()
 			} 
 		    } 
 		    else {
-			/* create the matlab data array to send to the main
+			/* create the userdata data array to send to the main
 			 * program */
-			/* put the timestamp in the beginning of the matlabdata
+			/* put the timestamp in the beginning of the userdatadata
 			 * array */
-			memcpy(matlabdata, bufferinfo, sizeof(u32));
-			memcpy(matlabdata + 2, &ntracked, sizeof(u32));
+			memcpy(userdatadata, bufferinfo, sizeof(u32));
+			memcpy(userdatadata + 2, &ntracked, sizeof(u32));
 			/* we need to create a single data buffer, so we copy
 			 * the y tracked pixel coordinates to the end of the x
 			 * array */
 			memcpy(trackedx + ntracked, trackedy, ntracked * 
 				sizeof(short));
 			if (SendMessage(client_data[SPIKE_MAIN].fd, POS_DATA, 
-				    (char *) matlabdata, 2 * 
+				    (char *) userdatadata, 2 * 
 				    (ntracked + 2) * sizeof(short)) == -1) {
 			    error = 1;
 			}
@@ -260,25 +260,25 @@ int main()
 		    }
 		    //fprintf(STATUSFILE, "spike_posdaq: sent data out\n");
 		}
-		/* if matlab saving is on, send the list of tracked pixel
-		 * coordinates to spike_matlab */
-		if (sysinfo.matlabon) {
-		    /* put the timestamp in the beginning of the matlabdata
+		/* if userdata saving is on, send the list of tracked pixel
+		 * coordinates to spike_userdata */
+		if (sysinfo.userdataon) {
+		    /* put the timestamp in the beginning of the userdatadata
 		     * array */
-		    memcpy(matlabdata, bufferinfo, sizeof(u32));
-		    memcpy(matlabdata + 2, &ntracked, sizeof(u32));
+		    memcpy(userdatadata, bufferinfo, sizeof(u32));
+		    memcpy(userdatadata + 2, &ntracked, sizeof(u32));
 		    /* we need to create a single data buffer, so we copy
 		     * the y tracked pixel coordinates to the end of the x
 		     * array */
 		    memcpy(trackedx + ntracked, trackedy, ntracked * 
 			    sizeof(short));
-		    if (SendMessage(client_data + SPIKE_MATLAB, POS_DATA, 
-				(char *) matlabdata, 2 * (ntracked + 2) * 
+		    if (SendMessage(client_data + SPIKE_USER_DATA, POS_DATA, 
+				(char *) userdatadata, 2 * (ntracked + 2) * 
 				sizeof(short)) == -1) {
 			error = 1;
 		    }
 		    if (error) {
-			fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_matlab\n");
+			fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_userdata\n");
 		    }
 		}
 	    }
@@ -365,19 +365,19 @@ int main()
 		} 
 	    } 
 	    else {
-		/* create the matlab data array to send to the main
+		/* create the userdata data array to send to the main
 		 * program */
-		/* put the timestamp in the beginning of the matlabdata
+		/* put the timestamp in the beginning of the userdatadata
 		 * array */
-		memcpy(matlabdata, bufferinfo, sizeof(u32));
-		memcpy(matlabdata + 2, &ntracked, sizeof(u32));
+		memcpy(userdatadata, bufferinfo, sizeof(u32));
+		memcpy(userdatadata + 2, &ntracked, sizeof(u32));
 		/* we need to create a single data buffer, so we copy
 		 * the y tracked pixel coordinates to the end of the x
 		 * array */
 		memcpy(trackedx + ntracked, trackedy, ntracked * 
 			sizeof(short));
 		if (SendMessage(client_data[SPIKE_MAIN].fd, POS_DATA, 
-			    (char *) matlabdata, 2 * 
+			    (char *) userdatadata, 2 * 
 			    (ntracked + 2) * sizeof(short)) == -1) {
 		    error = 1;
 		}
@@ -398,25 +398,25 @@ int main()
 		fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_process_posdata\n");
 	    }
 
-	    /* if matlab saving is on, put the data in a buffer and send it 
-	     * to spike_matlab */
-	    if (sysinfo.matlabon) {
-		/* put the timestamp in the beginning of the matlabdata
+	    /* if userdata saving is on, put the data in a buffer and send it 
+	     * to spike_userdata */
+	    if (sysinfo.userdataon) {
+		/* put the timestamp in the beginning of the userdatadata
 		 * array */
-		memcpy(matlabdata, bufferinfo, sizeof(u32));
-		memcpy(matlabdata + 2, &ntracked, sizeof(u32));
+		memcpy(userdatadata, bufferinfo, sizeof(u32));
+		memcpy(userdatadata + 2, &ntracked, sizeof(u32));
 		/* we need to create a single data buffer, so we copy
 		 * the y tracked pixel coordinates to the end of the x
 		 * array */
 		memcpy(trackedx + ntracked, trackedy, ntracked * 
 			sizeof(short));
-		if (SendMessage(client_data + SPIKE_MATLAB, POS_DATA, 
-			    (char *) matlabdata, 2 * (ntracked + 2) * 
+		if (SendMessage(client_data + SPIKE_USER_DATA, POS_DATA, 
+			    (char *) userdatadata, 2 * (ntracked + 2) * 
 			    sizeof(short)) == -1) {
 		    error = 1;
 		}
 		if (error) {
-		    fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_matlab\n");
+		    fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_userdata\n");
 		}
 	    }
 	}
@@ -500,27 +500,27 @@ int main()
 			AddFD(video_fd, server_data, netinfo.datainfd);
 #endif
 			/* allocate space for the tracked pixels that could be
-			 * sent to matlab including two elements for the
+			 * sent to userdata including two elements for the
 			 * timestamp. */
-			matlabdata = (short *) calloc(2*imagesize+4, sizeof(short));
-			/* matlabdata's first four elements are the timestamp
+			userdatadata = (short *) calloc(2*imagesize+4, sizeof(short));
+			/* userdatadata's first four elements are the timestamp
 			 * and the number of pixels */
-			trackedx = matlabdata + 4;
+			trackedx = userdatadata + 4;
 			trackedy = trackedx + imagesize;
 			break;
 		   case POSITION_INFO:
 			sysinfo.posthresh = (unsigned char) messagedata[0];
 			break;
-		    case MATLAB_INFO:
-			/* get the matlabinfo structure */
-			memcpy(messagedata, (char *) &matlabinfo, 
-				sizeof(MatlabInfo));
+		    case USER_DATA_INFO:
+			/* get the userdatainfo structure */
+			memcpy(messagedata, (char *) &userdatainfo, 
+				sizeof(UserDataInfo));
 			break;
-		    case MATLAB_START_SAVE:
-			sysinfo.matlabon = 1;
+		    case USER_DATA_START:
+			sysinfo.userdataon = 1;
 			break;
-		    case MATLAB_STOP_SAVE:
-			sysinfo.matlabon = 0;
+		    case USER_DATA_STOP:
+			sysinfo.userdataon = 0;
 			break;
 		    case EXIT:
 			posdaqexit(0);		        

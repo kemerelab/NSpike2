@@ -42,6 +42,35 @@
 #define DSP_PROGRAM_ADDR	0x4200  // base location for writing to the DSP EEPROM for reprogramming
 #define DSP_PROGRAM_SIZE	4080  // 4080 words in a DSP program
 
+/* Digital / Analog IO DSP data locations */
+#define DSP_ANALOG_OUT_ADDR	0xC000  // base location for analog outs from DIO DSP
+
+#ifdef DIO_ON_MASTER_DSP
+#define DIO_STATE0_BASE_ADDR  DSP_SRAM // base location for programming
+#define DIO_STATE1_BASE_ADDR  DSP_SRAM // base location for programming
+#define DIO_STATE2_BASE_ADDR  DSP_SRAM // base location for programming
+#define DIO_STATE3_BASE_ADDR  DSP_SRAM // base location for programming
+#define DIO_STATE0_BUFFER_START	0x0200 // the start offset for the state pointer for state machine 0
+#define DIO_STATE1_BUFFER_START	0x0240 // the start offset for the state pointer for state machine 1
+#define DIO_STATE2_BUFFER_START	0x0280 // the start offset for the state pointer for state machine 2
+#define DIO_STATE3_BUFFER_START	0x02C0 // the start offset for the state pointer for state machine 3
+#define DIO_STATE_SIZE		62	// instructions per state machine. The first instruction is always left at "wait forever", and the final instruction is always a jump to instruction 0, so there are 64 - 2 = 62 instructions available for programming 
+
+#else
+/* each state machine has its own base address  */
+#define DIO_STATE0_BASE_ADDR  0x4110 // base location for programming
+#define DIO_STATE1_BASE_ADDR  0x4111 // base location for programming
+#define DIO_STATE2_BASE_ADDR  0x4112 // base location for programming
+#define DIO_STATE3_BASE_ADDR  0x4113 // base location for programming
+#define DIO_STATE0_BUFFER_START	  0 // the start offset for the state pointer for state machine 0
+#define DIO_STATE1_BUFFER_START	  0 // the start offset for the state pointer for state machine 1
+#define DIO_STATE2_BUFFER_START	  0 // the start offset for the state pointer for state machine 2
+#define DIO_STATE3_BUFFER_START	  0 // the start offset for the state pointer for state machine 3
+#define DIO_STATE_SIZE	   	  65534	// instructions per state machine. The first instruction is always left at "wait forever", and the final instruction is always a jump to instruction 0, so there are 65536 - 2 instructions available for programming 
+#define DIO_ARB_WAVE_ADDR	  0x4114 // base location for the arbitrary waveform generator
+#endif
+
+
 
 /* commands to read and write data */
 #define SHORT_READ		0x80     // read a few bytes
@@ -82,18 +111,24 @@
 #define DIO_IN_3		0xE0	// state of input bits 33-48
 #define DIO_IN_4		0xE1	// state of input bits 33-48
 #define DIO_N_STATE_MACHINES	4	// the total number of state machines
-#define DIO_STATE_SIZE		62	// instructions per state machine. The first instruction is always left at "wait forever", and the final instruction is always a jump to instruction 0, so there are 64 - 2 = 62 instructions available for programming 
 #define DIO_STATE_AVAILABLE	0xE7	// the index of a currently available state machine
 #define DIO_STATE_MACHINES_BUSY -1		// the result of reading from the DIO_S_AVAILABLE pointer if no state machines are free
+
+#ifdef DIO_ON_MASTER_DSP
 #define DIO_STATE_ENABLE	0xED	// if bit 0 = 1, run the state machine
+#else
+#define DIO_STATE0_ENABLE	0xD4	// if bit 0 = 1, run the state machine
+#define DIO_STATE1_ENABLE	0xD5	// if bit 0 = 1, run the state machine
+#define DIO_STATE2_ENABLE	0xD6	// if bit 0 = 1, run the state machine
+#define DIO_STATE3_ENABLE	0xD7	// if bit 0 = 1, run the state machine
+#endif
+
+
+
 #define DIO_STATE0_PTR		0xF0	// Pointer to current instruction for state machine 0
 #define DIO_STATE1_PTR		0xF3	// Pointer to current instruction for state machine 1
 #define DIO_STATE2_PTR		0xF6	// Pointer to current instruction for state machine 2
 #define DIO_STATE3_PTR		0xF9	// Pointer to current instruction for state machine 3
-#define DIO_STATE0_BUFFER_START	0x0200 // the start offset for the state pointer for state machine 0
-#define DIO_STATE1_BUFFER_START	0x0240 // the start offset for the state pointer for state machine 1
-#define DIO_STATE2_BUFFER_START	0x0280 // the start offset for the state pointer for state machine 2
-#define DIO_STATE3_BUFFER_START	0x02C0 // the start offset for the state pointer for state machine 3
 #define DIO_MESSAGE_SIZE	14	// 7 * sizeof(unsigned short) bytes per digital IO message packet
 
 #define DIO_IN_1_MASK		0xE2	// Mask for input 1
@@ -102,8 +137,6 @@
 #define DIO_IN_4_MASK		0xE5	// Mask for input 4
 #define DIO_IN_DEBOUNCE_TIME	0xE8	// debounce time for inputs
 #define DIO_PIPE_ID		0xEE	// ID for packets containing changed state information
-
-
 
 /* aux DSP addresses */
 #define PIPE_ID_ADDR		0xD0  // the ID # for each DSP
@@ -157,6 +190,7 @@
 
 typedef struct _DigIOInfo {
     unsigned short statemachineptr[DIO_N_STATE_MACHINES];  // the current pointer for each state machines */
+    unsigned short statemachinebaseaddr[DIO_N_STATE_MACHINES];  // the base address for each state machine
     unsigned short statemachinebuffer[DIO_N_STATE_MACHINES];  // the start of the memory buffer to be written to for each state machine
     int nports;
     int porttype[MAX_DSP_DIO_PORTS];  // 0 for input, 1 for output 

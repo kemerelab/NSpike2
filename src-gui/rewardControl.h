@@ -175,18 +175,18 @@ class setRewardsDialog : public QDialog {
 
 };
 
-class matlabDialog : public QDialog {
+class userDataDialog : public QDialog {
 	Q_OBJECT
 
     public:
-	    matlabDialog(QWidget *parent = 0, 
+	    userDataDialog(QWidget *parent = 0, 
 		    const char *name = 0, bool model = FALSE, 
 		    Qt::WFlags fl = 0);
-	    ~matlabDialog();
-	    void setMatlabInfo();
+	    ~userDataDialog();
+	    void setUserDataInfo();
 
     public slots:
-	    void acceptSettings(void) { setMatlabInfo(); };
+	    void acceptSettings(void) { setUserDataInfo(); };
 
     signals:
 	    void finished(void);
@@ -201,4 +201,5 @@ class matlabDialog : public QDialog {
 	QPushButton	*accept;
 };
 
-#endif // spikeMainWindow.h
+
+#endif // rewardControl.h
