@@ -29,9 +29,9 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   layout->addWidget(new QLabel("Realtime Feedback Program"),1,0, Qt::AlignRight);
   layout->addWidget(feedbackAlgorithmComboBox,1,1);
 
-  QPushButton *realtimeEnableButton = new QPushButton("Enable Realtime");
+  realtimeEnableButton = new QPushButton("Enable Realtime");
   layout->addWidget(realtimeEnableButton,2,0,1,2,Qt::AlignCenter);
-  connect(realtimeEnableButton, SIGNAL(clicked()), daq_io_widget, SLOT(enableRealtimeStim()));
+  // click signal connected in spikeUserGUI
 
   status = new QLabel("waiting...");
   QGroupBox *statusGroupBox = new QGroupBox("Status");
@@ -41,13 +41,13 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   statusBoxLayout->addWidget(status,Qt::AlignCenter);
   layout->addWidget(statusGroupBox,3,0,2,2);
 
-  QPushButton *startFeedbackButton = new QPushButton("Start Feedback");
+  startFeedbackButton = new QPushButton("Start Feedback");
   layout->addWidget(startFeedbackButton,5,0, Qt::AlignCenter);
-  connect(realtimeEnableButton, SIGNAL(clicked()), daq_io_widget, SLOT(startRealtimeStim()));
+  // click signal connected in spikeUserGUI
 
-  QPushButton *stopFeedbackButton = new QPushButton("Stop Feedback");
+  stopFeedbackButton = new QPushButton("Stop Feedback");
   layout->addWidget(stopFeedbackButton,5,1, Qt::AlignCenter);
-  connect(realtimeEnableButton, SIGNAL(clicked()), daq_io_widget, SLOT(stopRealtimeStim()));
+  // click signal connected in spikeUserGUI
 
   QStackedWidget *algorithmAlternativesStack = new QStackedWidget;
   QLabel *noAlgorithm = new QLabel("Select a Feedback Control Algorithm");

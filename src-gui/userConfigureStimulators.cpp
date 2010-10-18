@@ -30,7 +30,9 @@ StimConfigTab::StimConfigTab (QWidget *parent)
     stimulatorAButton->setChecked(true);
     stimulatorAButton->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
     stimulatorAButton->setStyleSheet("QPushButton::checked{color: green;}");
+    stimulatorAButton->setStyle("Windows");
     layout->addWidget(stimConfigA,1,1,Qt::AlignLeft);
+    activeStimulator = 1;
 
     stimulatorBButton = new QPushButton("B");
     layout->addWidget(stimulatorBButton,2,0,Qt::AlignRight);
@@ -38,6 +40,7 @@ StimConfigTab::StimConfigTab (QWidget *parent)
     stimulatorBButton->setChecked(false);
     stimulatorBButton->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
     stimulatorBButton->setStyleSheet("QPushButton::checked{color: green;}");
+    stimulatorBButton->setStyle("Windows");
     layout->addWidget(stimConfigB,2,1,Qt::AlignLeft);
     stimConfigB->setEnabled(false);
 
@@ -72,6 +75,8 @@ void StimConfigTab::setActiveStimulator(int which)
 {
   qDebug("Received setActiveStimulator signal %d",which);
 
+  activeStimulator = which;
+
   stimulatorAButton->setChecked(which & 0x01);
   stimulatorBButton->setChecked(which & 0x02);
 
@@ -85,6 +90,17 @@ void StimConfigTab::setActiveStimulator(int which)
 StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   : QWidget(parent)
 {
+  stimPulseCmd.line = 0;
+  stimPulseCmd.pre_delay = 0;
+  stimPulseCmd.pulse_width = 1; // default value - should set this below?
+  stimPulseCmd.inter_pulse_delay = 1249;
+  stimPulseCmd.n_pulses = 1;
+  stimPulseCmd.is_biphasic = 0;
+  stimPulseCmd.pin1mask = 1;
+  stimPulseCmd.pin2mask = 1;
+  stimPulseCmd.n_repeats = 0;
+  stimPulseCmd.inter_frame_delay = 0;
+
   QGroupBox *groupBox = new QGroupBox(title);
 
   pulseLengthSpinBox = new QDoubleSpinBox();
@@ -92,7 +108,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   pulseLengthSpinBox->setAlignment(Qt::AlignRight);
   pulseLengthSpinBox->setDecimals(1);
   pulseLengthSpinBox->setRange(0.1,5);
-  //connect(pulseLengthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(periodChanged(void)));
+  connect(pulseLengthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateStimParameters(void)));
 
   nPulsesSpinBox = new QSpinBox();
   nPulsesSpinBox->setRange(1,10);
@@ -102,11 +118,11 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   sequencePeriodSpinBox = new QDoubleSpinBox();
   sequencePeriodSpinBox->setAlignment(Qt::AlignRight);
   sequencePeriodSpinBox->setSuffix(" ms");
-  sequencePeriodSpinBox->setRange(1,5000);
+  sequencePeriodSpinBox->setRange(125,5000);
   connect(sequencePeriodSpinBox, SIGNAL(valueChanged(double)), this, SLOT(periodChanged(void)));
   sequenceFrequencySpinBox = new QSpinBox();
   sequenceFrequencySpinBox->setAlignment(Qt::AlignRight);
-  sequenceFrequencySpinBox->setRange(0.2,200);
+  sequenceFrequencySpinBox->setRange(0.2,1000);
   sequenceFrequencySpinBox->setSuffix(" Hz");
   connect(sequenceFrequencySpinBox, SIGNAL(valueChanged(int)), this, SLOT(frequencyChanged(void)));
 
@@ -155,6 +171,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   primaryStimPinSpinBox = new QSpinBox();
   primaryStimPinSpinBox->setAlignment(Qt::AlignRight);
   primaryStimPinSpinBox->setRange(0,63);
+  connect(primaryStimPinSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateStimParameters(void)));
   QLabel *primaryStimPinLabel = new QLabel("Primary");
 
   biphasicCheckBox = new QCheckBox("Enable Biphasic Stim");
@@ -163,6 +180,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   secondaryStimPinSpinBox = new QSpinBox();
   secondaryStimPinSpinBox->setAlignment(Qt::AlignRight);
   secondaryStimPinSpinBox->setRange(0,63);
+  connect(secondaryStimPinSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateStimParameters(void)));
   secondaryStimPinLabel = new QLabel("Secondary");
 
   QGridLayout *stimPinControlsLayout = new QGridLayout;
@@ -198,7 +216,7 @@ void StimConfigureWidget::frequencyChanged(void)
   sequencePeriodSpinBox->blockSignals(true);
   sequencePeriodSpinBox->setValue(10000/sequenceFrequencySpinBox->value());
   sequencePeriodSpinBox->blockSignals(false);
-  //updateStimData();
+  updateStimParameters();
     return;
 }
 
@@ -207,8 +225,7 @@ void StimConfigureWidget::periodChanged(void)
   sequenceFrequencySpinBox->blockSignals(true);
   sequenceFrequencySpinBox->setValue(1000/sequencePeriodSpinBox->value());
   sequenceFrequencySpinBox->blockSignals(false);
-  //updateStimData();
-    return;
+  updateStimParameters();
 }
 
 void StimConfigureWidget::ablePulseSequence(void)
@@ -219,7 +236,7 @@ void StimConfigureWidget::ablePulseSequence(void)
   else {
     multiPulseGroup->setEnabled(false);
   }
-    return;
+  updateStimParameters();
 }
 
 void StimConfigureWidget::ableBiphasicStimulation(int state)
@@ -232,7 +249,20 @@ void StimConfigureWidget::ableBiphasicStimulation(int state)
     secondaryStimPinSpinBox->setEnabled(false);
     secondaryStimPinLabel->setEnabled(false);
   }
-    return;
+  updateStimParameters();
+}
+
+void StimConfigureWidget::updateStimParameters(void)
+{
+  stimPulseCmd.pulse_width = pulseLengthSpinBox->value()*10; // conver to 0.1 ms ticks
+  stimPulseCmd.inter_pulse_delay = sequencePeriodSpinBox->value()*10 - stimPulseCmd.pulse_width;
+  stimPulseCmd.n_pulses = nPulsesSpinBox->value();
+
+  stimPulseCmd.is_biphasic = biphasicCheckBox->isChecked();
+  stimPulseCmd.pin1mask = 1 >> primaryStimPinSpinBox->value();
+  stimPulseCmd.pin2mask = 1 >> secondaryStimPinSpinBox->value();
+
+  qDebug("Updating stim parameters.");
 }
 
 /*

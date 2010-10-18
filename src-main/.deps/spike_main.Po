@@ -684,7 +684,8 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
  /usr/share/qt4/include/Qt3Support/q3popupmenu.h \
  /usr/share/qt4/include/QtGui/QLabel \
  ../include/spike_stimcontrol_defines.h ../src-gui/userMainConfig.h \
- ../src-gui/userOutputOnlyTab.h ../src-gui/userRealtimeFeedbackTab.h \
+ ../src-gui/userConfigureStimulators.h ../src-gui/userOutputOnlyTab.h \
+ ../src-gui/userRealtimeFeedbackTab.h \
  /usr/share/qt4/include/Qt3Support/q3textedit.h \
  /usr/share/qt4/include/Qt3Support/q3scrollview.h \
  /usr/share/qt4/include/Qt3Support/q3frame.h \
@@ -2268,6 +2269,8 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 ../include/spike_stimcontrol_defines.h:
 
 ../src-gui/userMainConfig.h:
+
+../src-gui/userConfigureStimulators.h:
 
 ../src-gui/userOutputOnlyTab.h:
 

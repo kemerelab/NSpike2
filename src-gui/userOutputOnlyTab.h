@@ -12,7 +12,14 @@ class StimOutputOnlyTab : public QWidget
 public:
   StimOutputOnlyTab (QWidget *parent);
 
+  QSpinBox *trainIntervalSpinBox;
+  QSpinBox *nTrainsSpinBox;
+  QPushButton *continuousButton;
+
   QComboBox *stimulatorSelectComboBox;
+  QPushButton *stimSingleButton;
+  QPushButton *startStimButton;
+  QPushButton *abortStimButton;
 
 public slots:
 

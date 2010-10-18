@@ -28,6 +28,8 @@
 #define DIO_PULSE_SEQ_START	301
 #define DIO_PULSE_SEQ_STOP	302
 
+#define MAX_PULSE_SEQS 50
+
 #define DIO_QUERY_RT_FEEDBACK_STATUS 400
 #define DIO_RT_STATUS_RIPPLE_DISRUPT 404
 
@@ -53,6 +55,28 @@
 #define DIO_RT_DEFAULT_LATENCY_TEST_THRESHOLD 2000
 
 #define DIO_DEFAULT_CM_PER_PIX 0.87
+
+#include <stdint.h>
+
+typedef struct _PulseCommand {
+    uint32_t start_samp_timestamp;
+    int line;
+    int pre_delay; // in ticks; automatically zeroed after first
+    int pulse_width; // in ticks (10 kHz)
+    int n_pulses;
+    int inter_pulse_delay; // in ticks
+    int is_biphasic;
+    uint64_t pin1mask, pin2mask;
+    int n_repeats; // note that this is decremented to zero (not preserved) by code
+                   // except for -1 which is the special case of continuous
+    int inter_frame_delay; // in ticks;
+} PulseCommand;
+
+// special codes - embedded in the "pulse_width" field
+#define DIO_PULSE_COMMAND_END  -1    //  end of command sequence
+#define DIO_PULSE_COMMAND_REPEAT -10 //  repeat command sequence
+          // jumping to command in line field, repeating n_repeats
+
 
 typedef struct _ThetaStimParameters {
     int pulse_length;

@@ -7,6 +7,7 @@
 
 #include "spike_stimcontrol_defines.h"
 #include "userMainConfig.h"
+#include "userConfigureStimulators.h"
 #include "userOutputOnlyTab.h"
 #include "userRealtimeFeedbackTab.h"
 
@@ -32,6 +33,8 @@ public:
   int StimChanChanged;
   int UserProgramRunning;
 
+  PulseCommand PulseCommandA, PulseCommandB;
+
 signals:
   void changedUserProgramStatus(int);
   void updateChanDisplay(int);
@@ -44,14 +47,6 @@ public slots:
   void updateChan(int);
   void checkUserProgramStatus(void);
   void msgFromUser(int msg, char *data);
-
-  void triggerSingleOutput(void);
-  void startOutputOnlyStim(void);
-  void abortOutputOnlyStim(void);
-
-  void enableRealtimeStim(void);
-  void startRealtimeStim(void);
-  void stopRealtimeStim(void);
 };
 
 extern DAQ_IO *daq_io_widget; // global, but created in DIOInterface
@@ -73,6 +68,14 @@ public slots:
   void  loadSettings(void);
   void  saveSettings(void);
 
+  void triggerSingleStim(void);
+  void startOutputOnlyStim(void);
+  void abortOutputOnlyStim(void);
+
+  void enableRealtimeStim(void);
+  void startRealtimeStim(void);
+  void stopRealtimeStim(void);
+
 protected:
   int         	ntabs;
 
@@ -81,6 +84,7 @@ protected:
   // Q3WidgetStack     	*qtab;
   QTabWidget *qtab;
 
+  StimConfigTab *stimConfigTab;
   MainConfigTab *mainConfigTab;
   //PulseFileTab *pulseFileTabWidget;
   StimOutputOnlyTab *stimOutputOnlyTab;

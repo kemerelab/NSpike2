@@ -33,29 +33,32 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
   nTrainsSpinBox->setRange(1,200);
   nTrainsLayout->addWidget(nTrainsSpinBox);
   QPushButton *continuousButton = new QPushButton("Continuous");
+  continuousButton->setCheckable(true);
+  continuousButton->setStyle("Windows");
+
   nTrainsLayout->addWidget(continuousButton);
 
   layout->addLayout(nTrainsLayout,1,1);
 
   layout->addWidget(new QLabel("Inter-train Interval"), 3, 0,
       Qt::AlignRight | Qt::AlignVCenter);
-  QSpinBox *trainIntervalSpinBox = new QSpinBox();
+  trainIntervalSpinBox = new QSpinBox();
   trainIntervalSpinBox->setAlignment(Qt::AlignRight);
   trainIntervalSpinBox->setSuffix(" ms");
-  trainIntervalSpinBox->setRange(500, 50000);
+  trainIntervalSpinBox->setRange(500, 60000);
   layout->addWidget(trainIntervalSpinBox, 3, 1);
 
-  QPushButton *stimSingleButton = new QPushButton("Trigger Single Pulse Sequence");
+  stimSingleButton = new QPushButton("Trigger Single Pulse Sequence");
   layout->addWidget(stimSingleButton,5,0);
-  connect(stimSingleButton, SIGNAL(clicked()), daq_io_widget, SLOT(triggerSingleStim()));
 
-  QPushButton *startStimButton = new QPushButton("Start Pulse Sequence");
+  startStimButton = new QPushButton("Start Pulse Sequence");
   layout->addWidget(startStimButton,5,1);
-  connect(startStimButton, SIGNAL(clicked()), daq_io_widget, SLOT(startOutputOnlyStim()));
 
-  QPushButton *abortStimButton = new QPushButton("Abort Pulse Sequence");
+  abortStimButton = new QPushButton("Abort Pulse Sequence");
   layout->addWidget(abortStimButton,5,2);
-  connect(startStimButton, SIGNAL(clicked()), daq_io_widget, SLOT(abortOutputOnlyStim()));
+
+  /* Signals from the trigger, start, and abort buttons are
+   * connected to slots in  spikeUserGUI */
 
   setLayout(layout);
 

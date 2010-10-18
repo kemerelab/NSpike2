@@ -52,6 +52,8 @@ MainConfigTab::MainConfigTab( QWidget* parent )
     realtimeFeedbackModePushButton->setCheckable(true);
     outputOnlyModePushButton->setStyleSheet("QPushButton::checked{color: green;}");
     realtimeFeedbackModePushButton->setStyleSheet("QPushButton::checked{color: green;}");
+    outputOnlyModePushButton->setStyle("Windows");
+    realtimeFeedbackModePushButton->setStyle("Windows");
 
     modeButtonGroup = new QButtonGroup;
     modeButtonGroup->addButton(outputOnlyModePushButton,OUTPUT_ONLY_MODE);

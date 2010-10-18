@@ -41,6 +41,9 @@ public:
 
   QLabel *status;
 
+  QPushButton *realtimeEnableButton;
+  QPushButton *startFeedbackButton;
+  QPushButton *stopFeedbackButton;
   //LatencyTest *latencyTest;
   //ThetaPhaseStim *thetaPhaseStim;
   //RippleDisruption *rippleDisruption;

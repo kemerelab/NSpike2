@@ -45,6 +45,7 @@ int main(int argc, char **argv)
   int         message;
   int         j;
   int         pending = 0;
+  int         nPulses = 0;
 
   FILE        *outfile = NULL;
 
@@ -57,6 +58,8 @@ int main(int argc, char **argv)
   u32 oldts = 0;
   double avgtsdiff = 0.0;
   double stdtsdiff = 0.0;
+
+  int pulseArraySize;
 
   inputfd = 0;
   outputfd = 0;
@@ -191,9 +194,17 @@ int main(int argc, char **argv)
           fprintf(stderr,"rt_user: Received Realtime STOP command......\n");
           break;
         case DIO_PULSE_SEQ:
-          //ParsePulseFile((char *)messagedata, pulseArray);
-          //nextPulseCmd = pulseArray;
-          //nextPulseCmd->start_samp_timestamp = 0; // wait for start
+          nPulses = messagedatalen / sizeof(PulseCommand);
+          if ((nPulses > MAX_PULSE_SEQS) || (nPulses < 1)) {
+            pulseArray[0].pulse_width = DIO_PULSE_COMMAND_END;
+            fprintf(stderr,"rt_user: Pulse command more than MAX_PULSE_SEQS (%d)\n", MAX_PULSE_SEQS);
+          }
+          else {
+            memcpy(pulseArray,(PulseCommand *)messagedata, nPulses * sizeof(PulseCommand));
+            fprintf(stderr,"rt_user: Received pulse command of length %d.\n", nPulses);
+          }
+          nextPulseCmd = pulseArray;
+          nextPulseCmd->start_samp_timestamp = 0; // wait for start
           break;
         case DIO_PULSE_SEQ_START:
           pending = 1;

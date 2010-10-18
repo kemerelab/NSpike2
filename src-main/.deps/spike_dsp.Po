@@ -679,6 +679,7 @@ spike_dsp.o: spike_dsp.cpp ../include/spikecommon.h /usr/include/stdio.h \
  ../include/../src-gui/spikeUserGUI.h ../include/../src-gui/spikeGLPane.h \
  ../include/spike_dsp.h ../include/spike_stimcontrol_defines.h \
  ../include/../src-gui/userMainConfig.h \
+ ../include/../src-gui/userConfigureStimulators.h \
  ../include/../src-gui/userOutputOnlyTab.h \
  ../include/../src-gui/userRealtimeFeedbackTab.h \
  /usr/share/qt4/include/Qt3Support/q3textedit.h \
@@ -2227,6 +2228,8 @@ spike_dsp.o: spike_dsp.cpp ../include/spikecommon.h /usr/include/stdio.h \
 ../include/spike_stimcontrol_defines.h:
 
 ../include/../src-gui/userMainConfig.h:
+
+../include/../src-gui/userConfigureStimulators.h:
 
 ../include/../src-gui/userOutputOnlyTab.h:
 
