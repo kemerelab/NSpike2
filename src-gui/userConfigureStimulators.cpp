@@ -96,8 +96,8 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   stimPulseCmd.inter_pulse_delay = 1249;
   stimPulseCmd.n_pulses = 1;
   stimPulseCmd.is_biphasic = 0;
-  stimPulseCmd.pin1mask = 1;
-  stimPulseCmd.pin2mask = 1;
+  stimPulseCmd.pin1 = 1;
+  stimPulseCmd.pin2 = 1;
   stimPulseCmd.n_repeats = 0;
   stimPulseCmd.inter_frame_delay = 0;
 
@@ -259,8 +259,8 @@ void StimConfigureWidget::updateStimParameters(void)
   stimPulseCmd.n_pulses = nPulsesSpinBox->value();
 
   stimPulseCmd.is_biphasic = biphasicCheckBox->isChecked();
-  stimPulseCmd.pin1mask = 1 >> primaryStimPinSpinBox->value();
-  stimPulseCmd.pin2mask = 1 >> secondaryStimPinSpinBox->value();
+  stimPulseCmd.pin1 = primaryStimPinSpinBox->value();
+  stimPulseCmd.pin2 = secondaryStimPinSpinBox->value();
 
   qDebug("Updating stim parameters.");
 }

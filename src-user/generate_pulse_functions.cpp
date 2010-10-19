@@ -3,41 +3,51 @@
 void ByteSwap(unsigned short *sptr, int nelem);
 
 int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
-    int len = 0;
-    int i;
-    int tick_pulse_on, tick_pulse_off;
+  int len = 0;
+  int i;
+  int tick_pulse_on, tick_pulse_off;
 
-    tick_pulse_on = pulseCmd.pulse_width * 3;
-    tick_pulse_off = pulseCmd.inter_pulse_delay * 3;
+  int laserPort1, laserPort2;
+  uint16_t p1mask, p2mask;
 
-    tick_pulse_on = tick_pulse_on - 3; // account for 3 word command processing
-    tick_pulse_off = tick_pulse_off - 3; // account for command processing
+  tick_pulse_on = pulseCmd.pulse_width * 3;
+  tick_pulse_off = pulseCmd.inter_pulse_delay * 3;
 
-    /*if (pulseCmd.n_pulses > 10) {
-	fprintf(stderr,"Number of pulses, %d, too many.\n", pulseCmd.n_pulses);
-	return -1;
-    }*/
+  tick_pulse_on = tick_pulse_on - 3; // account for 3 word command processing
+  tick_pulse_off = tick_pulse_off - 3; // account for command processing
 
-    for (i = 0; i < pulseCmd.n_pulses; i++) {
-        command[len++] = DIO_S_SET_PORT | laserPort; 
-        if (pulseCmd.is_biphasic) {
-          command[len++] = pulseCmd.pin1mask; 
-          command[len++] = DIO_S_WAIT | tick_pulse_on; 
-          command[len++] = DIO_S_SET_PORT | laserPort; 
-          command[len++] = pulseCmd.pin2mask; 
-          command[len++] = DIO_S_WAIT | tick_pulse_on; 
-        }
-        else {
-          command[len++] = pulseCmd.pin1mask; 
-          command[len++] = DIO_S_WAIT | tick_pulse_on; 
-        }
-        command[len++] = DIO_S_SET_PORT | laserPort; 
-        command[len++] = 0x00; 
-	  if (i < (pulseCmd.n_pulses-1))
-	      command[len++] = DIO_S_WAIT | tick_pulse_off;
+  laserPort1 = (pulseCmd.pin1 / 16);
+  p1mask = (uint16_t) (1 << (pulseCmd.pin1 % 16));
+  if (pulseCmd.is_biphasic) {
+    laserPort2 = (pulseCmd.pin2 / 16);
+    p2mask = (uint16_t) (1 << (pulseCmd.pin2 % 16));
+    if (laserPort1 != laserPort2)
+      fprintf(stderr,"rt_user: warning - laser ports are different. probably won't work.");
+  }
+
+  fprintf(stderr,"rt_user: port %d and pin %d (biphasic: %d)\n",
+      laserPort1, p1mask, pulseCmd.is_biphasic);
+
+  for (i = 0; i < pulseCmd.n_pulses; i++) {
+    command[len++] = DIO_S_SET_PORT | laserPort1; 
+    if (pulseCmd.is_biphasic) {
+      command[len++] = p1mask;
+      command[len++] = DIO_S_WAIT | tick_pulse_on; 
+      command[len++] = DIO_S_SET_PORT | laserPort1; 
+      command[len++] = p2mask; 
+      command[len++] = DIO_S_WAIT | tick_pulse_on; 
     }
+    else {
+      command[len++] = p1mask; 
+      command[len++] = DIO_S_WAIT | tick_pulse_on; 
+    }
+    command[len++] = DIO_S_SET_PORT | laserPort1; 
+    command[len++] = 0x00; 
+    if (i < (pulseCmd.n_pulses-1))
+      command[len++] = DIO_S_WAIT | tick_pulse_off;
+  }
 
-    return len;
+  return len;
 }
 
 void PulseLaserCommand (PulseCommand pulseCmd, int ignoreTimestamp) {

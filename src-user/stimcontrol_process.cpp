@@ -85,7 +85,7 @@ void InitPulseArray( void)
 void ProcessTimestamp( void )
 {
 
-  if ((nextPulseCmd->line == -1 ) || (nextPulseCmd->start_samp_timestamp == 0))
+  if ((nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END ) || (nextPulseCmd->start_samp_timestamp == 0))
     return;
 
   if ( (timestamp * SAMP_TO_TIMESTAMP > last_future_timestamp) && 
@@ -100,15 +100,15 @@ void ProcessTimestamp( void )
       nextPulseCmd->n_repeats--;
       nextPulseCmd->pre_delay = 0;
       nextPulseCmd->start_samp_timestamp = last_future_timestamp +
-      PulseCommandLength(*nextPulseCmd) +
-      nextPulseCmd->inter_frame_delay;
+      nextPulseCmd->inter_frame_delay*3;
+      //PulseCommandLength(*nextPulseCmd) +
       return;
     }
     else if (nextPulseCmd->n_repeats == -1) { // continuous
       nextPulseCmd->pre_delay = 0;
       nextPulseCmd->start_samp_timestamp = last_future_timestamp +
-      PulseCommandLength(*nextPulseCmd) +
-      nextPulseCmd->inter_frame_delay;
+      nextPulseCmd->inter_frame_delay*3;
+      //PulseCommandLength(*nextPulseCmd) +
       return;
     }
 
@@ -132,8 +132,8 @@ void ProcessTimestamp( void )
     }
       
     nextPulseCmd->start_samp_timestamp = last_future_timestamp + 
-      PulseCommandLength(*nextPulseCmd) +
-      nextPulseCmd->pre_delay;
+      nextPulseCmd->pre_delay*3;
+      //PulseCommandLength(*nextPulseCmd) +
   }
 
 }

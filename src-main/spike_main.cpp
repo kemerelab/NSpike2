@@ -605,7 +605,7 @@ void SQCompat::spikeProcessMessages(void)
             }
           }
           else {
-            fprintf(stderr, "Error getting user program output\n");
+            fprintf(stderr, "Error getting user program output %d\n");
           }
         }
         datareceived = 1;

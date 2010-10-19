@@ -66,7 +66,7 @@ typedef struct _PulseCommand {
     int n_pulses;
     int inter_pulse_delay; // in ticks
     int is_biphasic;
-    uint64_t pin1mask, pin2mask;
+    uint64_t pin1, pin2;
     int n_repeats; // note that this is decremented to zero (not preserved) by code
                    // except for -1 which is the special case of continuous
     int inter_frame_delay; // in ticks;

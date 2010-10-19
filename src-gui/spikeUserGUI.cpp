@@ -161,15 +161,21 @@ void DIOInterface::triggerSingleStim(void)
   qDebug("triggerSingleStim signal received. Current stimulator is: %d\n", stimConfigTab->activeStimulator);
   switch (stimConfigTab->activeStimulator) {
   case 1:
+    pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
+    pCmd[0].n_repeats = 0;
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
     daq_io_widget->updateChan(0);
     SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
-    SendUserMessage(DIO_PULSE_SEQ, (char *) &(stimConfigTab->stimConfigB->stimPulseCmd), sizeof(PulseCommand));
+    SendUserMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
     SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
     break;
   case 2:
+    pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
+    pCmd[0].n_repeats = 0;
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
     daq_io_widget->updateChan(0);
     SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
-    SendUserMessage(DIO_PULSE_SEQ, (char *) &(stimConfigTab->stimConfigB->stimPulseCmd), sizeof(PulseCommand));
+    SendUserMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
     SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
     break;
   case 3: // A then B will always be A first then B (or we can do two...)
@@ -202,7 +208,10 @@ void DIOInterface::startOutputOnlyStim(void)
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
     pCmd[0].pre_delay = 0;
     pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
-    pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[0].n_repeats = -1;
+    else
+      pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
     daq_io_widget->updateChan(0);
     SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
@@ -213,7 +222,10 @@ void DIOInterface::startOutputOnlyStim(void)
     pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
     pCmd[0].pre_delay = 0;
     pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
-    pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[0].n_repeats = -1;
+    else
+      pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
     daq_io_widget->updateChan(0);
     SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
@@ -222,13 +234,18 @@ void DIOInterface::startOutputOnlyStim(void)
     break;
   case 3: 
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
+    pCmd[0].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[0].n_repeats = 0;
     pCmd[1] = stimConfigTab->stimConfigB->stimPulseCmd;
     pCmd[1].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[1].n_repeats = 0;
     pCmd[2].pulse_width = DIO_PULSE_COMMAND_REPEAT;
     pCmd[2].line = 0;
-    pCmd[2].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;;
+    //pCmd[2].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;;
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[2].n_repeats = -1;
+    else
+      pCmd[2].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[3].pulse_width = DIO_PULSE_COMMAND_END;
     daq_io_widget->updateChan(0);
     SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
