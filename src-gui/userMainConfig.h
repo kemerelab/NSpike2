@@ -16,8 +16,8 @@ public:
     QLabel* UserProgramStatus;
 
     QButtonGroup *modeButtonGroup;
-    QPushButton *outputOnlyModePushButton;
-    QPushButton *realtimeFeedbackModePushButton;
+    QPushButton *outputOnlyModeButton;
+    QPushButton *realtimeFeedbackModeButton;
     QLineEdit* CmPerPix;
 
     QPushButton *loadSettingsButton;

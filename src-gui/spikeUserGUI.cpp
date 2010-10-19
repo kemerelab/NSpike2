@@ -48,15 +48,14 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     daq_io_widget = new DAQ_IO(this);
 
-    connect(daq_io_widget,SIGNAL(userProgramRunning(bool)),this,SLOT(enableTabs(bool)));
+    connect(daq_io_widget,SIGNAL(changedUserProgramStatus(int)),this,SLOT(enableTabs(int)));
 
     qtab = new QTabWidget(this);
     qtab->setUsesScrollButtons(false);
 
     mainConfigTab = new MainConfigTab(this);
     qtab->insertTab(mainConfigTab,"Global Settings", MAIN_CONFIG_TAB);
-    connect(mainConfigTab->modeButtonGroup, SIGNAL(buttonClicked(int)), this,
-        SLOT(changeOperatingMode(int)));
+    connect(mainConfigTab->modeButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(changeOperatingMode(int)));
 
     connect(mainConfigTab->loadSettingsButton, SIGNAL(clicked(void)), this, SLOT(loadSettings(void)));
     connect(mainConfigTab->saveSettingsButton, SIGNAL(clicked(void)), this, SLOT(saveSettings(void)));
@@ -65,8 +64,7 @@ DIOInterface::DIOInterface(QWidget* parent,
     qtab->insertTab(stimConfigTab, "Configure Stimulators", CONFIG_STIMULATORS_TAB);
 
     stimOutputOnlyTab = new StimOutputOnlyTab(this);
-    qtab->insertTab(stimOutputOnlyTab, "Output-Only Experiments",
-        OUTPUT_ONLY_TAB);
+    qtab->insertTab(stimOutputOnlyTab, "Output-Only Experiments", OUTPUT_ONLY_TAB);
     connect(stimConfigTab, SIGNAL(activeStimulatorChanged(int)), stimOutputOnlyTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(stimOutputOnlyTab->stimulatorSelectComboBox, SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
     connect(stimOutputOnlyTab->stimSingleButton, SIGNAL(clicked()), this, SLOT(triggerSingleStim()));
@@ -99,6 +97,7 @@ DIOInterface::DIOInterface(QWidget* parent,
     mainConfigTab->initializeValues();
 
     stimConfigTab->selectStimulator(); // synchronize initial stim display
+    qtab->setTabEnabled(CONFIG_STIMULATORS_TAB,false);
 
     changeOperatingMode(DEFAULT_MODE);
 
@@ -143,8 +142,14 @@ void DIOInterface::saveSettings(void) {
   qDebug() << "User  wanting to save settings in" << settingsFilename;
 }
 
-void DIOInterface::enableTabs(bool enable)
+void DIOInterface::enableTabs(int enable)
 {
+
+  qtab->setTabEnabled(CONFIG_STIMULATORS_TAB,enable>=0);
+  qtab->setTabEnabled(OUTPUT_ONLY_TAB,enable>=0);
+  qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,enable>=0);
+
+  qDebug("Enabled == %d\n", enable);
 }
 
 void DIOInterface::triggerSingleStim(void)

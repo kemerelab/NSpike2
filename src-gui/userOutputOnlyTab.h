@@ -22,6 +22,8 @@ public:
   QPushButton *abortStimButton;
 
 public slots:
+  void toggleContinuousMode(bool isToggled) {nTrainsSpinBox->setEnabled(!isToggled);}
+
 
 private:
 

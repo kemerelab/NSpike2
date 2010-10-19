@@ -264,36 +264,3 @@ void StimConfigureWidget::updateStimParameters(void)
 
   qDebug("Updating stim parameters.");
 }
-
-/*
-void ConfigForm::updateStimPins(void)
-{
-  int data[2];
-
-  int stimPin1 = PortSpinBox->value();
-  int stimPin2 = Port2SpinBox->value();
-
-  if (digioinfo.outputfd) {
-    if (BiphasicButton->isOn()) {
-      // set biphasic and 2 pins
-      data[0] = stimPin1;
-      data[1] = stimPin2;
-      if ((data[0] / 16) != (data[1] / 16))
-QMessageBox::warning(this,"Invalid Stimulation Ports","Stimulation ports for stim 1 and 2 must be the same. Stim Pin 1 port assumed.");
-      SendDAQUserMessage(DIO_SET_BIPHASIC_STIM_PINS, (char *) data, 2*sizeof(int));
-      fprintf(stderr,"Sent pins\n");
-    }
-    else {
-      // set single activation pin
-      data[0] = stimPin1;
-      SendDAQUserMessage(DIO_SET_SINGLE_STIM_PIN, (char *) data, sizeof(int));
-      fprintf(stderr,"Sent pin\n");
-    }
-
-  }
-  else {
-    QMessageBox::warning(this,"No User Program","No user program is currently running");
-  }
-}
-
-*/

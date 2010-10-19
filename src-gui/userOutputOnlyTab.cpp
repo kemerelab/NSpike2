@@ -28,13 +28,14 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
 
   QVBoxLayout *nTrainsLayout = new QVBoxLayout;
 
-  QSpinBox *nTrainsSpinBox = new QSpinBox();
+  nTrainsSpinBox = new QSpinBox();
   nTrainsSpinBox->setAlignment(Qt::AlignRight);
   nTrainsSpinBox->setRange(1,200);
   nTrainsLayout->addWidget(nTrainsSpinBox);
-  QPushButton *continuousButton = new QPushButton("Continuous");
+  continuousButton = new QPushButton("Continuous");
   continuousButton->setCheckable(true);
   continuousButton->setStyle("Windows");
+  connect(continuousButton, SIGNAL(toggled(bool)), this, SLOT(toggleContinuousMode(bool)));
 
   nTrainsLayout->addWidget(continuousButton);
 

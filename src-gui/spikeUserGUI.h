@@ -63,7 +63,7 @@ public:
   void msgFromUser(int msg, char *data) { daq_io_widget->msgFromUser(msg,data); }
 
 public slots:
-  void  enableTabs(bool);
+  void  enableTabs(int);
   void  changeOperatingMode(int);
   void  loadSettings(void);
   void  saveSettings(void);
