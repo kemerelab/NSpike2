@@ -49,6 +49,7 @@ public:
   //RippleDisruption *rippleDisruption;
 
 public slots:
+  void setFeedbackAlgorithm(int index);
 
 private:
 

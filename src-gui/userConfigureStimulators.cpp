@@ -108,22 +108,26 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   pulseLengthSpinBox->setAlignment(Qt::AlignRight);
   pulseLengthSpinBox->setDecimals(1);
   pulseLengthSpinBox->setRange(0.1,500);
+  pulseLengthSpinBox->setToolTip("Length in milliseconds of each pulse in pulse sequence.");
   connect(pulseLengthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateStimParameters(void)));
 
   nPulsesSpinBox = new QSpinBox();
   nPulsesSpinBox->setRange(1,10);
   nPulsesSpinBox->setAlignment(Qt::AlignRight);
+  nPulsesSpinBox->setToolTip("Number of pulses in pulse sequence.");
   connect(nPulsesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(ablePulseSequence(void)));
 
   sequencePeriodSpinBox = new QDoubleSpinBox();
   sequencePeriodSpinBox->setAlignment(Qt::AlignRight);
   sequencePeriodSpinBox->setSuffix(" ms");
   sequencePeriodSpinBox->setRange(125,5000);
+  sequencePeriodSpinBox->setToolTip("Period of pulses in pulse sequence.");
   connect(sequencePeriodSpinBox, SIGNAL(valueChanged(double)), this, SLOT(periodChanged(void)));
   sequenceFrequencySpinBox = new QSpinBox();
   sequenceFrequencySpinBox->setAlignment(Qt::AlignRight);
   sequenceFrequencySpinBox->setRange(0.2,1000);
   sequenceFrequencySpinBox->setSuffix(" Hz");
+  sequenceFrequencySpinBox->setToolTip("Frequency of pulses in pulse sequence.");
   connect(sequenceFrequencySpinBox, SIGNAL(valueChanged(int)), this, SLOT(frequencyChanged(void)));
 
   QLabel *pulseLengthGraphic = new QLabel;
@@ -171,6 +175,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   primaryStimPinSpinBox = new QSpinBox();
   primaryStimPinSpinBox->setAlignment(Qt::AlignRight);
   primaryStimPinSpinBox->setRange(0,63);
+  primaryStimPinSpinBox->setToolTip("Output pin (range 0 - 63) to stimulate.\nFor biphasic triggering, this is the first pin triggered.");
   connect(primaryStimPinSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateStimParameters(void)));
   QLabel *primaryStimPinLabel = new QLabel("Primary");
 
@@ -180,6 +185,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   secondaryStimPinSpinBox = new QSpinBox();
   secondaryStimPinSpinBox->setAlignment(Qt::AlignRight);
   secondaryStimPinSpinBox->setRange(0,63);
+  secondaryStimPinSpinBox->setToolTip("For biphasic triggering, this is the second pin triggered.\nThe value must lie in the same bank of 16 as the primary pin.");
   connect(secondaryStimPinSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateStimParameters(void)));
   secondaryStimPinLabel = new QLabel("Secondary");
 
@@ -261,6 +267,11 @@ void StimConfigureWidget::updateStimParameters(void)
   stimPulseCmd.is_biphasic = biphasicCheckBox->isChecked();
   stimPulseCmd.pin1 = primaryStimPinSpinBox->value();
   stimPulseCmd.pin2 = secondaryStimPinSpinBox->value();
+
+  if (stimPulseCmd.pin2 / 16 != stimPulseCmd.pin1 / 16) 
+    secondaryStimPinSpinBox->setStyleSheet("color: red");
+  else
+    secondaryStimPinSpinBox->setStyleSheet("color: black");
 
   qDebug("Updating stim parameters.");
 }

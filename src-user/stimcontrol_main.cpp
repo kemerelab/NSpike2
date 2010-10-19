@@ -47,6 +47,8 @@ int main(int argc, char **argv)
   int         pending = 0;
   int         nPulses = 0;
 
+  int messageCode;
+
   FILE        *outfile = NULL;
 
   unsigned short     *usptr;
@@ -152,7 +154,7 @@ int main(int argc, char **argv)
               fprintf(stderr,"rt_user: Received request to do ripple disruption.\n");
               break;
             case DIO_RTMODE_LATENCY_TEST:
-              InitRipple();
+              InitLatency();
               fprintf(stderr,"rt_user: Received request to do latency test.\n");
               break;
             case DIO_RTMODE_DEFAULT:
@@ -212,6 +214,8 @@ int main(int argc, char **argv)
         case DIO_PULSE_SEQ_STOP:
           fprintf(stderr,"rt_user: Received STOP command\n");
           nextPulseCmd->start_samp_timestamp = 0;
+          messageCode = -1;
+          SendMessage(outputfd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
           break;
         case SETUP_DAQ_TO_USER:
           /* copy daq_to_user_dsps array into sysinfo structure */

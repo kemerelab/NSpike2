@@ -85,6 +85,8 @@ void InitPulseArray( void)
 void ProcessTimestamp( void )
 {
 
+  int messageCode;
+
   if ((nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END ) || (nextPulseCmd->start_samp_timestamp == 0))
     return;
 
@@ -127,7 +129,8 @@ void ProcessTimestamp( void )
     }
 
     if (nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END) { // end of file
-      SendMessage(outputfd, DIO_PULSE_SEQ_EXECUTED, NULL, 0); 
+      messageCode = 0;
+      SendMessage(outputfd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
       return;
     }
       

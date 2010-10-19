@@ -41,9 +41,10 @@ signals:
   void changedUserProgramStatus(int);
   void updateChanDisplay(int);
   void userProgramRunning(bool);
-  void pulseFileLineExecuted(int);
   void rippleStatusUpdate(RippleStatusMsg);
-  void pulseFileFinished(void);
+
+  void pulseSeqLineExecuted(int);
+  void pulseSeqFinished(int);
 
 public slots:
   void updateChan(int);

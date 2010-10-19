@@ -62,7 +62,32 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   setLayout(layout);
 
   connect(feedbackAlgorithmComboBox, SIGNAL(currentIndexChanged(int)), 
-      algorithmAlternativesStack, SLOT(setCurrentIndex(int)));
+      this, SLOT(setFeedbackAlgorithm(int)));
+}
+
+void RealtimeFeedbackTab::setFeedbackAlgorithm (int index)
+{
+  int mode;
+
+  algorithmAlternativesStack->setCurrentIndex(index);
+
+  switch(index) {
+    case 0:
+      mode = DIO_RTMODE_DEFAULT;
+      break;
+    case 1:
+      mode = DIO_RTMODE_LATENCY_TEST;
+      break;
+    case 2:
+      mode = DIO_RTMODE_THETA;
+      break;
+    case 3:
+      mode = DIO_RTMODE_RIPPLE_DISRUPT;
+      break;
+  }
+
+  qDebug("sending mode: %d\n", mode);
+  SendUserMessage(DIO_STIMCONTROL_MODE, (char *)&mode, sizeof(int));
 }
 
 LatencyTest::LatencyTest(QWidget *parent)

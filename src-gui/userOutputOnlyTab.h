@@ -12,6 +12,9 @@ class StimOutputOnlyTab : public QWidget
 public:
   StimOutputOnlyTab (QWidget *parent);
 
+  int trainCounter;
+  int nTrains;
+
   QSpinBox *trainIntervalSpinBox;
   QSpinBox *nTrainsSpinBox;
   QPushButton *continuousButton;
@@ -21,9 +24,15 @@ public:
   QPushButton *startStimButton;
   QPushButton *abortStimButton;
 
+  void startStimulation(int count);
+
+  void writeStateToFile(QFile *stateFile);
+  void readStateFromFile(QFile *stateFile);
+
 public slots:
   void toggleContinuousMode(bool isToggled) {nTrainsSpinBox->setEnabled(!isToggled);}
-
+  void endStimulation(int flag);
+  void stepStimulation(int count);
 
 private:
 
