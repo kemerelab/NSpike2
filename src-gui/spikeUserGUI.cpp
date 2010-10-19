@@ -26,8 +26,6 @@
 #include <QtGui>
 #include <q3listbox.h>
 #include <q3buttongroup.h>
-#include <Q3PopupMenu>
-#include <Q3GridLayout>
 
 extern SysInfo sysinfo;
 extern DigIOInfo digioinfo;
@@ -48,7 +46,7 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     daq_io_widget = new DAQ_IO(this);
 
-    connect(daq_io_widget,SIGNAL(changedUserProgramStatus(int)),this,SLOT(enableTabs(int)));
+    connect(daq_io_widget,SIGNAL(userProgramRunning(bool)),this,SLOT(enableTabs(bool)));
 
     qtab = new QTabWidget(this);
     qtab->setUsesScrollButtons(false);
@@ -101,11 +99,15 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     changeOperatingMode(DEFAULT_MODE);
 
+    //setAttribute(Qt::WA_DeleteOnClose,true);
     show();
+
 }
 
 DIOInterface::~DIOInterface() 
 {
+  qDebug("Got destructor!");
+  daq_io_widget->close();
 }
 
 void DIOInterface::changeOperatingMode(int mode)
@@ -142,14 +144,15 @@ void DIOInterface::saveSettings(void) {
   qDebug() << "User  wanting to save settings in" << settingsFilename;
 }
 
-void DIOInterface::enableTabs(int enable)
+void DIOInterface::enableTabs(bool enable)
 {
 
-  qtab->setTabEnabled(CONFIG_STIMULATORS_TAB,enable>=0);
-  qtab->setTabEnabled(OUTPUT_ONLY_TAB,enable>=0);
-  qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,enable>=0);
+  if (qtab->isTabEnabled(CONFIG_STIMULATORS_TAB) != enable)
+    qtab->setTabEnabled(CONFIG_STIMULATORS_TAB,enable);
+  //qtab->setTabEnabled(OUTPUT_ONLY_TAB,enable>=0);
+  //qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,enable>=0);
 
-  qDebug("Enabled == %d\n", enable);
+  //qDebug("Enabled == %d\n", enable);
 }
 
 void DIOInterface::triggerSingleStim(void)
@@ -158,12 +161,16 @@ void DIOInterface::triggerSingleStim(void)
   qDebug("triggerSingleStim signal received. Current stimulator is: %d\n", stimConfigTab->activeStimulator);
   switch (stimConfigTab->activeStimulator) {
   case 1:
-    SendDAQUserMessage(DIO_PULSE_SEQ, (char *) &(stimConfigTab->stimConfigB->stimPulseCmd), sizeof(PulseCommand));
-    SendDAQUserMessage(DIO_PULSE_SEQ_START,NULL,0);
+    daq_io_widget->updateChan(0);
+    SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
+    SendUserMessage(DIO_PULSE_SEQ, (char *) &(stimConfigTab->stimConfigB->stimPulseCmd), sizeof(PulseCommand));
+    SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
     break;
   case 2:
-    SendDAQUserMessage(DIO_PULSE_SEQ, (char *) &(stimConfigTab->stimConfigB->stimPulseCmd), sizeof(PulseCommand));
-    SendDAQUserMessage(DIO_PULSE_SEQ_START,NULL,0);
+    daq_io_widget->updateChan(0);
+    SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
+    SendUserMessage(DIO_PULSE_SEQ, (char *) &(stimConfigTab->stimConfigB->stimPulseCmd), sizeof(PulseCommand));
+    SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
     break;
   case 3: // A then B will always be A first then B (or we can do two...)
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
@@ -172,8 +179,10 @@ void DIOInterface::triggerSingleStim(void)
     pCmd[1].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[1].n_repeats = 0;
     pCmd[2].pulse_width = DIO_PULSE_COMMAND_END;
-    SendDAQUserMessage(DIO_PULSE_SEQ, (char *)pCmd, 3*sizeof(PulseCommand));
-    SendDAQUserMessage(DIO_PULSE_SEQ_START,NULL,0);
+    daq_io_widget->updateChan(0);
+    SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
+    SendUserMessage(DIO_PULSE_SEQ, (char *)pCmd, 3*sizeof(PulseCommand));
+    SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
     break;
   default:
   case 0:
@@ -195,8 +204,10 @@ void DIOInterface::startOutputOnlyStim(void)
     pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
-    SendDAQUserMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
-    SendDAQUserMessage(DIO_PULSE_SEQ_START,NULL,0);
+    daq_io_widget->updateChan(0);
+    SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
+    SendUserMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
+    SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
     break;
   case 2:
     pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
@@ -204,8 +215,10 @@ void DIOInterface::startOutputOnlyStim(void)
     pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
-    SendDAQUserMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
-    SendDAQUserMessage(DIO_PULSE_SEQ_START,NULL,0);
+    daq_io_widget->updateChan(0);
+    SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
+    SendUserMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
+    SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
     break;
   case 3: 
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
@@ -217,8 +230,10 @@ void DIOInterface::startOutputOnlyStim(void)
     pCmd[2].line = 0;
     pCmd[2].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;;
     pCmd[3].pulse_width = DIO_PULSE_COMMAND_END;
-    SendDAQUserMessage(DIO_PULSE_SEQ, (char *) pCmd, 4*sizeof(PulseCommand));
-    SendDAQUserMessage(DIO_PULSE_SEQ_START,NULL,0);
+    daq_io_widget->updateChan(0);
+    SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
+    SendUserMessage(DIO_PULSE_SEQ, (char *) pCmd, 4*sizeof(PulseCommand));
+    SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
     break;
   default:
   case 0:
@@ -230,12 +245,21 @@ void DIOInterface::startOutputOnlyStim(void)
 void DIOInterface::abortOutputOnlyStim(void)
 {
   qDebug("abortOutputOnlyStim signal received");
-  SendDAQUserMessage(DIO_PULSE_SEQ_STOP,NULL,0);
+  SendUserMessage(DIO_PULSE_SEQ_STOP,NULL,0);
 }
 
 void DIOInterface::enableRealtimeStim(void)
 {
   qDebug("enableRealtimeStim signal received");
+  //daq_io_widget->updateChan();
+  //SendUserMessage(DIO_STIMCONTROL_MODE, DIO_RT_MODE????, sizeof(int));
+
+  //SendUserMessage(DIO_SET_RT_STIM_PARAMS, NULL, 0);
+
+  //SendUserMessage(DIO_SET_RT_FEEDBACK_PARAMS, NULL, 0);
+     // also lock parameters from changing?
+
+  //SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
 }
 
 void DIOInterface::startRealtimeStim(void)
@@ -266,6 +290,8 @@ DAQ_IO::DAQ_IO (QWidget *parent)
 
     StimChan = 0;
 
+    setAttribute(Qt::WA_DeleteOnClose,true);
+
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(checkUserProgramStatus()));
     timer->start(500);
@@ -274,6 +300,8 @@ DAQ_IO::DAQ_IO (QWidget *parent)
 void DAQ_IO::updateChan(int chnum)
 {
   StimChan = chnum;
+
+  qDebug("updateChan called with chnum %d\n", chnum);
 
     memset(sysinfo.daq_to_user.dsps, 0, sizeof(int) * MAX_DSPS);
     memset(sysinfo.daq_to_user.channels, 0, sizeof(int) * MAX_CHANNELS);
@@ -307,8 +335,7 @@ void DAQ_IO::checkUserProgramStatus(void)
   if (UserProgramRunning != oldUserProgram)
     emit changedUserProgramStatus(UserProgramRunning);
 
-  if (UserProgramRunning >= 0) 
-    emit userProgramRunning(TRUE);
+  emit userProgramRunning(UserProgramRunning >= 0);
 }
 
 void DAQ_IO::msgFromUser (int msg, char *data) {
@@ -328,3 +355,12 @@ void DAQ_IO::msgFromUser (int msg, char *data) {
       break;
   }
 }
+
+void  SendUserMessage(int message, char *data, int datalen)
+{
+  if (digioinfo.outputfd)
+    SendMessage(digioinfo.outputfd, message, data, datalen);
+  else
+    fprintf(stderr,"User program not started.\n");
+}
+

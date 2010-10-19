@@ -138,8 +138,7 @@ int main(int argc, char **argv)
           fprintf(stderr,"rt_user: Setting cm/pix = %f.\n",cmPerPix);
           break;
         case DIO_STIMCONTROL_MODE:
-          memcpy((char *)&stimcontrolMode, messagedata,
-              sizeof(int));
+          memcpy((char *)&stimcontrolMode, messagedata, sizeof(int));
           switch (stimcontrolMode) {
             case DIO_RTMODE_OUTPUT_ONLY:
               fprintf(stderr,"rt_user: Received request to do output only stimulation.\n");

@@ -107,7 +107,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
   pulseLengthSpinBox->setSuffix(" ms");
   pulseLengthSpinBox->setAlignment(Qt::AlignRight);
   pulseLengthSpinBox->setDecimals(1);
-  pulseLengthSpinBox->setRange(0.1,5);
+  pulseLengthSpinBox->setRange(0.1,500);
   connect(pulseLengthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateStimParameters(void)));
 
   nPulsesSpinBox = new QSpinBox();

@@ -24,6 +24,8 @@ extern void  SendDAQUserMessage(int message, char *data, int datalen);
 
 extern void StartDigIOProgram(int prognum);
 
+void  SendUserMessage(int message, char *data, int datalen);
+
 class DAQ_IO : public QWidget {
 	Q_OBJECT
 public:
@@ -63,7 +65,7 @@ public:
   void msgFromUser(int msg, char *data) { daq_io_widget->msgFromUser(msg,data); }
 
 public slots:
-  void  enableTabs(int);
+  void  enableTabs(bool);
   void  changeOperatingMode(int);
   void  loadSettings(void);
   void  saveSettings(void);

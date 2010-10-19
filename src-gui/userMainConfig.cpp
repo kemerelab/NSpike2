@@ -84,7 +84,7 @@ MainConfigTab::MainConfigTab( QWidget* parent )
     //marginsLayout->addLayout(grid,1,0);
 
     setLayout(grid);
-
+    updateStatus(digioinfo.currentprogram);
 }
 
 /*
@@ -119,6 +119,8 @@ void MainConfigTab::updateStatus(int whichProgram)
     realtimeFeedbackModeButton->setEnabled(true);
   }
 }
+
+
 void MainConfigTab::updateCmPerPix(void)
 {
   double data;
@@ -126,7 +128,7 @@ void MainConfigTab::updateCmPerPix(void)
   if (digioinfo.outputfd) {
     // set single activation pin
     data = CmPerPix->text().toDouble();
-    SendDAQUserMessage(DIO_SET_CM_PER_PIX, (char *) &data, sizeof(double));
+    SendUserMessage(DIO_SET_CM_PER_PIX, (char *) &data, sizeof(double));
     fprintf(stderr,"Sent pin\n");
   }
   else {

@@ -618,10 +618,10 @@ setRewardsDialog::setRewardsDialog(QWidget* parent,
     change = new QRadioButton *[BITS_PER_PORT];
 
     pulseButtonGroup = new Q3ButtonGroup(this);
-    changeButtonGroup = new Q3ButtonGroup(this);
+    changeButtonGroup = new QButtonGroup(this);
 
     /* set the changeButtonGroup to be non exclusive */
-    changeButtonGroup->setRadioButtonExclusive(false);
+    changeButtonGroup->setExclusive(false);
 
     enabled = false;
     /* if this an output port enable it */
@@ -673,7 +673,7 @@ setRewardsDialog::setRewardsDialog(QWidget* parent,
 	change[i]->setSizePolicy(p);
 	change[i]->setFont(fs);
 	grid->addMultiCellWidget(change[i], i, i, 6, 6);
-	changeButtonGroup->insert(change[i], i);
+	changeButtonGroup->addButton(change[i], i);
 
 	/* check to see if we need to set this button to be down */
 	if (digioinfo.raised[currentbit]) {
@@ -685,7 +685,7 @@ setRewardsDialog::setRewardsDialog(QWidget* parent,
 	change[i]->setEnabled(enabled);
     }
     connect(pulseButtonGroup, SIGNAL(clicked(int)), this, SLOT(pulseBit(int)));
-    connect(changeButtonGroup, SIGNAL(pressed(int)), this, SLOT(changeBit(int)));
+    connect(changeButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(changeBit(int)));
 
 
     /* create the next and prev buttons */
@@ -700,6 +700,8 @@ setRewardsDialog::setRewardsDialog(QWidget* parent,
     close = new QPushButton("Close", this, "CloseDialog");
     connect( close, SIGNAL( clicked() ), this, SLOT( dialogClosed() ) );
     grid->addMultiCellWidget(close, nrows-1, nrows-1, ncols-1, ncols-1, 0); 
+
+    setAttribute(Qt::WA_DeleteOnClose,true);
     show();
 }
 

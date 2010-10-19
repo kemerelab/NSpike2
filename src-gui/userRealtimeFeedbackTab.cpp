@@ -177,8 +177,8 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   // think about using a qsignalmapper 
   // file:///usr/share/qt4/doc/html/qsignalmapper.html
 
-  // connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
-  // connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
+  connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
+  connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
 
   // connect(StimChan, SIGNAL(activated(int)), this, SLOT(updateRippleData(void)));
   //connect(pulse_len, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
