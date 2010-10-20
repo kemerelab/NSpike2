@@ -15,6 +15,9 @@ HEADERS += spikeStatusbar.h
 SOURCES += rewardControl.cpp
 HEADERS += rewardControl.h
 
+SOURCES += spikeUserData.cpp
+HEADERS += spikeUserData.h
+
 # SOURCES += spikeUserThetaGUI.cpp 
 # SOURCES += userRippleGUI.cpp
 # SOURCES += spikeUserLatencyGUI.cpp 

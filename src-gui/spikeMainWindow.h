@@ -106,12 +106,11 @@ class SpikeMainWindow : public QMainWindow {
       else
         QMessageBox::information(this, "Reward GUI Warning", "Only one Reward GUI can be open at a time.");
     }
-    void       outputToUserProgram() { getOutputToUserProgram(); };
-    void       userProgramGUI() { launchUserGUI() ; };
- //   void	setDataToUser() { new userDataGui(this, "User Data GUI", FALSE, 0); };
-    void       resetStateMachines() { ResetStateMachines(); };
-    void    toggleUsesCompression();
-    void    doCompressionSettingsDialog();
+    void       	outputToUserProgram() { getOutputToUserProgram(); };
+    void       	userProgramGUI() { launchUserGUI() ; };
+    void       	resetStateMachines() { ResetStateMachines(); };
+    void       	toggleUsesCompression();
+    void       	doCompressionSettingsDialog();
     void 	warnCompSettingsTakeEffect();
     void	rewardGUIOff(void) { rewardGUIOn = false; };
 

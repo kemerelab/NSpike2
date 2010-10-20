@@ -332,7 +332,6 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
     digioMenu->addAction( "Reward Control", this, SLOT(startRewardControl()));
     digioMenu->addAction( "Send Message to User Program", this, SLOT(outputToUserProgram()), Qt::CTRL+Qt::Key_U );
     digioMenu->addAction( "User Program GUI", this, SLOT(userProgramGUI()), Qt::CTRL+Qt::Key_G );
-    digioMenu->addAction( "Set Data to User", this, SLOT(setDataToUser()));
     digioMenu->addAction( "Reset State Machines", this, SLOT(resetStateMachines()));
     menuBar->addMenu( digioMenu);
   }

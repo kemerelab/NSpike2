@@ -1,5 +1,5 @@
-#ifndef __SPIKE_USER_DATA_H__
-#define __SPIKE_USER_DATA_H__
+#ifndef __SPIKE_USERDATA_H__
+#define __SPIKE_USERDATA_H__
 
 /* below are the default sizes for the data buffer in spike_userdata.cpp.  Note
  * that these can be overridden on the spike_userdata command line */

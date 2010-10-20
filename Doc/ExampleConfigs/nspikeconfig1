@@ -52,13 +52,13 @@ port		10020
 % SPIKE 
 % DIGITALIO
 % and
-% MATLAB
+% USERDATA
 % or a combination of 
 % CONTINUOUS 
 % POSITION
 % DIGITALIO
 % and 
-% MATLAB
+% USERDATA
 % 
 % If you want POSITION data, both the master and the rtslave must have POSITION
 % as a datatype
@@ -71,7 +71,7 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype 	localhost		CONTINUOUS DIGITALIO
+datatype 	localhost		CONTINUOUS DIGITALIO USERDATA
 
 ndioports	4
 dioport	0	input
