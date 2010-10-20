@@ -65,44 +65,25 @@ SocketInfo 		client_data[MAX_CONNECTIONS]; // the structure for sendin data (cur
 #include "spike_dsp_shared.h"
 #include "../src-main/spike_dsp_shared.cpp"
 
-struct UserDataBuffer {
-  char 	*data;
-  char 	*dataptr;
-  char 	*endptr;
-  int		offset;
-  bool	send;	// TRUE if we should send this buffer to UserData
-  UserDataBufferInfo bufferinfo;
-  struct UserDataBuffer *next;
-};
-
-void UpdateUserDataInfo(struct UserDataBuffer *buf);
-void ClearUserDataInfo(struct UserDataBuffer *buf);
 void userdataexit(int status);
 void Usage(void);
 
 
 int main(int argc, char **argv) 
 {
-  UserDataBuffer	*buf, *nextbuf, *bufptr, *sendbuf;
-  // we save the buffer index each time we increment the size of the buffer
-  int 		bufsize =  USER_DATA_BUFFER_SIZE;
-  int			nbuffers = USER_DATA_NUM_BUFFERS;
-  int			retrysec;
-  int			socketsec;
-  int			socketusec;
   char		savebuf[SAVE_BUF_SIZE];
-  int			savebufsize;
+  int		savebufsize;
   short		datatype;
-  int			nspikes;
+  int		nspikes;
 
-  int			maxfds;
-  fd_set	   	readfds; 
+  int		maxfds;
+  fd_set	readfds; 
 
   char 		tmpstring[100];	// a temporary buffer 
   char 		filename[100];	
-  int         message;	// a temporary message variable
-  int			messagedata[MAX_BUFFER_SIZE]; // message data can contain a sysinfo or channelinfo structure
-  int			messagedatalen; // the length of the data in the message
+  int         	message;	// a temporary message variable
+  int		messagedata[MAX_BUFFER_SIZE]; // message data can contain a sysinfo or channelinfo structure
+  int		messagedatalen; // the length of the data in the message
   int 		i, id, j, nxtarg;
 
   struct timeval	tval, lasttval;
@@ -114,8 +95,8 @@ int main(int argc, char **argv)
   int 		writesize;
 
   SysInfo		*systmp;
-  SpikeBuffer		*stmp;
-  UserDataContBuffer	*mptr;
+  SpikeBuffer		*sptr;
+  UserDataContBuffer	*cptr;
 
   u32			*u32ptr;
 
@@ -136,28 +117,6 @@ int main(int argc, char **argv)
   }
 
   /* process the arguments */
-  nxtarg = 0;
-  while (++nxtarg < argc) {
-	if (strcmp(argv[nxtarg], "-bufsize") == 0) {
-	  bufsize = atoi(argv[++nxtarg]);
-    }
-	else if (strcmp(argv[nxtarg], "-nbuffers") == 0) {
-	  nbuffers = atoi(argv[++nxtarg]);
-    }
-    else {
-	  fprintf(stderr, "spike_userdata: unknown command line option %s, ignoring\n", argv[nxtarg]);
-	  Usage();
-    }
-  }
-  /* check to make sure the buffer sizes are set reasonably */
-  if ((bufsize < 100000) || (nbuffers < 3)) {
-	Usage();
-	fprintf(stderr, "Using default values\n");
-  	bufsize =  USER_DATA_BUFFER_SIZE;
-  	nbuffers = USER_DATA_NUM_BUFFERS;
-  }
-
-
   sysinfo.acq = 0;
   sysinfo.userdataon = 0;
 
@@ -167,42 +126,6 @@ int main(int argc, char **argv)
 	userdataexit(1);
   }
 
-  /* set the retry times and the timeouts for checking for an open socket */
-  retrysec = 5;
-  socketusec = 200000;
-  socketsec = 0;
-
-  /* set the type of program we are in for messaging */
-  sysinfo.program_type = SPIKE_USER_DATA;
-
-  /* allocate the circularly linked list of data buffers */
-  buf = (struct UserDataBuffer *) malloc(sizeof(struct UserDataBuffer));
-  buf->data = (char *) calloc(bufsize, sizeof(char));
-  buf->dataptr = buf->data;
-  buf->endptr = buf->data + bufsize - 1;
-  buf->offset = 0;
-  buf->send = 1;
-  ClearUserDataInfo(buf);
-  bufptr = buf;
-  /* create the rest of the buffers */
-  for (i = 1; i < nbuffers; i++) {
-    nextbuf = (struct UserDataBuffer *) 
-		    malloc(sizeof(struct UserDataBuffer));
-    nextbuf->data = (char *) calloc(bufsize, sizeof(char));
-    nextbuf->dataptr = nextbuf->data;
-    nextbuf->endptr = nextbuf->data + bufsize - 1;
-    nextbuf->offset = 0;
-    nextbuf->send = 0;
-    ClearUserDataInfo(nextbuf);
-    bufptr->next = nextbuf;
-    bufptr = bufptr->next;
-  }
-  /* link the next element to the first buffer */
-  bufptr->next = buf;
-
-  /* start at the first buffer */
-  bufptr = sendbuf = buf;
-  
   /* get the current time */
   gettimeofday(&lasttval, &tzone);
   
@@ -223,27 +146,6 @@ int main(int argc, char **argv)
 	message = GetMessage(server_data[i].fd, savebuf, &savebufsize, 
 		1);
 	if (sysinfo.userdataon) {
-	  /* check to see if adding the message on to the end of the
-	   * data buffer would push it past it's maximum size */
-	  if (bufptr->offset + savebufsize + sizeof(short) > 
-	      bufsize) {
-	    /* we are off the end, so move on to the next
-	     * buffer in the linked list */
-	    bufptr = bufptr->next;
-	    /* check to see if this buffer is the same as the first
-	     * buffer to send, and if so, increment the first
-	     * buffer to send. This will erase a buffers worth of
-	     * data */
-	    if (bufptr == sendbuf) {
-	      sendbuf = sendbuf->next;
-	      StatusMessage("Warning: filled all userdata buffers",
-		      client_message);
-	    }
-	    bufptr->send = 1;
-	    bufptr->offset = 0;
-	    bufptr->dataptr = bufptr->data;
-	    UpdateUserDataInfo(bufptr);
-	  }
 	  switch(i) {
 	    case SPIKE_DAQ:
 	      if (message == SPIKE_DATA) {
@@ -251,44 +153,20 @@ int main(int argc, char **argv)
 		/* get the number of each electrode and increment
 		 * the number of spikes on them */
 		nspikes = savebufsize / sizeof(SpikeBuffer);
-		stmp = (SpikeBuffer *) savebuf;
-		for (j = 0; j < nspikes; j++, stmp++) {
-		   bufptr->bufferinfo.nspikes[stmp->electnum]++;
-		}
+		sptr = (SpikeBuffer *) savebuf;
 	      }
 	      else if (message == CONTINUOUS_DATA) {
 		datatype = CONTINUOUS_DATA_TYPE;
-		mptr = (UserDataContBuffer *) savebuf;
-		for (j = 0; j < mptr->nchan; j++) {
-		   bufptr->bufferinfo.ncontsamp[mptr->electnum[j]] += 
-		     mptr->nsamp;
-		}
+		cptr = (UserDataContBuffer *) savebuf;
 	      }
 	      break;
 	    case SPIKE_POSDAQ:
 	      datatype = POSITION_DATA_TYPE;
-	      /* update the number of position records */
-	      bufptr->bufferinfo.nposbuf++;
 	      break;
 	    case SPIKE_MAIN: 
 	      datatype = DIGITALIO_DATA_TYPE;
-	      bufptr->bufferinfo.ndigiobuf++;
-	      u32ptr =  (u32 *) savebuf;
 	      break;
 	  }
-	  /* put the datatype, the size of the data and the data 
-	   * itself in the buffer */
-	  memcpy(bufptr->dataptr, &datatype, sizeof(short));
-	  bufptr->dataptr += sizeof(short);
-	  /* write out the size of the data buffer */
-	  memcpy(bufptr->dataptr, &savebufsize, sizeof(int));
-	  bufptr->dataptr += sizeof(int);
-	  /* write out the data */
-	  memcpy(bufptr->dataptr, &savebuf, savebufsize);
-	  bufptr->dataptr += savebufsize;
-	  /* adjust the offset */
-	  bufptr->offset += sizeof(short) + sizeof(int) + savebufsize;
-	  bufptr->send = 1;
 	}
       }
       id++;
@@ -313,8 +191,6 @@ int main(int argc, char **argv)
 	     /* get the userdatainfo structure */
 	     memcpy((char *) &userdatainfo, messagedata,
 		    sizeof(UserDataInfo));
-	     /* we now update the userdatainfo of the current buffer */
-	     UpdateUserDataInfo(bufptr);
 	     break;
 	  case USER_DATA_START:
 	     sysinfo.userdataon = 1;
@@ -323,18 +199,6 @@ int main(int argc, char **argv)
 	     sysinfo.userdataon = 0;
 	     /* move on to the next buffer so that we can start
 	     * fresh */
-	     bufptr = bufptr->next;
-	     /* check to see if this buffer is the same as the first
-	     * buffer to send, and if so, increment the first
-	     * buffer to send. This will erase a buffers worth of
-	     * data */
-	     if (bufptr == sendbuf) {
-		sendbuf = sendbuf->next;
-	     }
-	     bufptr->send = 1;
-	     bufptr->offset = 0;
-	     bufptr->dataptr = bufptr->data;
-	     UpdateUserDataInfo(bufptr);
 	     break;
 	  case SYSTEM_INFO:
 	     systmp = (SysInfo *) messagedata;
@@ -356,119 +220,8 @@ int main(int argc, char **argv)
       }
       id++;
     }
-    /* if the specified length of time has passed, try to open a client to
-     * send data to userdata */
-    gettimeofday(&tval, &tzone);
-    if (tval.tv_sec - lasttval.tv_sec > retrysec) {
-      /* close the socket if it was open */
-      if (fd > 0) {
-	    close(fd);
-      }
-      /* we should try to send a buffer */
-      //fprintf(stderr, "spike_userdata: trying to open UserData socket\n");
-      if ((fd = GetClientSocket(USER_DATA_SOCKET_NAME, socketsec, 
-		  socketusec)) > 0) {
-	/* we have sucessfully opened the socket, so we send the
-	 * data from the current buffer through and then close the
-	 * socket */
-	fprintf(stderr, "spike_userdata: opened UserData socket, sending data\n");
-	/* we first get the information on what sort of data is in the
-	 * buffers and the total number of each type of buffer and send
-	 * that out first */
-	while (bufptr->send) {
-	  /* we first send the buffer information */
-	  if ((nwritten = write(fd, &bufptr->bufferinfo, 
-		  sizeof(UserDataBufferInfo))) != 
-		  sizeof(UserDataBufferInfo)) {
-	    fprintf(STATUSFILE, "Error: unable to write buffer information to UserData\n");
-	  }
-	  fprintf(stderr, "wrote UserDataBufferInfo, datalen to write = %d\n", bufptr->offset);
-
-	  /* now write out the buffer */
-	  datalen = bufptr->offset;
-	  /* reset the dataptr */
-	  bufptr->dataptr = bufptr->data;
-	  nwritten = 0;
-	  totalwritten = 0;
-	  /* send the data*/
-	  while (datalen > 0) {
-	    writesize = datalen > MAX_SOCKET_WRITE_SIZE ? 
-			    MAX_SOCKET_WRITE_SIZE : datalen;
-	    nwritten = write(fd, bufptr->dataptr, writesize);
-	    bufptr->dataptr += nwritten;
-	    if (nwritten == -1) {
-	       fprintf(STATUSFILE, "Error: unable to write complete buffer to UserData\n");
-	       break;
-	    }
-	    else {
-	      datalen -= nwritten;
-	    } 
-	  }
-	  /* reset the buffer */
-	  bufptr->send = 0;
-	  bufptr->offset = 0;
-	  bufptr->dataptr = bufptr->data;
-	  ClearUserDataInfo(bufptr);
-	  /* move on to the next buffer */
-	  bufptr = bufptr->next;
-	  UpdateUserDataInfo(bufptr);
-	}
-	fprintf(stderr, "spike_userdata: done writing data \n");
-	/* we have sent all of the data, so we reset the timer */
-	lasttval.tv_sec = tval.tv_sec;
-      }
-      else {
-	/* we can't send data, so we reset the timer */
-	lasttval.tv_sec = tval.tv_sec;
-      }
-    }
   }
   return 0;
-}
-
-void ClearUserDataInfo(struct UserDataBuffer *buf)
-{
-  UserDataBufferInfo *iptr;
-  int i;
-
-  /* set all the bytes in the structure to 0 to clear it out */
-  memset(&buf->bufferinfo, 0, sizeof(UserDataBufferInfo));
-
-  /* set the starttime to be very large so that we can set it by looking for
-   * a smaller time */
-  buf->bufferinfo.conttimes[0] = UINT_MAX;
-  return;
-}
-
-void UpdateUserDataInfo(struct UserDataBuffer *buf)
-  /* combine the current userdata information with that already stored to
-   * produce a complete list of the types of data and channels in the current
-   * buffer */
-{
-  UserDataBufferInfo *iptr;
-  int i;
-
-  iptr = &buf->bufferinfo;
-
-  /* copy the DSPInfo from sysinfo */
-  iptr->userdatainfo.sendcont |= userdatainfo.sendcont;
-  iptr->userdatainfo.sendspike |= userdatainfo.sendspike;
-  iptr->userdatainfo.sendpos |= userdatainfo.sendpos;
-  iptr->userdatainfo.senddigio |= userdatainfo.senddigio;
-
-  for (i = 0; i < MAX_ELECTRODE_NUMBER; i++) {
-	iptr->userdatainfo.contelect[i] |= userdatainfo.contelect[i];
-	if (iptr->userdatainfo.contelect[i] && 
-		(i > iptr->maxconttetnum)) {
-	  iptr->maxconttetnum = i;
-	}
-	iptr->userdatainfo.spikeelect[i] |= userdatainfo.spikeelect[i]; 
-	if (iptr->userdatainfo.spikeelect[i] && 
-		(i > iptr->maxspiketetnum)) {
-	  iptr->maxspiketetnum = i;
-	}
-  }
-  return;
 }
 
 void userdataexit(int status)
