@@ -448,7 +448,7 @@ typedef struct _SystemInfo {
     struct timeval	computer_start_time; // the approximate time at which we last reset the clock
     int 		program_type;  	// display, process, etc.
     char		myhostname[80]; // this is a duplicate of the netinfo.myname variable. It's necessary for extracting the data correctly
-    int			rt;		// 1 if this is a real time system
+    bool		rtmode;		// true if data transmission between modules should be as real time as possible
     int			machinenum;	// the index for this machine
     unsigned char	datatype[MAX_MACHINES]; // the data types for each machine
     char	        datadir[MAX_MACHINES][200]; // the data types for each machine
@@ -495,9 +495,9 @@ typedef struct _SystemInfo {
     float		eegtracelength; // a temporary place for the eeg trace length 
     int			nelectrodes;    // the total number of electrodes on this machine
     int			maxelectnum;    // the total number of electrodes on all machines
-    u32	approxtime;    	// the APPROXIMATE current time. NOT EXACT
-    u32	lastdisplayedtime;    	// the last time that was displayed
-    u32	lastfilesizetime;    	// the last time that the file size was displayed
+    u32			approxtime;    	// the APPROXIMATE current time. NOT EXACT
+    u32			lastdisplayedtime;    	// the last time that was displayed
+    u32			lastfilesizetime;    	// the last time that the file size was displayed
     
     /* Position related variables */
     u32		cpudsptimeoffset; // the difference between dsp and cpu times
@@ -531,7 +531,7 @@ typedef struct _SystemInfo {
 
 
 typedef struct _ElectrodeData {
-    u32       timestamp;      // the timestamp in 100 usec units
+    u32       		timestamp;      // the timestamp in 100 usec units
     short               data[NTOTAL_POINTS_PER_SPIKE];
 } ElectrodeData;
 

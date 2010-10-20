@@ -114,14 +114,25 @@ dspinfo		0		110			localhost
 dspinfo		1		30000			localhost
 dspinfo		2		30000			localhost
 
+%dspsampperpacket controls the amount of data in each packet from the dsp.  This is useful if you want
+%to do rapid processing in spike_userdata of incoming continuous data that is sampled at 
+%relatively low rates (e.g. 1500 Hz).  
+%Don't set this otherwise, as the default values are optimal for minimizing cpu usage
+%dspsampperpacket	1	1
+
+%rtmode is similarly used to improve online analysis.  setting rtmode changes the number of samples per
+%packet for continuous channels to produce a data packet every millisecond.  This also causes 
+%spike_daq to send out data to spike_userdata (if it is running) as quickly as possible
+%As with dspsampperpacket, don't set this unless you need to minize data latency to spike_userdata
+%rtmode	0
+
 % calibration file specifies the name of the calibration file to set the
 % relative amplitudes of the channels.  See writecalfile.m for a matlab script
 % that generates an example calibration file
-
 calibrationfile		/usr/local/nspike/nspikecalfile
 
 % set the length (in seconds) of the eeg trace 
-eegtracelength 	1.0
+eegtracelength 	4.0
 
 % the mapping from electrodes to dsp channels.  This mapping is set by the
 % connections from the microdrive array to the A to D box.

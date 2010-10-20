@@ -117,7 +117,7 @@ int main(int argc, char **argv)
   dispinfo.posdatarate = 0;
   dispinfo.eegtracestarttime = 0;
 
-  sysinfo.rt = 0;
+  sysinfo.rtmode = 0;
   sysinfo.acq = 0;
   sysinfo.dspacq = 0;
   sysinfo.posinputnum = -1;
