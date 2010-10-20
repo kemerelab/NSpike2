@@ -43,10 +43,10 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
  /usr/include/zlib.h /usr/include/zconf.h ../include/spike_position.h \
  ../include/spike_defines.h ../include/spike_dsp.h ../include/spike_dio.h \
- ../include/spike_functions.h ../include/spike_rtl.h \
- ../include/spike_userdata.h ../src-gui/spikeMainWindow.h \
- ../src-gui/spikeGLPane.h /usr/lib/qt4/include/QtGui/QtGui \
- /usr/lib/qt4/include/QtCore/QtCore \
+ ../include/spike_dsp_shared.h ../include/spike_functions.h \
+ ../include/spike_rtl.h ../include/spike_userdata.h \
+ ../src-gui/spikeMainWindow.h ../src-gui/spikeGLPane.h \
+ /usr/lib/qt4/include/QtGui/QtGui /usr/lib/qt4/include/QtCore/QtCore \
  /usr/lib/qt4/include/QtCore/qabstractanimation.h \
  /usr/lib/qt4/include/QtCore/qobject.h \
  /usr/lib/qt4/include/QtCore/qobjectdefs.h \
@@ -899,6 +899,8 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 ../include/spike_dsp.h:
 
 ../include/spike_dio.h:
+
+../include/spike_dsp_shared.h:
 
 ../include/spike_functions.h:
 

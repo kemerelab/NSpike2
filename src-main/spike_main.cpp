@@ -327,6 +327,8 @@ int main(int argc, char **argv)
   if (sysinfo.userdataoutput) {
     fprintf(STATUSFILE, "Sending userdata config\n");
     SendUserDataInfo();
+    fprintf(STATUSFILE, "Sending digio config to spike_userdata\n");
+    SendDigIOInfo();
   }
 
   /* now set up the data buffers for display of spike or eeg traces */

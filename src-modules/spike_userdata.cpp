@@ -40,6 +40,14 @@
  */
 
 #include <spikecommon.h>
+/* function definitions that allow us to use spike_dsp_shared.h */
+void DisplayErrorMessage(char *);
+void DisplayStatusMessage(char *);
+void StartLocalAcq(void) { return; };
+void StopLocalAcq(void) { return; };
+
+char tmpstring[200];
+
 
 
 /* Global variables */
@@ -47,11 +55,15 @@ SysInfo 		sysinfo;
 NetworkInfo		netinfo;
 UserDataInfo		userdatainfo;
 DSPInfo			*dptr;
+DigIOInfo		digioinfo;
 
 SocketInfo 		server_message[MAX_CONNECTIONS]; // the structure for the server messaging
 SocketInfo 		client_message[MAX_CONNECTIONS]; // the structure for the client messaging
 SocketInfo 		server_data[MAX_CONNECTIONS]; // the structure for receiving data
 SocketInfo 		client_data[MAX_CONNECTIONS]; // the structure for sendin data (currently unused)
+
+#include "spike_dsp_shared.h"
+#include "../src-main/spike_dsp_shared.cpp"
 
 struct UserDataBuffer {
   char 	*data;
@@ -331,6 +343,10 @@ int main(int argc, char **argv)
 		    sizeof(DSPInfo) * MAX_DSPS);
 	     dptr = sysinfo.dspinfo;
 	     break;
+	  case DIGIO_INFO:
+	     /* copy the DSPInfo structure */
+	     memcpy(messagedata, &digioinfo, sizeof(DigIOInfo));
+	     break;
 	  case EXIT:
 	     userdataexit(0);		    
 	     break;
@@ -472,3 +488,12 @@ void Usage(void)
   fprintf(stderr, "Usage: spike_userdata -config configfile -netconfig networkconfigfile [-bufsize #] [-nbuffers #]\n\bufsize must be > 100000\n\t nbufs must be >= 3\n");
 }
 
+void DisplayErrorMessage(char *message)
+{
+  fprintf(stderr, "spike_userdata error: %s\n", message);
+}
+
+void DisplayStatusMessage(char *message)
+{
+  fprintf(stderr, "spike_userdata status: %s\n", message);
+}

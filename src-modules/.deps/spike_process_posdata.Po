@@ -43,8 +43,8 @@ spike_process_posdata.o: spike_process_posdata.cpp \
  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
  /usr/include/zlib.h /usr/include/zconf.h ../include/spike_position.h \
  ../include/spike_defines.h ../include/spike_dsp.h ../include/spike_dio.h \
- ../include/spike_functions.h ../include/spike_rtl.h \
- ../include/spike_userdata.h spike_ffmpegEncoder.h \
+ ../include/spike_dsp_shared.h ../include/spike_functions.h \
+ ../include/spike_rtl.h ../include/spike_userdata.h spike_ffmpegEncoder.h \
  ../include/spike_position.h ../include/spike_defines.h
 
 ../include/spikecommon.h:
@@ -232,6 +232,8 @@ spike_process_posdata.o: spike_process_posdata.cpp \
 ../include/spike_dsp.h:
 
 ../include/spike_dio.h:
+
+../include/spike_dsp_shared.h:
 
 ../include/spike_functions.h:
 

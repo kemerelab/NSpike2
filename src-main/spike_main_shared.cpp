@@ -252,6 +252,20 @@ void SendUserDataInfo(void)
     return;
 }
 
+void SendDigIOInfo(void)
+    /* send the digio structure to the spike_userdata module. This
+     * is only called by the master machine */
+{
+    int id, i = 0;
+    while ((id = netinfo.messageinfd[i++]) != -1) {
+	/* only send the message to the local modules */
+	if (strcmp(netinfo.myname, client_message[id].to) == 0) {
+	    SendMessage(client_message[id].fd, DIGIO_INFO, (char *)&digioinfo,
+		    sizeof(DigIOInfo)); 
+	}
+    } 
+    return;
+}
 
 int UserDataStart(void) 
 {

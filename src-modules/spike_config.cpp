@@ -1107,10 +1107,10 @@ int SetDSPInfo(void)
 {
     /* go through the channelinfo structure and set up the dsp info structures
      * */
-    int i, j, m;
+    int i, m;
     int dspelectnum, chnum;
     int lastelect, dsp;
-    int sampmult, defaultnsamp;
+    int sampmult;
     ChannelInfo *ch;
     DSPInfo *dptr;
 

@@ -43,9 +43,10 @@ spike_dsp.o: spike_dsp.cpp ../include/spikecommon.h /usr/include/stdio.h \
  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
  /usr/include/zlib.h /usr/include/zconf.h ../include/spike_position.h \
  ../include/spike_defines.h ../include/spike_dsp.h ../include/spike_dio.h \
- ../include/spike_functions.h ../include/spike_rtl.h \
- ../include/spike_userdata.h ../include/spike_main.h /usr/include/GL/gl.h \
- /usr/include/GL/glext.h /usr/include/inttypes.h /usr/include/GL/glu.h \
+ ../include/spike_dsp_shared.h ../include/spike_functions.h \
+ ../include/spike_rtl.h ../include/spike_userdata.h \
+ ../include/spike_main.h /usr/include/GL/gl.h /usr/include/GL/glext.h \
+ /usr/include/inttypes.h /usr/include/GL/glu.h \
  ../include/../src-gui/spikeInput.h /usr/lib/qt4/include/QtGui/QtGui \
  /usr/lib/qt4/include/QtCore/QtCore \
  /usr/lib/qt4/include/QtCore/qabstractanimation.h \
@@ -683,7 +684,8 @@ spike_dsp.o: spike_dsp.cpp ../include/spikecommon.h /usr/include/stdio.h \
  /usr/lib/qt4/include/Qt3Support/q3popupmenu.h \
  /usr/lib/qt4/include/QtGui/QLabel \
  /usr/lib/gcc/x86_64-manbo-linux-gnu/4.4.3/../../../../include/c++/4.4.3/sstream \
- /usr/lib/gcc/x86_64-manbo-linux-gnu/4.4.3/../../../../include/c++/4.4.3/bits/sstream.tcc
+ /usr/lib/gcc/x86_64-manbo-linux-gnu/4.4.3/../../../../include/c++/4.4.3/bits/sstream.tcc \
+ spike_dsp_shared.cpp
 
 ../include/spikecommon.h:
 
@@ -870,6 +872,8 @@ spike_dsp.o: spike_dsp.cpp ../include/spikecommon.h /usr/include/stdio.h \
 ../include/spike_dsp.h:
 
 ../include/spike_dio.h:
+
+../include/spike_dsp_shared.h:
 
 ../include/spike_functions.h:
 
@@ -2230,3 +2234,5 @@ spike_dsp.o: spike_dsp.cpp ../include/spikecommon.h /usr/include/stdio.h \
 /usr/lib/gcc/x86_64-manbo-linux-gnu/4.4.3/../../../../include/c++/4.4.3/sstream:
 
 /usr/lib/gcc/x86_64-manbo-linux-gnu/4.4.3/../../../../include/c++/4.4.3/bits/sstream.tcc:
+
+spike_dsp_shared.cpp:
