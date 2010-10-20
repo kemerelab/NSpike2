@@ -317,28 +317,6 @@ int StopModuleAcquisition(void);
 int StopModuleAcquisition(int modulenum);
 
 
-/* DSP digital IO commands */
-void StartDigIOProgram(int prognum);
-int TriggerOutput(int output);
-void ChangeOutput(int output, int raise);
-void SendDAQUserMessage(int message, char *data, int datalen);
-void SendDigIOUserMessage(char *message, int len);
-//int WriteDSPDIOCommand(unsigned short *command, int len);
-int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine=-1, int sendResetStateMachine=1);
-int ResetStateMachines();
-int WriteDSPDIORestartStateMachine(int s);
-int LookForDSPDIOResponse(void);
-int NextDIOStateMachine(void);
-#ifndef DIO_ON_MASTER_DSP
-int WriteArbWaveForm(unsigned short *wavefm, int len);
-int SetArbAOutChan(unsigned short aout);
-int SetArbPointer(unsigned short offset);
-int EnableArb(unsigned short enable);
-int SetArbTrigger(unsigned short trigger);
-#endif
-
-
-
 void DrawInitialScreen(void);
 void DefineCommonDrawInfo(void);
 void UpdateCommonButton(int bnum);

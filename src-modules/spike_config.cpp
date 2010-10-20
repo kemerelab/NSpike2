@@ -521,8 +521,8 @@ int ReadConfigFile(char *configfilename, int datafile)
                 }
 	    }
 	    /* Matlab output */
-            else if (strncmp(tmp, "userdata", 6) == 0) {
-		tmp += 6;
+            else if (strncmp(tmp, "userdata", 8) == 0) {
+		tmp += 8;
 		tmpbool = NULL;
 		/* skip spaces until we get to the datatype string */
 		tmpint[0] = 0;
@@ -544,13 +544,14 @@ int ReadConfigFile(char *configfilename, int datafile)
 		    }
 		    else {
 			/* set this electrode to be saved */
-			*(tmpbool + *tmpint) = 1;
+			tmpbool[*tmpint] = 1;
 		    }
+		    fprintf(stderr, "cont data chan %d\n", userdatainfo.contelect[*tmpint]);
 		}
 		else if (strncmp(tmp, "POSITION", 8) == 0) {
 		    userdatainfo.sendpos = 1;
 		}
-		else if (strncmp(tmp, "DIGITALIO", 8) == 0) {
+		else if (strncmp(tmp, "DIGITALIO", 9) == 0) {
 		    userdatainfo.senddigio = 1;
 		}
 		else {

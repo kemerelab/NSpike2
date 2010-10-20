@@ -124,7 +124,15 @@ dspinfo		2		30000			localhost
 %packet for continuous channels to produce a data packet every millisecond.  This also causes 
 %spike_daq to send out data to spike_userdata (if it is running) as quickly as possible
 %As with dspsampperpacket, don't set this unless you need to minize data latency to spike_userdata
-%rtmode	0
+rtmode		1
+
+%userdata defines the types of data to send and the list of electrodes to send to spike_user_data
+%currently each datatype and electrode number need to be listed separately:
+% userdata DIGITALIO
+% userdata POSITION
+% userdata SPIKE 4    this causes spike data from electrode 4 to be sent to spike_userdata
+% userdata CONTINUOUS 5    this causes continuous data from electrode 5 to be sent to spike_userdata
+userdata CONTINUOUS 2
 
 % calibration file specifies the name of the calibration file to set the
 % relative amplitudes of the channels.  See writecalfile.m for a matlab script
