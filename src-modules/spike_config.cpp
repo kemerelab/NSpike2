@@ -1151,6 +1151,7 @@ int SetDSPInfo(void)
             ch->dspind = dptr->nchan;
             /* set the number of the dsp channel that this handles and
              * increment the total number of channels on this dsp */
+            dptr->channelinfochan[dptr->nchan] = ch->index;
             dptr->dspchan[dptr->nchan++] = ch->dspchan;
              /* check to see if we are on the same electrode as the previous
              * channel */
