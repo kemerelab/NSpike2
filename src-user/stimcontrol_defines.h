@@ -17,7 +17,6 @@
 #define DEFAULT_LASER_PIN_2 0x02 
 
 #define DELAY_TO_START_PULSE_FILE 5000 // 500 ms delay from receiving pulse file to running
-#define MAX_PULSES 500
 
 #define MIN_LATENCY 300 // about 9 Hz
 #define MAX_LATENCY 900 // about 6 Hz
@@ -30,19 +29,6 @@
 
 #define PULSE_IMMEADIATELY 1
 
-
-typedef struct _PulseCommand {
-    int line;
-    int pre_delay; // in ticks; automatically zeroed after first
-    int pulse_width; // in ticks (10 kHz)
-    int inter_pulse_delay; // in ticks
-    int n_pulses;
-    u32 start_samp_timestamp;
-    int is_biphasic;
-    uint64_t pin1mask, pin2mask;
-    int inter_frame_delay; // in ticks;
-    int n_repeats;
-} PulseCommand;
 
 typedef struct {
   double w1,w2;
@@ -93,7 +79,7 @@ extern double cmPerPix; // global mapping between video and reality
 extern double ratSpeed; // global measure of rat speed
 
 /* Globals for stimulation */
-extern PulseCommand pulseArray[MAX_PULSES + 1];
+extern PulseCommand pulseArray[MAX_PULSE_SEQS + 1];
 extern PulseCommand *nextPulseCmd;
 
 void PrepareStimCommand(PulseCommand pulseCmd);

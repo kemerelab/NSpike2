@@ -46,20 +46,25 @@ MainConfigTab::MainConfigTab( QWidget* parent )
     grid->addWidget(CmPerPix, 2, 1);
     connect(CmPerPix, SIGNAL(textChanged(const QString &)), this, SLOT(updateCmPerPix(void)));
 
-    outputOnlyModePushButton =       new QPushButton("\nOutput Only Mode\n");
-    realtimeFeedbackModePushButton = new QPushButton("\nRealtime Feedback Mode\n");
-    outputOnlyModePushButton->setCheckable(true);
-    realtimeFeedbackModePushButton->setCheckable(true);
-    outputOnlyModePushButton->setStyleSheet("QPushButton::checked{color: green;}");
-    realtimeFeedbackModePushButton->setStyleSheet("QPushButton::checked{color: green;}");
+    outputOnlyModeButton =       new QPushButton("\nOutput Only Mode\n");
+    realtimeFeedbackModeButton = new QPushButton("\nRealtime Feedback Mode\n");
+    outputOnlyModeButton->setCheckable(true);
+    realtimeFeedbackModeButton->setCheckable(true);
+    outputOnlyModeButton->setStyleSheet("QPushButton::checked{color: green;}");
+    realtimeFeedbackModeButton->setStyleSheet("QPushButton::checked{color: green;}");
+    outputOnlyModeButton->setStyle("Windows");
+    realtimeFeedbackModeButton->setStyle("Windows");
+
+    outputOnlyModeButton->setEnabled(false);
+    realtimeFeedbackModeButton->setEnabled(false);
 
     modeButtonGroup = new QButtonGroup;
-    modeButtonGroup->addButton(outputOnlyModePushButton,OUTPUT_ONLY_MODE);
-    modeButtonGroup->addButton(realtimeFeedbackModePushButton,REALTIME_FEEDBACK_MODE);
+    modeButtonGroup->addButton(outputOnlyModeButton,OUTPUT_ONLY_MODE);
+    modeButtonGroup->addButton(realtimeFeedbackModeButton,REALTIME_FEEDBACK_MODE);
 
     QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(outputOnlyModePushButton);
-    hlayout->addWidget(realtimeFeedbackModePushButton);
+    hlayout->addWidget(outputOnlyModeButton);
+    hlayout->addWidget(realtimeFeedbackModeButton);
     grid->addLayout(hlayout,4,0,1,3);
 
     loadSettingsButton = new QPushButton("Load Settings");
@@ -79,7 +84,7 @@ MainConfigTab::MainConfigTab( QWidget* parent )
     //marginsLayout->addLayout(grid,1,0);
 
     setLayout(grid);
-
+    updateStatus(digioinfo.currentprogram);
 }
 
 /*
@@ -101,13 +106,21 @@ void MainConfigTab::updateStatus(int whichProgram)
     UserProgramStatus->setText(QString("User Program [Not Running]"));
     UserProgramCombo->setCurrentItem(0);
     RunUserProgramButton->setText(QString("Run"));
+
+    outputOnlyModeButton->setEnabled(false);
+    realtimeFeedbackModeButton->setEnabled(false);
   }
   else {
     UserProgramStatus->setText(QString("User Program [Running]"));
     UserProgramCombo->setCurrentItem(whichProgram);
     RunUserProgramButton->setText(QString("Restart"));
+
+    outputOnlyModeButton->setEnabled(true);
+    realtimeFeedbackModeButton->setEnabled(true);
   }
 }
+
+
 void MainConfigTab::updateCmPerPix(void)
 {
   double data;
@@ -115,7 +128,7 @@ void MainConfigTab::updateCmPerPix(void)
   if (digioinfo.outputfd) {
     // set single activation pin
     data = CmPerPix->text().toDouble();
-    SendDAQUserMessage(DIO_SET_CM_PER_PIX, (char *) &data, sizeof(double));
+    SendUserMessage(DIO_SET_CM_PER_PIX, (char *) &data, sizeof(double));
     fprintf(stderr,"Sent pin\n");
   }
   else {

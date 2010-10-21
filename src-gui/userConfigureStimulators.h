@@ -2,6 +2,7 @@
 #define __SPIKE_USER_CONFIGURE_STIMULATORS_H__
 
 #include <QtGui>
+#include "spike_stimcontrol_defines.h"
 
 #define DEFAULT_TMP_PULSE_COMMANDS_FILE "/tmp/tmp_pulse_commands"
 
@@ -12,12 +13,16 @@ class StimConfigureWidget : public QWidget
 public:
   StimConfigureWidget(const QString &title = "Group Box",QWidget *parent = 0);
 
+  PulseCommand stimPulseCmd;
+
 public slots:
   void frequencyChanged(void);
   void periodChanged(void);
   void ablePulseSequence(void);
 
   void ableBiphasicStimulation(int);
+
+  void updateStimParameters(void);
 
 private:
   QDoubleSpinBox *pulseLengthSpinBox;
@@ -41,6 +46,9 @@ class StimConfigTab : public QWidget
 
 public:
   StimConfigTab(QWidget *parent = 0);
+  int activeStimulator;
+  StimConfigureWidget *stimConfigA;
+  StimConfigureWidget *stimConfigB;
 
 public slots:
   void selectStimulator(void);
@@ -51,8 +59,6 @@ signals:
   void activeStimulatorChanged(int);
 
 private:
-  StimConfigureWidget *stimConfigA;
-  StimConfigureWidget *stimConfigB;
   QPushButton *stimulatorAButton;
   QPushButton *stimulatorBButton;
 

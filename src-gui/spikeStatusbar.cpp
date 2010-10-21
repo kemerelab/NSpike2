@@ -55,21 +55,25 @@ SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
 
     fileStatus = new QLabel(FileDiskStatus);
     fileStatus->setFont(f);
+    fileStatus->setAutoFillBackground(true);
     //addPermanentWidget(fileStatus);
     statusLayout->addWidget(fileStatus,0,0,1,1);
 
     fileSize = new QLabel(FileDiskStatus);
     fileSize->setFont(f);
+    fileSize->setAutoFillBackground(true);
     //addPermanentWidget(fileSize);
     statusLayout->addWidget(fileSize,0,1,1,1);
 
     diskStatus = new QLabel(FileDiskStatus);
     diskStatus->setFont(f);
+    diskStatus->setAutoFillBackground(true);
     //addPermanentWidget(diskStatus);
     statusLayout->addWidget(diskStatus,1,0,1,1);
 
     diskFree = new QLabel(FileDiskStatus);
     diskFree->setFont(f);
+    diskFree->setAutoFillBackground(true);
     //addPermanentWidget(diskFree);
     statusLayout->addWidget(diskFree,1,1,1,1);
 
@@ -85,51 +89,62 @@ void SpikeInfo::clearStatus() {
   message->setText(""); sysinfo.newmessage = 0;
 };
 
-void SpikeInfo::updateInfo(void) {
-    QString s;
-    /* update the labels */
+void SpikeInfo::updateInfo(void) 
+{
+  QString s;
+  /* update the labels */
 
-    if (dispinfo.errormessage[0] == '\0') {
-	/* display the current status message */
-	message->setPaletteForegroundColor("black");
-	if (sysinfo.newmessage) {
-	    message->setText(QString(dispinfo.statusmessage));
-	}
-	fileStatus->setPaletteBackgroundColor("lightgrey");
-    }
-    else {
-	/* display the current error message in red*/
-	message->setPaletteForegroundColor("red");
-	if (sysinfo.newmessage) {
-	    message->setText(QString(dispinfo.errormessage));
-	}
-	fileStatus->setPaletteBackgroundColor("grey98");
-    }
-    
-    if (sysinfo.fileopen) {
-	fileStatus->setText(QString(sysinfo.datafilename));
-	fileStatus->setPaletteBackgroundColor(QColor(0, 200, 0));
-	fileSize->setText(QString("%1 MB").arg(sysinfo.datafilesize, 0, 'f',1));
-	fileSize->setPaletteBackgroundColor(QColor(0, 200, 0));
-    }
-    else {
-	fileStatus->setText("No File");
-	fileStatus->setPaletteBackgroundColor(QColor(250, 50, 50));
-	fileSize->setText(QString("0.0 MB"));
-	fileSize->setPaletteBackgroundColor(QColor(250, 50, 50));
-    }
+  QPalette palRed;
+  QPalette palGreen;
+  QPalette palDefault;
+  palRed.setColor(QPalette::Window,QColor(255,50,50));
+  palGreen.setColor(QPalette::Window,QColor(0, 200, 0));
 
-    FormatTS(&s, sysinfo.disktime);
-    if (sysinfo.diskon) {
-	diskStatus->setText(QString("Disk on  %1").arg(s));
-	diskStatus->setPaletteBackgroundColor(QColor(0, 200, 0));
-	diskFree->setPaletteBackgroundColor(QColor(0, 200, 0));
-    }
-    else {
-	diskStatus->setText(QString("Disk off  %1").arg(s));
-	diskStatus->setPaletteBackgroundColor(QColor(255, 50, 50));
-	diskFree->setPaletteBackgroundColor(QColor(255, 50, 50));
-    }
-    diskFree->setText(QString("%1 MB free").arg(sysinfo.diskfree, 0, 'f',1));
+  // default colors
+  message->setPaletteForegroundColor("black");
+  fileStatus->setPalette(palDefault);
+  fileSize->setPalette(palDefault);
+  diskStatus->setPalette(palDefault);
+  diskFree->setPalette(palDefault);
+
+  if (sysinfo.newmessage) { // display the current status message
+    message->setText(QString(dispinfo.statusmessage));
+  }
+  if (dispinfo.errormessage[0] == '\0') {
+    message->setStyleSheet("color: black;");
+  }
+  else {
+    /* display the current error message in red*/
+    message->setStyleSheet("color: red;");
+  }
+
+  if (sysinfo.fileopen) {
+    fileStatus->setText(QString(sysinfo.datafilename));
+    fileSize->setText(QString("%1 MB").arg(sysinfo.datafilesize, 0, 'f',1));
+
+    fileStatus->setPalette(palGreen);
+    fileSize->setPalette(palGreen);
+  }
+  else {
+    fileStatus->setText("No File");
+    fileSize->setText(QString("0.0 MB"));
+
+    fileStatus->setPalette(palRed);
+    //fileSize->setPalette(palRed);
+  }
+
+  FormatTS(&s, sysinfo.disktime);
+  if (sysinfo.diskon) {
+    diskStatus->setText(QString("Disk on  %1").arg(s));
+    diskStatus->setPalette(palGreen);
+  }
+  else if (sysinfo.fileopen) {
+    diskStatus->setText(QString("Disk off  %1").arg(s));
+    diskStatus->setPalette(palRed);
+  }
+
+  diskFree->setText(QString("%1 GB free").arg(sysinfo.diskfree/1000, 0, 'f',1));
+  if (sysinfo.diskfree < 500) 
+    diskFree->setPalette(palRed);
 }
 

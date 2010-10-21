@@ -14,11 +14,16 @@
 Makefile
 Makefile.in
 config.*
+aclocal.m4
 autom4te.cache/*
 autom4te.cache
 src-extract/nspike_extract
 src-extract/nspike_postimestamp
 src-gui/libnspike.a
+src-gui/qrc_guiresources.cpp
+src-gui/.moc/*
+src-gui/.ui/*
+src-gui/.obj/*
 src-main/nspike
 src-modules/nspike_matlab
 src-modules/spike_daq
@@ -27,3 +32,7 @@ src-modules/spike_posdaq
 src-modules/spike_process_posdata
 src-modules/spike_save_data
 src-user/user_program
+
+src-gui/testing/Makefile
+src-gui/testing/qrc_guiresources.cpp
+src-gui/testing/testUserGui

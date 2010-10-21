@@ -168,7 +168,7 @@ class setRewardsDialog : public QDialog {
 	QPushButton  	**pulse;
 	QRadioButton  	**change;
 	Q3ButtonGroup	*pulseButtonGroup;
-	Q3ButtonGroup	*changeButtonGroup;
+	QButtonGroup	*changeButtonGroup;
 	QPushButton	*next;
 	QPushButton	*prev;
 	QPushButton	*close;

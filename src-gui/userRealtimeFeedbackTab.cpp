@@ -3,6 +3,8 @@
 #include "userRealtimeFeedbackTab.h"
 #include "spikeUserGUI.h"
 
+extern DAQ_IO *daq_io_widget; // global
+
 RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   : QWidget(parent)
 {
@@ -27,8 +29,9 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   layout->addWidget(new QLabel("Realtime Feedback Program"),1,0, Qt::AlignRight);
   layout->addWidget(feedbackAlgorithmComboBox,1,1);
 
-  QPushButton *realtimeEnableButton = new QPushButton("Enable Realtime");
+  realtimeEnableButton = new QPushButton("Enable Realtime");
   layout->addWidget(realtimeEnableButton,2,0,1,2,Qt::AlignCenter);
+  // click signal connected in spikeUserGUI
 
   status = new QLabel("waiting...");
   QGroupBox *statusGroupBox = new QGroupBox("Status");
@@ -38,11 +41,13 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   statusBoxLayout->addWidget(status,Qt::AlignCenter);
   layout->addWidget(statusGroupBox,3,0,2,2);
 
-  QPushButton *startFeedbackButton = new QPushButton("Start Feedback");
+  startFeedbackButton = new QPushButton("Start Feedback");
   layout->addWidget(startFeedbackButton,5,0, Qt::AlignCenter);
+  // click signal connected in spikeUserGUI
 
-  QPushButton *stopFeedbackButton = new QPushButton("Stop Feedback");
+  stopFeedbackButton = new QPushButton("Stop Feedback");
   layout->addWidget(stopFeedbackButton,5,1, Qt::AlignCenter);
+  // click signal connected in spikeUserGUI
 
   QStackedWidget *algorithmAlternativesStack = new QStackedWidget;
   QLabel *noAlgorithm = new QLabel("Select a Feedback Control Algorithm");
@@ -57,7 +62,32 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   setLayout(layout);
 
   connect(feedbackAlgorithmComboBox, SIGNAL(currentIndexChanged(int)), 
-      algorithmAlternativesStack, SLOT(setCurrentIndex(int)));
+      this, SLOT(setFeedbackAlgorithm(int)));
+}
+
+void RealtimeFeedbackTab::setFeedbackAlgorithm (int index)
+{
+  int mode;
+
+  algorithmAlternativesStack->setCurrentIndex(index);
+
+  switch(index) {
+    case 0:
+      mode = DIO_RTMODE_DEFAULT;
+      break;
+    case 1:
+      mode = DIO_RTMODE_LATENCY_TEST;
+      break;
+    case 2:
+      mode = DIO_RTMODE_THETA;
+      break;
+    case 3:
+      mode = DIO_RTMODE_RIPPLE_DISRUPT;
+      break;
+  }
+
+  qDebug("sending mode: %d\n", mode);
+  SendUserMessage(DIO_STIMCONTROL_MODE, (char *)&mode, sizeof(int));
 }
 
 LatencyTest::LatencyTest(QWidget *parent)
@@ -172,8 +202,8 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   // think about using a qsignalmapper 
   // file:///usr/share/qt4/doc/html/qsignalmapper.html
 
-  // connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
-  // connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
+  connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
+  connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
 
   // connect(StimChan, SIGNAL(activated(int)), this, SLOT(updateRippleData(void)));
   //connect(pulse_len, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));

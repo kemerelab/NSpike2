@@ -37,6 +37,7 @@ extern char *tmpstring;
 SpikeLineEdit::SpikeLineEdit(QWidget *parent, int chanNum) : 
 	QLineEdit(parent), chanNum(chanNum)
 {
+    setStyle("Windows");
     // Attach the checkinput slot to a timer so that we can determine if the
     // input has been changed
     editTimer = new QTimer(this);
@@ -75,7 +76,7 @@ void SpikeLineEdit::valueChanged(void) {
 
 
 SpikeFiltSpinBox::SpikeFiltSpinBox(QWidget *parent, bool highfilter, int chanNum) : QSpinBox(parent), highfilter(highfilter), chanNum(chanNum) {
-    this->setPaletteBackgroundColor("lightgrey");
+    //this->setPaletteBackgroundColor("lightgrey");
 
     /* check the values for the filter and set the displayed text to the
      * correct number */
@@ -83,6 +84,8 @@ SpikeFiltSpinBox::SpikeFiltSpinBox(QWidget *parent, bool highfilter, int chanNum
     
     /* set the range */
     this->setRange(cdspinfo.lowFilt[0], cdspinfo.highFilt[NDSP_HIGH_FILTERS-1]);
+
+    setStyle("Windows");
 }
 
 QValidator::State SpikeFiltSpinBox::validate(QString &input, int &pos) const {
@@ -208,6 +211,7 @@ SpikeAudioButton::SpikeAudioButton(QWidget *parent, int chan, int output, bool f
     if (output == 1)
       setStyleSheet("QPushButton::checked{color: green;}");
 
+    setStyle("Windows");
 }
 
 SpikeAudioButton::~SpikeAudioButton() {
@@ -243,130 +247,134 @@ SpikeTetInput::SpikeTetInput(QWidget *parent, int electNum,
 	bool fullScreenElect) 
 	: QWidget(parent), electNum(electNum), fullScreenElect(fullScreenElect)
 {
-    ChannelInfo *ch;
-    int currentchan, i;
-    int ndiv= 10;
+  ChannelInfo *ch;
+  int currentchan, i;
+  int ndiv= 10;
 
   setAutoFillBackground(true);
 
-    /* Get the appropriate channelinfo structure */
-    currentchan = electNum * NCHAN_PER_ELECTRODE;
-    ch = sysinfo.channelinfo[sysinfo.machinenum] + currentchan;
-    
-    /* create a grid layout for the spike waveform windows */
-    Q3GridLayout *grid = new Q3GridLayout(this, 4, 
-	    NCHAN_PER_ELECTRODE * ndiv, 0, 0, "spikeTetInputLayout");
+  /* Get the appropriate channelinfo structure */
+  currentchan = electNum * NCHAN_PER_ELECTRODE;
+  ch = sysinfo.channelinfo[sysinfo.machinenum] + currentchan;
 
-    QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
-    QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
+  /* create a grid layout for the spike waveform windows */
+  Q3GridLayout *grid = new Q3GridLayout(this, 4, 
+      NCHAN_PER_ELECTRODE * ndiv, 0, 0, "spikeTetInputLayout");
 
-    QFont f( "SansSerif", 8, QFont::Normal );
-    QFont fs( "SansSerif", 7, QFont::Normal );
-    if (fullScreenElect) {
-	f = QFont( "SansSerif", 16, QFont::Normal );
-	fs = QFont( "SansSerif", 12, QFont::Normal );
-    }
-    /* create the push buttons that select whether all of the channels are
-     * changed at once */
-    mdvSelectAll = new QPushButton("M", this, "mdv_all");
-    mdvSelectAll->setToggleButton(TRUE);
-    mdvSelectAll->setSizePolicy(p2);
-    mdvSelectAll->setFont(f);
-    tSelectAll = new QPushButton("T", this, "f_all");
-    tSelectAll->setToggleButton(TRUE);
-    tSelectAll->setSizePolicy(p2);
-    tSelectAll->setFont(f);
-    fSelectAll = new QPushButton("F", this, "t_all");
-    fSelectAll->setToggleButton(TRUE);
-    fSelectAll->setSizePolicy(p2);
-    fSelectAll->setFont(f);
-    mdvSelectAll->setOn(TRUE);
-    tSelectAll->setOn(TRUE);
-    fSelectAll->setOn(TRUE);
+  QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
+  QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
 
-    /* put the buttons in the grid */
-    grid->addMultiCellWidget(mdvSelectAll, 0, 0, 0, 0);
-    grid->addMultiCellWidget(tSelectAll, 1, 1, 0, 0);
-    grid->addMultiCellWidget(fSelectAll, 2, 2, 0, 0);
+  QFont f( "SansSerif", 8, QFont::Normal );
+  QFont fs( "SansSerif", 7, QFont::Normal );
+  if (fullScreenElect) {
+    f = QFont( "SansSerif", 16, QFont::Normal );
+    fs = QFont( "SansSerif", 12, QFont::Normal );
+  }
+  /* create the push buttons that select whether all of the channels are
+   * changed at once */
+  mdvSelectAll = new QPushButton("M", this, "mdv_all");
+  mdvSelectAll->setToggleButton(TRUE);
+  mdvSelectAll->setSizePolicy(p2);
+  mdvSelectAll->setFont(f);
+  mdvSelectAll->setStyle("Windows");
+  tSelectAll = new QPushButton("T", this, "f_all");
+  tSelectAll->setToggleButton(TRUE);
+  tSelectAll->setSizePolicy(p2);
+  tSelectAll->setFont(f);
+  tSelectAll->setStyle("Windows");
+  fSelectAll = new QPushButton("F", this, "t_all");
+  fSelectAll->setToggleButton(TRUE);
+  fSelectAll->setSizePolicy(p2);
+  fSelectAll->setFont(f);
+  fSelectAll->setStyle("Windows");
 
-    /* create the pointers to the line input boxes */
-    maxdispval = new SpikeLineEdit* [NCHAN_PER_ELECTRODE]; 
-    thresh = new SpikeLineEdit* [NCHAN_PER_ELECTRODE]; 
+  mdvSelectAll->setOn(TRUE);
+  tSelectAll->setOn(TRUE);
+  fSelectAll->setOn(TRUE);
 
-    /* create the pointers to the filter spin boxes */
-    lowfilt = new SpikeFiltSpinBox* [NCHAN_PER_ELECTRODE]; 
-    highfilt = new SpikeFiltSpinBox* [NCHAN_PER_ELECTRODE]; 
+  /* put the buttons in the grid */
+  grid->addMultiCellWidget(mdvSelectAll, 0, 0, 0, 0);
+  grid->addMultiCellWidget(tSelectAll, 1, 1, 0, 0);
+  grid->addMultiCellWidget(fSelectAll, 2, 2, 0, 0);
 
-    /* create the pointer to the audio push buttons */
-    audio1 = new SpikeAudioButton* [NCHAN_PER_ELECTRODE];
-    audio2 = new SpikeAudioButton* [NCHAN_PER_ELECTRODE];
+  /* create the pointers to the line input boxes */
+  maxdispval = new SpikeLineEdit* [NCHAN_PER_ELECTRODE]; 
+  thresh = new SpikeLineEdit* [NCHAN_PER_ELECTRODE]; 
 
-    QString ss;
+  /* create the pointers to the filter spin boxes */
+  lowfilt = new SpikeFiltSpinBox* [NCHAN_PER_ELECTRODE]; 
+  highfilt = new SpikeFiltSpinBox* [NCHAN_PER_ELECTRODE]; 
 
-    /* set up the validators to check the input */
-    QIntValidator *valid = new QIntValidator(0, MAX_DISP_VAL, this, 
-	    "dataValValidator");
-    for(i = 0; i < NCHAN_PER_ELECTRODE; i++, currentchan++) {
-	maxdispval[i] = new SpikeLineEdit(this, currentchan);
-	maxdispval[i]->setFont(f);
-	ss = QString("%1").arg(ch[i].maxdispval);
-	maxdispval[i]->setText(QString(ss));
-	/* set up a validator for the value */
-	maxdispval[i]->setValidator(valid);
-	maxdispval[i]->setSizePolicy(p);
-	/* put the label and the text window into the local layout */
-	grid->addMultiCellWidget(maxdispval[i], 0, 0, (i*ndiv)+1, (i*ndiv)+9);
+  /* create the pointer to the audio push buttons */
+  audio1 = new SpikeAudioButton* [NCHAN_PER_ELECTRODE];
+  audio2 = new SpikeAudioButton* [NCHAN_PER_ELECTRODE];
 
-	/* connect the update message to the update slot */
-	connect(maxdispval[i], SIGNAL(updateVal(int, unsigned short)), this, SLOT(mdvChanged(int, unsigned short)));
+  QString ss;
 
-	thresh[i] = new SpikeLineEdit(this, currentchan);
-	thresh[i]->setFont(f);
-	ss = QString("%1").arg(ch[i].thresh);
-	thresh[i]->setText(QString(ss));
-	thresh[i]->setValidator(valid);
-	thresh[i]->setSizePolicy(p);
-	/* put the label and the text window into the local layout */
-	grid->addMultiCellWidget(thresh[i], 1, 1, (i*ndiv)+1, (i*ndiv)+9);
-	connect(thresh[i], SIGNAL(updateVal(int, unsigned short)), this, SLOT(threshChanged(int, unsigned short)));
+  /* set up the validators to check the input */
+  QIntValidator *valid = new QIntValidator(0, MAX_DISP_VAL, this, 
+      "dataValValidator");
+  for(i = 0; i < NCHAN_PER_ELECTRODE; i++, currentchan++) {
+    maxdispval[i] = new SpikeLineEdit(this, currentchan);
+    maxdispval[i]->setFont(f);
+    ss = QString("%1").arg(ch[i].maxdispval);
+    maxdispval[i]->setText(QString(ss));
+    /* set up a validator for the value */
+    maxdispval[i]->setValidator(valid);
+    maxdispval[i]->setSizePolicy(p);
+    /* put the label and the text window into the local layout */
+    grid->addMultiCellWidget(maxdispval[i], 0, 0, (i*ndiv)+1, (i*ndiv)+9);
 
-	lowfilt[i] = new SpikeFiltSpinBox(this, FALSE, currentchan);
-	lowfilt[i]->setFont(fs);
-	lowfilt[i]->setValue(ch[i].lowfilter);
-	lowfilt[i]->setSizePolicy(p);
-	/* put the label and the text window into the local layout */
-	grid->addMultiCellWidget(lowfilt[i], 2, 2, (i*ndiv)+1, (i*ndiv)+4);
-	connect(lowfilt[i], SIGNAL(updateVal(int, unsigned short)), this, SLOT(lowFiltChanged(int, unsigned short)));
+    /* connect the update message to the update slot */
+    connect(maxdispval[i], SIGNAL(updateVal(int, unsigned short)), this, SLOT(mdvChanged(int, unsigned short)));
 
-	highfilt[i] = new SpikeFiltSpinBox(this, TRUE, currentchan);
-	highfilt[i]->setFont(fs);
-	highfilt[i]->setValue(ch[i].highfilter);
-	highfilt[i]->setSizePolicy(p);
-	/* put the label and the text window into the local layout */
-	grid->addMultiCellWidget(highfilt[i], 2, 2, (i*ndiv)+5, (i*ndiv)+9);
-	connect(highfilt[i], SIGNAL(updateVal(int, unsigned short)), this, SLOT(highFiltChanged(int, unsigned short)));
+    thresh[i] = new SpikeLineEdit(this, currentchan);
+    thresh[i]->setFont(f);
+    ss = QString("%1").arg(ch[i].thresh);
+    thresh[i]->setText(QString(ss));
+    thresh[i]->setValidator(valid);
+    thresh[i]->setSizePolicy(p);
+    /* put the label and the text window into the local layout */
+    grid->addMultiCellWidget(thresh[i], 1, 1, (i*ndiv)+1, (i*ndiv)+9);
+    connect(thresh[i], SIGNAL(updateVal(int, unsigned short)), this, SLOT(threshChanged(int, unsigned short)));
 
-	/* Create the audio buttons */
-	audio1[i] = new SpikeAudioButton(this, currentchan, 0, fullScreenElect);
-	audio1[i]->setText("Audio1");
-	audio1[i]->setSizePolicy(p);
-	audio1[i]->setFont(fs);
-	grid->addMultiCellWidget(audio1[i], 3, 3, (i*ndiv)+1, (i*ndiv)+4);
+    lowfilt[i] = new SpikeFiltSpinBox(this, FALSE, currentchan);
+    lowfilt[i]->setFont(fs);
+    lowfilt[i]->setValue(ch[i].lowfilter);
+    lowfilt[i]->setSizePolicy(p);
+    /* put the label and the text window into the local layout */
+    grid->addMultiCellWidget(lowfilt[i], 2, 2, (i*ndiv)+1, (i*ndiv)+4);
+    connect(lowfilt[i], SIGNAL(updateVal(int, unsigned short)), this, SLOT(lowFiltChanged(int, unsigned short)));
 
-	/* Create the audio buttons */
-	audio2[i] = new SpikeAudioButton(this, currentchan, 1, fullScreenElect);
-	audio2[i]->setText("Audio2");
-	audio2[i]->setSizePolicy(p);
-	audio2[i]->setFont(fs);
-	grid->addMultiCellWidget(audio2[i], 3, 3, (i*ndiv)+5, (i*ndiv)+8);
-	/* Update the Threshold to make it draw correctly */
-	UpdateChanThresh(electNum, currentchan, ch[i].thresh);
-    }
-    for(i = 0; i < NCHAN_PER_ELECTRODE * ndiv; i++, currentchan++) {
-	grid->setColStretch(i, 2);
-    }
-    grid->setColStretch(0, 3);
-    grid->setColStretch(ndiv-1, 1);
+    highfilt[i] = new SpikeFiltSpinBox(this, TRUE, currentchan);
+    highfilt[i]->setFont(fs);
+    highfilt[i]->setValue(ch[i].highfilter);
+    highfilt[i]->setSizePolicy(p);
+    /* put the label and the text window into the local layout */
+    grid->addMultiCellWidget(highfilt[i], 2, 2, (i*ndiv)+5, (i*ndiv)+9);
+    connect(highfilt[i], SIGNAL(updateVal(int, unsigned short)), this, SLOT(highFiltChanged(int, unsigned short)));
+
+    /* Create the audio buttons */
+    audio1[i] = new SpikeAudioButton(this, currentchan, 0, fullScreenElect);
+    audio1[i]->setText("Audio1");
+    audio1[i]->setSizePolicy(p);
+    audio1[i]->setFont(fs);
+    grid->addMultiCellWidget(audio1[i], 3, 3, (i*ndiv)+1, (i*ndiv)+4);
+
+    /* Create the audio buttons */
+    audio2[i] = new SpikeAudioButton(this, currentchan, 1, fullScreenElect);
+    audio2[i]->setText("Audio2");
+    audio2[i]->setSizePolicy(p);
+    audio2[i]->setFont(fs);
+    grid->addMultiCellWidget(audio2[i], 3, 3, (i*ndiv)+5, (i*ndiv)+8);
+    /* Update the Threshold to make it draw correctly */
+    UpdateChanThresh(electNum, currentchan, ch[i].thresh);
+  }
+  for(i = 0; i < NCHAN_PER_ELECTRODE * ndiv; i++, currentchan++) {
+    grid->setColStretch(i, 2);
+  }
+  grid->setColStretch(0, 3);
+  grid->setColStretch(ndiv-1, 1);
 }
 
 SpikeTetInput::~SpikeTetInput() {
@@ -562,150 +570,129 @@ SpikeTetInfo::SpikeTetInfo(QWidget *parent, int electNum,
 	bool fullScreenElect) 
 	: QWidget(parent), electNum(electNum), fullScreenElect(fullScreenElect)
 {
-    ChannelInfo *ch;
-    int currentchan;
-    int ndiv = 18;
+  ChannelInfo *ch;
+  int currentchan;
 
-    /* Get the appropriate channelinfo structure */
-    currentchan = electNum * NCHAN_PER_ELECTRODE;
-    ch = sysinfo.channelinfo[sysinfo.machinenum] + currentchan;
+  /* Get the appropriate channelinfo structure */
+  currentchan = electNum * NCHAN_PER_ELECTRODE;
+  ch = sysinfo.channelinfo[sysinfo.machinenum] + currentchan;
 
-    /* create a grid layout for the spike waveform windows */
-    //Q3GridLayout *grid = new Q3GridLayout(this, 2, ndiv, 0, 0, "spikeTetInfoLayout");
-    QGridLayout *grid = new Q3GridLayout(this);
-    QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
-    //QSizePolicy p2(QSizePolicy::Expanding, QSizePolicy::Maximum, FALSE);
+  /* create a grid layout for the spike waveform windows */
+  QGridLayout *grid = new Q3GridLayout(this);
+  QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
 
-    QFont f( "SansSerif", 8, QFont::Normal );
-    QFont fs( "SansSerif", 7, QFont::Normal );
-    QFont fb( "TypeWriter", 10, QFont::Normal );
-    if (fullScreenElect) {
-	f = QFont( "SansSerif", 16, QFont::Normal );
-	fs = QFont( "SansSerif", 12, QFont::Normal );
-	fb = QFont( "TypeWriter", 20, QFont::Normal );
-    }
-    
-    /* create the tetrode number label */
-    QString s = QString("Tetrode %1").arg((int) ch->number, 2);
-    tetNumLabel = new QLabel("tetNumLabel", this, 0);
-    tetNumLabel->setText(s);
-    tetNumLabel->setFont(fb);
-    tetNumLabel->setSizePolicy(p2);
-    tetNumLabel->setAutoFillBackground(true);
-    //grid->addMultiCellWidget(tetNumLabel, 0, 0, 0, 4);
-    grid->addWidget(tetNumLabel, 0, 0, 1, 5);
+  QFont f( "SansSerif", 8, QFont::Normal );
+  QFont fs( "SansSerif", 7, QFont::Normal );
+  QFont fb( "TypeWriter", 10, QFont::Normal );
+  if (fullScreenElect) {
+    f = QFont( "SansSerif", 16, QFont::Normal );
+    fs = QFont( "SansSerif", 12, QFont::Normal );
+    fb = QFont( "TypeWriter", 20, QFont::Normal );
+  }
 
-    /* Create the Depth Label */
-    depthLabel = new QLabel("Depth", this, "DepthLabel");
-    depthLabel->setFont(f);
-    depthLabel->setSizePolicy(p2);
-    //depthLabel->setAlignment(Qt::AlignRight);
-    //grid->addMultiCellWidget(depthLabel, 0, 0, 11, 14);
-    grid->addWidget(depthLabel, 0, 11, 1, 4);
+  /* create the tetrode number label */
+  QString s = QString("Tetrode %1").arg((int) ch->number, 2);
+  tetNumLabel = new QLabel("tetNumLabel", this, 0);
+  tetNumLabel->setText(s);
+  tetNumLabel->setFont(fb);
+  tetNumLabel->setSizePolicy(p2);
+  tetNumLabel->setAutoFillBackground(true);
+  grid->addWidget(tetNumLabel, 0, 0, 1, 5);
 
-    /* create the Depth input */
-    depth = new SpikeLineEdit(this, currentchan);
-    /* we set the depth here so that we can update it below  */
-    s = QString("%1").arg(ch->depth);
-    depth->setText(s);
-    depth->setFont(f);
-    QIntValidator *valid = new QIntValidator(0, SHRT_MAX, this, 
-	    "depthValidator");
-    depth->setValidator(valid);
-    depth->setSizePolicy(p2);
-    //grid->addMultiCellWidget(depth, 0, 0, 14, 15);
-    grid->addWidget(depth, 0, 14, 1, 2);
-    /* connect the update signal to the depth update function */
-    connect(depth, SIGNAL(updateVal(int, unsigned short)), this, SLOT(depthChanged(int, unsigned short)));
-    depthLabel->setBuddy(depth);
+  /* Create the Depth Label */
+  depthLabel = new QLabel("Depth", this, "DepthLabel");
+  depthLabel->setFont(f);
+  depthLabel->setSizePolicy(p2);
+  grid->addWidget(depthLabel, 0, 11, 1, 4);
+
+  /* create the Depth input */
+  depth = new SpikeLineEdit(this, currentchan);
+  /* we set the depth here so that we can update it below  */
+  s = QString("%1").arg(ch->depth);
+  depth->setText(s);
+  depth->setFont(f);
+  QIntValidator *valid = new QIntValidator(0, SHRT_MAX, this, "depthValidator");
+  depth->setValidator(valid);
+  depth->setSizePolicy(p2);
+  grid->addWidget(depth, 0, 14, 1, 2);
+  /* connect the update signal to the depth update function */
+  connect(depth, SIGNAL(updateVal(int, unsigned short)), this, SLOT(depthChanged(int, unsigned short)));
+  depthLabel->setBuddy(depth);
 
 
-    /* create the depth conversion label */ 
-    depthmmLabel = new QLabel(this);
-    depthmmLabel->setFont(f);
-    depthmmLabel->setSizePolicy(p2);
-    //depthUpdate(currentchan, ch->depth);
-    grid->addWidget(depthmmLabel, 0, 16, 1, 3);
-    //grid->addMultiCellWidget(depthmmLabel, 0, 0, 16, 18);
+  /* create the depth conversion label */ 
+  depthmmLabel = new QLabel(this);
+  depthmmLabel->setFont(f);
+  depthmmLabel->setSizePolicy(p2);
+  grid->addWidget(depthmmLabel, 0, 16, 1, 3);
 
-    /* create the reference label*/
-    refLabel = new QLabel("Ref", this, "Ref", 0);
-    refLabel->setFont(f);
-    refLabel->setSizePolicy(p2);
-    grid->addWidget(refLabel, 1, 0, 1, 3);
-    //grid->addMultiCellWidget(refLabel, 1, 1, 0, 2);
+  /* create the reference label*/
+  refLabel = new QLabel("Ref", this, "Ref", 0);
+  refLabel->setFont(f);
+  refLabel->setSizePolicy(p2);
+  grid->addWidget(refLabel, 1, 0, 1, 3);
 
-    /* creat the reference spin box */
-    refElect = new QSpinBox(0, sysinfo.maxelectnum, 1, this, "refspinbox");
-    refElect->setSpecialValueText("Gnd");
-    refElect->setFont(f);
-    refElect->setValue(ch->refelect);
-    refElect->setSizePolicy(p2);
-    connect(refElect, SIGNAL(valueChanged(int)), this, 
-	    SLOT(refElectChanged(int)));
-    grid->addWidget(refElect, 1, 3, 1, 4);
-    //grid->addMultiCellWidget(refElect, 1, 1, 3, 6);
+  /* creat the reference spin box */
+  refElect = new QSpinBox(0, sysinfo.maxelectnum, 1, this, "refspinbox");
+  refElect->setSpecialValueText("Gnd");
+  refElect->setFont(f);
+  refElect->setValue(ch->refelect);
+  refElect->setSizePolicy(p2);
+  refElect->setStyle("Windows");
+  connect(refElect, SIGNAL(valueChanged(int)), this, SLOT(refElectChanged(int)));
+  grid->addWidget(refElect, 1, 3, 1, 4);
 
-    /* create the reference channel label*/
-    refChLabel = new QLabel("ch", this, "ch", 0);
-    refChLabel->setFont(f);
-    refChLabel->setSizePolicy(p2);
-    grid->addWidget(refChLabel, 1, 7, 1, 1);
-    //grid->addMultiCellWidget(refChLabel, 1, 1, 7, 7);
+  /* create the reference channel label*/
+  refChLabel = new QLabel("ch", this, "ch", 0);
+  refChLabel->setFont(f);
+  refChLabel->setSizePolicy(p2);
+  grid->addWidget(refChLabel, 1, 7, 1, 1);
 
-    /* create the reference spin box */
-    /* note that the maximum value will be set in the update function */
-    refChan = new QSpinBox(0, 0, 1, this, "refchspinbox");
-    refChan->setFont(f);
-    refChan->setValue(ch->refchan);
-    refChan->setSizePolicy(p2);
-    connect(refChan, SIGNAL(valueChanged(int)), this,SLOT(refChanChanged(int)));
-    grid->addWidget(refChan, 1, 8, 1, 1);
-    //grid->addMultiCellWidget(refChan, 1, 1, 8, 8);
+  /* create the reference spin box */
+  /* note that the maximum value will be set in the update function */
+  refChan = new QSpinBox(0, 0, 1, this, "refchspinbox");
+  refChan->setFont(f);
+  refChan->setValue(ch->refchan);
+  refChan->setSizePolicy(p2);
+  refChan->setStyle("Windows");
+  connect(refChan, SIGNAL(valueChanged(int)), this,SLOT(refChanChanged(int)));
+  grid->addWidget(refChan, 1, 8, 1, 1);
 
-    /* create the overlay button */
-    overlay = new QPushButton("Overlay", this, "Overlaybutton");
-    overlay->setToggleButton(TRUE);
-    overlay->setFont(f);
-    grid->addWidget(overlay, 1, 10, 1, 3); 
-    //grid->addMultiCellWidget(overlay, 1, 1, 10, 12, 0); 
-    connect(overlay, SIGNAL(pressed()), this, SLOT(overlayChanged()));
+  /* create the overlay button */
+  overlay = new QPushButton("Overlay", this, "Overlaybutton");
+  overlay->setToggleButton(TRUE);
+  overlay->setFont(f);
+  overlay->setStyle("Windows");
+  grid->addWidget(overlay, 1, 10, 1, 3); 
+  connect(overlay, SIGNAL(pressed()), this, SLOT(overlayChanged()));
 
 
-    /* create the full screen button  */
-    if (!fullScreenElect) {
-	fullScreen = new QPushButton("Full Screen", this, "fullscreenbutton");
-    }
-    else { 
-	fullScreen = new QPushButton("Multiple Window", this, "fullscreenbutton");
-    }
-    /* connect the button's signal to the appropriate change page command  */
-    fullScreen->setFont(f);
-    //fullScreen->setSizePolicy(p2);
-    connect(fullScreen, SIGNAL(pressed()), this, SLOT(fullScreenChanged()));
-    grid->addWidget(fullScreen, 1, 13, 1, 4); 
-    //grid->addMultiCellWidget(fullScreen, 1, 1, 13, 16); 
+  /* create the full screen button  */
+  if (!fullScreenElect) {
+    fullScreen = new QPushButton("Full Screen", this, "fullscreenbutton");
+  }
+  else { 
+    fullScreen = new QPushButton("Multiple Window", this, "fullscreenbutton");
+  }
+  /* connect the button's signal to the appropriate change page command  */
+  fullScreen->setFont(f);
+  fullScreen->setStyle("Windows");
+  //fullScreen->setSizePolicy(p2);
+  connect(fullScreen, SIGNAL(pressed()), this, SLOT(fullScreenChanged()));
+  grid->addWidget(fullScreen, 1, 13, 1, 4); 
 
-    /* create the clear projections button */
-    clearProj = new QPushButton("Clear Proj.", this, "clear proj. button");
-    clearProj->setFont(f);
-    //clearProj->setSizePolicy(p2);
-    connect(clearProj, SIGNAL(pressed()), this, SLOT(clearProjections()));
-    //grid->addMultiCellWidget(clearProj, 1, 1, 17, 17, Qt::AlignRight);
-    grid->addWidget(clearProj, 1, 17, 1, 1);
-    //grid->addMultiCellWidget(clearProj, 1, 1, 17, 17, 0);
+  /* create the clear projections button */
+  clearProj = new QPushButton("Clear Proj.", this, "clear proj. button");
+  clearProj->setFont(f);
+  clearProj->setStyle("Windows");
+  connect(clearProj, SIGNAL(pressed()), this, SLOT(clearProjections()));
+  grid->addWidget(clearProj, 1, 17, 1, 1);
 
-    
-    /*for(i = 0; i < ndiv * ndiv; i++) {
-	grid->setColStretch(i, 2);
-    }
-    grid->setColStretch(9, 3); */
-    grid->setColStretch(10, 3);
-    grid->setColStretch(11, 3);
+  grid->setColStretch(10, 3);
+  grid->setColStretch(11, 3);
 
-    setAutoFillBackground(true);
-    setLayout(grid);
-
+  setAutoFillBackground(true);
+  setLayout(grid);
 }
 
 SpikeTetInfo::~SpikeTetInfo() {
@@ -734,65 +721,66 @@ void SpikeTetInfo::refChanUpdate(int channel) {
     this->refUpdate(this->refElect->value(), channel);
 }
 
-void SpikeTetInfo::refUpdate(int electrode, int channel) {
-    ChannelInfo *ch;
-    int chanNum, i;
-    int updated = 0;
+void SpikeTetInfo::refUpdate(int electrode, int channel) 
+{
+  ChannelInfo *ch;
+  int chanNum, i;
+  int updated = 0;
 
 
-    /* check to see if we are supposed to reference to ground, in which case we
-     * set the channel to 0 */
-    if (electrode == 0) {
-	channel = 0;
+  /* check to see if we are supposed to reference to ground, in which case we
+   * set the channel to 0 */
+  if (electrode == 0) {
+    channel = 0;
+  }
+  /* update the internal variables */
+  if (sysinfo.commonref) {
+    /* if we want a common reference, we set sysinfo.commonref to 0, update 
+     * values of each channels refelect and refchan, call the tetrode update routine
+     * and then reset sysinfo.commonref.  This will call this routine once for 
+     * each channel */
+    sysinfo.commonref = 0;
+    /* Stop acquisition if it is on */
+    StopLocalAcq();
+    ch = sysinfo.channelinfo[sysinfo.machinenum]; 
+    for (i = 0; i < sysinfo.nchannels[sysinfo.machinenum]; i++, ch++) {
+      ch->refelect = electrode; 
+      ch->refchan = channel;
+      UpdateChannel(ch, 0);
     }
-    /* update the internal variables */
-    if (sysinfo.commonref) {
-	/* if we want a common reference, we set sysinfo.commonref to 0, update 
-	 * values of each channels refelect and refchan, call the tetrode update routine
-	 * and then reset sysinfo.commonref.  This will call this routine once for 
-	 * each channel */
-	sysinfo.commonref = 0;
-	/* Stop acquisition if it is on */
-	StopLocalAcq();
-	ch = sysinfo.channelinfo[sysinfo.machinenum]; 
-	for (i = 0; i < sysinfo.nchannels[sysinfo.machinenum]; i++, ch++) {
-	    ch->refelect = electrode; 
-	    ch->refchan = channel;
-	    UpdateChannel(ch, 0);
-	}
-	for (i = 0; i < sysinfo.nelectrodes; i++) {
-	    /* We need to update the displays */
-	    dispinfo.spikeTetInfo[i]->updateTetInfo();
-	}
-	sysinfo.commonref = 1;
-	StartLocalAcq();
+    for (i = 0; i < sysinfo.nelectrodes; i++) {
+      /* We need to update the displays */
+      dispinfo.spikeTetInfo[i]->updateTetInfo();
+    }
+    sysinfo.commonref = 1;
+    StartLocalAcq();
 
+  }
+  else {
+    chanNum = this->electNum * NCHAN_PER_ELECTRODE;
+    ch = sysinfo.channelinfo[sysinfo.machinenum] + chanNum;
+    updated = 0;
+    for (i = 0; i < NCHAN_PER_ELECTRODE; i++, chanNum++, ch++) {
+      if ((ch->refelect != electrode) || (ch->refchan != channel))  {
+        ch->refelect = electrode;
+        ch->refchan = channel;
+        if (ch->refelect > 0) {
+          /* get the dsp number for this reference channel */
+          ch->dsprefchan = sysinfo.electinfo[ch->refelect].dspchan[ch->refchan];
+        }
+        else {
+          /* set the channel to be 127, which will be interpreted as 
+           * setting the reference to ground in spike_dsp.cpp */
+          ch->dsprefchan = 127;
+        }
+        UpdateChannel(ch, 0);
+        updated = 1;
+      }
     }
-    else {
-	chanNum = this->electNum * NCHAN_PER_ELECTRODE;
-	ch = sysinfo.channelinfo[sysinfo.machinenum] + chanNum;
-	updated = 0;
-	for (i = 0; i < NCHAN_PER_ELECTRODE; i++, chanNum++, ch++) {
-	    if ((ch->refelect != electrode) || (ch->refchan != channel))  {
-		ch->refelect = electrode;
-		ch->refchan = channel;
-		if (ch->refelect > 0) {
-		    /* get the dsp number for this reference channel */
-		    ch->dsprefchan = sysinfo.electinfo[ch->refelect].dspchan[ch->refchan];
-		}
-		else {
-		    /* set the channel to be 127, which will be interpreted as 
-		     * setting the reference to ground in spike_dsp.cpp */
-		    ch->dsprefchan = 127;
-		}
-		UpdateChannel(ch, 0);
-		updated = 1;
-	    }
-	}
-	if (updated) {
-	    updateTetInfo();
-	}
+    if (updated) {
+      updateTetInfo();
     }
+  }
 }
 
 void SpikeTetInfo::changeFullScreen(void) {
@@ -878,52 +866,50 @@ void SpikeTetInfo::clearTetProjections(void) {
 SpikeEEGButton::SpikeEEGButton(QWidget *parent, int chanNum):
     QWidget(parent), chanNum(chanNum)
 {
-    ChannelInfo *ch;
+  ChannelInfo *ch;
 
-    int ncols = 6;
-    int nrows = 5;
+  int ncols = 6;
+  int nrows = 5;
 
-    setAutoFillBackground(true);
+  setAutoFillBackground(true);
+  setStyle("Windows");
 
-    ch = sysinfo.channelinfo[sysinfo.machinenum] + chanNum;
+  ch = sysinfo.channelinfo[sysinfo.machinenum] + chanNum;
 
-    QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
-    QSizePolicy p2(QSizePolicy::Ignored, QSizePolicy::Ignored, FALSE);
+  QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
+  QSizePolicy p2(QSizePolicy::Ignored, QSizePolicy::Ignored, FALSE);
 
-    QFont fs( "TypeWriter", 8, QFont::Normal );
-    QFont fvs( "TypeWriter", 6, QFont::Normal );
-    QFont fl( "TypeWriter", 14, QFont::Normal );
+  QFont fs( "TypeWriter", 8, QFont::Normal );
+  QFont fvs( "TypeWriter", 6, QFont::Normal );
+  QFont fl( "TypeWriter", 14, QFont::Normal );
 
+  /* create the tetrode number label */
+  QString s = QString("%1").arg((int)ch->number,2,10,QLatin1Char('0'));
+  tetNumLabel = new QLabel("tetNumLabel", this);
+  tetNumLabel->setText(s);
+  if (sysinfo.nchannels[sysinfo.machinenum] > 64) {
+    tetNumLabel->setFont(fvs);
+  }
+  else if (sysinfo.nchannels[sysinfo.machinenum] > 32) {
+    tetNumLabel->setFont(fs);
+  }
+  else {
+    tetNumLabel->setFont(fl);
+  }
+  tetNumLabel->setSizePolicy(p);
 
-    /* create the tetrode number label */
-    QString s = QString("%1").arg((int)ch->number,2,10,QLatin1Char('0'));
-    tetNumLabel = new QLabel("tetNumLabel", this);
-    tetNumLabel->setText(s);
-    if (sysinfo.nchannels[sysinfo.machinenum] > 64) {
-	tetNumLabel->setFont(fvs);
-    }
-    else if (sysinfo.nchannels[sysinfo.machinenum] > 32) {
-	tetNumLabel->setFont(fs);
-    }
-    else {
-	tetNumLabel->setFont(fl);
-    }
-    tetNumLabel->setSizePolicy(p);
+  Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "SpikeEEGButtonLayout");
 
-    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "SpikeEEGButtonLayout");
-    //QHBoxLayout *hlayout = new QHBoxLayout;
+  grid->addMultiCellWidget(tetNumLabel, 1, 3, 0, 1);
 
-    //hlayout->addWidget(tetNumLabel);
-    grid->addMultiCellWidget(tetNumLabel, 1, 3, 0, 1);
+  /* create the button */
+  chInfo = new QPushButton("test", this, "channelbutton");
+  chInfo->setSizePolicy(p);
+  chInfo->setStyle("Windows");
 
-    /* create the button */
-    chInfo = new QPushButton("test", this, "channelbutton");
-    chInfo->setSizePolicy(p);
-    
-    /* add the button to the global button group */
-    grid->addMultiCellWidget(chInfo, 1, 3, 2, 5);
-    //hlayout->addWidget(chInfo);
-    dispinfo.EEGButtonGroup->addButton(chInfo, chanNum);
+  /* add the button to the global button group */
+  grid->addMultiCellWidget(chInfo, 1, 3, 2, 5);
+  dispinfo.EEGButtonGroup->addButton(chInfo, chanNum);
 }
 
 SpikeEEGButton::~SpikeEEGButton() {
@@ -955,33 +941,33 @@ void SpikeEEGButton::updateButton(void)
 SpikeEEGInfo::SpikeEEGInfo(QWidget *parent, int colNum):
     QWidget(parent), colNum(colNum)
 {
-    /* Set up the EEG traces for the first or second column of traces */
-    int i, nrows, ncols;
-    int currentchan;
+  /* Set up the EEG traces for the first or second column of traces */
+  int i, nrows, ncols;
+  int currentchan;
 
-    /* create a grid layout for the spike waveform windows */
-    if (colNum == 0) {
-	nChannels = dispinfo.neegchan1;
-	currentchan = 0;
-    }
-    else {
-	nChannels = dispinfo.neegchan2;
-	currentchan = dispinfo.neegchan1;
-    }
-    nrows = nChannels * 3;
-    ncols = 1;
+  /* create a grid layout for the spike waveform windows */
+  if (colNum == 0) {
+    nChannels = dispinfo.neegchan1;
+    currentchan = 0;
+  }
+  else {
+    nChannels = dispinfo.neegchan2;
+    currentchan = dispinfo.neegchan1;
+  }
+  nrows = nChannels * 3;
+  ncols = 1;
 
-    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "SpikeEEGInfoLayout");
+  Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "SpikeEEGInfoLayout");
 
-    QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Ignored, FALSE);
+  QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Ignored, FALSE);
 
-    /* create the array of EEG Buttons */
-    EEGButton = new SpikeEEGButton * [nChannels];
-    for (i = 0; i < nChannels; i++, currentchan++) {
-	EEGButton[i] = new SpikeEEGButton(this, currentchan);
-	EEGButton[i]->setSizePolicy(p2);
-	grid->addMultiCellWidget(EEGButton[i], i*3, i*3 + 2, 0, 1);
-    }
+  /* create the array of EEG Buttons */
+  EEGButton = new SpikeEEGButton * [nChannels];
+  for (i = 0; i < nChannels; i++, currentchan++) {
+    EEGButton[i] = new SpikeEEGButton(this, currentchan);
+    EEGButton[i]->setSizePolicy(p2);
+    grid->addMultiCellWidget(EEGButton[i], i*3, i*3 + 2, 0, 1);
+  }
 }
 
 SpikeEEGInfo::~SpikeEEGInfo() {
@@ -1001,198 +987,212 @@ SpikeEEGDialog::SpikeEEGDialog(QWidget* parent, const char* name, bool modal,
 	Qt::WFlags fl, int chanNum)
     : QDialog( parent, name, modal, fl ), chanNum(chanNum)
 {
-    bool enabled; 
-    ChannelInfo *ch;
-    int ncols = 6;
-    int nrows = 8;
+  bool enabled; 
+  ChannelInfo *ch;
 
-    enabled = !sysinfo.fileopen;
+  enabled = !sysinfo.fileopen;
 
-    ch = sysinfo.channelinfo[sysinfo.machinenum] + chanNum;
-    /* check to see if this is the position sync signal and if so whether we
-     * should be allowed to change it */
-    if (enabled && (ch->dspchan == DSP_POS_SYNC_CHAN) && 
-	    !sysinfo.allowsyncchanchange) {
-	enabled = 0;
-    }
+  ch = sysinfo.channelinfo[sysinfo.machinenum] + chanNum;
+  /* check to see if this is the position sync signal and if so whether we
+   * should be allowed to change it */
+  if (enabled && (ch->dspchan == DSP_POS_SYNC_CHAN) && 
+      !sysinfo.allowsyncchanchange) {
+    enabled = 0;
+  }
+
+  //Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "SpikeEEGDialogLayout");
+  QGridLayout *grid = new QGridLayout;
+
+  QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
+  QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
+
+  QFont fs( "SansSerif", 10, QFont::Normal );
+  QFont fb( "TypeWriter", 18, QFont::Normal );
+
+  /* create the tetrode number label */
+  QString s = QString("%1").arg((int)ch->number,2);
+  tetNumLabel = new QLabel("tetNumLabel", this, 0);
+  tetNumLabel->setText(s);
+  tetNumLabel->setFont(fb);
+  tetNumLabel->setSizePolicy(p);
+  grid->addWidget(tetNumLabel, 0, 0);
+  //grid->addMultiCellWidget(tetNumLabel, 0, 0, 0, 0);
+
+  /* create the tetrode channel label */
+  tetChanLabel = new QLabel("tetNumLabel", this, 0);
+  tetChanLabel->setText("channel");
+  tetChanLabel->setFont(fs);
+  tetChanLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter | Qt::TextExpandTabs);
+  tetChanLabel->setSizePolicy(p);
+  grid->addWidget(tetChanLabel, 0, 1);
+  //grid->addMultiCellWidget(tetChanLabel, 0, 0, 1, 1);
+
+  /* create the tetrode channel number spin box */
+  tetChanNum = new QSpinBox(0, sysinfo.electinfo[ch->number].nchan - 1, 1,
+      this, "tetchspinbox");
+  tetChanNum->setValue(ch->electchan);
+  tetChanNum->setEnabled(enabled);
+  connect(tetChanNum, SIGNAL(valueChanged(int)), this, 
+      SLOT(tetChanChanged(int)));
+  grid->addWidget(tetChanNum, 0, 2);
+  //grid->addMultiCellWidget(tetChanNum, 0, 0, 2, 2);
+  /* disable this if the default datatype is SPIKE */
+
+  /* Create the Depth Label */
+  depthLabel = new QLabel("Depth", this, "DepthLabel");
+  depthLabel->setFont(fs);
+  depthLabel->setSizePolicy(p);
+  depthLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter | Qt::TextExpandTabs);
+  grid->addWidget(depthLabel, 0, 5);
+  //grid->addMultiCellWidget(depthLabel, 0, 0, 5, 5);
+
+  /* create the Depth input */
+  depth = new SpikeLineEdit(this, chanNum);
+  /* we set the depth here so that we can update it below  */
+  s = QString("%1").arg(ch->depth);
+  depth->setText(s);
+  depth->setFont(fs);
+  depth->setEnabled(enabled);
+  QIntValidator *dvalid = new QIntValidator(0, SHRT_MAX, this, 
+      "depthValidator");
+  depth->setValidator(dvalid);
+  depth->setSizePolicy(p);
+  grid->addWidget(depth, 0, 6);
+  //grid->addMultiCellWidget(depth, 0, 0, 6, 6);
+  /* connect the update signal to the depth update function */
+  connect(depth, SIGNAL(updateVal(int, unsigned short)), this, SLOT(depthChanged(int, unsigned short)));
+  /* disable this if the default datatype is SPIKE */
+
+  /* create the depth conversion label */ 
+  depthmmLabel = new QLabel(this);
+  depthmmLabel->setFont(fs);
+  depthmmLabel->setSizePolicy(p2);
+  depthmmLabel->setText(QString("%1 mm").arg(ch->depth * 
+        DEPTH_CONVERSION, 0, 'f', 3));
+  grid->addWidget(depthmmLabel, 0, 7);
+  //grid->addMultiCellWidget(depthmmLabel, 0, 0, 7, 7);
+
+  /* create the reference selector button */
+
+  /* create the reference selector */
+  refSelectAll = new QPushButton("Reference", this, "ref_all");
+  refSelectAll->setToggleButton(TRUE);
+  refSelectAll->setSizePolicy(p);
+  refSelectAll->setFont(fs);
+  grid->addWidget(refSelectAll, 1, 0, 1, 4);
+  //grid->addMultiCellWidget(refSelectAll, 1, 1, 0, 3);
+
+  refElect = new QSpinBox(0, sysinfo.maxelectnum, 1, this, "refelectspinbox");
+  refElect->setSpecialValueText("Gnd");
+  refElect->setValue(ch->refelect);
+  refElect->setEnabled(enabled);
+  connect(refElect, SIGNAL(valueChanged(int)), this, 
+      SLOT(refElectChanged(int)));
+  grid->addWidget(refElect, 1, 4, 1, 2);
+  //grid->addMultiCellWidget(refElect, 1, 1, 4, 5);
+  /* disable this if the default datatype is SPIKE */
+
+  /* create the reference channel label */
+  refChanLabel = new QLabel("chan", this, "RefLabel");
+  refChanLabel->setFont(fs);
+  refChanLabel->setSizePolicy(p);
+  grid->addWidget(refChanLabel, 1, 6);
+  //grid->addMultiCellWidget(refChanLabel, 1, 1, 6, 6);
+
+  /* create the reference channel spin box */
+  refChan = new QSpinBox(0, sysinfo.electinfo[ch->refelect].nchan - 1, 1,
+      this, "refchspinbox");
+  refChan->setFont(fs);
+  refChan->setValue(ch->refchan);
+  refChan->setEnabled(enabled);
+  connect(refChan, SIGNAL(valueChanged(int)), this,SLOT(refChanChanged(int)));
+  grid->addWidget(refChan, 1, 7);
+  //grid->addMultiCellWidget(refChan, 1, 1, 7, 7);
+  /* disable this if the default datatype is SPIKE */
+
+  /* create the push buttons that select whether all of the channels are
+   * changed at once  */
+  mdvSelectAll = new QPushButton("Max Disp", this, "mdv_all");
+  mdvSelectAll->setToggleButton(TRUE);
+  mdvSelectAll->setSizePolicy(p);
+  mdvSelectAll->setFont(fs);
+  fSelectAll = new QPushButton("Filters", this, "t_all");
+  fSelectAll->setToggleButton(TRUE);
+  fSelectAll->setSizePolicy(p);
+  fSelectAll->setFont(fs);
+  /* put the buttons in the grid  */
+  grid->addWidget(mdvSelectAll, 2, 0, 1, 4);
+  grid->addWidget(fSelectAll, 3, 0, 1, 4);
+  //grid->addMultiCellWidget(mdvSelectAll, 2, 2, 0, 3);
+  //grid->addMultiCellWidget(fSelectAll, 3, 3, 0, 3);
+
+  /* create the max display value label  */
+  maxdispval = new SpikeLineEdit(this, chanNum);
+  maxdispval->setFont(fs);
+  s = QString("%1").arg(ch->maxdispval);
+  maxdispval->setText(s);
+  /* set up a validator for the value */
+  QIntValidator *valid = new QIntValidator(0, MAX_DISP_VAL, this, 
+      "dataValValidator");
+  maxdispval->setValidator(valid);
+  maxdispval->setSizePolicy(p);
+  /* put the label and the text window into the local layout */
+  grid->addWidget(maxdispval, 2, 4, 1, 2);
+  //grid->addMultiCellWidget(maxdispval, 2, 2, 4, 7);
+  /* connect the update message to the update slot */
+  connect(maxdispval, SIGNAL(updateVal(int, unsigned short)), this, SLOT(mdvChanged(int, unsigned short)));
 
 
+  /* create the filter value label  */
 
-    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "SpikeEEGDialogLayout");
+  lowfilt = new SpikeFiltSpinBox(this, FALSE, chanNum);
+  lowfilt->setFont(fs);
+  lowfilt->setValue(ch->lowfilter);
+  lowfilt->setSizePolicy(p);
+  lowfilt->setEnabled(enabled);
+  /* put the label and the text window into the local layout */
+  grid->addWidget(lowfilt, 3, 4, 1, 2);
+  //grid->addMultiCellWidget(lowfilt, 3, 3, 4, 5);
+  connect(lowfilt, SIGNAL(updateVal(int, unsigned short)), this, SLOT(lowFiltChanged(int, unsigned short)));
 
-    QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
-    QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
+  highfilt = new SpikeFiltSpinBox(this, TRUE, chanNum);
+  highfilt->setFont(fs);
+  highfilt->setValue(ch->highfilter);
+  highfilt->setSizePolicy(p);
+  highfilt->setEnabled(enabled);
+  /* put the label and the text window into the local layout */
+  grid->addWidget(highfilt, 3, 6, 1, 2);
+  //grid->addMultiCellWidget(highfilt, 3, 3, 6, 7);
+  connect(highfilt, SIGNAL(updateVal(int, unsigned short)), this, SLOT(highFiltChanged(int, unsigned short)));
 
-    QFont fs( "SansSerif", 10, QFont::Normal );
-    QFont fb( "TypeWriter", 18, QFont::Normal );
+  /* create the next and prev buttons */
+  next = new QPushButton("Next", this, "NextTetrode");
+  connect(next, SIGNAL( clicked() ), this, SLOT( gotoNextTet() ) );
+  prev = new QPushButton("Previous", this, "NextTetrode");
+  connect(prev, SIGNAL( clicked() ), this, SLOT( gotoPrevTet() ) );
+  /* create a close button at the bottom */
+  close = new QPushButton("Close", this, "CloseEEGDialog");
+  connect( close, SIGNAL( clicked() ), this, SLOT( accept() ) );
 
-    /* create the tetrode number label */
-    QString s = QString("%1").arg((int)ch->number,2);
-    tetNumLabel = new QLabel("tetNumLabel", this, 0);
-    tetNumLabel->setText(s);
-    tetNumLabel->setFont(fb);
-    tetNumLabel->setSizePolicy(p);
-    grid->addMultiCellWidget(tetNumLabel, 0, 0, 0, 0);
-
-    /* create the tetrode channel label */
-    tetChanLabel = new QLabel("tetNumLabel", this, 0);
-    tetChanLabel->setText("channel");
-    tetChanLabel->setFont(fs);
-    tetChanLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter | Qt::TextExpandTabs);
-    tetChanLabel->setSizePolicy(p);
-    grid->addMultiCellWidget(tetChanLabel, 0, 0, 1, 1);
-
-    /* create the tetrode channel number spin box */
-    tetChanNum = new QSpinBox(0, sysinfo.electinfo[ch->number].nchan - 1, 1,
-	    this, "tetchspinbox");
-    tetChanNum->setValue(ch->electchan);
-    tetChanNum->setEnabled(enabled);
-    connect(tetChanNum, SIGNAL(valueChanged(int)), this, 
-	    SLOT(tetChanChanged(int)));
-    grid->addMultiCellWidget(tetChanNum, 0, 0, 2, 2);
-    /* disable this if the default datatype is SPIKE */
-
-    /* Create the Depth Label */
-    depthLabel = new QLabel("Depth", this, "DepthLabel");
-    depthLabel->setFont(fs);
-    depthLabel->setSizePolicy(p);
-    depthLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter | Qt::TextExpandTabs);
-    grid->addMultiCellWidget(depthLabel, 0, 0, 5, 5);
-
-    /* create the Depth input */
-    depth = new SpikeLineEdit(this, chanNum);
-    /* we set the depth here so that we can update it below  */
-    s = QString("%1").arg(ch->depth);
-    depth->setText(s);
-    depth->setFont(fs);
-    depth->setEnabled(enabled);
-    QIntValidator *dvalid = new QIntValidator(0, SHRT_MAX, this, 
-	    "depthValidator");
-    depth->setValidator(dvalid);
-    depth->setSizePolicy(p);
-    grid->addMultiCellWidget(depth, 0, 0, 6, 6);
-    /* connect the update signal to the depth update function */
-    connect(depth, SIGNAL(updateVal(int, unsigned short)), this, SLOT(depthChanged(int, unsigned short)));
-    /* disable this if the default datatype is SPIKE */
-
-    /* create the depth conversion label */ 
-    depthmmLabel = new QLabel(this);
-    depthmmLabel->setFont(fs);
-    depthmmLabel->setSizePolicy(p2);
-    depthmmLabel->setText(QString("%1 mm").arg(ch->depth * 
-		DEPTH_CONVERSION, 0, 'f', 3));
-    grid->addMultiCellWidget(depthmmLabel, 0, 0, 7, 7);
-
-    /* create the reference selector button */
-
-    /* create the reference selector */
-    refSelectAll = new QPushButton("Reference", this, "ref_all");
-    refSelectAll->setToggleButton(TRUE);
-    refSelectAll->setSizePolicy(p);
-    refSelectAll->setFont(fs);
-    grid->addMultiCellWidget(refSelectAll, 1, 1, 0, 3);
-
-    refElect = new QSpinBox(0, sysinfo.maxelectnum, 1, this, "refelectspinbox");
-    refElect->setSpecialValueText("Gnd");
-    refElect->setValue(ch->refelect);
-    refElect->setEnabled(enabled);
-    connect(refElect, SIGNAL(valueChanged(int)), this, 
-	    SLOT(refElectChanged(int)));
-    grid->addMultiCellWidget(refElect, 1, 1, 4, 5);
-    /* disable this if the default datatype is SPIKE */
-
-    /* create the reference channel label */
-    refChanLabel = new QLabel("chan", this, "RefLabel");
-    refChanLabel->setFont(fs);
-    refChanLabel->setSizePolicy(p);
-    grid->addMultiCellWidget(refChanLabel, 1, 1, 6, 6);
-
-    /* create the reference channel spin box */
-    refChan = new QSpinBox(0, sysinfo.electinfo[ch->refelect].nchan - 1, 1,
-	    this, "refchspinbox");
-    refChan->setFont(fs);
-    refChan->setValue(ch->refchan);
-    refChan->setEnabled(enabled);
-    connect(refChan, SIGNAL(valueChanged(int)), this,SLOT(refChanChanged(int)));
-    grid->addMultiCellWidget(refChan, 1, 1, 7, 7);
-    /* disable this if the default datatype is SPIKE */
-    
-    /* create the push buttons that select whether all of the channels are
-     * changed at once  */
-    mdvSelectAll = new QPushButton("Max Disp", this, "mdv_all");
-    mdvSelectAll->setToggleButton(TRUE);
-    mdvSelectAll->setSizePolicy(p);
-    mdvSelectAll->setFont(fs);
-    fSelectAll = new QPushButton("Filters", this, "t_all");
-    fSelectAll->setToggleButton(TRUE);
-    fSelectAll->setSizePolicy(p);
-    fSelectAll->setFont(fs);
-    /* put the buttons in the grid  */
-    grid->addMultiCellWidget(mdvSelectAll, 2, 2, 0, 3);
-    grid->addMultiCellWidget(fSelectAll, 3, 3, 0, 3);
-
-    /* create the max display value label  */
-    maxdispval = new SpikeLineEdit(this, chanNum);
-    maxdispval->setFont(fs);
-    s = QString("%1").arg(ch->maxdispval);
-    maxdispval->setText(s);
-    /* set up a validator for the value */
-    QIntValidator *valid = new QIntValidator(0, MAX_DISP_VAL, this, 
-	    "dataValValidator");
-    maxdispval->setValidator(valid);
-    maxdispval->setSizePolicy(p);
-    /* put the label and the text window into the local layout */
-    grid->addMultiCellWidget(maxdispval, 2, 2, 4, 7);
-    /* connect the update message to the update slot */
-    connect(maxdispval, SIGNAL(updateVal(int, unsigned short)), this, SLOT(mdvChanged(int, unsigned short)));
+  grid->addWidget(next, 4, 3); 
+  grid->addWidget(prev, 4, 4); 
+  grid->addWidget(close, 4, 5); 
 
 
-    /* create the filter value label  */
+  /* set things up so that we can make changes to all tetrodes if this is
+   * a SPIKE machine */
+  if (sysinfo.defaultdatatype == SPIKE) {
+    /* set the selectors to be for all channels */
+    mdvSelectAll->setOn(TRUE);
+    refSelectAll->setOn(TRUE);
+    fSelectAll->setOn(TRUE);
+    tetChanNum->setEnabled(FALSE);
+    depth->setEnabled(FALSE);
+  }
 
-    lowfilt = new SpikeFiltSpinBox(this, FALSE, chanNum);
-    lowfilt->setFont(fs);
-    lowfilt->setValue(ch->lowfilter);
-    lowfilt->setSizePolicy(p);
-    lowfilt->setEnabled(enabled);
-    /* put the label and the text window into the local layout */
-    grid->addMultiCellWidget(lowfilt, 3, 3, 4, 5);
-    connect(lowfilt, SIGNAL(updateVal(int, unsigned short)), this, SLOT(lowFiltChanged(int, unsigned short)));
+  setLayout(grid);
+  show();
 
-    highfilt = new SpikeFiltSpinBox(this, TRUE, chanNum);
-    highfilt->setFont(fs);
-    highfilt->setValue(ch->highfilter);
-    highfilt->setSizePolicy(p);
-    highfilt->setEnabled(enabled);
-    /* put the label and the text window into the local layout */
-    grid->addMultiCellWidget(highfilt, 3, 3, 6, 7);
-    connect(highfilt, SIGNAL(updateVal(int, unsigned short)), this, SLOT(highFiltChanged(int, unsigned short)));
-
-    /* create the next and prev buttons */
-    next = new QPushButton("Next", this, "NextTetrode");
-    connect(next, SIGNAL( clicked() ), this, SLOT( gotoNextTet() ) );
-    grid->addMultiCellWidget(next, nrows-1, nrows-1, 1, 1, 0); 
-    prev = new QPushButton("Previous", this, "NextTetrode");
-    connect(prev, SIGNAL( clicked() ), this, SLOT( gotoPrevTet() ) );
-    grid->addMultiCellWidget(prev, nrows-1, nrows-1, 2, 2, 0); 
-
-    /* create a close button at the bottom */
-    close = new QPushButton("Close", this, "CloseEEGDialog");
-    connect( close, SIGNAL( clicked() ), this, SLOT( accept() ) );
-    grid->addMultiCellWidget(close, nrows-1, nrows-1, ncols-1, ncols-1, 0); 
-     
-    /* set things up so that we can make changes to all tetrodes if this is
-     * a SPIKE machine */
-    if (sysinfo.defaultdatatype == SPIKE) {
-	/* set the selectors to be for all channels */
-	mdvSelectAll->setOn(TRUE);
-	refSelectAll->setOn(TRUE);
-	fSelectAll->setOn(TRUE);
-	tetChanNum->setEnabled(FALSE);
-	depth->setEnabled(FALSE);
-    }
-
-    show();
-    
 }
 
 SpikeEEGDialog::~SpikeEEGDialog() {

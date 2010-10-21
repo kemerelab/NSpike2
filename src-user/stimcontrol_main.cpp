@@ -45,6 +45,9 @@ int main(int argc, char **argv)
   int         message;
   int         j;
   int         pending = 0;
+  int         nPulses = 0;
+
+  int messageCode;
 
   FILE        *outfile = NULL;
 
@@ -57,6 +60,8 @@ int main(int argc, char **argv)
   u32 oldts = 0;
   double avgtsdiff = 0.0;
   double stdtsdiff = 0.0;
+
+  int pulseArraySize;
 
   inputfd = 0;
   outputfd = 0;
@@ -135,8 +140,7 @@ int main(int argc, char **argv)
           fprintf(stderr,"rt_user: Setting cm/pix = %f.\n",cmPerPix);
           break;
         case DIO_STIMCONTROL_MODE:
-          memcpy((char *)&stimcontrolMode, messagedata,
-              sizeof(int));
+          memcpy((char *)&stimcontrolMode, messagedata, sizeof(int));
           switch (stimcontrolMode) {
             case DIO_RTMODE_OUTPUT_ONLY:
               fprintf(stderr,"rt_user: Received request to do output only stimulation.\n");
@@ -150,7 +154,7 @@ int main(int argc, char **argv)
               fprintf(stderr,"rt_user: Received request to do ripple disruption.\n");
               break;
             case DIO_RTMODE_LATENCY_TEST:
-              InitRipple();
+              InitLatency();
               fprintf(stderr,"rt_user: Received request to do latency test.\n");
               break;
             case DIO_RTMODE_DEFAULT:
@@ -191,9 +195,17 @@ int main(int argc, char **argv)
           fprintf(stderr,"rt_user: Received Realtime STOP command......\n");
           break;
         case DIO_PULSE_SEQ:
-          //ParsePulseFile((char *)messagedata, pulseArray);
-          //nextPulseCmd = pulseArray;
-          //nextPulseCmd->start_samp_timestamp = 0; // wait for start
+          nPulses = messagedatalen / sizeof(PulseCommand);
+          if ((nPulses > MAX_PULSE_SEQS) || (nPulses < 1)) {
+            pulseArray[0].pulse_width = DIO_PULSE_COMMAND_END;
+            fprintf(stderr,"rt_user: Pulse command more than MAX_PULSE_SEQS (%d)\n", MAX_PULSE_SEQS);
+          }
+          else {
+            memcpy(pulseArray,(PulseCommand *)messagedata, nPulses * sizeof(PulseCommand));
+            fprintf(stderr,"rt_user: Received pulse command of length %d.\n", nPulses);
+          }
+          nextPulseCmd = pulseArray;
+          nextPulseCmd->start_samp_timestamp = 0; // wait for start
           break;
         case DIO_PULSE_SEQ_START:
           pending = 1;
@@ -202,6 +214,8 @@ int main(int argc, char **argv)
         case DIO_PULSE_SEQ_STOP:
           fprintf(stderr,"rt_user: Received STOP command\n");
           nextPulseCmd->start_samp_timestamp = 0;
+          messageCode = -1;
+          SendMessage(outputfd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
           break;
         case SETUP_DAQ_TO_USER:
           /* copy daq_to_user_dsps array into sysinfo structure */

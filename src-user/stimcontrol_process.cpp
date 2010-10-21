@@ -16,7 +16,7 @@ PulseCommand rippleStimPulseCmd;
 PulseCommand latencyTestPulseCmd;
 
 PulseCommand *nextPulseCmd;
-PulseCommand pulseArray[MAX_PULSES+1];
+PulseCommand pulseArray[MAX_PULSE_SEQS+1];
 u32 last_future_timestamp;
 
 void ProcessData(unsigned short *usptr, DSPInfo *dptr) 
@@ -85,12 +85,13 @@ void InitPulseArray( void)
 void ProcessTimestamp( void )
 {
 
-  if ((nextPulseCmd->line == -1 ) || (nextPulseCmd->start_samp_timestamp == 0))
+  int messageCode;
+
+  if ((nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END ) || (nextPulseCmd->start_samp_timestamp == 0))
     return;
 
-
   if ( (timestamp * SAMP_TO_TIMESTAMP > last_future_timestamp) && 
-       (timestamp > nextPulseCmd->start_samp_timestamp/3 - 500) ){ // consider sending another command
+       (timestamp > nextPulseCmd->start_samp_timestamp/3 - 500) ) { // consider sending another command
     fprintf(stderr,"\n\nrt_user: next command timestamp %d (%d) (%d)\n", nextPulseCmd->start_samp_timestamp/3, last_future_timestamp/3, timestamp);
     PulseLaserCommand(*nextPulseCmd); // send current next command
     SendMessage(outputfd, DIO_PULSE_SEQ_STEP, (char *) &(nextPulseCmd->line),  sizeof(int));  // send info back to user program
@@ -101,22 +102,41 @@ void ProcessTimestamp( void )
       nextPulseCmd->n_repeats--;
       nextPulseCmd->pre_delay = 0;
       nextPulseCmd->start_samp_timestamp = last_future_timestamp +
-        PulseCommandLength(*nextPulseCmd) +
-        nextPulseCmd->inter_frame_delay;
+      nextPulseCmd->inter_frame_delay*3;
+      //PulseCommandLength(*nextPulseCmd) +
+      return;
+    }
+    else if (nextPulseCmd->n_repeats == -1) { // continuous
+      nextPulseCmd->pre_delay = 0;
+      nextPulseCmd->start_samp_timestamp = last_future_timestamp +
+      nextPulseCmd->inter_frame_delay*3;
+      //PulseCommandLength(*nextPulseCmd) +
       return;
     }
 
     nextPulseCmd++;
 
-    if (nextPulseCmd->line == -1) { // end of file
-      SendMessage(outputfd, DIO_PULSE_SEQ_EXECUTED, NULL, 0); 
+    if (nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_REPEAT)
+    {
+      if (nextPulseCmd->n_repeats == 0) // done with repeats
+        nextPulseCmd++;
+      else if (nextPulseCmd->n_repeats == -1)  // continuous repeat mode
+        nextPulseCmd = &pulseArray[nextPulseCmd->line];
+      else {
+        nextPulseCmd->n_repeats--;
+        nextPulseCmd = &pulseArray[nextPulseCmd->line];
+      }
+    }
+
+    if (nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END) { // end of file
+      messageCode = 0;
+      SendMessage(outputfd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
       return;
     }
-    else {
-      nextPulseCmd->start_samp_timestamp = last_future_timestamp + 
-        PulseCommandLength(*nextPulseCmd) +
-        nextPulseCmd->pre_delay;
-    }
+      
+    nextPulseCmd->start_samp_timestamp = last_future_timestamp + 
+      nextPulseCmd->pre_delay*3;
+      //PulseCommandLength(*nextPulseCmd) +
   }
 
 }

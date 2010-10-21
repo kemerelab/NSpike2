@@ -351,7 +351,7 @@ int main(int argc, char **argv)
   QApplication a(argc, argv); 
   /* use a Windows style to get square buttons (maximizes space for button
    * labels) */
-  a.setStyle("Windows");
+  //a.setStyle("windows");
 
   /* create the main form that has all of the tabbed windows inside it */
   spikeMainWindow = new SpikeMainWindow();
@@ -611,7 +611,7 @@ void SQCompat::spikeProcessMessages(void)
             }
           }
           else {
-            fprintf(stderr, "Error getting user program output\n");
+            fprintf(stderr, "Error getting user program output %d\n");
           }
         }
         datareceived = 1;

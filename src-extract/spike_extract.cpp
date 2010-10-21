@@ -50,27 +50,27 @@ typedef struct _ExtractInfo {
 
 int niter = 0;
 
-ExtractInfo   extractinfo;
-SysInfo   sysinfo;
-NetworkInfo netinfo;
-DigIOInfo digioinfo;
-UserDataInfo  userdatainfo;
-CommonDSPInfo cdspinfo;
-char    *tmpdata;
-char    datafilename[200];
+ExtractInfo 	extractinfo;
+SysInfo		sysinfo;
+NetworkInfo	netinfo;
+DigIOInfo	digioinfo;
+MatlabInfo	matlabinfo;
+CommonDSPInfo	cdspinfo;
+char		*tmpdata;
+char 		datafilename[200];
 
-double    actualtime, computedtime;
+double		actualtime, computedtime;
 
 
 
 
 int main(int argc, char **argv) 
 {
-    FILE    *datafile;
-    char    tmpstring[200];
-    char    configfilename[200];
-    u32 startoffset;
-    int     nxtarg = 0;    
+    FILE 		*datafile;
+    char		tmpstring[200];
+    char 		configfilename[200];
+    u32	startoffset;
+    int 		nxtarg = 0;    
 
     extractinfo.extractspike = 0;
     extractinfo.extractcont = 0;

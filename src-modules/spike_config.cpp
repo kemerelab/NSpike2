@@ -25,7 +25,7 @@
 
 extern SysInfo 		sysinfo;
 extern NetworkInfo 	netinfo;
-extern UserDataInfo 	userdatainfo;
+extern MatlabInfo 	matlabinfo;
 extern CommonDSPInfo 	cdspinfo;
 extern DigIOInfo 	digioinfo;
 
@@ -76,7 +76,7 @@ int ReadConfigFile(char *configfilename, int datafile)
 
     netinfo.nslaves = 0;
     netinfo.rtslave = -1;
-    netinfo.userdataslave = -1;
+    netinfo.matlabslave = -1;
     currentslave = 0;
     currentconn = 0;
     currentport = 0;
@@ -135,16 +135,24 @@ int ReadConfigFile(char *configfilename, int datafile)
                 }
             }
 	    else if ((strncmp(tmpbuf, "slave", 5) == 0) || 
-	             (strncmp(tmpbuf, "userdataslave", 13) == 0)) {
+	             (strncmp(tmpbuf, "rtslave", 7) == 0) ||
+	             (strncmp(tmpbuf, "matlabslave", 11) == 0)) {
 	        if (strncmp(tmpbuf, "slave", 5) == 0) {
 		    tmpptr = tmpbuf+6;
 		}
-		else if (strncmp(tmpbuf, "userdataslave", 13) == 0) {
+		else if (strncmp(tmpbuf, "rtslave", 7) == 0) {
+		    tmpptr = tmpbuf+8;
+		    sysinfo.rt = 1;
+		    /* we use rtslave to index into the machinename array, so
+		     * we need to set it to the current slave numnber + 1 */
+		    netinfo.rtslave = currentslave + 1;
+		}
+		else if (strncmp(tmpbuf, "matlabslave", 11) == 0) {
 		    tmpptr = tmpbuf+12;
-		    sysinfo.userdataoutput = 1;
-		    /* we use userdataslave to index into the machinename array, 
+		    sysinfo.matlaboutput = 1;
+		    /* we use matlabslave to index into the machinename array, 
 		     * so we need to set it to the current slave numnber + 1 */
-		    netinfo.userdataslave = currentslave + 1;
+		    netinfo.matlabslave = currentslave + 1;
 		}
 	        if ((netinfo.nslaves == 0) || (currentslave == netinfo.nslaves)) {
 		    fprintf(STATUSFILE, "spike_main: Error in slave section of  %s\n", configfilename);
@@ -283,9 +291,9 @@ int ReadConfigFile(char *configfilename, int datafile)
 			sysinfo.datatype[tmpint[0]] |= DIGITALIO;
 			tmp+=9;
 		    }
-		    else if (strncmp(tmp, "USERDATA", 8) == 0) {
-			sysinfo.datatype[tmpint[0]] |= USERDATA;
-			sysinfo.userdataoutput = 1;
+		    else if (strncmp(tmp, "MATLAB", 6) == 0) {
+			sysinfo.datatype[tmpint[0]] |= MATLAB;
+			sysinfo.matlaboutput = 1;
 			tmp+=6;
 		    }
 		    else {
@@ -521,41 +529,40 @@ int ReadConfigFile(char *configfilename, int datafile)
                 }
 	    }
 	    /* Matlab output */
-            else if (strncmp(tmp, "userdata", 8) == 0) {
-		tmp += 8;
+            else if (strncmp(tmp, "matlab", 6) == 0) {
+		tmp += 6;
 		tmpbool = NULL;
 		/* skip spaces until we get to the datatype string */
 		tmpint[0] = 0;
 		while (isspace(*tmp)) tmp++;
 		if (strncmp(tmp, "SPIKE", 5) == 0) {
-		    tmpbool = userdatainfo.spikeelect;
+		    tmpbool = matlabinfo.spikeelect;
 		    tmp+=6;
-		    userdatainfo.sendspike = 1;
+		    matlabinfo.savespike = 1;
 		}
 		else if (strncmp(tmp, "CONTINUOUS", 10) == 0) {
-		    tmpbool = userdatainfo.contelect;
+		    tmpbool = matlabinfo.contelect;
 		    tmp+=11;
-		    userdatainfo.sendcont = 1;
+		    matlabinfo.savecont = 1;
 		}
 		if (tmpbool) {
 		    /* it is a SPIKE or CONTINUOUS line */
 		    if (sscanf(tmp, "%d", tmpint) != 1) {
-			fprintf(stderr, "Error in config file: no electrode number on userdata line, ignoring\n");
+			fprintf(stderr, "Error in config file: no electrode number on matlab line, ignoring\n");
 		    }
 		    else {
 			/* set this electrode to be saved */
-			tmpbool[*tmpint] = 1;
+			*(tmpbool + *tmpint) = 1;
 		    }
-		    fprintf(stderr, "cont data chan %d\n", userdatainfo.contelect[*tmpint]);
 		}
 		else if (strncmp(tmp, "POSITION", 8) == 0) {
-		    userdatainfo.sendpos = 1;
+		    matlabinfo.savepos = 1;
 		}
-		else if (strncmp(tmp, "DIGITALIO", 9) == 0) {
-		    userdatainfo.senddigio = 1;
+		else if (strncmp(tmp, "DIGITALIO", 8) == 0) {
+		    matlabinfo.savedigio = 1;
 		}
 		else {
-		    fprintf(stderr, "Error in config file: no userdata datatype on line %s\n", tmpbuf);
+		    fprintf(stderr, "Error in config file: no matlab datatype on line %s\n", tmpbuf);
 		}
 	    }
 	    /* audio settings */
@@ -610,10 +617,6 @@ int ReadConfigFile(char *configfilename, int datafile)
             else if (strncmp(tmp, "dspsampperpacket", 16) == 0) {
                 sscanf(tmp+16, "%d%d", tmpint, tmpint+1);
 		sysinfo.dspinfo[tmpint[0]].nsamp = tmpint[1];
-	    }
-            else if (strncmp(tmp, "rtmode", 4) == 0) {
-                sscanf(tmp+4, "%d", tmpint);
-		sysinfo.rtmode = (bool) *tmpint;
 	    }
             else if (strncmp(tmp, "calibrationfile", 15) == 0) {
 		sscanf(tmp+15, "%s", sysinfo.calibrationfile);
@@ -842,8 +845,8 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 	if (sysinfo.datatype[i] & DIGITALIO) {
 	    gzprintf(outfile, "DIGITALIO\t");
 	}
-	if (sysinfo.datatype[i] & USERDATA) {
-	    gzprintf(outfile, "USERDATA\t");
+	if (sysinfo.datatype[i] & MATLAB) {
+	    gzprintf(outfile, "MATLAB\t");
 	}
 	gzprintf(outfile, "\n");
 	/* write out the default data directory */
@@ -857,8 +860,14 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 		netinfo.masterport);
 	/* write out the ports for each slave */
 	for (i = 0; i < netinfo.nslaves; i++) {
-	    gzprintf(outfile, "slave\t%s\t%d\n", netinfo.slavename[i], 
-		    netinfo.slaveport[i]);
+	    if (i != netinfo.rtslave - 1) {
+		gzprintf(outfile, "slave\t%s\t%d\n", netinfo.slavename[i], 
+			netinfo.slaveport[i]);
+	    }
+	    else {
+		gzprintf(outfile, "rtslave\t%s\t%d\n", netinfo.slavename[i], 
+			netinfo.slaveport[i]);
+	    }
 	}
 	/* write out the port numbers */
 	for (i = 0; i < netinfo.nports; i++) {
@@ -899,24 +908,24 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 	/* clock source */
 	gzprintf(outfile, "dspclock\t%d\n", sysinfo.dspclock);
 
-	/* write out the userdata data */
-	if (userdatainfo.sendpos) {
-	    gzprintf(outfile, "userdata\tPOSITION\t");
+	/* write out the matlab data */
+	if (matlabinfo.savepos) {
+	    gzprintf(outfile, "matlab\tPOSITION\t");
 	}
-	if (userdatainfo.senddigio) {
-	    gzprintf(outfile, "userdata\tDIGITALIO\t");
+	if (matlabinfo.savedigio) {
+	    gzprintf(outfile, "matlab\tDIGITALIO\t");
 	}
-	if (userdatainfo.sendcont) {
+	if (matlabinfo.savecont) {
 	    for (i = 1; i < MAX_ELECTRODE_NUMBER; i++) {
-		if (userdatainfo.contelect[i]) {
-		    gzprintf(outfile, "userdata\tCONTINUOUS\t%d", i);
+		if (matlabinfo.contelect[i]) {
+		    gzprintf(outfile, "matlab\tCONTINUOUS\t%d", i);
 		}
 	    }
 	}
-	if (userdatainfo.sendspike) {
+	if (matlabinfo.savespike) {
 	    for (i = 1; i < MAX_ELECTRODE_NUMBER; i++) {
-		if (userdatainfo.spikeelect[i]) {
-		    gzprintf(outfile, "userdata\tSPIKE\t%d", i);
+		if (matlabinfo.spikeelect[i]) {
+		    gzprintf(outfile, "matlab\tSPIKE\t%d", i);
 		}
 	    }
 	}
@@ -1118,6 +1127,20 @@ int SetDSPInfo(void)
     cdspinfo.audiogain[0] = DEFAULT_DSP_AUDIO_GAIN;
     cdspinfo.audiogain[1] = DEFAULT_DSP_AUDIO_GAIN;
 
+    /* test - the following is now done with a memset command at the beginnign
+     * of ReadConfigFile */
+    /* initialize all of the nchan and nelectrodes variables to 0 
+    for (i = 0; i < sysinfo.ndsps; i++) {
+        dptr = sysinfo.dspinfo + i;
+        dptr->nelectrodes = 0;
+        dptr->nchan = 0;
+        dptr->nsamp = 0;
+        for (j = 0; j < MAX_ELECTRODES; j++) {
+            dptr->electinfo[j].nchan = 0;
+        }
+	dptr->coderev = 0;
+    } */
+
     for (m = 0; m <= netinfo.nslaves; m++) {
         lastelect = 0;
         ch = sysinfo.channelinfo[m];
@@ -1186,12 +1209,7 @@ int SetDSPInfo(void)
 	     * the config file */
 	    if (!dptr->nsamp) {
 		dptr->nsamp = (short) (MAX_PACKET_SIZE - 3 * 
-			    sizeof(unsigned short)) / dptr->nchan - 1;
-		if (sysinfo.rtmode) {
-		    // set the number of samples to be the smaller of the
-		    // default or a rate that will give us a packet every ms
-		    dptr->nsamp = MIN(dptr->nsamp, dptr->samprate / 1000);
-		}
+			sizeof(unsigned short)) / dptr->nchan - 1;
 	    }
 	    else {
 		/* check that the number of samples is reasonable */
@@ -1205,7 +1223,7 @@ int SetDSPInfo(void)
 	    }
             /* aim for NCONT_BUF_PER_SEC continuous buffers per second */
             sampmult = (dptr->samprate / NCONT_BUF_PER_SEC) / dptr->nsamp;
-            if ((sampmult > 1) && (!sysinfo.rtmode)) {
+            if (sampmult > 1) {
                 dptr->nsampout = dptr->nsamp * sampmult;
             }
             else {

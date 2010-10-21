@@ -7,6 +7,7 @@
 
 #include "spike_stimcontrol_defines.h"
 #include "userMainConfig.h"
+#include "userConfigureStimulators.h"
 #include "userOutputOnlyTab.h"
 #include "userRealtimeFeedbackTab.h"
 
@@ -23,6 +24,8 @@ extern void  SendDAQUserMessage(int message, char *data, int datalen);
 
 extern void StartDigIOProgram(int prognum);
 
+void  SendUserMessage(int message, char *data, int datalen);
+
 class DAQ_IO : public QWidget {
 	Q_OBJECT
 public:
@@ -32,19 +35,21 @@ public:
   int StimChanChanged;
   int UserProgramRunning;
 
+  PulseCommand PulseCommandA, PulseCommandB;
+
 signals:
   void changedUserProgramStatus(int);
   void updateChanDisplay(int);
   void userProgramRunning(bool);
-  void pulseFileLineExecuted(int);
   void rippleStatusUpdate(RippleStatusMsg);
-  void pulseFileFinished(void);
+
+  void pulseSeqLineExecuted(int);
+  void pulseSeqFinished(int);
 
 public slots:
   void updateChan(int);
   void checkUserProgramStatus(void);
   void msgFromUser(int msg, char *data);
-
 };
 
 extern DAQ_IO *daq_io_widget; // global, but created in DIOInterface
@@ -66,6 +71,14 @@ public slots:
   void  loadSettings(void);
   void  saveSettings(void);
 
+  void triggerSingleStim(void);
+  void startOutputOnlyStim(void);
+  void abortOutputOnlyStim(void);
+
+  void enableRealtimeStim(void);
+  void startRealtimeStim(void);
+  void stopRealtimeStim(void);
+
 protected:
   int         	ntabs;
 
@@ -74,6 +87,7 @@ protected:
   // Q3WidgetStack     	*qtab;
   QTabWidget *qtab;
 
+  StimConfigTab *stimConfigTab;
   MainConfigTab *mainConfigTab;
   //PulseFileTab *pulseFileTabWidget;
   StimOutputOnlyTab *stimOutputOnlyTab;

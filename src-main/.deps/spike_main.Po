@@ -669,50 +669,49 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
  ../include/../src-gui/spikeInput.h \
  ../include/../src-gui/spikeStatusbar.h \
  ../include/../src-gui/spikeGLPane.h ../include/../src-gui/spikeUserGUI.h \
- /usr/lib/qt4/include/QtCore/qrect.h \
- /usr/lib/qt4/include/QtGui/qtabwidget.h \
- /usr/lib/qt4/include/QtGui/qwidget.h \
- /usr/lib/qt4/include/Qt3Support/q3popupmenu.h \
- /usr/lib/qt4/include/QtGui/QLabel ../include/spike_stimcontrol_defines.h \
- ../src-gui/userMainConfig.h ../src-gui/userOutputOnlyTab.h \
+ /usr/share/qt4/include/QtCore/qrect.h \
+ /usr/share/qt4/include/QtGui/qtabwidget.h \
+ /usr/share/qt4/include/QtGui/qwidget.h \
+ /usr/share/qt4/include/Qt3Support/q3popupmenu.h \
+ /usr/share/qt4/include/QtGui/QLabel \
+ ../include/spike_stimcontrol_defines.h ../src-gui/userMainConfig.h \
+ ../src-gui/userConfigureStimulators.h ../src-gui/userOutputOnlyTab.h \
  ../src-gui/userRealtimeFeedbackTab.h \
- /usr/lib/qt4/include/Qt3Support/q3textedit.h \
- /usr/lib/qt4/include/Qt3Support/q3scrollview.h \
- /usr/lib/qt4/include/Qt3Support/q3frame.h \
- /usr/lib/qt4/include/QtGui/qscrollbar.h \
- /usr/lib/qt4/include/Qt3Support/q3stylesheet.h \
- /usr/lib/qt4/include/Qt3Support/q3mimefactory.h ../include/spike_dio.h \
- ../src-gui/rewardControl.h /usr/lib/qt4/include/Qt3Support/q3listbox.h \
- /usr/lib/qt4/include/QtGui/QKeyEvent \
- /usr/lib/qt4/include/Qt3Support/Q3GridLayout \
- /usr/lib/qt4/include/Qt3Support/q3gridlayout.h \
- /usr/lib/qt4/include/Qt3Support/Q3PopupMenu \
- /usr/lib/qt4/include/Qt3Support/q3popupmenu.h \
- /usr/lib/qt4/include/Qt3Support/q3filedialog.h \
- /usr/lib/qt4/include/Qt3Support/q3urloperator.h \
- /usr/lib/qt4/include/Qt3Support/q3url.h \
- /usr/lib/qt4/include/Qt3Support/q3ptrlist.h \
- /usr/lib/qt4/include/Qt3Support/q3glist.h \
- /usr/lib/qt4/include/Qt3Support/q3ptrcollection.h \
- /usr/lib/qt4/include/Qt3Support/q3networkprotocol.h \
- /usr/lib/qt4/include/Qt3Support/q3dict.h \
- /usr/lib/qt4/include/Qt3Support/q3gdict.h \
- /usr/lib/qt4/include/Qt3Support/q3valuelist.h \
- /usr/lib/qt4/include/QtCore/qlinkedlist.h \
- /usr/lib/qt4/include/Qt3Support/Q3TextStream \
- /usr/lib/qt4/include/Qt3Support/q3textstream.h \
- /usr/lib/qt4/include/Qt3Support/q3cstring.h \
- /usr/lib/qt4/include/Qt3Support/Q3HBoxLayout \
- /usr/lib/qt4/include/Qt3Support/q3boxlayout.h \
- /usr/lib/qt4/include/Qt3Support/Q3BoxLayout ../src-gui/spikeStatusbar.h \
- /usr/lib/qt4/include/QtGui/qapplication.h \
- /usr/lib/qt4/include/QtCore/qtimer.h \
- /usr/lib/qt4/include/QtGui/qlayout.h \
- /usr/lib/qt4/include/QtGui/qsizepolicy.h \
- /usr/lib/qt4/include/QtGui/qfont.h \
- /usr/lib/gcc/x86_64-manbo-linux-gnu/4.4.3/../../../../include/c++/4.4.3/sstream \
- /usr/lib/gcc/x86_64-manbo-linux-gnu/4.4.3/../../../../include/c++/4.4.3/bits/sstream.tcc \
- spike_main_shared.cpp
+ /usr/share/qt4/include/Qt3Support/q3textedit.h \
+ /usr/share/qt4/include/Qt3Support/q3scrollview.h \
+ /usr/share/qt4/include/Qt3Support/q3frame.h \
+ /usr/share/qt4/include/QtGui/qscrollbar.h \
+ /usr/share/qt4/include/Qt3Support/q3stylesheet.h \
+ /usr/share/qt4/include/Qt3Support/q3mimefactory.h ../include/spike_dio.h \
+ ../src-gui/rewardControl.h /usr/share/qt4/include/Qt3Support/q3listbox.h \
+ /usr/share/qt4/include/QtGui/QKeyEvent \
+ /usr/share/qt4/include/Qt3Support/Q3GridLayout \
+ /usr/share/qt4/include/Qt3Support/q3gridlayout.h \
+ /usr/share/qt4/include/Qt3Support/Q3PopupMenu \
+ /usr/share/qt4/include/Qt3Support/q3popupmenu.h \
+ /usr/share/qt4/include/Qt3Support/q3filedialog.h \
+ /usr/share/qt4/include/Qt3Support/q3urloperator.h \
+ /usr/share/qt4/include/Qt3Support/q3url.h \
+ /usr/share/qt4/include/Qt3Support/q3ptrlist.h \
+ /usr/share/qt4/include/Qt3Support/q3glist.h \
+ /usr/share/qt4/include/Qt3Support/q3ptrcollection.h \
+ /usr/share/qt4/include/Qt3Support/q3networkprotocol.h \
+ /usr/share/qt4/include/Qt3Support/q3dict.h \
+ /usr/share/qt4/include/Qt3Support/q3gdict.h \
+ /usr/share/qt4/include/Qt3Support/q3valuelist.h \
+ /usr/share/qt4/include/QtCore/qlinkedlist.h \
+ /usr/share/qt4/include/Qt3Support/Q3TextStream \
+ /usr/share/qt4/include/Qt3Support/q3textstream.h \
+ /usr/share/qt4/include/Qt3Support/q3cstring.h \
+ /usr/share/qt4/include/Qt3Support/Q3HBoxLayout \
+ /usr/share/qt4/include/Qt3Support/q3boxlayout.h \
+ /usr/share/qt4/include/Qt3Support/Q3BoxLayout \
+ ../src-gui/spikeStatusbar.h /usr/share/qt4/include/QtGui/qapplication.h \
+ /usr/share/qt4/include/QtCore/qtimer.h \
+ /usr/share/qt4/include/QtGui/qlayout.h \
+ /usr/share/qt4/include/QtGui/qsizepolicy.h \
+ /usr/share/qt4/include/QtGui/qfont.h /usr/include/c++/4.4/sstream \
+ /usr/include/c++/4.4/bits/sstream.tcc spike_main_shared.cpp
 
 ../include/spikecommon.h:
 
@@ -2245,6 +2244,8 @@ spike_main.o: spike_main.cpp ../include/spikecommon.h \
 ../include/spike_stimcontrol_defines.h:
 
 ../src-gui/userMainConfig.h:
+
+../src-gui/userConfigureStimulators.h:
 
 ../src-gui/userOutputOnlyTab.h:
 
