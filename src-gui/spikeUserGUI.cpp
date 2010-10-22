@@ -92,6 +92,7 @@ DIOInterface::DIOInterface(QWidget* parent,
     layout->addWidget(qtab);
 
     setLayout(layout);
+    setWindowFlags(fl | Qt::Window);
 
     // Can we auto start user program here?
 
@@ -171,6 +172,8 @@ void DIOInterface::triggerSingleStim(void)
     SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
     SendUserMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
     SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
+
+    stimOutputOnlyTab->startStimulation(1);
     break;
   case 2:
     pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
@@ -180,6 +183,8 @@ void DIOInterface::triggerSingleStim(void)
     SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
     SendUserMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
     SendUserMessage(DIO_PULSE_SEQ_START,NULL,0);
+
+    stimOutputOnlyTab->startStimulation(1);
     break;
   case 3: // A then B will always be A first then B (or we can do two...)
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;

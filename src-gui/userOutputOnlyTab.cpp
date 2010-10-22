@@ -65,6 +65,7 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
   abortStimButton = new QPushButton("Abort Pulse Sequence");
   layout->addWidget(abortStimButton,5,2);
   abortStimButton->setToolTip("End stimulation program.");
+  abortStimButton->setEnabled(false);
 
   /* Signals from the trigger, start, and abort buttons are
    * connected to slots in  spikeUserGUI */
@@ -86,7 +87,8 @@ void StimOutputOnlyTab::startStimulation(int count)
   continuousButton->setEnabled(false);
   trainIntervalSpinBox->setEnabled(false);
 
-  nTrains = trainIntervalSpinBox->value();
+  nTrains = nTrainsSpinBox->value();
+  qDebug("\nnTrains is %d\n\n",nTrains);
   if (count == -1)
     nTrainsSpinBox->setSuffix(" (continuous)");
   if (count >= 0)
@@ -102,7 +104,7 @@ void StimOutputOnlyTab::endStimulation(int flag)
     nTrainsSpinBox->setEnabled(true);
   trainIntervalSpinBox->setEnabled(true);
 
-  trainIntervalSpinBox->setValue(nTrains);
+  nTrainsSpinBox->setValue(nTrains);
   nTrainsSpinBox->setSuffix("");
 
   stimSingleButton->setEnabled(true);

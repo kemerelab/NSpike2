@@ -100,6 +100,8 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
     qtab->addTab(w, tablabel); 
 
     mainGrid->addMultiCellWidget(qtab, 0, 9, 0, 9);
+
+    setWindowFlags(fl | Qt::Window);
     show();
     /* set the number of wells to 3 to create the second set of tabs */
 }

@@ -230,7 +230,8 @@ void init_device( int inputnum, int width, int height )
 //    fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_GREY;
     fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
 //    fmt.fmt.pix.field       = V4L2_FIELD_NONE;
-    fmt.fmt.pix.field       = V4L2_FIELD_TOP;
+    fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
+    //fmt.fmt.pix.field       = V4L2_FIELD_TOP;
 
     if (-1 == xioctl(x_video_fd, VIDIOC_S_FMT, &fmt))
         errno_exit ("VIDIOC_S_FMT");
