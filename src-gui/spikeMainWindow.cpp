@@ -39,7 +39,7 @@ extern DisplayInfo dispinfo;
 extern SysInfo sysinfo;
 extern NetworkInfo netinfo;
 extern DigIOInfo digioinfo;
-extern MatlabInfo matlabinfo;
+extern UserDataInfo userdatainfo;
 
 SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f ) 
 : QMainWindow(parent, name, f)
@@ -260,10 +260,10 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
     masterMenu->addAction( "&Audio Settings", this, SLOT(masterAudioSettings()));
     masterMenu->insertSeparator();
 
-    if (sysinfo.matlaboutput) {
-      masterMenu->addAction( "Matlab Save On", this, SLOT(masterMatlabSaveOn()));
-      masterMenu->addAction( "Matlab Save Off", this, SLOT(masterMatlabSaveOff()));
-      matlabSettingsAction = masterMenu->addAction( "Matlab Settings", this, SLOT(masterMatlabSettings()));
+    if (sysinfo.userdataoutput) {
+      masterMenu->addAction( "User Data Start", this, SLOT(masterUserDataStart()));
+      masterMenu->addAction( "User Data Stop", this, SLOT(masterUserDataStop()));
+      userDataSettingsAction = masterMenu->addAction( "User Data Settings", this, SLOT(masterUserDataSettings()));
     }
     masterMenu->insertSeparator();
 
@@ -332,6 +332,7 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
     digioMenu->addAction( "Reward Control", this, SLOT(startRewardControl()));
     digioMenu->addAction( "Send Message to User Program", this, SLOT(outputToUserProgram()), Qt::CTRL+Qt::Key_U );
     digioMenu->addAction( "User Program GUI", this, SLOT(userProgramGUI()), Qt::CTRL+Qt::Key_G );
+    digioMenu->addAction( "Reset State Machines", this, SLOT(resetStateMachines()));
     menuBar->addMenu( digioMenu);
   }
 

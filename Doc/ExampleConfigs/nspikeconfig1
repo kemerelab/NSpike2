@@ -15,7 +15,7 @@ nslaves 	0
 % change the port number if the software complains that it cannot open a
 % connection on the specified port.  
 % The port numbers must be > 1024 and < 65335
-master    	zephyr    10000
+master    	virga    10000
 
 % optional slave lines, one for each slave, would go here
 
@@ -52,13 +52,13 @@ port		10020
 % SPIKE 
 % DIGITALIO
 % and
-% MATLAB
+% USERDATA
 % or a combination of 
 % CONTINUOUS 
 % POSITION
 % DIGITALIO
 % and 
-% MATLAB
+% USERDATA
 % 
 % If you want POSITION data, both the master and the rtslave must have POSITION
 % as a datatype
@@ -71,7 +71,7 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype 	zephyr		CONTINUOUS DIGITALIO
+datatype 	virga		CONTINUOUS DIGITALIO USERDATA
 
 ndioports	4
 dioport	0	input
@@ -85,7 +85,7 @@ dioport	3	input
 % doesn't save data, the datadirectory does not need to be specified for that
 % machine.
 
-datadirectory   zephyr		/data
+datadirectory   virga		/data
 
 % the audio settings set the initial gain factor (volume), cutoff for diode
 % emulation, and delay in milliseconds.
@@ -110,18 +110,37 @@ dspclock	1
 % does analog outputs, it will ignore the sampling rate, but make sure to put
 % some number in the sampling rate field below
 % 	    dsp num   	sampling rate  		machine receiving data
-dspinfo		0		110			zephyr
-dspinfo		1		30000			zephyr
-dspinfo		2		30000			zephyr
+dspinfo		0		110			virga
+dspinfo		1		30000			virga
+dspinfo		2		30000			virga
+
+%dspsampperpacket controls the amount of data in each packet from the dsp.  This is useful if you want
+%to do rapid processing in spike_userdata of incoming continuous data that is sampled at 
+%relatively low rates (e.g. 1500 Hz).  
+%Don't set this otherwise, as the default values are optimal for minimizing cpu usage
+%dspsampperpacket	1	1
+
+%rtmode is similarly used to improve online analysis.  setting rtmode changes the number of samples per
+%packet for continuous channels to produce a data packet every millisecond.  This also causes 
+%spike_daq to send out data to spike_userdata (if it is running) as quickly as possible
+%As with dspsampperpacket, don't set this unless you need to minize data latency to spike_userdata
+rtmode		1
+
+%userdata defines the types of data to send and the list of electrodes to send to spike_user_data
+%currently each datatype and electrode number need to be listed separately:
+% userdata DIGITALIO
+% userdata POSITION
+% userdata SPIKE 4    this causes spike data from electrode 4 to be sent to spike_userdata
+% userdata CONTINUOUS 5    this causes continuous data from electrode 5 to be sent to spike_userdata
+userdata CONTINUOUS 2
 
 % calibration file specifies the name of the calibration file to set the
 % relative amplitudes of the channels.  See writecalfile.m for a matlab script
 % that generates an example calibration file
-
-calibrationfile		/usr/local/nspike/nspikecalfile
+calibrationfile		data/nspikecalfile
 
 % set the length (in seconds) of the eeg trace 
-eegtracelength 	1.0
+eegtracelength 	4.0
 
 % the mapping from electrodes to dsp channels.  This mapping is set by the
 % connections from the microdrive array to the A to D box.
@@ -159,7 +178,7 @@ electmap	25		0	115
 % first comes the name of the host. All channels following the hostname line
 % are assumed to be from the same host until the next hostname line is
 % encoutered
-hostname 	zephyr
+hostname 	virga
     channel 	0
 	    dspnum		1
 	    dspchan		96

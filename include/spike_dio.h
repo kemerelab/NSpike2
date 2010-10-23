@@ -12,19 +12,24 @@
 
 // state machine commands
 /* commands that can be sent to the master dsps state machine */
-#define DIO_COMMAND		200	// for simplicity, this is set to avoid overlap with the messages in spike_defines.h
-#define DIO_USER_MESSAGE	201	// for simplicity, this is set to avoid overlap with the messages in spike_defines.h
-#define DIO_EVENT		202	// a status packet from the master dsp
-#define DIO_POSITION		203	// the current animal position
+#define DIO_COMMAND			200	// for simplicity, this is set to avoid overlap with the messages in spike_defines.h
+#define DIO_USER_MESSAGE		201	// for simplicity, this is set to avoid overlap with the messages in spike_defines.h
+#define DIO_EVENT			202	// a status packet from the master dsp
+#define DIO_POSITION			203	// the current animal position
 #define DIO_EXPECT_DIO_RESPONSE		204	// 
-#define DIO_COMMAND_TO_STATEMACHINE		205	// 
+#define DIO_COMMAND_TO_STATEMACHINE	205	// 
 #define DIO_RUN_STATEMACHINE		206	// 
 #define DIO_SPEC_STATEMACHINE		207	// 
 
 
 #define DIO_MAX_COMMAND_LEN	DIO_STATE_SIZE // the maximum length of a dio command
 #define DIO_S_HALT		0xffff  // halt the state machine
-#define DIO_S_WAIT		0x8000  // wait for time in bits 1-15
+#define DIO_S_WAIT		0x8000  // wait for # samples in bits 1-15
+
+#ifndef DIO_ON_MASTER_DSP
+#define DIO_S_WAIT_WAIT		0xC000  // wait from last wait command
+#endif
+
 #define DIO_S_WAIT_TIME		0x7000  // wait for absolute time given in argument
 #define DIO_S_WAIT_MASKED_INPUT	0x6000  // wait for masked input to change
 #define DIO_S_WAIT_INPUT_HIGH	0x4100  // wait for input in bits 1-6 to be high
@@ -39,6 +44,29 @@
 #define	DIO_S_FOR_END		0x5000  // end for loop
 
 #define DIO_RESET_STATE_MACHINES 0xfffe	// command (interpreted by the main program) to reset all of the state machine pointers and stop execution of all state machines 
+
+/* Defines for the arbitrary waveform generator */
+#ifndef DIO_ON_MASTER_DSP
+#define DIO_ARB_WAVE_LEN	DIO_STATE_SIZE // the maximum length of an analog waveform for the arbitrary waveform generator
+#define DIO_ARB_ENABLE		0x00C4  // 0 disables, 1 enables, read for status
+#define DIO_ARB_TRIGGER	0x00C5  // first trigger info in high byte, retrigger in low byte
+#define DIO_ARB_NEVER_TRIGGER  0
+#define DIO_ARB_ALWAYS_TRIGGER  1
+#define DIO_ARB_DIO_OUTPUT1_TRIGGER   0x0020  // OR with 0x000b to trigger off of high bit b of port 1 output
+#define DIO_ARB_DIO_OUTPUT2_TRIGGER   0x0030  // OR with 0x000b to trigger off of high bit b of port 2 output
+#define DIO_ARB_DIO_OUTPUT3_TRIGGER   0x0040  // OR with 0x000b to trigger off of high bit b of port 3 output
+#define DIO_ARB_DIO_OUTPUT4_TRIGGER   0x0050  // OR with 0x000b to trigger off of high bit b of port 4 output
+#define DIO_ARB_DIO_INPUT1_TRIGGER   0x0060  // OR with 0x000b to trigger off of high bit b of port 1 input
+#define DIO_ARB_DIO_INPUT2_TRIGGER   0x0070  // OR with 0x000b to trigger off of high bit b of port 2 input
+#define DIO_ARB_DIO_INPUT3_TRIGGER   0x0080  // OR with 0x000b to trigger off of high bit b of port 3 input
+#define DIO_ARB_DIO_INPUT4_TRIGGER   0x0090  // OR with 0x000b to trigger off of high bit b of port 4 input
+
+#define DIO_ARB_LENGTH			0x00C6 // 16 bit # of points in buffer
+#define DIO_ARB_POINTER		0x00C7 // 16 bit pointer to offset of data (set to 0 when initializing)
+#define DIO_ARB_AOUT_CHANNEL		0x00C8 // Address for AOUT channel setting
+#define DIO_ARB_AOUT_CHANNEL_1		0x0000 // use AOUT 1
+#define DIO_ARB_AOUT_CHANNEL_2		0x0001 // use AOUT 2
+#endif
 
 
 #define		MAX_BITS			64

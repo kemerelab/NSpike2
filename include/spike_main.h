@@ -286,12 +286,13 @@ void StopSave(void);
 void ClearAll(void);
 
 
-/* Matlab Functions */
-void SendMatlabInfo(void);
-void MasterMatlabStartSave(void);
-void MasterMatlabStopSave(void);
-int MatlabStartSave(void);
-int MatlabStopSave(void);
+/* User Data Functions */
+void SendUserDataInfo(void);
+void SendDigIOInfo(void);
+void MasterUserDataStart(void);
+void MasterUserDataStop(void);
+int UserDataStart(void);
+int UserDataStop(void);
 
 /* Master commands */
 void ToggleAcq(void);
@@ -315,20 +316,6 @@ int StartModuleAcquisition(void);
 int StartModuleAcquisition(int modulenum);
 int StopModuleAcquisition(void);
 int StopModuleAcquisition(int modulenum);
-
-
-/* DSP digital IO commands */
-void StartDigIOProgram(int prognum);
-int TriggerOutput(int output);
-void ChangeOutput(int output, int raise);
-void SendDAQUserMessage(int message, char *data, int datalen);
-void SendDigIOUserMessage(char *message, int len);
-//int WriteDSPDIOCommand(unsigned short *command, int len);
-int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine=-1, int sendResetStateMachine=1);
-int WriteDSPDIORestartStateMachine(int s);
-int LookForDSPDIOResponse(void);
-int NextDIOStateMachine(void);
-
 
 
 void DrawInitialScreen(void);

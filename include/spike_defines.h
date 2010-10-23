@@ -21,7 +21,7 @@
 
 // indicate where the digital IO boards are.  For the separate DIO DSP, comment
 // out the following
-#define DIO_ON_MASTER_DSP
+//#define DIO_ON_MASTER_DSP
 
 /* some math defines */
 #define sqr(x) ((x) * (x))
@@ -34,6 +34,8 @@
 #define PI	3.14159265358979
 #define TWOPI	6.28318530717959
 
+
+
 /* system types */
 #define MASTER	 	0
 #define SLAVE		1
@@ -44,14 +46,12 @@
 #define SPIKE		((unsigned char) (1<<1))
 #define CONTINUOUS	((unsigned char) (1<<2))
 #define DIGITALIO	((unsigned char) (1<<3))
-#define MATLAB		((unsigned char) (1<<4))
+#define USERDATA	((unsigned char) (1<<4))
 
 /* the maximum number of DSPS.  Note that if you change this you will have to
  * remove or add definitions to keep the number of defined DSPS equal to
  * MAX_DSPS */
-#define MAX_DSPS		11
-// #define MAX_DSPS		13
-
+#define MAX_DSPS		13
 #define MAX_CHAN_PER_DSP	16
 #define MAX_ELECT_PER_DSP	(MAX_CHAN_PER_DSP / NCHAN_PER_ELECTRODE)
 #define DSP_BASE_SAMP_RATE	((int) 30000)
@@ -81,31 +81,21 @@
 #define DSP8			8
 #define DSP9			9
 
-// #ifdef DIO_ON_MASTER_DSP
-// #define DSPDIO			DSP0 // the DSP that handles digital and analog IO
-// #else
-// #define DSPDIO			10 // the DSP that handles digital and analog IO
-// #endif
-// 
-// #define DSP0ECHO		11 // the echo port for DSP0
-// #define DSPDIOECHO		12 // the echo port for DSPDIO
-// #define SPIKE_POSDAQ		13
-// #define	SPIKE_DAQ		14
-// #define	SPIKE_PROCESS_POSDATA	15
-// #define	SPIKE_SAVE_DATA		16
-// #define	SPIKE_MATLAB		17
-// #define	SPIKE_MAIN		18
-// #define MAX_MODULE_ID		18
-
+#ifdef DIO_ON_MASTER_DSP
 #define DSPDIO			DSP0 // the DSP that handles digital and analog IO
-#define DSP0ECHO		10 // the echo port for DSP0
-#define SPIKE_POSDAQ		11
-#define	SPIKE_DAQ		12
-#define	SPIKE_PROCESS_POSDATA	13
-#define	SPIKE_SAVE_DATA		14
-#define	SPIKE_MATLAB		15
-#define	SPIKE_MAIN		16
-#define MAX_MODULE_ID		16
+#else
+#define DSPDIO			10 // the DSP that handles digital and analog IO
+#endif
+
+#define DSP0ECHO		11 // the echo port for DSP0
+#define DSPDIOECHO		12 // the echo port for DSPDIO
+#define SPIKE_POSDAQ		13
+#define	SPIKE_DAQ		14
+#define	SPIKE_PROCESS_POSDATA	15
+#define	SPIKE_SAVE_DATA		16
+#define	SPIKE_USER_DATA		17
+#define	SPIKE_MAIN		18
+#define MAX_MODULE_ID		18
 
 #define NAUDIO_OUTPUTS		2  // there are currently 2 analog outputs on the DSPs
 
@@ -251,11 +241,11 @@ when adding new messages */
 #define         DIGITALIO_EVENT         57 // the message contains a digital IO event 
 #define         TRIGGER_OUTPUT          58 // the message contains a the number of a digital output to trigger 
 #define         CHANGE_OUTPUT           59 // the message contains a the number of a digital output to trigger 
-#define         MATLAB_INFO             60 // the message contains information for the spike_matlab process 
-#define         MATLAB_START_SAVE       61 // the message contains information for the spike_matlab process 
-#define         MATLAB_STOP_SAVE        62 // the message contains information for the spike_matlab process 
-#define         MATLAB_SAVE_STARTED     63 // the message contains information for the spike_matlab process 
-#define         MATLAB_SAVE_STOPPED     64 // the message contains information for the spike_matlab process 
+#define         USER_DATA_INFO             60 // the message contains information for the spike_user process 
+#define         USER_DATA_START       61 // the message contains information for the spike_user process 
+#define         USER_DATA_STOP        62 // the message contains information for the spike_user process 
+#define         USER_DATA_STARTED     63 // the message contains information for the spike_user process 
+#define         USER_DATA_STOPPED     64 // the message contains information for the spike_user process 
 #define         OPEN_DAQ_TO_USER        65
 #define         CLOSE_DAQ_TO_USER       66
 #define         SETUP_DAQ_TO_USER       67
@@ -264,9 +254,10 @@ when adding new messages */
 #define         ERROR_MESSAGE           70 // an error occured in a critical routine
 #define         STATUS_MESSAGE          71 // a non critical error or a status message 
 #define         SLAVE_ERROR             72 // an error occured on a slave machine
-#define         EXIT                    73      
-#define         EXITING                 74      
-#define         MESSAGES_END            75
+#define         DIGIO_INFO              73 // the message contains digital IO info
+#define         EXIT                    74      
+#define         EXITING                 75      
+#define         MESSAGES_END            76
 
 
 /* Events
@@ -375,7 +366,7 @@ typedef struct _NetworkInfo {
     unsigned short 	*slaveport;	// the port numbers for the slave 
     int 		*slavefd;	// the fd for the slave to master connections
     int			rtslave;	// the index of the rt-linux slave
-    int			matlabslave;	// the index of the matlab slave if there is one
+    int			userdataslave;	// the index of the user slave if there is one
     
     unsigned short	port[MAX_NETWORK_PORTS];// the port numbers to use for TCP/IP and UDP connections
     int			nports;		// the number of port numbers
@@ -458,7 +449,7 @@ typedef struct _SystemInfo {
     struct timeval	computer_start_time; // the approximate time at which we last reset the clock
     int 		program_type;  	// display, process, etc.
     char		myhostname[80]; // this is a duplicate of the netinfo.myname variable. It's necessary for extracting the data correctly
-    int			rt;		// 1 if this is a real time system
+    bool		rtmode;		// true if data transmission between modules should be as real time as possible
     int			machinenum;	// the index for this machine
     unsigned char	datatype[MAX_MACHINES]; // the data types for each machine
     char	        datadir[MAX_MACHINES][200]; // the data types for each machine
@@ -474,8 +465,8 @@ typedef struct _SystemInfo {
     int 		diskon;		// 1 if data is being saved
     u32	disktime;	// the last time disk status was modified/
     int 		fileopen;	// 1 or 0 depending on whether the file is open
-    int 		matlaboutput;	// 1 if we have the option of sending data to matlab
-    int 		matlabon;	// 1 or 0 depending on whether we should be sending data to the matlab process
+    int 		userdataoutput;	// 1 if we have the option of sending data to spike_user
+    int 		userdataon;	// 1 or 0 depending on whether we should be sending data to the spike_user process
     char		datafilename[200];   // the name of the data file
     char		origdatafilename[200];   // the original name of the data file (used only when a second data file is opened)
     char		digioconfigfilename[200]; // the name of the digital IO configuration file to use
@@ -505,9 +496,9 @@ typedef struct _SystemInfo {
     float		eegtracelength; // a temporary place for the eeg trace length 
     int			nelectrodes;    // the total number of electrodes on this machine
     int			maxelectnum;    // the total number of electrodes on all machines
-    u32	approxtime;    	// the APPROXIMATE current time. NOT EXACT
-    u32	lastdisplayedtime;    	// the last time that was displayed
-    u32	lastfilesizetime;    	// the last time that the file size was displayed
+    u32			approxtime;    	// the APPROXIMATE current time. NOT EXACT
+    u32			lastdisplayedtime;    	// the last time that was displayed
+    u32			lastfilesizetime;    	// the last time that the file size was displayed
     
     /* Position related variables */
     u32		cpudsptimeoffset; // the difference between dsp and cpu times
@@ -541,7 +532,7 @@ typedef struct _SystemInfo {
 
 
 typedef struct _ElectrodeData {
-    u32       timestamp;      // the timestamp in 100 usec units
+    u32       		timestamp;      // the timestamp in 100 usec units
     short               data[NTOTAL_POINTS_PER_SPIKE];
 } ElectrodeData;
 
