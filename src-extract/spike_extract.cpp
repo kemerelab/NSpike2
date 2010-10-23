@@ -347,18 +347,17 @@ int WriteContData(u32 offset)
   bool    lastodd = 0;
   bool    oddframe = 0;
   char    transition;
+  int     index;
 
 
   /* allocate space for the list of output file names */
   outfile = (FILE **) malloc(sysinfo.nchannels[sysinfo.machinenum] * sizeof(FILE *));
   /* create a lookup table for the file indeces corresponding to the
-   * electrode number */
+   * electrode and channel numbers */
   for (i = 0; i < sysinfo.nchannels[sysinfo.machinenum]; i++) {
     /* get the electrode number, depth, and ndays for the first channel of this electrode */
     ch = sysinfo.channelinfo[sysinfo.machinenum] + i;
     electnum = ch->number;
-    /* this current electrode number is the i-th file */
-    electnumfile[electnum] = i;
     /* check to see if this is the position sync channel and if so,
      * overwrite the name */
     if (ch->dspchan == DSP_POS_SYNC_CHAN) {
@@ -391,8 +390,8 @@ int WriteContData(u32 offset)
       /* construct strings for each of them so that all of the directory 
        * names are the same length */
       sprintf(outfilename, "%02d-%03d", electnum, depth);
-      /* put .eeg on the end of the spike file */
-      strcat(outfilename, ".eeg");
+      /* put .cont on the end of the spike file */
+      strcat(outfilename, ".cont");
 
 
       /* check to see if the file exists and warn the user if it does */
@@ -406,6 +405,7 @@ int WriteContData(u32 offset)
         }
       }
       else {
+        dptr = sysinfo.dspinfo + ch->dspnum;
         if ((outfile[i] = fopen(outfilename, "w")) == NULL) {
           fprintf(stderr, "Error: unable to open file [%s]\n", outfilename);
           return -1;
@@ -463,8 +463,7 @@ int WriteContData(u32 offset)
                 return -1;
               }
               transition = lastodd ? DSP_ODD_TO_EVEN_SYNC : DSP_EVEN_TO_ODD_SYNC;
-              if (fwrite(&transition, sizeof(char), 1, 
-                    outfile[index]) != 1) {
+              if (fwrite(&transition, sizeof(char), 1, outfile[index]) != 1) {
                 fprintf(stderr, "Error: unable to write position sync data\n");
                 return -1;
               }
@@ -472,8 +471,7 @@ int WriteContData(u32 offset)
             }
           }
           else {
-            if (fwrite(shortptr, sizeof(short), 1, 
-                  outfile[index]) 
+            if (fwrite(shortptr, sizeof(short), 1, outfile[index]) 
                 != 1) {
               fprintf(stderr, "Error: unable to write continuous data for electrode %d\n", i);
               return -1;
