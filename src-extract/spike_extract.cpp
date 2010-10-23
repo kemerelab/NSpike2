@@ -347,6 +347,7 @@ int WriteContData(u32 offset)
   bool    lastodd = 0;
   bool    oddframe = 0;
   char    transition;
+  int     index;
 
 
   /* allocate space for the list of output file names */
@@ -463,8 +464,7 @@ int WriteContData(u32 offset)
                 return -1;
               }
               transition = lastodd ? DSP_ODD_TO_EVEN_SYNC : DSP_EVEN_TO_ODD_SYNC;
-              if (fwrite(&transition, sizeof(char), 1, 
-                    outfile[index]) != 1) {
+              if (fwrite(&transition, sizeof(char), 1, outfile[index]) != 1) {
                 fprintf(stderr, "Error: unable to write position sync data\n");
                 return -1;
               }
@@ -472,8 +472,7 @@ int WriteContData(u32 offset)
             }
           }
           else {
-            if (fwrite(shortptr, sizeof(short), 1, 
-                  outfile[index]) 
+            if (fwrite(shortptr, sizeof(short), 1, outfile[index]) 
                 != 1) {
               fprintf(stderr, "Error: unable to write continuous data for electrode %d\n", i);
               return -1;
