@@ -204,134 +204,119 @@ int main(int argc, char **argv)
 
 int WriteSpikeData(u32 offset)
 {
-    /* for each electrode, make a directory of the appropriate name and write out 
-     * the spike files */
-    FILE    **outfile;
-    int     *electnumfile;
-    SpikeBuffer   *stmp;
-    ElectrodeData electdata;
-    int     i, j;
-    int     electnum;
-    int     maxelectnum;
-    int     depth;
-    int     ndays;
-    int     retval;
-    int     datasize;
-    int     nspikes;
-    char    command[100];
-    char    outfilename[100];
-    char    tmpstring[100];
-    char    electnumstr[4];
-    char    depthstr[50];
-    // char   depthstr[5];
-    short   recordtype;
-    u32 fileoffset, lastspiketime;
-    size_t    tmpsize;
-    int     exists = 0;
+  /* for each electrode, make a directory of the appropriate name and write out 
+   * the spike files */
+  FILE    **outfile;
+  int     *electnumfile;
+  SpikeBuffer   *stmp;
+  ElectrodeData electdata;
+  int     i, j;
+  int     electnum;
+  int     maxelectnum;
+  int     depth;
+  int     ndays;
+  int     retval;
+  int     datasize;
+  int     nspikes;
+  char    command[100];
+  char    outfilename[100];
+  char    tmpstring[100];
+  char    electnumstr[4];
+  char    depthstr[50];
+  // char   depthstr[5];
+  short   recordtype;
+  u32 fileoffset, lastspiketime;
+  size_t    tmpsize;
+  int     exists = 0;
 
 
-    /* allocate space for the list of files and the lookup table for the
-     * electrode numbers */
-    outfile = (FILE **) malloc(sizeof(FILE *) * sysinfo.nelectrodes);
-    maxelectnum = 0;
-    for (i = 0; i < sysinfo.nelectrodes; i++) {
-  if (sysinfo.channelinfo[sysinfo.machinenum][i*NCHAN_PER_ELECTRODE].number > maxelectnum) {
+  /* allocate space for the list of files and the lookup table for the
+   * electrode numbers */
+  outfile = (FILE **) malloc(sizeof(FILE *) * sysinfo.nelectrodes);
+  maxelectnum = 0;
+  for (i = 0; i < sysinfo.nelectrodes; i++) {
+    if (sysinfo.channelinfo[sysinfo.machinenum][i*NCHAN_PER_ELECTRODE].number > maxelectnum) {
       maxelectnum = sysinfo.channelinfo[sysinfo.machinenum]
-    [i*NCHAN_PER_ELECTRODE].number;
-  }
+        [i*NCHAN_PER_ELECTRODE].number;
     }
-    electnumfile = (int *) calloc(maxelectnum + 1, sizeof(int));
+  }
+  electnumfile = (int *) calloc(maxelectnum + 1, sizeof(int));
 
-    for (i = 0; i < sysinfo.nelectrodes; i++) {
-  lastspiketime = 0;
-        /* get the electrode number, depth, and days for the first channel of this electrode */
-  electnum = sysinfo.channelinfo[sysinfo.machinenum][i*NCHAN_PER_ELECTRODE].number;
-  depth = sysinfo.channelinfo[sysinfo.machinenum][i*NCHAN_PER_ELECTRODE].depth;
-  /* this current electrode number is the i-th file */
-  electnumfile[electnum] = i;
-  /* construct strings for each of them so that all of the directory names are the
-   * same length */
-        if (electnum < 10) {
-      sprintf(electnumstr, "0%d", electnum);
-        }
-  else {
-      sprintf(electnumstr, "%d", electnum);
-        }
-        if (depth < 10) {
-      sprintf(depthstr, "00%d", depth);
-        }
-  else if (depth < 100) {
-      sprintf(depthstr, "0%d", depth);
-  }
-  else {
-      sprintf(depthstr, "%d", depth);
-  }
-  /* now put them all together in tmpstring and command */
-  sprintf(tmpstring, "%s-%s", electnumstr, depthstr);
-  sprintf(command, "mkdir %s", tmpstring);
-  fprintf(stderr, "executing %s\n", command);
-  /* make the directory */
-  retval = system(command);
-  /* return -1 on error */
-  if ((retval == -1) || (retval == 127)) {
+  for (i = 0; i < sysinfo.nelectrodes; i++) {
+    lastspiketime = 0;
+    /* get the electrode number, depth, and days for the first channel of this electrode */
+    electnum = sysinfo.channelinfo[sysinfo.machinenum][i*NCHAN_PER_ELECTRODE].number;
+    depth = sysinfo.channelinfo[sysinfo.machinenum][i*NCHAN_PER_ELECTRODE].depth;
+    /* this current electrode number is the i-th file */
+    electnumfile[electnum] = i;
+    /* construct strings for each of them so that all of the directory names are the
+     * same length */
+    /* now put them all together in tmpstring and command */
+    sprintf(tmpstring, "%02d-%03d", electnum, depth);
+    sprintf(command, "mkdir %s", tmpstring);
+    fprintf(stderr, "executing %s\n", command);
+    /* make the directory */
+    retval = system(command);
+    /* return -1 on error */
+    if ((retval == -1) || (retval == 127)) {
       fprintf(stderr, "Error: unable to execute %s\n", command);
       return -1;
-        }
-  /* put .tt on the end of the spike file */
-  sprintf(outfilename, "%s/%s.tt", tmpstring, tmpstring);
+    }
+    /* put .tt on the end of the spike file */
+    sprintf(outfilename, "%s/%s.tt", tmpstring, tmpstring);
 
-        /* check to see if the file exists and warn the user if it does */
-  exists = 0;
-  if ((outfile[i] = fopen(outfilename, "r")) != NULL) {
+    /* check to see if the file exists and warn the user if it does */
+    exists = 0;
+    if ((outfile[i] = fopen(outfilename, "r")) != NULL) {
       fprintf(stderr, "Warning: appending to previously created file %s\n", outfilename);
       fclose(outfile[i]); 
       exists = 1;
-        }
+    }
 
-  /* now open up the spike file */
-  if ((outfile[i] = fopen(outfilename, "a")) == NULL) {
+    /* now open up the spike file */
+    if ((outfile[i] = fopen(outfilename, "a")) == NULL) {
       fprintf(stderr, "Error: unable to open file [%s]\n", outfilename);
       return -1;
-        }
-  if (!exists) {
+    }
+    if (!exists) {
       /* write out the necessary header elements for spikeparms */
       fprintf(outfile[i], "%%%%BEGINHEADER\n");
       fprintf(outfile[i], "%% File type:    Binary\n");
       fprintf(outfile[i], "%% Extraction type:      tetrode waveforms\n");
       fprintf(outfile[i], "%% Fields:       timestamp,8,4,1 waveform,2,2,%d\n", NPOINTS_PER_SPIKE * NCHAN_PER_ELECTRODE);
       fprintf(outfile[i], "%%%%ENDHEADER\n");
-  }
-
     }
-    /* go to the offset location in the data file so that we are past the configuration header */
-    gzseek(extractinfo.datafile, offset, SEEK_SET);
-    fileoffset = offset;
 
-    /* go through the file looking for spikes from this electrode */
-    do {
-  recordtype = GetNextRecord(tmpdata, &fileoffset, &datasize);
-  if (recordtype == SPIKE_DATA_TYPE) {
+  }
+  /* go to the offset location in the data file so that we are past the configuration header */
+  gzseek(extractinfo.datafile, offset, SEEK_SET);
+  fileoffset = offset;
+
+  /* go through the file looking for spikes from this electrode */
+  do {
+    recordtype = GetNextRecord(tmpdata, &fileoffset, &datasize);
+    if (recordtype == SPIKE_DATA_TYPE) {
       stmp = (SpikeBuffer *) tmpdata;
       /* copy the data into an ElectrodeData structure */
       nspikes = datasize / sizeof(SpikeBuffer);
       for (i = 0; i < nspikes; i++, stmp++) {
-    electdata.timestamp = stmp->timestamp;
-    memcpy(electdata.data, stmp->data, NTOTAL_POINTS_PER_SPIKE *
-      sizeof(short));
-    if (fwrite(&electdata, 1, sizeof(ElectrodeData),
-          outfile[electnumfile[stmp->electnum]]) 
-        != sizeof(ElectrodeData)) {
-        fprintf(stderr, "Error: unable to write spike data\n");
-        return -1;
-    }
+        electdata.timestamp = stmp->timestamp;
+        memcpy(electdata.data, stmp->data, NTOTAL_POINTS_PER_SPIKE *
+            sizeof(short));
+        if (fwrite(&electdata, 1, sizeof(ElectrodeData),
+              outfile[electnumfile[stmp->electnum]]) 
+            != sizeof(ElectrodeData)) {
+          fprintf(stderr, "Error: unable to write spike data\n");
+          return -1;
+        }
       }
-  }
-    } while (!gzeof(extractinfo.datafile));
-    /* close all of the output files */
-    for (i = 0; i < sysinfo.nelectrodes; i++) {
-  fclose(outfile[i]);
     }
-    return 0;
+  } while (!gzeof(extractinfo.datafile));
+  /* close all of the output files */
+  for (i = 0; i < sysinfo.nelectrodes; i++) {
+    fclose(outfile[i]);
+  }
+  return 0;
 }
 
 int WriteContData(u32 offset)
@@ -405,23 +390,7 @@ int WriteContData(u32 offset)
       depth = ch->depth;
       /* construct strings for each of them so that all of the directory 
        * names are the same length */
-      if (electnum < 10) {
-        sprintf(electnumstr, "0%d", electnum);
-      }
-      else {
-        sprintf(electnumstr, "%d", electnum);
-      }
-      if (depth < 10) {
-        sprintf(depthstr, "00%d", depth);
-      }
-      else if (depth < 100) {
-        sprintf(depthstr, "0%d", depth);
-      }
-      else {
-        sprintf(depthstr, "%d", depth);
-      }
-      /* now put them all together */
-      sprintf(outfilename, "%s-%s", electnumstr, depthstr);
+      sprintf(outfilename, "%02d-%03d", electnum, depth);
       /* put .eeg on the end of the spike file */
       strcat(outfilename, ".eeg");
 
@@ -445,7 +414,9 @@ int WriteContData(u32 offset)
         fprintf(outfile[i], "%%%%BEGINHEADER\n");
         fprintf(outfile[i], "%% Continuous data from electrode %d\n", i+1);
         fprintf(outfile[i], "%% File type:    Binary\n");
-        fprintf(outfile[i], "%% Fields timestamp nsamples samplingrate samples\n");
+        fprintf(outfile[i], "%% Fields timestamp (uint32) samples (int16)\n");
+        fprintf(outfile[i], "%% nsamplesperbuf %d\n", dptr->nsampout);
+        fprintf(outfile[i], "%% samplingrate %d\n", dptr->samprate);
         fprintf(outfile[i], "%%%%ENDHEADER\n");
         /* go through the file looking for samples from this electrode */
       }
@@ -468,24 +439,8 @@ int WriteContData(u32 offset)
       for (i = 0; i < dptr->nchan; i++) {
         /* make sure that this is not the position sync channel */
         if (dptr->dspchan[i] != DSP_POS_SYNC_CHAN) {
-          electnum = dptr->electinfo[i].number;
-          //electnum = 1;
-          if (fwrite(&ctmp->timestamp, sizeof(u32), 1, 
-                outfile[electnumfile[electnum]]) != 1) {
-            fprintf(stderr, "Error: unable to write continuous data\n");
-            return -1;
-          }
-          /* write out the number of samples */
-          numsamples = (int) dptr->nsampout;
-          if (fwrite(&numsamples, sizeof(int), 1, 
-                outfile[electnumfile[electnum]]) != 1) {
-            fprintf(stderr, "Error: unable to write continuous data\n");
-            return -1;
-          }
-          /* write out the sampling rate */
-          samplingrate = (double) dptr->samprate;
-          if (fwrite(&samplingrate, sizeof(double), 1, 
-                outfile[electnumfile[electnum]]) != 1){
+          index = dptr->channelinfochan[i];
+          if (fwrite(&ctmp->timestamp, sizeof(u32), 1, outfile[index]) != 1) {
             fprintf(stderr, "Error: unable to write continuous data\n");
             return -1;
           }
@@ -495,7 +450,7 @@ int WriteContData(u32 offset)
       shortptr = ctmp->data;
       for (j = 0; j < dptr->nsampout; j++) {
         for (i = 0; i < dptr->nchan; i++) {
-          electnum = dptr->electinfo[i].number;
+          index = dptr->channelinfochan[i];
           if (dptr->dspchan[i] == DSP_POS_SYNC_CHAN) {
             /* look for a transition between odd and even */
             oddframe = *shortptr & DSP_VIDEO1_SYNC_ODD;
@@ -503,15 +458,13 @@ int WriteContData(u32 offset)
               /* write out a timestamp and the transition type */
               tmptime = ctmp->timestamp + (u32) (((double) j / 
                     (double) dptr->samprate) * SEC_TO_TSTAMP);
-              if (fwrite(&tmptime, sizeof(u32), 1, 
-                    outfile[electnumfile[electnum]]) != 1) {
+              if (fwrite(&tmptime, sizeof(u32), 1, outfile[index]) != 1) {
                 fprintf(stderr, "Error: unable to write position sync data\n");
                 return -1;
               }
-              transition = lastodd ? DSP_ODD_TO_EVEN_SYNC :
-                DSP_EVEN_TO_ODD_SYNC;
+              transition = lastodd ? DSP_ODD_TO_EVEN_SYNC : DSP_EVEN_TO_ODD_SYNC;
               if (fwrite(&transition, sizeof(char), 1, 
-                    outfile[electnumfile[electnum]]) != 1) {
+                    outfile[index]) != 1) {
                 fprintf(stderr, "Error: unable to write position sync data\n");
                 return -1;
               }
@@ -520,7 +473,7 @@ int WriteContData(u32 offset)
           }
           else {
             if (fwrite(shortptr, sizeof(short), 1, 
-                  outfile[electnumfile[electnum]]) 
+                  outfile[index]) 
                 != 1) {
               fprintf(stderr, "Error: unable to write continuous data for electrode %d\n", i);
               return -1;
@@ -541,228 +494,228 @@ int WriteContData(u32 offset)
 int WritePosData(u32 offset)
 /* Write out the position data and a separate file for timestamps */
 {
-    
-    FILE    *pipe;
-    FILE    *mpegout;
-    FILE    *foffsetout;
-    FILE    *tcheckout;
-    FILE    *tstampout;
-    PosMPEGBuffer *ptmp;
-    char    tmpstring[200];
-    char    command[200];
-    char    *tmpptr;
-    int     datasize;
-    char    tstampfilename[100];
-    char    mpegfilename[100];
-    char    foffsetname[100];
-    char    tcheckname[100];
-    short   recordtype;
-    u32     fileoffset;
-    u32     mpegoffset;
-    unsigned long long  mpegoffset64;
-    u32     lasttimestamp = 0;
-    int     currentslice;
-    u32     size;
-    int     i;
 
-    
-    /* generate the command */
-    sprintf(command, "pwd");
-    if ((pipe = popen(command, "r")) == NULL) {
-        fprintf(stderr, "Error executing pwd\n");
-    }
-    /* read in the present working directory */
-    fgets(tmpstring, 200, pipe);
-    pclose(pipe);
+  FILE    *pipe;
+  FILE    *mpegout;
+  FILE    *foffsetout;
+  FILE    *tcheckout;
+  FILE    *tstampout;
+  PosMPEGBuffer *ptmp;
+  char    tmpstring[200];
+  char    command[200];
+  char    *tmpptr;
+  int     datasize;
+  char    tstampfilename[100];
+  char    mpegfilename[100];
+  char    foffsetname[100];
+  char    tcheckname[100];
+  short   recordtype;
+  u32     fileoffset;
+  u32     mpegoffset;
+  unsigned long long  mpegoffset64;
+  u32     lasttimestamp = 0;
+  int     currentslice;
+  u32     size;
+  int     i;
 
-    /* get rid of the '\n' in tmpstring */
-    tmpptr = strchr(tmpstring, '\n');
-    *tmpptr = '\0';
 
-    /* find the last "/" in the directory; everything past that point is the name of the
-     * current directory */
-    tmpptr = strrchr(tmpstring, '/');
-
-    /* create an output file containing the timestamp information*/
-    sprintf(tstampfilename, "%s.cpupostimestamp", ++tmpptr);
-    /* check to see if the file exists and warn the user if it does */
-    if ((tstampout = fopen(tstampfilename, "r")) != NULL) {
-  fprintf(stderr, "Warning: appending to previously created file %s\n", tstampfilename);
-  fclose(tstampout); 
-  /* open the file for appending */
-  if ((tstampout = fopen(tstampfilename, "a")) == NULL) {
-      fprintf(stderr, "Error: unable to open file [%s]\n", tstampfilename);
-      return -1;
+  /* generate the command */
+  sprintf(command, "pwd");
+  if ((pipe = popen(command, "r")) == NULL) {
+    fprintf(stderr, "Error executing pwd\n");
   }
-    }
-    else { 
-  /* open the file for appending */
-  if ((tstampout = fopen(tstampfilename, "a")) == NULL) {
-      fprintf(stderr, "Error: unable to open file [%s]\n", tstampfilename);
-      return -1;
-  }
-  /* write out an uncompressed header */
-  fprintf(tstampout, "%%%%BEGINHEADER\n");
-  fprintf(tstampout, "%% File type:    Binary\n");
-  fprintf(tstampout, "%% Extraction type:  mpeg cpu frame times \n");
-  fprintf(tstampout, "%% Fields:       time (unsigned int)\n");
-  fprintf(tstampout, "%%%%ENDHEADER\n");
-    }
+  /* read in the present working directory */
+  fgets(tmpstring, 200, pipe);
+  pclose(pipe);
 
-    /* now open the video file */
-    switch ( sysinfo.videocodec ) {
-      case  MPEG1_CODEC:
-        sprintf(mpegfilename, "%s.mpeg", tmpptr);
-      break;
-      case  MPEG2_CODEC:
-        sprintf(mpegfilename, "%s.m2v", tmpptr);
-      break;
-      case  MJPEG_CODEC: 
-        sprintf(mpegfilename, "%s.mjpg", tmpptr);
-      break;
-      default:
-        fprintf(stderr, "Error: unknown video codec: [%d] (assuming mpeg)\n",sysinfo.videocodec);
-        sprintf(mpegfilename, "%s.mpeg", tmpptr);
-    }
-    if ((mpegout = fopen(mpegfilename, "r")) != NULL) {
-  fprintf(stderr, "Warning: appending to previously created file %s\n", mpegfilename);
-  fclose(mpegout); 
-    }
+  /* get rid of the '\n' in tmpstring */
+  tmpptr = strchr(tmpstring, '\n');
+  *tmpptr = '\0';
+
+  /* find the last "/" in the directory; everything past that point is the name of the
+   * current directory */
+  tmpptr = strrchr(tmpstring, '/');
+
+  /* create an output file containing the timestamp information*/
+  sprintf(tstampfilename, "%s.cpupostimestamp", ++tmpptr);
+  /* check to see if the file exists and warn the user if it does */
+  if ((tstampout = fopen(tstampfilename, "r")) != NULL) {
+    fprintf(stderr, "Warning: appending to previously created file %s\n", tstampfilename);
+    fclose(tstampout); 
     /* open the file for appending */
-    if ((mpegout = fopen(mpegfilename, "a")) == NULL) {
-  fprintf(stderr, "Error: unable to open mpeg file [%s]\n", mpegfilename);
-  return -1;
+    if ((tstampout = fopen(tstampfilename, "a")) == NULL) {
+      fprintf(stderr, "Error: unable to open file [%s]\n", tstampfilename);
+      return -1;
     }
+  }
+  else { 
+    /* open the file for appending */
+    if ((tstampout = fopen(tstampfilename, "a")) == NULL) {
+      fprintf(stderr, "Error: unable to open file [%s]\n", tstampfilename);
+      return -1;
+    }
+    /* write out an uncompressed header */
+    fprintf(tstampout, "%%%%BEGINHEADER\n");
+    fprintf(tstampout, "%% File type:    Binary\n");
+    fprintf(tstampout, "%% Extraction type:  mpeg cpu frame times \n");
+    fprintf(tstampout, "%% Fields:       time (unsigned int)\n");
+    fprintf(tstampout, "%%%%ENDHEADER\n");
+  }
 
-    /* open the offset file */
-    sprintf(foffsetname, "%s.mpegoffset", tmpptr);
-    /* check to see if the file exists */
-    if ((foffsetout = fopen(foffsetname, "r")) == NULL) {
-  /* open the file for writing */
-  if ((foffsetout = fopen(foffsetname, "w")) == NULL) {
+  /* now open the video file */
+  switch ( sysinfo.videocodec ) {
+    case  MPEG1_CODEC:
+      sprintf(mpegfilename, "%s.mpeg", tmpptr);
+      break;
+    case  MPEG2_CODEC:
+      sprintf(mpegfilename, "%s.m2v", tmpptr);
+      break;
+    case  MJPEG_CODEC: 
+      sprintf(mpegfilename, "%s.mjpg", tmpptr);
+      break;
+    default:
+      fprintf(stderr, "Error: unknown video codec: [%d] (assuming mpeg)\n",sysinfo.videocodec);
+      sprintf(mpegfilename, "%s.mpeg", tmpptr);
+  }
+  if ((mpegout = fopen(mpegfilename, "r")) != NULL) {
+    fprintf(stderr, "Warning: appending to previously created file %s\n", mpegfilename);
+    fclose(mpegout); 
+  }
+  /* open the file for appending */
+  if ((mpegout = fopen(mpegfilename, "a")) == NULL) {
+    fprintf(stderr, "Error: unable to open mpeg file [%s]\n", mpegfilename);
+    return -1;
+  }
+
+  /* open the offset file */
+  sprintf(foffsetname, "%s.mpegoffset", tmpptr);
+  /* check to see if the file exists */
+  if ((foffsetout = fopen(foffsetname, "r")) == NULL) {
+    /* open the file for writing */
+    if ((foffsetout = fopen(foffsetname, "w")) == NULL) {
       fprintf(stderr, "Error: unable to open file [%s]\n", foffsetname);
       return -1;
-  }
-  /* write out a header to the offset file */
-  fprintf(foffsetout, "%%%%BEGINHEADER\n");
-  fprintf(foffsetout, "%% File type:    Binary\n");
-  fprintf(foffsetout, "%% Extraction type:      mpeg file offset\n");
-  if (!extractinfo.extractpos64) {
+    }
+    /* write out a header to the offset file */
+    fprintf(foffsetout, "%%%%BEGINHEADER\n");
+    fprintf(foffsetout, "%% File type:    Binary\n");
+    fprintf(foffsetout, "%% Extraction type:      mpeg file offset\n");
+    if (!extractinfo.extractpos64) {
       fprintf(foffsetout, "%% Fields:       offset (unsigned int)\n");
+    }
+    else {
+      fprintf(foffsetout, "%% Fields:       offset (unsigned long long)\n");
+    }
+    fprintf(foffsetout, "%%%%ENDHEADER\n");
   }
   else {
-      fprintf(foffsetout, "%% Fields:       offset (unsigned long long)\n");
-  }
-  fprintf(foffsetout, "%%%%ENDHEADER\n");
-    }
-    else {
-  /* append to the already created file */
-  if ((foffsetout = fopen(foffsetname, "a")) == NULL) {
+    /* append to the already created file */
+    if ((foffsetout = fopen(foffsetname, "a")) == NULL) {
       fprintf(stderr, "Error: unable to open file %s for appending\n", foffsetname);
       return -1;
-  }
     }
+  }
 
-    /* open the time check file */
-    sprintf(tcheckname, "%s.cpudsptimecheck", tmpptr);
-    /* check to see if the file exists */
-    if ((tcheckout = fopen(tcheckname, "r")) == NULL) {
-  /* open the file for writing */
-  if ((tcheckout = fopen(tcheckname, "w")) == NULL) {
+  /* open the time check file */
+  sprintf(tcheckname, "%s.cpudsptimecheck", tmpptr);
+  /* check to see if the file exists */
+  if ((tcheckout = fopen(tcheckname, "r")) == NULL) {
+    /* open the file for writing */
+    if ((tcheckout = fopen(tcheckname, "w")) == NULL) {
       fprintf(stderr, "Error: unable to open file [%s]\n", tcheckname);
       return -1;
-  }
-  /* write out a header to the offset file */
-  fprintf(tcheckout, "%%%%BEGINHEADER\n");
-  fprintf(tcheckout, "%% File type:    Binary\n");
-  fprintf(tcheckout, "%% Extraction type:      time data\n");
-  fprintf(tcheckout, "%% Fields:       cpu_time (u32) dsp_time (u32) cpu_time (u32)\n");
-  fprintf(tcheckout, "%%%%ENDHEADER\n");
     }
-    else {
-  /* append to the already created file */
-  if ((tcheckout = fopen(tcheckname, "a")) == NULL) {
+    /* write out a header to the offset file */
+    fprintf(tcheckout, "%%%%BEGINHEADER\n");
+    fprintf(tcheckout, "%% File type:    Binary\n");
+    fprintf(tcheckout, "%% Extraction type:      time data\n");
+    fprintf(tcheckout, "%% Fields:       cpu_time (u32) dsp_time (u32) cpu_time (u32)\n");
+    fprintf(tcheckout, "%%%%ENDHEADER\n");
+  }
+  else {
+    /* append to the already created file */
+    if ((tcheckout = fopen(tcheckname, "a")) == NULL) {
       fprintf(stderr, "Error: unable to open file %s for appending\n", tcheckname);
       return -1;
-  }
     }
-    /* go to the offset location in the data file so that we are past the configuration header */
-    gzseek(extractinfo.datafile, offset, SEEK_SET);
-    fileoffset = offset;
+  }
+  /* go to the offset location in the data file so that we are past the configuration header */
+  gzseek(extractinfo.datafile, offset, SEEK_SET);
+  fileoffset = offset;
 
-    /* allocate space for the position buffers */
-    ptmp = (PosMPEGBuffer *) malloc((sysinfo.mpegslices + 1) * 
+  /* allocate space for the position buffers */
+  ptmp = (PosMPEGBuffer *) malloc((sysinfo.mpegslices + 1) * 
       sizeof(PosMPEGBuffer));
 
-    /* go through the file looking for position or timecheck buffers */
-    lasttimestamp = 0;
-    currentslice = 0;
-    size = 0;
-    do {
-  recordtype = GetNextRecord(tmpdata, &fileoffset, &datasize);
-  //if (recordtype == -1) break;
-  /* write out the record if it is position data or time check data*/
-  if (recordtype == POSITION_DATA_TYPE) {
+  /* go through the file looking for position or timecheck buffers */
+  lasttimestamp = 0;
+  currentslice = 0;
+  size = 0;
+  do {
+    recordtype = GetNextRecord(tmpdata, &fileoffset, &datasize);
+    //if (recordtype == -1) break;
+    /* write out the record if it is position data or time check data*/
+    if (recordtype == POSITION_DATA_TYPE) {
       memcpy(ptmp + currentslice, tmpdata, datasize);
       /* check to see if the timestamp matches lasttimestamp, in which
        * case we move on to the next slice */
       if (ptmp[currentslice].timestamp == lasttimestamp) {
-    currentslice++;
+        currentslice++;
       }
       /* otherwise we write out all of the slices up to, but not
        * including the current one if we're past the first slice*/
       else if (currentslice > 0) {
-          if (fwrite(&ptmp[0].timestamp, sizeof(u32), 1, tstampout) 
-      != 1) {
-        fprintf(stderr, "Error: unable to write mpeg frame timestamp to %s\n", mpegfilename);
-        return -1;
-    } 
-    /* write out the current offset in the mpeg */
-    if (!extractinfo.extractpos64) {
-        mpegoffset = (u32) ftell(mpegout);
-        fwrite(&mpegoffset, 1, sizeof(u32), foffsetout);
-    }
-    else {
-        mpegoffset64 = (unsigned long long) ftello(mpegout);
-        fwrite(&mpegoffset64, 1, sizeof(unsigned long long), 
-          foffsetout);
-    } 
-    for (i = 0; i < currentslice; i++) {
-        size += ptmp[i].size;
-    }
-    /* write out the slices */
-    for (i = 0; i < currentslice; i++) {
-        if (fwrite(ptmp[i].frame, ptmp[i].size, 1, mpegout)
-          != 1) {
-      fprintf(stderr, "Error: unable to write mpeg data to %s\n", mpegfilename);
-      return -1; 
+        if (fwrite(&ptmp[0].timestamp, sizeof(u32), 1, tstampout) 
+            != 1) {
+          fprintf(stderr, "Error: unable to write mpeg frame timestamp to %s\n", mpegfilename);
+          return -1;
+        } 
+        /* write out the current offset in the mpeg */
+        if (!extractinfo.extractpos64) {
+          mpegoffset = (u32) ftell(mpegout);
+          fwrite(&mpegoffset, 1, sizeof(u32), foffsetout);
         }
-    }
-    /* copy the last frame to the first frame */
-    memcpy(ptmp, ptmp+currentslice, sizeof(PosBuffer));
-    currentslice = 1;
-    lasttimestamp = ptmp[0].timestamp;
-    size = 0;
+        else {
+          mpegoffset64 = (unsigned long long) ftello(mpegout);
+          fwrite(&mpegoffset64, 1, sizeof(unsigned long long), 
+              foffsetout);
+        } 
+        for (i = 0; i < currentslice; i++) {
+          size += ptmp[i].size;
+        }
+        /* write out the slices */
+        for (i = 0; i < currentslice; i++) {
+          if (fwrite(ptmp[i].frame, ptmp[i].size, 1, mpegout)
+              != 1) {
+            fprintf(stderr, "Error: unable to write mpeg data to %s\n", mpegfilename);
+            return -1; 
+          }
+        }
+        /* copy the last frame to the first frame */
+        memcpy(ptmp, ptmp+currentslice, sizeof(PosBuffer));
+        currentslice = 1;
+        lasttimestamp = ptmp[0].timestamp;
+        size = 0;
       }
       else {
-    /* we've read in the first slice only, so move on to the next
-     * one */
-    currentslice++;
-    lasttimestamp = ptmp[0].timestamp;
+        /* we've read in the first slice only, so move on to the next
+         * one */
+        currentslice++;
+        lasttimestamp = ptmp[0].timestamp;
       }
-  }
-  else if (recordtype == TIME_CHECK_DATA_TYPE) {
+    }
+    else if (recordtype == TIME_CHECK_DATA_TYPE) {
       if (fwrite(tmpdata, datasize, 1, tcheckout) != 1) {
-    fprintf(stderr, "Error: unable to write time check data to %s\n", tcheckname);
-    return -1; 
+        fprintf(stderr, "Error: unable to write time check data to %s\n", tcheckname);
+        return -1; 
       }
-  }
+    }
 
-    } while (!gzeof(extractinfo.datafile));
-    fclose(tstampout);
-    fclose(mpegout);
-    fclose(foffsetout);
-    return 0;
+  } while (!gzeof(extractinfo.datafile));
+  fclose(tstampout);
+  fclose(mpegout);
+  fclose(foffsetout);
+  return 0;
 }
 
 
