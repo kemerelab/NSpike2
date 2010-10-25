@@ -40,11 +40,14 @@
  */
 
 #include <spikecommon.h>
+#include <spike_user_defines.h>
 /* function definitions that allow us to use spike_dsp_shared.h */
 void DisplayErrorMessage(char *);
 void DisplayStatusMessage(char *);
 void StartLocalAcq(void) { return; };
 void StopLocalAcq(void) { return; };
+
+
 
 char tmpstring[200];
 
@@ -95,8 +98,10 @@ int main(int argc, char **argv)
   int 		writesize;
 
   SysInfo		*systmp;
-  SpikeBuffer		*sptr;
+/*  UserDataSpikeBuffer	*sptr;
   UserDataContBuffer	*cptr;
+  UserDataDIOBuffer	*dptr;
+  UserDataPosBuffer	*pptr; */
 
   u32			*u32ptr;
 
@@ -151,22 +156,22 @@ int main(int argc, char **argv)
 	      if (message == SPIKE_DATA) {
 		datatype = SPIKE_DATA_TYPE;
 		/* get the number of each electrode and increment
-		 * the number of spikes on them */
+		 * the number of spikes on them 
 		nspikes = savebufsize / sizeof(SpikeBuffer);
-		sptr = (SpikeBuffer *) savebuf;
+		sptr = (UserDataSpikeBuffer *) savebuf; */
 	      }
 	      else if (message == CONTINUOUS_DATA) {
 		datatype = CONTINUOUS_DATA_TYPE;
-		cptr = (UserDataContBuffer *) savebuf;
+	      }
+	      else if (message == DIGITALIO_DATA) {
+		datatype = DIGITALIO_DATA_TYPE;
 	      }
 	      break;
 	    case SPIKE_POSDAQ:
 	      datatype = POSITION_DATA_TYPE;
 	      break;
-	    case SPIKE_MAIN: 
-	      datatype = DIGITALIO_DATA_TYPE;
-	      break;
 	  }
+	  ProcessData(datatype, savebuf, savebufsize); 
 	}
       }
       id++;
@@ -215,6 +220,8 @@ int main(int argc, char **argv)
 	     userdataexit(0);		    
 	     break;
 	  default:
+	     /* Send the message on to the user's ProcessMessage function */
+	     ProcessMessage(message, messagedata, messagedatalen)
 	     break;
 	}
       }

@@ -34,7 +34,7 @@
 void daqexit(int status);
 void getspike(short *data);
 int getcont(ContBuffer *contbuf);
-int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *mptr);
+int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *udptr);
 
 int tempnum = 0;
 
@@ -61,9 +61,6 @@ typedef struct _DataBuffer {
 } DataBuffer;
 
 DataBuffer databuf[MAX_DSPS];
-
-int       userdatafd; // socket for communication with user program
-
 
 void ExtractSpikes(DataBuffer *databuf, int dspnum);
 
@@ -249,15 +246,6 @@ int main()
         /* move to the timestamp field */
         ByteSwap(usptr, dptr->packetshorts-1);
 
-        /* check whether or not a DAQ_TO_USER pipe is opened
-         * and if dspnum matches desired data */
-        if (sysinfo.daq_to_user.is_enabled) {
-          if (sysinfo.daq_to_user.dsps[dspnum]) {
-          SendMessage(userdatafd, DATA, 
-            (char *)(usptr-1), dptr->packetshorts * sizeof(short));
-          }
-        }
-
         memcpy(&timestamp, usptr, 2 * sizeof(unsigned short));
         /* check to see if this is from the master dsp, in which case
          * we put the data into a diobuf and send it out to
@@ -268,11 +256,10 @@ int main()
           for (i = 0; i < MAX_DIO_PORTS; i++) {
             diobuf.status[i] = usptr[i+2];
           }
-		  if (sysinfo.userdataon) {
-			SendMessage(client_data[SPIKE_USER_DATA].fd, 
-				DIGITALIO_EVENT, (char *) &diobuf, 
-				DIO_BUF_STATIC_SIZE);
-		  }
+	  if (sysinfo.userdataon) {
+	     SendMessage(client_data[SPIKE_USER_DATA].fd, DIGITALIO_EVENT, 
+		     	(char *) &diobuf, DIO_BUF_STATIC_SIZE);
+	  }
           /* send the digital IO event on to be saved */
           SendMessage(client_data[SPIKE_SAVE_DATA].fd, 
               DIGITALIO_EVENT, (char *) &diobuf, 
@@ -757,7 +744,7 @@ int getcont(ContBuffer *contbuf)
   return CONT_BUF_STATIC_SIZE + nchan * dptr->nsamp * sizeof(short);
 }
 
-int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *mptr) 
+int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *udptr) 
   /* create a continuous buffer with only the data that are supposed to be
    * sent to userdata and return the size of the buffer */
 {
@@ -773,10 +760,10 @@ int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *mptr)
   dptr = sysinfo.dspinfo + cptr->dspnum;
   chptr = sysinfo.channelinfo[sysinfo.machinenum];
 
-  mptr->timestamp = cptr->timestamp;
-  mptr->samprate = dptr->samprate;
+  udptr->timestamp = cptr->timestamp;
+  udptr->samprate = dptr->samprate;
 
-  mptr->nchan = 0;
+  udptr->nchan = 0;
   /* zero out the list of channels to save */
   memset((void *) savechan, 0, MAX_CHANNELS * sizeof(bool));
   for (j = 0; j < dptr->nchan; j++, chptr++) {
@@ -785,17 +772,17 @@ int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *mptr)
       savechan[j] = 1;
       /* note that the dsp channel is only correct when only one channel
        * of an electrode is selected */
-      mptr->channum[mptr->nchan] = chptr->electchan;
-      mptr->electnum[mptr->nchan++] = chptr->number;
+      udptr->channum[udptr->nchan] = chptr->electchan;
+      udptr->electnum[udptr->nchan++] = chptr->number;
     }
   }
   /* set the pointer for the continuous data */
   dataptr = cptr->data;
-  outdataptr = mptr->data;
-  mptr->nsamp = dptr->nsampout;
+  outdataptr = udptr->data;
+  udptr->nsamp = dptr->nsampout;
   /* copy the channels to be saved into the userdatacontbuf
    * data buffer */
-  for (i = 0; i < mptr->nsamp; i++) {
+  for (i = 0; i < udptr->nsamp; i++) {
     for (j = 0; j < dptr->nchan; j++, dataptr++) {
       if (savechan[j]) {
         *(outdataptr++) = *dataptr;
@@ -803,9 +790,9 @@ int MakeUserDataBuf(ContBuffer *cptr, UserDataContBuffer *mptr)
     }
   }
   /* calculate and return the size */
-  sz = sizeof(UserDataContBuffer) - (MAX_CONT_BUF_SIZE - sizeof(short) *
-	 mptr->nsamp * mptr->nchan);
-  return sz;
+//  sz = sizeof(UserDataContBuffer) - (MAX_CONT_BUF_SIZE - sizeof(short) *
+//	 udptr->nsamp * udptr->nchan);
+  return sizeof(UserDataContBuffer);
 
 }
 

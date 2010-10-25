@@ -28,6 +28,8 @@ typedef struct _UserDataContBuffer {
     short       data[MAX_CONT_BUF_SIZE]; 
 } UserDataContBuffer;
 
+typedef SpikeBuffer UserSpikeDataBuffer;
+typedef DIOBuffer UserDIODataBuffer;
 
 typedef struct _UserDataBufferInfo {
     UserDataInfo	userdatainfo;

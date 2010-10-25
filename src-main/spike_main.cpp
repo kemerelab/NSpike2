@@ -450,7 +450,54 @@ void SQCompat::spikeProcessMessages(void)
     id = 0;
     while ((i = netinfo.datainfd[id]) != -1) {
       if (FD_ISSET(server_data[i].fd, &readfds)) {
-        if (i == SPIKE_DAQ) {
+        if (i == SPIKE_USER_DATA) {
+          /* this is a message from the user's digital IO program.
+           * The message should contain a series of unsigned short
+           * programming commands for the digital IO state machine
+           * of the master DSP, so we pass these commands on to the
+           * DSP */
+          if ((message = GetMessage(server_data[i].fd, (char *) 
+                  tmpdatabuf, messagedatalen, 1)) != -1) {
+            //fprintf(stderr,"spike_main: message from user: %d\n", message);
+            switch(message) {
+              case DIO_COMMAND:
+                fprintf(stderr, "master DSP timestamp = %d\n", ReadDSPTimestamp(0));
+                if (!WriteDSPDIOCommand((unsigned short *) tmpdatabuf, (int) *messagedatalen / sizeof(unsigned short))) { 
+                  sprintf(tmpstring, "Error writing user program digital IO command to Master DSP\n");
+                  DisplayErrorMessage(tmpstring);
+                }
+                break;
+              case DIO_SPEC_STATEMACHINE:
+                statemachine = *((int *)tmpdatabuf);
+                break;
+              case DIO_COMMAND_TO_STATEMACHINE:
+                if (!WriteDSPDIOCommand((unsigned short *) tmpdatabuf, (int) *messagedatalen / sizeof(unsigned short),statemachine,0)) { 
+                  sprintf(tmpstring, "Error writing user program digital IO command to Master DSP\n");
+                  DisplayErrorMessage(tmpstring);
+                }
+                break;
+              case DIO_EXPECT_DIO_RESPONSE:
+                if (~LookForDSPDIOResponse() ) { 
+                  // LookFor already throws an error
+                }
+                break;
+              case DIO_RUN_STATEMACHINE:
+                if (!WriteDSPDIORestartStateMachine( *((int *)tmpdatabuf) )) { 
+                  sprintf(tmpstring, "Error restarting state machine %d\n", *((int *) tmpdatabuf));
+                  DisplayErrorMessage(tmpstring);
+                }
+                break;
+              default:
+                // fprintf(stderr, "unknown message type from user program %d.\n", message);
+                ((DIOInterface *)dispinfo.userguiptr)->msgFromUser(message, (char *)tmpdatabuf);
+                break;
+            }
+          }
+          else {
+            fprintf(stderr, "Error getting spike_userdata program output %d\n");
+          }
+        }
+	else if (i == SPIKE_DAQ) {
           /* get the buffer information */
           if ((message = GetMessage(server_data[i].fd,
                   (char *) tmpdatabuf,
@@ -532,12 +579,12 @@ void SQCompat::spikeProcessMessages(void)
             fprintf(stderr, "Error getting pos buffer\n");
           }
         }
-        else if (server_data[i].fd == client_message[DSP0].fd) {
+        else if (server_data[i].fd == client_message[DSPDIO].fd) {
           /* this is a message about a digital output, so read it and
              send it on to SPIKE_SAVE_DATA. Note that in newer 
              versions of the DSP code this message comes from 
              SPIKE_DAQ */
-          if (read(client_message[DSP0].fd, (char *) tmpdatabuf, 
+          if (read(client_message[DSPDIO].fd, (char *) tmpdatabuf, 
                 DIO_MESSAGE_SIZE) == DIO_MESSAGE_SIZE) {
             usptr = (unsigned short *) tmpdatabuf;
             ByteSwap(usptr, DIO_MESSAGE_SIZE / sizeof(unsigned short));
@@ -565,53 +612,6 @@ void SQCompat::spikeProcessMessages(void)
           }
           else {
             fprintf(STATUSFILE, "Error getting digital IO data from master DSP.\n");
-          }
-        }
-        else if (server_data[i].fd == digioinfo.inputfd) {
-          /* this is a message from the user's digital IO program.
-           * The message should contain a series of unsigned short
-           * programming commands for the digital IO state machine
-           * of the master DSP, so we pass these commands on to the
-           * DSP */
-          if ((message = GetMessage(server_data[i].fd, (char *) 
-                  tmpdatabuf, messagedatalen, 1)) != -1) {
-            //fprintf(stderr,"spike_main: message from user: %d\n", message);
-            switch(message) {
-              case DIO_COMMAND:
-                fprintf(stderr, "master DSP timestamp = %d\n", ReadDSPTimestamp(0));
-                if (!WriteDSPDIOCommand((unsigned short *) tmpdatabuf, (int) *messagedatalen / sizeof(unsigned short))) { 
-                  sprintf(tmpstring, "Error writing user program digital IO command to Master DSP\n");
-                  DisplayErrorMessage(tmpstring);
-                }
-                break;
-              case DIO_SPEC_STATEMACHINE:
-                statemachine = *((int *)tmpdatabuf);
-                break;
-              case DIO_COMMAND_TO_STATEMACHINE:
-                if (!WriteDSPDIOCommand((unsigned short *) tmpdatabuf, (int) *messagedatalen / sizeof(unsigned short),statemachine,0)) { 
-                  sprintf(tmpstring, "Error writing user program digital IO command to Master DSP\n");
-                  DisplayErrorMessage(tmpstring);
-                }
-                break;
-              case DIO_EXPECT_DIO_RESPONSE:
-                if (~LookForDSPDIOResponse() ) { 
-                  // LookFor already throws an error
-                }
-                break;
-              case DIO_RUN_STATEMACHINE:
-                if (!WriteDSPDIORestartStateMachine( *((int *)tmpdatabuf) )) { 
-                  sprintf(tmpstring, "Error restarting state machine %d\n", *((int *) tmpdatabuf));
-                  DisplayErrorMessage(tmpstring);
-                }
-                break;
-              default:
-                // fprintf(stderr, "unknown message type from user program %d.\n", message);
-                ((DIOInterface *)dispinfo.userguiptr)->msgFromUser(message, (char *)tmpdatabuf);
-                break;
-            }
-          }
-          else {
-            fprintf(stderr, "Error getting user program output %d\n");
           }
         }
         datareceived = 1;
