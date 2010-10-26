@@ -1461,7 +1461,7 @@ int StartNetworkMessaging(SocketInfo *server_message,
   }
   /* now send out the CONNECTION ESTABLISHED message to all of our
    * modules (except the UDP modules) */
-  for (i = MAX_CONNECTIONS; i >= 0; i--) {
+  for (i = MAX_CONNECTIONS - 1; i >= 0; i--) {
     if ((server_message[i].fd) && 
       (server_message[i].protocol != UDP)) {
     SendMessage(client_message[i].fd, CONNECTION_ESTABLISHED, NULL, 0);
@@ -1547,7 +1547,7 @@ int StartNetworkMessaging(SocketInfo *server_message,
        * modules and wait for the response. Note that this only
        * goes out to non-UDP connected modules at the moment, as
        * the DSPs are not set up to get these messages (????)*/
-      for (i = MAX_CONNECTIONS; i >= 0; i--) {
+      for (i = MAX_CONNECTIONS - 1; i >= 0; i--) {
       if ((server_message[i].fd) && 
         (server_message[i].protocol != UDP)) {
         SendMessage(client_message[i].fd, CONNECTION_ESTABLISHED, NULL, 0);
