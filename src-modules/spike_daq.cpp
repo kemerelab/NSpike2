@@ -630,31 +630,6 @@ int main()
           case USER_DATA_STOP:
             sysinfo.userdataon = 0;
             break;
-          case OPEN_DAQ_TO_USER:
-            /* open socket (blocks until user program opens server) */
-            // ADD - turn off acquisiton
-  fprintf(stderr, "spike_daq: trying to open DAQ connection to user program.\n");
-            if ((userdatafd = GetClientSocket(DAQ_TO_USER_DATA)) == -1) {
-              error = 1;
-  fprintf(stderr, "spike_daq: error connecting to server socket %s for user program\n", 
-                DAQ_TO_USER_DATA);
-            }
-  fprintf(stderr, "spike_daq: opened DAQ connection to user program.\n");
-            // ADD - turn on acquisiton
-            break;
-          case CLOSE_DAQ_TO_USER:
-  fprintf(stderr, "spike_daq: closing DAQ connection to user program.\n");
-            sysinfo.daq_to_user.is_enabled = 0;
-            close(userdatafd);
-            unlink(DAQ_TO_USER_DATA);
-            break;
-          case SETUP_DAQ_TO_USER:
-  fprintf(stderr, "spike_daq: setting up DAQ connection to user program.\n");
-            /* copy daq_to_user_dsps array into sysinfo structure */
-            memcpy((char *)&sysinfo.daq_to_user, messagedata,
-                sizeof(DaqToUserInfo));
-            sysinfo.daq_to_user.is_enabled = 0;
-            break;
           case DIO_RT_ENABLE:
             fprintf(stderr, "spike_daq: DIO_RT_ENABLE\n");
             sysinfo.daq_to_user.is_enabled = 1;
@@ -1009,8 +984,6 @@ void daqexit(int status)
    CloseSockets(server_message);
    CloseSockets(client_message);
    CloseSockets(client_data);
-   close(userdatafd);
-   unlink(DAQ_TO_USER_DATA);
    fclose(STATUSFILE);
    exit(status);
 

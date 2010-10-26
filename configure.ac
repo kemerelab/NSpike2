@@ -73,7 +73,6 @@ AC_CONFIG_FILES([Makefile
            src-modules/Makefile
            src-extract/Makefile
            src-fixpos/Makefile
-           src-user/Makefile
            src-main/Makefile])
 
 AC_OUTPUT

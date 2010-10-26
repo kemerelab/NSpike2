@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 	      else if (message == CONTINUOUS_DATA) {
 		datatype = CONTINUOUS_DATA_TYPE;
 	      }
-	      else if (message == DIGITALIO_DATA) {
+	      else if (message == DIGITALIO_EVENT) {
 		datatype = DIGITALIO_DATA_TYPE;
 	      }
 	      break;
@@ -196,6 +196,8 @@ int main(int argc, char **argv)
 	     /* get the userdatainfo structure */
 	     memcpy((char *) &userdatainfo, messagedata,
 		    sizeof(UserDataInfo));
+	     /* we also need to reset any relevant variables */
+	     ResetUserStatus();
 	     break;
 	  case USER_DATA_START:
 	     sysinfo.userdataon = 1;
@@ -221,7 +223,7 @@ int main(int argc, char **argv)
 	     break;
 	  default:
 	     /* Send the message on to the user's ProcessMessage function */
-	     ProcessMessage(message, messagedata, messagedatalen)
+	     ProcessMessage(message, (char *) messagedata, messagedatalen);
 	     break;
 	}
       }

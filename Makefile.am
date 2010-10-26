@@ -17,5 +17,5 @@ EXTRA_DIST += autogen.sh
 
 dist_bin_SCRIPTS = setupnet kspike
 
-SUBDIRS = src-modules src-fixpos src-extract src-user src-gui src-main data
+SUBDIRS = src-modules src-fixpos src-extract src-gui src-main data
 
