@@ -21,7 +21,7 @@
 
 // indicate where the digital IO boards are.  For the separate DIO DSP, comment
 // out the following
-//#define DIO_ON_MASTER_DSP
+#define DIO_ON_MASTER_DSP
 
 /* some math defines */
 #define sqr(x) ((x) * (x))

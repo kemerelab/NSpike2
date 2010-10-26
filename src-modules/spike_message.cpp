@@ -1388,75 +1388,79 @@ int StartNetworkMessaging(SocketInfo *server_message,
     }
     }
     else {
-    /* this connection is between two other machines or between
-     * modules.  If it is a connection between
-     * two machines we  send them messages and wait for a reply  */
-    /* if the message is to or from a DSP machine, we only need to
-     * tell the slave computer to start it's connection */
-    if ((c->toid >= DSP1) && (c->toid < MAX_DSPS)) {
-      if (strcmp(c->from, netinfo.myname) == 0) {
-      /* this is a connection from a local module, so we tell it 
-       * to start its client */	
-      fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for UDP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-      SendMessage(client_message[c->fromid].fd,
-        START_NETWORK_CLIENT, (char *) c, sizeof(SocketInfo));
-      }
-      else {
-      slavenum = GetSlaveNum(c->from);
-      fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for UDP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-      SendMessage(netinfo.slavefd[slavenum], 
-        START_NETWORK_CLIENT, (char *) c,
-        sizeof(SocketInfo));
-      }
-    }
-    else if (strcmp(c->to, c->from) != 0) {
-      /* this is a message between two machines, so we 
-       * send them both messages. */
-      if (strcmp(c->from, netinfo.myname) == 0) {
-      fprintf(STATUSFILE, "spike_main: Sending START_NETWORK_CLIENT message to local module %s %d\n", c->from, c->fromid);
-      /* if this is from a module on this machine, send it a
-       * message */
-      SendMessage(client_message[c->fromid].fd,
-        START_NETWORK_CLIENT, (char *) c, 
-        sizeof(SocketInfo));
-      }
-      else {
-      /* this is from a slave */
-      if (c->fromid >= MAX_DSPS) {
-        fprintf(STATUSFILE, "spike_main: Sending START_NETWORK_CLIENT message to remote machine %s %d\n", c->from, c->fromid);
+      /* this connection is between two other machines or between
+       * modules.  If it is a connection between
+       * two machines we  send them messages and wait for a reply  */
+      /* if the message is to or from a DSP machine, we only need to
+       * tell the slave computer to start it's connection */
+      if ((c->toid >= DSP1) && (c->toid < MAX_DSPS)) {
+        if (strcmp(c->from, netinfo.myname) == 0) {
+        /* this is a connection from a local module, so we tell it 
+         * to start its client */	
+        fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for UDP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+        SendMessage(client_message[c->fromid].fd,
+          START_NETWORK_CLIENT, (char *) c, sizeof(SocketInfo));
+        }
+        else {
         slavenum = GetSlaveNum(c->from);
+        fprintf(STATUSFILE, "Sending START_NETWORK_CLIENT_message for UDP data socket from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
         SendMessage(netinfo.slavefd[slavenum], 
+          START_NETWORK_CLIENT, (char *) c,
+          sizeof(SocketInfo));
+        }
+      }
+      else if (strcmp(c->to, c->from) != 0) {
+        /* this is a message between two machines, so we 
+         * send them both messages. */
+        if (strcmp(c->from, netinfo.myname) == 0) {
+        fprintf(STATUSFILE, "spike_main: Sending START_NETWORK_CLIENT message to local module %s %d\n", c->from, c->fromid);
+        /* if this is from a module on this machine, send it a
+         * message */
+        SendMessage(client_message[c->fromid].fd,
           START_NETWORK_CLIENT, (char *) c, 
           sizeof(SocketInfo));
+        }
+        else {
+        /* this is from a slave */
+          if (c->fromid >= MAX_DSPS) {
+            fprintf(STATUSFILE, "spike_main: Sending START_NETWORK_CLIENT message to remote machine %s %d\n", c->from, c->fromid);
+            slavenum = GetSlaveNum(c->from);
+            SendMessage(netinfo.slavefd[slavenum], 
+              START_NETWORK_CLIENT, (char *) c, 
+              sizeof(SocketInfo));
+          }
+        }
+        if (strcmp(c->to, netinfo.myname) == 0) {
+          /* if this is to a module on this machine, send it a
+           * message */
+          fprintf(stderr, "spike_main: Sending START_NETWORK_SERVER message to local module %s %d\n", c->to, c->toid);
+          fdtmp = server_message[c->toid].fd;
+          SendMessage(client_message[c->toid].fd, 
+            START_NETWORK_SERVER, (char *) c, 
+            sizeof(SocketInfo));
+        }
+        else {
+          if (c->toid >= MAX_DSPS) {
+            slavenum = GetSlaveNum(c->to);
+            fprintf(stderr, "spike_main: Sending START_NETWORK_SERVER message to remote module %s %d\n", c->to, c->toid);
+            fdtmp = netinfo.masterfd[slavenum];
+            SendMessage(netinfo.slavefd[slavenum], 
+              START_NETWORK_SERVER, (char *) c, 
+              sizeof(SocketInfo));
+          }
+        }
+        /* Now wait for a message from the server */
+        if (c->toid >= MAX_DSPS) {
+          fprintf(STATUSFILE, "waiting for connection established message from %s %d, slavenum %d\n", c->to, fdtmp, slavenum);
+          if (!WaitForMessage(fdtmp, CONNECTION_ESTABLISHED, 15)) {
+          fprintf(STATUSFILE, "Error establishing connection from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+          return -1;
+          }
+          else {
+          fprintf(STATUSFILE, "Established connection from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
+          }
+        }
       }
-      }
-      if (strcmp(c->to, netinfo.myname) == 0) {
-      /* if this is to a module on this machine, send it a
-       * message */
-      fprintf(stderr, "spike_main: Sending START_NETWORK_SERVER message to local module %s %d\n", c->to, c->toid);
-      fdtmp = server_message[c->toid].fd;
-      SendMessage(client_message[c->toid].fd, 
-        START_NETWORK_SERVER, (char *) c, 
-        sizeof(SocketInfo));
-      }
-      else {
-      slavenum = GetSlaveNum(c->to);
-      fprintf(stderr, "spike_main: Sending START_NETWORK_SERVER message to remote module %s %d\n", c->to, c->toid);
-      fdtmp = netinfo.masterfd[slavenum];
-      SendMessage(netinfo.slavefd[slavenum], 
-        START_NETWORK_SERVER, (char *) c, 
-        sizeof(SocketInfo));
-      }
-      /* Now wait for a message from the server */
-      fprintf(STATUSFILE, "waiting for connection established message from %s %d, slavenum %d\n", c->to, fdtmp, slavenum);
-      if (!WaitForMessage(fdtmp, CONNECTION_ESTABLISHED, 15)) {
-      fprintf(STATUSFILE, "Error establishing connection from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-      return -1;
-      }
-      else {
-      fprintf(STATUSFILE, "Established connection from %s %d to %s %d on port %d\n", c->from, c->fromid, c->to, c->toid, c->port);
-      }
-    }
     }
   }
   /* now send out the CONNECTION ESTABLISHED message to all of our
