@@ -11,6 +11,7 @@
  *
  * nspike is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    spikeTetInput = new SpikeTetInput* [nElect];
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
@@ -367,8 +368,6 @@ SpikeTetInput::SpikeTetInput(QWidget *parent, int electNum,
     audio2[i]->setSizePolicy(p);
     audio2[i]->setFont(fs);
     grid->addMultiCellWidget(audio2[i], 3, 3, (i*ndiv)+5, (i*ndiv)+8);
-    /* Update the Threshold to make it draw correctly */
-    UpdateChanThresh(electNum, currentchan, ch[i].thresh);
   }
   for(i = 0; i < NCHAN_PER_ELECTRODE * ndiv; i++, currentchan++) {
     grid->setColStretch(i, 2);

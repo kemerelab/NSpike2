@@ -125,15 +125,10 @@ void MainConfigTab::updateCmPerPix(void)
 {
   double data;
 
-  if (digioinfo.outputfd) {
-    // set single activation pin
-    data = CmPerPix->text().toDouble();
-    SendUserMessage(DIO_SET_CM_PER_PIX, (char *) &data, sizeof(double));
-    fprintf(stderr,"Sent pin\n");
-  }
-  else {
-    QMessageBox::warning(this,"No User Program","No user program is currently running");
-  }
+  // set single activation pin
+  data = CmPerPix->text().toDouble();
+  SendUserDataMessage(DIO_SET_CM_PER_PIX, (char *) &data, sizeof(double));
+  fprintf(stderr,"Sent pin\n");
 }
 
 void MainConfigTab::runProgram(void)

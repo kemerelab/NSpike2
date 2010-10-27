@@ -7,7 +7,7 @@
 // in other words, #ifdef NO_DSP_DEBUG means to not really use DSPs and to build
 // a dummy/demo version of nspike -- so comment this out for a final build
 //
- //#define NO_DSP_DEBUG
+#define NO_DSP_DEBUG
 
 // uncomment to debug without video
 // in other words, #ifdef NO_VIDEO_DEBUG means to not really use the video

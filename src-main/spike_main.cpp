@@ -494,7 +494,7 @@ void SQCompat::spikeProcessMessages(void)
             }
           }
           else {
-            fprintf(stderr, "Error getting spike_userdata program output %d\n");
+            fprintf(stderr, "Error getting spike_userdata program output %d\n", i);
           }
         }
 	else if (i == SPIKE_DAQ) {
@@ -1796,14 +1796,6 @@ void StartDigIOProgram(int prognum)
   }
 }
 
-void  SendDAQUserMessage(int message, char *data, int datalen)
-{
-  SendMessage(client_message[SPIKE_DAQ].fd, message, 
-      data, datalen);
-  SendMessage(digioinfo.outputfd, message, 
-      data, datalen);
-}
-
 void SendDigIOUserMessage(char *message, int len)
 {
 
@@ -1816,6 +1808,15 @@ void SendDigIOUserMessage(char *message, int len)
     DisplayStatusMessage(tmpstring);
   }
 }
+
+void SendUserDataMessage(int messagetype, char *message, int len)
+{
+    SendMessage(server_message[SPIKE_USER_DATA].fd, messagetype, message,
+        len);
+}
+
+
+
 
 
 void SwitchDisplayModes(void)

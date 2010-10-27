@@ -40,12 +40,12 @@ LatencyTab::LatencyTab (QWidget *parent)
 
     Q3GridLayout *grid = new Q3GridLayout(this, 10, 6, 20, -1, "grid 1");
 
-    grid->addMultiCellWidget(new QLabel("Tetrode / channel", this), 0, 0, 0, 4);
+/*    grid->addMultiCellWidget(new QLabel("Tetrode / channel", this), 0, 0, 0, 4);
     StimChan = new QComboBox( FALSE, this, "Channel Combo Box" );
     StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
     grid->addMultiCellWidget(StimChan, 0, 0, 3, 3);
     connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
-    connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
+    connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int))); */
 
     triggeredStart = new QPushButton("Start", this, "start");
     triggeredStart->setToggleButton(TRUE);
@@ -72,23 +72,17 @@ void LatencyTab::updateLatencyData(void)
 {
   LatencyTestParameters data;
 
-  daq_io_widget->updateChan(StimChan->currentItem());
+  //daq_io_widget->updateChan(StimChan->currentItem());
   data.thresh = thresh->value();
   data.pulse_length = 10;
 
-    if (digioinfo.outputfd) {
   SendDAQUserMessage(DIO_SET_RT_LATENCY_TEST_PARAMS, (char *) &data, sizeof(LatencyTestParameters));
   triggeredStart->setEnabled(TRUE);
-    }
-    else {
-  QMessageBox::warning(this,"No User Program","No user program is currently running");
-    }
 }
 
 void LatencyTab::startTest(bool on)
 {
-    if (on) {
-  if (digioinfo.outputfd) {
+  if (on) {
     updateLatencyData();
     SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
     SendMessage(digioinfo.outputfd, DIO_LATENCY_TEST_START, NULL, 0);
@@ -99,28 +93,17 @@ void LatencyTab::startTest(bool on)
     triggeredStop->setText("Stop");
     triggeredStop->setOn(false);
   }
-  else {
-      QMessageBox::warning(this,"No User Program","No user program is currently running");
-      triggeredStart->setOn(false);
-  }
-    }
 }
 
 void LatencyTab::stopTest(bool on)
 {
-    if (on) {
-	if (digioinfo.outputfd) {
-	    SendMessage(digioinfo.outputfd, DIO_LATENCY_TEST_STOP, NULL, 0);
-	    SendDAQUserMessage(DIO_RT_DISABLE, NULL, 0);
-	    triggeredStart->setPaletteForegroundColor("black");
-	    triggeredStart->setText("Start");
-	    triggeredStop->setPaletteForegroundColor("red");
-	    triggeredStop->setText("Stopped");
-	    triggeredStart->setOn(false);
-	}
-	else {
-	    QMessageBox::warning(this,"No User Program","No user program is currently running");
-	    triggeredStop->setOn(false);
-	}
-    }
+  if (on) {
+    SendMessage(digioinfo.outputfd, DIO_LATENCY_TEST_STOP, NULL, 0);
+    SendDAQUserMessage(DIO_RT_DISABLE, NULL, 0);
+    triggeredStart->setPaletteForegroundColor("black");
+    triggeredStart->setText("Start");
+    triggeredStop->setPaletteForegroundColor("red");
+    triggeredStop->setText("Stopped");
+    triggeredStart->setOn(false);
+  }
 }

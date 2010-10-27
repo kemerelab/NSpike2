@@ -32,6 +32,7 @@
 #include <qmessagebox.h>
 
 extern DigIOInfo digioinfo;
+extern SocketInfo *server_message;
 
 ThetaTab::ThetaTab (QWidget *parent)
   : QWidget(parent)
@@ -40,12 +41,12 @@ ThetaTab::ThetaTab (QWidget *parent)
 
     Q3GridLayout *grid = new Q3GridLayout(this, 10, 6, 20, -1, "grid 1");
 
-    grid->addMultiCellWidget(new QLabel("Tetrode / channel", this), 0, 0, 0, 4);
+/*    grid->addMultiCellWidget(new QLabel("Tetrode / channel", this), 0, 0, 0, 4);
     StimChan = new QComboBox( FALSE, this, "Channel Combo Box" );
     StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
     grid->addMultiCellWidget(StimChan, 0, 0, 3, 3);
     connect(StimChan, SIGNAL(activated(int)), this, SLOT(updateThetaData(void)));
-    connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
+    connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int))); */
 
     grid->addMultiCellWidget(new QLabel("Pulse Length (100 us units)", this), 1, 1, 0, 2);
     pulse_len = new QSpinBox (0, 10000, 1, this, "Pulse Length");
@@ -88,58 +89,40 @@ void ThetaTab::updateThetaData(void)
 {
   ThetaStimParameters data;
 
-  daq_io_widget->updateChan(StimChan->currentItem());
   data.pulse_length = pulse_len->value();
   data.vel_thresh = vel_thresh->value();
   data.filt_delay = filt_delay->value();
   data.stim_phase = theta_phase->value();
 
-    if (digioinfo.outputfd) {
-	SendDAQUserMessage(DIO_SET_RT_THETA_PARAMS, (char *) &data, sizeof(ThetaStimParameters));
+  /* This needs to be updated for the new spike_userdata */
+//  SendDAQUserMessage(DIO_SET_RT_THETA_PARAMS, (char *) &data, sizeof(ThetaStimParameters));
+//
   triggeredStart->setEnabled(TRUE);
-    }
-    else {
-	QMessageBox::warning(this,"No User Program","No user program is currently running");
-    }
 }
 
 void ThetaTab::startThetaStim(bool on)
 {
-    if (on) {
-	if (digioinfo.outputfd) {
+  if (on) {
     updateThetaData();
-    SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
-		SendMessage(digioinfo.outputfd, DIO_THETA_STIM_START, NULL, 0);
-	  triggeredStart->setOn(false);
-	  triggeredStart->setPaletteForegroundColor("green");
-	  triggeredStart->setText("Running");
-	  triggeredStop->setPaletteForegroundColor("black");
-	  triggeredStop->setText("Stop");
-	  triggeredStop->setOn(false);
-	}
-	else {
-	    QMessageBox::warning(this,"No User Program","No user program is currently running");
-	    triggeredStart->setOn(false);
-	}
-    }
+    SendMessage(server_message[SPIKE_USER_DATA].fd, DIO_THETA_STIM_START, NULL, 0);
+    triggeredStart->setOn(false);
+    triggeredStart->setPaletteForegroundColor("green");
+    triggeredStart->setText("Running");
+    triggeredStop->setPaletteForegroundColor("black");
+    triggeredStop->setText("Stop");
+    triggeredStop->setOn(false);
+  }
 }
 
 void ThetaTab::stopThetaStim(bool on)
 {
-    if (on) {
-	if (digioinfo.outputfd) {
-	    SendMessage(digioinfo.outputfd, DIO_THETA_STIM_STOP, NULL, 0);
-	    SendDAQUserMessage(DIO_RT_DISABLE, NULL, 0);
-	    triggeredStart->setPaletteForegroundColor("black");
-	    triggeredStart->setText("Start");
-	    triggeredStop->setPaletteForegroundColor("red");
-	    triggeredStop->setText("Stopped");
-	    triggeredStart->setOn(false);
-	}
-	else {
-	    QMessageBox::warning(this,"No User Program","No user program is currently running");
-	    triggeredStop->setOn(false);
-	}
-    }
+  if (on) {
+    SendMessage(server_message[SPIKE_USER_DATA].fd, DIO_THETA_STIM_STOP, NULL, 0);
+    triggeredStart->setPaletteForegroundColor("black");
+    triggeredStart->setText("Start");
+    triggeredStop->setPaletteForegroundColor("red");
+    triggeredStop->setText("Stopped");
+    triggeredStart->setOn(false);
+  }
 }
 

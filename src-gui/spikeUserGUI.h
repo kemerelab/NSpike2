@@ -20,11 +20,7 @@
 #define OUTPUT_ONLY_TAB 2
 #define REALTIME_FEEDBACK_TAB 3
 
-extern void  SendDAQUserMessage(int message, char *data, int datalen);
-
 extern void StartDigIOProgram(int prognum);
-
-void  SendUserMessage(int message, char *data, int datalen);
 
 class DAQ_IO : public QWidget {
 	Q_OBJECT
@@ -33,22 +29,18 @@ public:
   QStringList *ChannelStrings;
   int StimChan;
   int StimChanChanged;
-  int UserProgramRunning;
 
   PulseCommand PulseCommandA, PulseCommandB;
 
 signals:
   void changedUserProgramStatus(int);
   void updateChanDisplay(int);
-  void userProgramRunning(bool);
   void rippleStatusUpdate(RippleStatusMsg);
 
   void pulseSeqLineExecuted(int);
   void pulseSeqFinished(int);
 
 public slots:
-  void updateChan(int);
-  void checkUserProgramStatus(void);
   void msgFromUser(int msg, char *data);
 };
 

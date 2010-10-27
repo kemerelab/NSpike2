@@ -47,14 +47,14 @@ RippleTab::RippleTab (QWidget *parent)
     // stimulatorSelectComboBox->addItem("B");
     // stimulatorSelectComboBox->addItem("Both (Alternating)");
 
-    layout->addWidget(new QLabel("Tetrode / channel", this), 0,
+/*    layout->addWidget(new QLabel("Tetrode / channel", this), 0,
         0, 1, 2, Qt::AlignRight);
     StimChan = new QComboBox( false, this, "Channel Combo Box" );
     StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
     layout->addWidget(StimChan, 0, 2);
     connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
     connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
-    connect(StimChan, SIGNAL(activated(int)), this, SLOT(updateRippleData(void)));
+    connect(StimChan, SIGNAL(activated(int)), this, SLOT(updateRippleData(void))); */
 
     layout->addWidget(new QLabel("Pulse Length (100 us units)",
           this), 1, 0, 1, 2, Qt::AlignRight);
@@ -160,83 +160,57 @@ void RippleTab::updateRippleData(void)
   data.lockout = lockoutPeriod->value();
   data.speed_threshold = speedThresh->text().toDouble();
 
-  if (digioinfo.outputfd) {
-    SendDAQUserMessage(DIO_SET_RT_RIPPLE_PARAMS, (char *) &data, sizeof(RippleStimParameters));
-    startButton->setEnabled(TRUE);
-  }
-  else {
-    QMessageBox::warning(this,"No User Program","No user program is currently running");
-  }
+  SendUserDataMessage(DIO_SET_RT_RIPPLE_PARAMS, (char *) &data, sizeof(RippleStimParameters));
+  startButton->setEnabled(TRUE);
 }
 
 void RippleTab::startRTData(bool on)
 {
-    if (on) {
-	if (digioinfo.outputfd) {
+  if (on) {
     updateRippleData();
-    SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
-    //SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_START, NULL, 0);
-	  startButton->setPaletteForegroundColor("green");
-	  startButton->setText("Running");
-	  stopButton->setPaletteForegroundColor("black");
-	  stopButton->setText("Stop");
-	  stopButton->setOn(false);
-
+    SendUserDataMessage(DIO_START_RT_FEEDBACK), NULL, 0);
+    startButton->setPaletteForegroundColor("green");
+    startButton->setText("Running");
+    stopButton->setPaletteForegroundColor("black");
+    stopButton->setText("Stop");
+    stopButton->setOn(false);
     enableButton->setEnabled(true);
-
     timer->start(500);
-	}
-	else {
-	  QMessageBox::warning(this,"No User Program","No user program is currently running");
-	  startButton->setOn(false);
-	}
-    }
+  }
 }
 
 void RippleTab::stopRTData(bool on)
 {
-    if (on) {
-	if (digioinfo.outputfd) {
-	    SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_STOP, NULL, 0);
-	    SendDAQUserMessage(DIO_RT_DISABLE, NULL, 0);
-	    startButton->setPaletteForegroundColor("black");
-	    startButton->setText("Start");
-	    stopButton->setPaletteForegroundColor("red");
-	    stopButton->setText("Stopped");
-	    startButton->setOn(false);
+  if (on) {
+    SendUserDataMessage(DIO_STOP_RT_FEEDBACK, NULL, 0);
+    startButton->setPaletteForegroundColor("black");
+    startButton->setText("Start");
+    stopButton->setPaletteForegroundColor("red");
+    stopButton->setText("Stopped");
+    startButton->setOn(false);
 
-      if (enableButton->isOn()) {
-        enableRipStim(false);
-        enableButton->setOn(false);
-        enableButton->setEnabled(false);
-      }
-      else
-        enableButton->setEnabled(false);
-
-      timer->stop();
-	}
-	else {
-	    QMessageBox::warning(this,"No User Program","No user program is currently running");
-	    stopButton->setOn(false);
-	}
+    if (enableButton->isOn()) {
+      enableRipStim(false);
+      enableButton->setOn(false);
+      enableButton->setEnabled(false);
     }
+    else
+      enableButton->setEnabled(false);
+
+    timer->stop();
+  }
 }
 
 void RippleTab::enableRipStim(bool on)
 {
-	if (digioinfo.outputfd) {
-    if (on) {
-      SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_START, NULL, 0);
-      enableButton->setText("Disable Stim");
-    }
-    else {
-      SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_STOP, NULL, 0);
-      enableButton->setText("Enable Stim");
-    }
+  if (on) {
+    SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_START, NULL, 0);
+    enableButton->setText("Disable Stim");
   }
-	else {
-	  QMessageBox::warning(this,"No User Program","No user program is currently running");
-	}
+  else {
+    SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_STOP, NULL, 0);
+    enableButton->setText("Enable Stim");
+  }
 }
 
 

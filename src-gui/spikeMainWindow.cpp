@@ -300,11 +300,14 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
     /* add a menu for couping all of the references, thresholds, and
      * filters */
     tetrodeSettingsMenu = new QMenu("&Tetrode Settings", this);
-    tetrodeSettingsMenu->setCheckable(TRUE);
     crAction = tetrodeSettingsMenu->addAction("Common Reference", this, SLOT(commonRef()));
+    crAction->setCheckable(true);
     ctAction = tetrodeSettingsMenu->addAction("Common Threshold", this, SLOT(commonThresh()));
+    ctAction->setCheckable(true);
     cmdvAction = tetrodeSettingsMenu->addAction("Common Max. Disp. Val.", this, SLOT(commonMDV()));
+    cmdvAction->setCheckable(true);
     cfAction = tetrodeSettingsMenu->addAction("Common Filters", this, SLOT(commonFilt()));
+    cfAction->setCheckable(true);
     menuBar->addMenu( tetrodeSettingsMenu );
   }
 
@@ -686,58 +689,22 @@ void SpikeMainWindow::doCompressionSettingsDialog()
 
 void SpikeMainWindow::updateCommonRef(void) 
 {
-    if (crAction->isEnabled()) {
-  /* uncheck the item */
-  crAction->setChecked(false);
-  sysinfo.commonref = 0;
-    }
-    else {
-  /* check the item */
-  crAction->setChecked(true);
-  sysinfo.commonref = 1;
-    }
+  sysinfo.commonref = crAction->isChecked();
 }
 
 void SpikeMainWindow::updateCommonThresh(void) 
 {
-    if (ctAction->isEnabled()) {
-  /* uncheck the item */
-  ctAction->setChecked(false);
-  sysinfo.commonthresh = 0;
-    }
-    else {
-  /* check the item */
-  ctAction->setChecked(true);
-  sysinfo.commonthresh = 1;
-    }
+  sysinfo.commonthresh = ctAction->isChecked();
 }
 
 void SpikeMainWindow::updateCommonMDV(void) 
 {
-    if (cmdvAction->isEnabled()) {
-  /* uncheck the item */
-  cmdvAction->setChecked(false);
-  sysinfo.commonmdv = 0;
-    }
-    else {
-  /* check the item */
-  cmdvAction->setChecked(true);
-  sysinfo.commonmdv = 1;
-    }
+  sysinfo.commonmdv = cmdvAction->isChecked();
 }
 
 void SpikeMainWindow::updateCommonFilt(void) 
 {
-    if (cfAction->isEnabled()) {
-  /* uncheck the item */
-  cfAction->setChecked(false);
-  sysinfo.commonfilt = 0;
-    }
-    else {
-  /* check the item */
-  cfAction->setChecked(true);
-  sysinfo.commonfilt = 1;
-    }
+  sysinfo.commonfilt = cfAction->isChecked();
 }
 
 void SpikeMainWindow::updatePositionOutput() 
@@ -802,71 +769,70 @@ void SpikeMainWindow::getOutputToUserProgram(void)
 
 void SpikeMainWindow::setEEGTraceLength(void)
 {
-    bool ok;
-    double length = QInputDialog::getDouble("EEG Trace Length", 
-      "Enter the new EEG trace length in seconds ", 1.0, 0.000001, 
-      MAX_EEG_TRACE_LENGTH, 6, &ok, this);
-    if (ok) {
-  SetEEGTraceLength((float) length);
-    }
+  bool ok;
+  double length = QInputDialog::getDouble("EEG Trace Length", 
+    "Enter the new EEG trace length in seconds ", 1.0, 0.000001, 
+    MAX_EEG_TRACE_LENGTH, 6, &ok, this);
+  if (ok) {
+    SetEEGTraceLength((float) length);
+  }
 }
 
 void SpikeMainWindow::launchUserGUI(void)
 {
-    char tmpstring[200];
-    if (strncmp(sysinfo.usergui, "stim", 4) == 0) {
-      if (dispinfo.userguiptr == NULL)
-        dispinfo.userguiptr = new DIOInterface();
-      else
-        ((DIOInterface *)dispinfo.userguiptr)->show();
-    }
-    else {
-  sprintf(tmpstring,"Unknown user gui program %s", sysinfo.usergui);
-  DisplayErrorMessage(tmpstring);
-    }
+  char tmpstring[200];
+  if (strncmp(sysinfo.usergui, "stim", 4) == 0) {
+    if (dispinfo.userguiptr == NULL)
+      dispinfo.userguiptr = new DIOInterface();
+    else
+      ((DIOInterface *)dispinfo.userguiptr)->show();
+  }
+  else {
+    sprintf(tmpstring,"Unknown user gui program %s", sysinfo.usergui);
+    DisplayErrorMessage(tmpstring);
+  }
 }
 
 void SpikeMainWindow::keyPressEvent( QKeyEvent *e )
 {
-    int index;
-    /* process keyboard events. most of these are handled by the menu bar, so
-     * we ignore any that we can't interpret */
-    index = dispinfo.qtab->currentPageIndex();
-    if (e->key() == Qt::Key_PageDown) { // pg down
-  /* if we are on a multipaned spike window, we go down one window */
-  if ((index < ntabs - 1) && (this->spikeGLPane[index + 1]->
-    spikePane)) {
+  int index;
+  /* process keyboard events. most of these are handled by the menu bar, so
+   * we ignore any that we can't interpret */
+  index = dispinfo.qtab->currentPageIndex();
+  if (e->key() == Qt::Key_PageDown) { // pg down
+    /* if we are on a multipaned spike window, we go down one window */
+    if ((index < ntabs - 1) && (this->spikeGLPane[index + 1]-> spikePane)) {
       dispinfo.qtab->setCurrentPage(index + 1);
       this->updateAllInfo();
-  }
-  else if ((this->spikeGLPane[index]->singleSpikePane == TRUE ) && 
-           (dispinfo.fullscreenelect < sysinfo.nelectrodes - 1)) {
+    }
+    else if ((this->spikeGLPane[index]->singleSpikePane == TRUE ) && 
+	   (dispinfo.fullscreenelect < sysinfo.nelectrodes - 1)) {
       dispinfo.fullscreenelect++;
       dispinfo.currentdispelect = dispinfo.fullscreenelect;
       this->updateAllInfo();
       DrawInitialScreen();
-  }
-  e->accept();
-    } 
-    else if (e->key() == Qt::Key_PageUp) { //pgup
-  /* if we are on a multipaned spike window, we go up one window */
-  if ((index > 0) && !(this->spikeGLPane[index]->singleSpikePane) && 
-    (this->spikeGLPane[index-1]->spikePane)) {
-      dispinfo.qtab->setCurrentPage(index - 1);
-      this->updateAllInfo();
-  }
-  else if ((this->spikeGLPane[index]->singleSpikePane == TRUE) && 
-           (dispinfo.fullscreenelect > 0)) {
+    }
+    e->accept();
+  } 
+  else if (e->key() == Qt::Key_PageUp) { //pgup
+    /* if we are on a multipaned spike window, we go up one window */
+    if ((index > 0) && !(this->spikeGLPane[index]->singleSpikePane) && 
+      (this->spikeGLPane[index-1]->spikePane)) {
+	dispinfo.qtab->setCurrentPage(index - 1);
+	this->updateAllInfo();
+    }
+    else if ((this->spikeGLPane[index]->singleSpikePane == TRUE) && 
+	 (dispinfo.fullscreenelect > 0)) {
       dispinfo.fullscreenelect--;
       dispinfo.currentdispelect = dispinfo.fullscreenelect;
       this->updateAllInfo();
       DrawInitialScreen();
+    }
+    e->accept();
   }
-  e->accept();
-    }
-    else {
-  e->ignore();
-    }
+  else {
+    e->ignore();
+  }
 }
 
 

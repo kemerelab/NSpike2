@@ -630,14 +630,6 @@ int main()
           case USER_DATA_STOP:
             sysinfo.userdataon = 0;
             break;
-          case DIO_RT_ENABLE:
-            fprintf(stderr, "spike_daq: DIO_RT_ENABLE\n");
-            sysinfo.daq_to_user.is_enabled = 1;
-            break;
-          case DIO_RT_DISABLE:
-            fprintf(stderr, "spike_daq: DIO_RT_DISABLE\n");
-            sysinfo.daq_to_user.is_enabled = 0;
-            break;
           case EXIT:
             daqexit(0);            
             break;

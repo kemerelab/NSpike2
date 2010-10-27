@@ -52,19 +52,19 @@ SpikeGLPane::SpikeGLPane(QWidget *parent, int paneNum,  int nElect) :
     this->setEnabled(1);
 
     /* create a set of spikeTetInputs and Infos for the tetrode displays */
-    spikeTetInput = new SpikeTetInput* [nElect];
     spikeTetInfo = new SpikeTetInfo* [nElect];
+    spikeTetInput = new SpikeTetInput* [nElect];
 
 
     elect = startElect;
     for (i = 0; i < nElect; i++, elect++) {
-  spikeTetInput[i] = new SpikeTetInput(this, elect);
-  spikeTetInfo[i] = new SpikeTetInfo(this, elect);
-  this->fullScreenElect = FALSE;
-  /* we also need to set the pointer for dispinfo' spikeTetInput  and
-   * spikeTetInfo */
-  dispinfo.spikeTetInput[elect] = spikeTetInput[i];
-  dispinfo.spikeTetInfo[elect] = spikeTetInfo[i];
+      spikeTetInput[i] = new SpikeTetInput(this, elect);
+      spikeTetInfo[i] = new SpikeTetInfo(this, elect);
+      this->fullScreenElect = FALSE;
+      /* we also need to set the pointer for dispinfo' spikeTetInput  and
+       * spikeTetInfo */
+      dispinfo.spikeTetInput[elect] = spikeTetInput[i];
+      dispinfo.spikeTetInfo[elect] = spikeTetInfo[i];
     }
     this->updateAllInfo();
 }
@@ -111,8 +111,8 @@ SpikeGLPane::SpikeGLPane(int paneNum, QWidget *parent, const char *name,
     spikeEEGInfo[1] = new SpikeEEGInfo(this, 1);
     dispinfo.spikeEEGInfo = spikeEEGInfo;
     if (posPane) {
-  spikePosInfo = new SpikePosInfo(this);
-  dispinfo.spikePosInfo = spikePosInfo;
+      spikePosInfo = new SpikePosInfo(this); 
+      dispinfo.spikePosInfo = spikePosInfo;
     }
     this->updateAllInfo();
 }
@@ -179,14 +179,14 @@ void SpikeGLPane::initializeGL() {
     tickinc = EEG_WIN_WIDTH / 10;
     glBegin(GL_LINES);
     for (i = 0; i < 11; i++) {
-  glVertex2f(EEG_WIN1_X_START + tickinc * i, EEG_WIN1_Y_START + 
-    EEG_WIN1_HEIGHT - EEG_TICK_HEIGHT);
-  glVertex2f(EEG_WIN1_X_START + tickinc * i, EEG_WIN1_Y_START + 
-    EEG_WIN1_HEIGHT + EEG_TICK_HEIGHT);
-  glVertex2f(EEG_WIN1_X_START + tickinc * i, EEG_WIN1_Y_START + 
-    EEG_TICK_HEIGHT);
-  glVertex2f(EEG_WIN1_X_START + tickinc * i, EEG_WIN1_Y_START - 
-    EEG_TICK_HEIGHT);
+      glVertex2f(EEG_WIN1_X_START + tickinc * i, EEG_WIN1_Y_START + 
+      	EEG_WIN1_HEIGHT - EEG_TICK_HEIGHT);
+      glVertex2f(EEG_WIN1_X_START + tickinc * i, EEG_WIN1_Y_START + 
+	EEG_WIN1_HEIGHT + EEG_TICK_HEIGHT);
+      glVertex2f(EEG_WIN1_X_START + tickinc * i, EEG_WIN1_Y_START + 
+	EEG_TICK_HEIGHT);
+      glVertex2f(EEG_WIN1_X_START + tickinc * i, EEG_WIN1_Y_START - 
+	EEG_TICK_HEIGHT);
     }
     glEnd();
 
@@ -203,14 +203,14 @@ void SpikeGLPane::initializeGL() {
     /* draw 10 ticks on the window */
     glBegin(GL_LINES);
     for (i = 0; i < 11; i++) {
-  glVertex2f(EEG_WIN2_X_START + tickinc * i, EEG_WIN2_Y_START + 
-    EEG_WIN2_HEIGHT - EEG_TICK_HEIGHT);
-  glVertex2f(EEG_WIN2_X_START + tickinc * i, EEG_WIN2_Y_START + 
-    EEG_WIN2_HEIGHT + EEG_TICK_HEIGHT);
-  glVertex2f(EEG_WIN2_X_START + tickinc * i, EEG_WIN2_Y_START +
-    EEG_TICK_HEIGHT);
-  glVertex2f(EEG_WIN2_X_START + tickinc * i, EEG_WIN2_Y_START - 
-    EEG_TICK_HEIGHT);
+      glVertex2f(EEG_WIN2_X_START + tickinc * i, EEG_WIN2_Y_START + 
+	EEG_WIN2_HEIGHT - EEG_TICK_HEIGHT);
+      glVertex2f(EEG_WIN2_X_START + tickinc * i, EEG_WIN2_Y_START + 
+	EEG_WIN2_HEIGHT + EEG_TICK_HEIGHT);
+      glVertex2f(EEG_WIN2_X_START + tickinc * i, EEG_WIN2_Y_START +
+	EEG_TICK_HEIGHT);
+      glVertex2f(EEG_WIN2_X_START + tickinc * i, EEG_WIN2_Y_START - 
+	EEG_TICK_HEIGHT);
     }
     glEnd();
     glEndList();
@@ -240,8 +240,8 @@ void SpikeGLPane::initializeGL() {
     glVertex2f(TET_SPIKE_WIN_X_START + NCHAN_PER_ELECTRODE*txinc, TET_SPIKE_WIN_Y_START + tyinc);
     /* left edge of each box */
     for (i = 0; i < 5; i++) {
-  glVertex2f(TET_SPIKE_WIN_X_START + i * txinc , TET_SPIKE_WIN_Y_START);
-  glVertex2f(TET_SPIKE_WIN_X_START + i * txinc, TET_SPIKE_WIN_Y_START + tyinc);
+      glVertex2f(TET_SPIKE_WIN_X_START + i * txinc , TET_SPIKE_WIN_Y_START);
+      glVertex2f(TET_SPIKE_WIN_X_START + i * txinc, TET_SPIKE_WIN_Y_START + tyinc);
     }
     /* now draw the zero ticks in a dark red */
     for (i = 0; i < NCHAN_PER_ELECTRODE; i++) {
@@ -267,13 +267,13 @@ void SpikeGLPane::initializeGL() {
     glBegin(GL_LINES);
     /* bottom line */
     for (i = 0; i < 4; i++) {
-  glVertex2f(TET_PROJ_WIN_X_START, TET_PROJ_WIN_Y_START + i*pyinc);
-  glVertex2f(TET_PROJ_WIN_X_START + 2*pxinc, TET_PROJ_WIN_Y_START + i*pyinc);
+      glVertex2f(TET_PROJ_WIN_X_START, TET_PROJ_WIN_Y_START + i*pyinc);
+      glVertex2f(TET_PROJ_WIN_X_START + 2*pxinc, TET_PROJ_WIN_Y_START + i*pyinc);
     }
     /* left edge of each box */
     for (i = 0; i < 3; i++) {
-  glVertex2f(TET_PROJ_WIN_X_START + i*pxinc, TET_PROJ_WIN_Y_START);
-  glVertex2f(TET_PROJ_WIN_X_START + i*pxinc, TET_PROJ_WIN_Y_START + 3*pyinc);
+      glVertex2f(TET_PROJ_WIN_X_START + i*pxinc, TET_PROJ_WIN_Y_START);
+      glVertex2f(TET_PROJ_WIN_X_START + i*pxinc, TET_PROJ_WIN_Y_START + 3*pyinc);
     }
     glEnd();
     glEndList();
@@ -283,11 +283,11 @@ void SpikeGLPane::initializeGL() {
     glLineWidth(2.0f);
     glBegin(GL_LINES);
     for (i = 0; i <  ncolors; i++) {
-        color = ((float) i) / ncolors; 
-  glColor3f(color, color, color);
-  glVertex2f(dispinfo.poscolorbarloc[0].x, dispinfo.poscolorbarloc[0].y + 
+      color = ((float) i) / ncolors; 
+      glColor3f(color, color, color);
+      glVertex2f(dispinfo.poscolorbarloc[0].x, dispinfo.poscolorbarloc[0].y + 
                                            dispinfo.colorbaryscale * (float) i);
-  glVertex2f(dispinfo.poscolorbarloc[1].x, dispinfo.poscolorbarloc[0].y + 
+      glVertex2f(dispinfo.poscolorbarloc[1].x, dispinfo.poscolorbarloc[0].y + 
                                            dispinfo.colorbaryscale * (float) i);
     }
     /* draw a blue box around the position display area */

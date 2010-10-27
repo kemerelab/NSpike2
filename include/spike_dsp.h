@@ -8,7 +8,7 @@
 void StartDigIOProgram(int prognum);
 int TriggerOutput(int output);
 void ChangeOutput(int output, int raise);
-void SendDAQUserMessage(int message, char *data, int datalen);
+//void SendDAQUserMessage(int message, char *data, int datalen);
 void SendDigIOUserMessage(char *message, int len);
 
 /* Defines for DSPs */

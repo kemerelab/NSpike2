@@ -288,6 +288,7 @@ void ClearAll(void);
 
 /* User Data Functions */
 void SendUserDataInfo(void);
+void SendUserDataMessage(int messagetype, char *message, int len);
 void SendDigIOInfo(void);
 void MasterUserDataStart(void);
 void MasterUserDataStop(void);

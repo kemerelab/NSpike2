@@ -87,7 +87,7 @@ void RealtimeFeedbackTab::setFeedbackAlgorithm (int index)
   }
 
   qDebug("sending mode: %d\n", mode);
-  SendUserMessage(DIO_STIMCONTROL_MODE, (char *)&mode, sizeof(int));
+  SendUserDataMessage(DIO_STIMCONTROL_MODE, (char *)&mode, sizeof(int));
 }
 
 LatencyTest::LatencyTest(QWidget *parent)
@@ -157,9 +157,9 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   QGroupBox *algorithmParametersGroupBox = new QGroupBox("Ripple Disruption Parameters");
   QFormLayout *parametersLayout = new QFormLayout;
 
-  QComboBox *StimChan = new QComboBox( false, this, "Channel Combo Box" );
+/*  QComboBox *StimChan = new QComboBox( false, this, "Channel Combo Box" );
   StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
-  parametersLayout->addRow("Tetrode / channel", StimChan);
+  parametersLayout->addRow("Tetrode / channel", StimChan); */
 
   QLineEdit *ripCoeff1 = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_COEFF1));
   ripCoeff1->setValidator(new QDoubleValidator(0.0,2.0,3,this));
@@ -202,7 +202,7 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   // think about using a qsignalmapper 
   // file:///usr/share/qt4/doc/html/qsignalmapper.html
 
-  connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
+//  connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
   connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
 
   // connect(StimChan, SIGNAL(activated(int)), this, SLOT(updateRippleData(void)));
