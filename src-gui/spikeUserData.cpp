@@ -85,6 +85,7 @@ userDataDialog::userDataDialog(QWidget* parent,
 						*[sysinfo.maxelectnum + 1];
 
     for (i = 1; i <= sysinfo.maxelectnum; i++) {
+	/* FIX TO GO THROUGH CHANNELINFO for each MACHINE */
 	/* create a radio button for both the spike and continuous data
 	 * selectors */
 	col = (i-1)/16;

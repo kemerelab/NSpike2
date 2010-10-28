@@ -30,7 +30,6 @@ void ProcessData(int datatype, char *data, int datalen)
     //return;
 
 
-  /* right now we only process continuous data */
   if (datatype == CONTINUOUS_DATA_TYPE) {
     cptr = (UserDataContBuffer *) data;
     dataptr = cptr->data;
@@ -75,7 +74,9 @@ void ProcessData(int datatype, char *data, int datalen)
       }
     }
   }
-  ProcessTimestamp();
+  else if (datatype == SPIKE_DATA_TYPE) {
+      fprintf(stderr, "got spike data\n");
+  }
 }
 
 void InitPulseArray( void)
