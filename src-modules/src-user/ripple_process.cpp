@@ -12,7 +12,6 @@ extern RippleStimParameters rippleStimParameters;
 extern PulseCommand rippleStimPulseCmd;
 
 // ripple processing data:
-#define NSAMPS_MEAN 1000
 #define NLAST_VALS 20
 
 double lastval[NLAST_VALS];
@@ -30,6 +29,7 @@ double fY[NFILT];
 void InitRipple(void)
 {
   rippleStimParameters.pulse_length = DIO_RT_DEFAULT_PULSE_LEN;
+  rippleStimParameters.sampDivisor = DIO_RT_DEFAULT_SAMP_DIVISOR;
   rippleStimParameters.ripCoeff1 = DIO_RT_DEFAULT_RIPPLE_COEFF1;
   rippleStimParameters.ripCoeff2 = DIO_RT_DEFAULT_RIPPLE_COEFF2;
   rippleStimParameters.muaCoeff1 = DIO_RT_DEFAULT_MUA_COEFF1;
@@ -155,8 +155,9 @@ int ProcessRippleData(double d) {
   /* Only update mean and standard deviation if NOT stimulating
    * this stops the stimulation artifact from changing the values */
   if (realtimeProcessingEnabled == 0) {
-    rippleMean = rippleMean + (y - rippleMean)/NSAMPS_MEAN;
-    rippleSd = (fabs(y - rippleMean) - rippleSd)/ (double) NSAMPS_MEAN + rippleSd;
+    rippleMean = rippleMean + (y - rippleMean)/rippleStimParameters.sampDivisor;
+    rippleSd = (fabs(y - rippleMean) - rippleSd)/ 
+	(double) rippleStimParameters.sampDivisor + rippleSd;
   }
 
   // The threshold is expressed in standard deviations above mean
@@ -207,8 +208,10 @@ int ProcessRippleData(double d) {
 void sendRippleStatusUpdate (void) {
   RippleStatusMsg status;
 
-  status.mean = rippleMean;
-  status.std = rippleSd;
+  status.ripMean = rippleMean;
+  status.ripStd = rippleSd;
+  status.muaMean = muaMean;
+  status.muaStd = muaSd;
   status.sincelast = timeSinceLast;
   status.isRunning = realtimeProcessingEnabled;
   status.ratSpeed = ratSpeed;

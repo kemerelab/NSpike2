@@ -120,8 +120,8 @@ void RealtimeFeedbackTab::checkRealtimeStatus (void)
 void RealtimeFeedbackTab::updateRealtimeStatus(RippleStatusMsg r)
 {
   QString str;
-  str.sprintf("Ripple Mean (Std): %f (%f)<br>Time since last: %d <br>Speed: %f", 
-        r.mean, r.std, r.sincelast, r.ratSpeed);
+  str.sprintf("Ripple Mean (Std): %2.1f (%2.1f)<br>MUA Mean (Std) %2.2f (%2.2f)<br>Time since last: %d <br>Speed: %f", 
+        r.ripMean, r.ripStd, r.muaMean, r.muaStd, r.sincelast, r.ratSpeed);
   status->setText(str);
 }
 
@@ -196,6 +196,12 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
   parametersLayout->addRow("Tetrode / channel", StimChan); */
 
+  sampDivisor = new QSpinBox;
+  sampDivisor->setRange(0,20000);
+  sampDivisor->setValue(DIO_RT_DEFAULT_SAMP_DIVISOR);
+  sampDivisor->setAlignment(Qt::AlignRight);
+  parametersLayout->addRow("Sample Divisor", sampDivisor);
+
   ripCoeff1 = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_COEFF1));
   ripCoeff1->setValidator(new QDoubleValidator(0.0,2.0,3,this));
   ripCoeff1->setAlignment(Qt::AlignRight);
@@ -210,6 +216,25 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   ripThresh->setValidator(new QDoubleValidator(0.0,20.0,2,this));
   ripThresh->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Ripple Threshold (sd)", ripThresh);
+
+  muaEnabled = new QCheckBox(this);
+  muaEnabled->setChecked(true);
+  parametersLayout->addRow("MUA Enabled", muaEnabled);
+
+  muaCoeff1 = new QLineEdit(QString::number(DIO_RT_DEFAULT_MUA_COEFF1));
+  muaCoeff1->setValidator(new QDoubleValidator(0.0,2.0,3,this));
+  muaCoeff1->setAlignment(Qt::AlignRight);
+  parametersLayout->addRow("MUA Coeff 1", muaCoeff1);
+
+  muaCoeff2 = new QLineEdit(QString::number(DIO_RT_DEFAULT_MUA_COEFF2));
+  muaCoeff2->setValidator(new QDoubleValidator(0.0,2.0,3,this));
+  muaCoeff2->setAlignment(Qt::AlignRight);
+  parametersLayout->addRow("MUA Coeff 2", muaCoeff2);
+
+  muaThresh = new QLineEdit(QString::number(DIO_RT_DEFAULT_MUA_THRESHOLD));
+  muaThresh->setValidator(new QDoubleValidator(0.0,20.0,2,this));
+  muaThresh->setAlignment(Qt::AlignRight);
+  parametersLayout->addRow("MUA Threshold (sd)", muaThresh);
 
   lockoutPeriod = new QSpinBox;
   lockoutPeriod->setRange(0,20000);
@@ -237,9 +262,15 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   // think about using a qsignalmapper 
   // file:///usr/share/qt4/doc/html/qsignalmapper.html
 
+  connect(sampDivisor, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
   connect(ripCoeff1, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
   connect(ripCoeff2, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
   connect(ripThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
+
+  connect(muaEnabled, SIGNAL(stateChanged(int)), this, SLOT(updateMUAStatus(int)));
+  connect(muaCoeff1, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
+  connect(muaCoeff2, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
+  connect(muaThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
   connect(lockoutPeriod, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
   connect(timeDelay, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
   connect(timeJitter, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
@@ -255,83 +286,36 @@ RippleDisruption::RippleDisruption(QWidget *parent)
 }
 
 
-/*
-    grid->addMultiCellWidget(new QLabel("Timing/RT IO Tetrode / channel:", this), 4, 4, 1, 2);
-    StimChan = new QComboBox( FALSE, this, "Timer Channel Combo Box" );
-    StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
-    grid->addMultiCellWidget(StimChan, 4, 4, 3, 3);
-    connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
-    connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
-*/
+void RippleDisruption::updateMUAStatus(int checked)
+{ 
+    muaCoeff1->setEnabled((bool)checked);
+    muaCoeff2->setEnabled((bool)checked);
+    muaThresh->setEnabled((bool)checked);
 
+    return;
+}
 
 void RippleDisruption::updateRippleData(void)
 {
   RippleStimParameters data;
 
-  fprintf(stderr, "updating ripple data\n");
-
+  data.sampDivisor = sampDivisor->value();
   data.ripCoeff1 = ripCoeff1->text().toDouble();
   data.ripCoeff2 = ripCoeff2->text().toDouble();
+  data.ripple_threshold = ripThresh->text().toDouble();
+  data.muaEnabled = muaEnabled->isChecked();
+  data.muaCoeff1 = muaCoeff1->text().toDouble();
+  data.muaCoeff2 = muaCoeff2->text().toDouble();
+  data.mua_threshold = muaThresh->text().toDouble();
   data.time_delay = timeDelay->value();
   data.jitter = timeJitter->value();
-  data.ripple_threshold = ripThresh->text().toDouble();
   data.lockout = lockoutPeriod->value();
   data.speed_threshold = speedThresh->text().toDouble();
 
   SendUserDataMessage(DIO_SET_RIPPLE_STIM_PARAMS, (char *) &data, sizeof(RippleStimParameters));
 }
 
-/*void RippleDisruption::startRTData(bool on)
-{
-  if (on) {
-    updateRippleData();
-    SendUserDataMessage(DIO_START_RT_FEEDBACK), NULL, 0);
-    startButton->setPaletteForegroundColor("green");
-    startButton->setText("Running");
-    stopButton->setPaletteForegroundColor("black");
-    stopButton->setText("Stop");
-    stopButton->setOn(false);
-    enableButton->setEnabled(true);
-    timer->start(500);
-  }
-}
-
-void RippleDisruption::stopRTData(bool on)
-{
-  if (on) {
-    SendUserDataMessage(DIO_STOP_RT_FEEDBACK, NULL, 0);
-    startButton->setPaletteForegroundColor("black");
-    startButton->setText("Start");
-    stopButton->setPaletteForegroundColor("red");
-    stopButton->setText("Stopped");
-    startButton->setOn(false);
-
-    if (enableButton->isOn()) {
-      enableRipStim(false);
-      enableButton->setOn(false);
-      enableButton->setEnabled(false);
-    }
-    else
-      enableButton->setEnabled(false);
-
-    timer->stop();
-  }
-} */
-
-/*void RippleDisruption::enableRipStim(bool on)
-{
-  if (on) {
-    SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_START, NULL, 0);
-    enableButton->setText("Disable Stim");
-  }
-  else {
-    SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_STOP, NULL, 0);
-    enableButton->setText("Enable Stim");
-  }
-}
-
-
+/*
 
 void RippleDisruption::showEvent(QShowEvent *e) {
   QWidget::showEvent(e);
