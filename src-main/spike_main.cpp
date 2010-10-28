@@ -461,7 +461,7 @@ void SQCompat::spikeProcessMessages(void)
             //fprintf(stderr,"spike_main: message from spike user: %d\n", message);
             switch(message) {
               case DIO_COMMAND:
-                fprintf(stderr, "master DSP timestamp = %d\n", ReadDSPTimestamp(0));
+                //fprintf(stderr, "master DSP timestamp = %d\n", ReadDSPTimestamp(0));
                 if (!WriteDSPDIOCommand((unsigned short *) tmpdatabuf, (int) *messagedatalen / sizeof(unsigned short))) { 
                   sprintf(tmpstring, "Error writing user program digital IO command to Master DSP\n");
                   DisplayErrorMessage(tmpstring);

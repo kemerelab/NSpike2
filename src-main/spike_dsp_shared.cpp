@@ -201,7 +201,7 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
 	DisplayErrorMessage(tmpstring);
 	return 0;
     }
-    fprintf(stderr,"GOT STATE MACHINE: %d\n",s);
+    //fprintf(stderr,"GOT STATE MACHINE: %d\n",s);
 
     if (statemachine >= 0) {
       if (s > statemachine)

@@ -68,7 +68,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 	  //sizeof(rtStimParameters));
       break;
     case DIO_SET_RIPPLE_STIM_PARAMS:
-      fprintf(stderr, "updating ripple stim parameters\n");
+      fprintf(stderr, "Updating ripple stim parameters\n");
       memcpy((char *)&rippleStimParameters, messagedata,
 	      sizeof(RippleStimParameters));
       break;
