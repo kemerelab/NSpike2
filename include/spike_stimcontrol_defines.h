@@ -48,9 +48,12 @@
 
 #define DIO_RT_DEFAULT_RIPPLE_COEFF1 1.2 
 #define DIO_RT_DEFAULT_RIPPLE_COEFF2 0.2
+#define DIO_RT_DEFAULT_MUA_COEFF1 1.2 
+#define DIO_RT_DEFAULT_MUA_COEFF2 0.2
 #define DIO_RT_DEFAULT_RIPPLE_TIME_DELAY 0
 #define DIO_RT_DEFAULT_RIPPLE_JITTER 0
 #define DIO_RT_DEFAULT_RIPPLE_THRESHOLD 3.0 
+#define DIO_RT_DEFAULT_MUA_THRESHOLD 3.0 
 #define DIO_RT_DEFAULT_RIPPLE_LOCKOUT 150 
 #define DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH 1000.0 
 
@@ -90,12 +93,13 @@ typedef struct _ThetaStimParameters {
 typedef struct _RippleStimParameters {
     int pulse_length;
     double ripCoeff1, ripCoeff2;
+    double muaCoeff1, muaCoeff2;
     int time_delay;
     int jitter;
     double ripple_threshold;
+    double mua_threshold;
     int lockout;
     double speed_threshold;
-
 } RippleStimParameters;
 
 typedef struct _RippleStatusMsg {

@@ -20,6 +20,8 @@ int counter;
 
 double rippleMean;
 double rippleSd;
+double muaMean;
+double muaSd;
 int timeSinceLast;
 
 double fX[NFILT];
@@ -30,9 +32,12 @@ void InitRipple(void)
   rippleStimParameters.pulse_length = DIO_RT_DEFAULT_PULSE_LEN;
   rippleStimParameters.ripCoeff1 = DIO_RT_DEFAULT_RIPPLE_COEFF1;
   rippleStimParameters.ripCoeff2 = DIO_RT_DEFAULT_RIPPLE_COEFF2;
+  rippleStimParameters.muaCoeff1 = DIO_RT_DEFAULT_MUA_COEFF1;
+  rippleStimParameters.muaCoeff2 = DIO_RT_DEFAULT_MUA_COEFF2;
   rippleStimParameters.time_delay = DIO_RT_DEFAULT_RIPPLE_TIME_DELAY;
   rippleStimParameters.jitter = DIO_RT_DEFAULT_RIPPLE_JITTER;
   rippleStimParameters.ripple_threshold = DIO_RT_DEFAULT_RIPPLE_THRESHOLD;
+  rippleStimParameters.mua_threshold = DIO_RT_DEFAULT_MUA_THRESHOLD;
   rippleStimParameters.lockout = DIO_RT_DEFAULT_RIPPLE_LOCKOUT;
   rippleStimParameters.speed_threshold = DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH;
 
@@ -56,6 +61,8 @@ void ResetRippleData(void)
 
   rippleMean = 0.0;
   rippleSd = 0.0;
+  muaMean = 0.0;
+  muaSd = 0.0;
   timeSinceLast = 0;
 }
 

@@ -120,7 +120,7 @@ void RealtimeFeedbackTab::checkRealtimeStatus (void)
 void RealtimeFeedbackTab::updateRealtimeStatus(RippleStatusMsg r)
 {
   QString str;
-  str.sprintf("<b>Status:</b><p>Mean (Std): %f (%f)<br>Time since last: %d <br>Speed: %f", 
+  str.sprintf("Ripple Mean (Std): %f (%f)<br>Time since last: %d <br>Speed: %f", 
         r.mean, r.std, r.sincelast, r.ratSpeed);
   status->setText(str);
 }
