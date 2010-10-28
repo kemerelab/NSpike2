@@ -86,6 +86,10 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 	  break;
       }
       break;
+    case DIO_RESET_RT_FEEDBACK:
+      ResetUserStatus();
+      fprintf(stderr,"rt_user: Received Realtime RESET command (state = %d)......\n", stimcontrolMode);
+      break;
     case DIO_START_RT_FEEDBACK:
       realtimeProcessingEnabled = 1;
       fprintf(stderr,"rt_user: Received Realtime START command (state = %d)......\n", stimcontrolMode);

@@ -84,6 +84,7 @@ DIOInterface::DIOInterface(QWidget* parent,
         realtimeFeedbackTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(realtimeFeedbackTab->stimulatorSelectComboBox, 
         SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
+    connect(realtimeFeedbackTab->resetFeedbackButton, SIGNAL(clicked()), this, SLOT(resetRealtimeStim()));
     connect(realtimeFeedbackTab->startFeedbackButton, SIGNAL(clicked()), this, SLOT(startRealtimeStim()));
     connect(realtimeFeedbackTab->stopFeedbackButton, SIGNAL(clicked()), this, SLOT(stopRealtimeStim()));
 
@@ -278,17 +279,10 @@ void DIOInterface::abortOutputOnlyStim(void)
   SendUserDataMessage(DIO_PULSE_SEQ_STOP,NULL,0);
 }
 
-void DIOInterface::enableRealtimeData(void)
+void DIOInterface::resetRealtimeStim(void)
 {
-  qDebug("enableRealtimeData signal received");
-  //SendUserDataMessage(DIO_STIMCONTROL_MODE, DIO_RT_MODE????, sizeof(int));
-
-  //SendUserDataMessage(DIO_SET_RT_STIM_PARAMS, NULL, 0);
-
-  //SendUserDataMessage(DIO_SET_RT_FEEDBACK_PARAMS, NULL, 0);
-     // also lock parameters from changing?
-
-  //SendDAQUserMessage(DIO_RT_ENABLE, NULL, 0);
+  qDebug("resetRealtimeStim signal received");
+  SendUserDataMessage(DIO_RESET_RT_FEEDBACK, NULL, 0);
 }
 
 void DIOInterface::startRealtimeStim(void)
