@@ -112,6 +112,7 @@ int ProcessRippleData(double d) {
   double gain;
   double rd;
 
+
   timeSinceLast = timestamp - lastStimTimestamp;
   /* --------------------------------------------------- */
   /* 
@@ -148,7 +149,7 @@ int ProcessRippleData(double d) {
    * this stops the stimulation artifact from changing the values */
   if (realtimeProcessingEnabled == 0) {
     rippleMean = rippleMean + (y - rippleMean)/NSAMPS_MEAN;
-    rippleSd = (abs(y - rippleMean) - rippleSd)/NSAMPS_MEAN + rippleSd;
+    rippleSd = (fabs(y - rippleMean) - rippleSd)/ (double) NSAMPS_MEAN + rippleSd;
   }
 
   // The threshold is expressed in standard deviations above mean
@@ -193,7 +194,6 @@ int ProcessRippleData(double d) {
     timeSinceLast = 0; // If we're going to stimulate, reset lockout counter
     lastStimTimestamp = timestamp;
   }
-
   return stim;
 }
 

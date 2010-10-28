@@ -682,19 +682,24 @@ int getcont(ContBuffer *contbuf)
 {
   int i, j, nchan;
   short *dataptr;
-  float    time, freq;
+  float    time, freq, ampfreq, modfreq, mod;
   short    stmp;
   DSPInfo *dptr;
 
-  freq = 8;
+  freq = 200;
+  ampfreq = .5;
   dataptr = contbuf->data;
   dptr = sysinfo.dspinfo + contbuf->dspnum;
   time = (float) contbuf->timestamp / 10000.0;
   nchan = dptr->nchan;
   for (i = 0; i < dptr->nsampout; i++) {
     for (j = 0; j < nchan; j++) {
-      stmp = (short) (250.0 * sin(TWOPI * freq * (time + 
-               ((float) i) / ((float) dptr->samprate))));
+	mod = sin(TWOPI * ampfreq * (time + ((float) i) / 
+			       ((float) dptr->samprate)));  
+	mod =  (mod > .98) ? 50 * (mod - .98): 0;
+        stmp = (short) (250.0 * mod * sin(TWOPI * freq * (time + 
+			       ((float) i) / ((float) dptr->samprate))) + 
+			25 * (float) rand() / (float) RAND_MAX);
       *(dataptr++) =  stmp;
 
 //                

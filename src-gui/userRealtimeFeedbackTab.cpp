@@ -4,6 +4,7 @@
 #include "spikeUserGUI.h"
 
 extern DAQ_IO *daq_io_widget; // global
+extern SysInfo sysinfo; // global
 
 RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   : QWidget(parent)
@@ -29,27 +30,33 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   layout->addWidget(new QLabel("Realtime Feedback Program"),1,0, Qt::AlignRight);
   layout->addWidget(feedbackAlgorithmComboBox,1,1);
 
-  realtimeEnableButton = new QPushButton("Enable Realtime");
-  layout->addWidget(realtimeEnableButton,2,0,1,2,Qt::AlignCenter);
+  realtimeDataStatus = new QLabel();
+  QTimer *timer = new QTimer(this);
+  connect(timer, SIGNAL(timeout()), this, SLOT(checkRealtimeStatus()));
+  timer->start(500);
+ 
+  layout->addWidget(realtimeDataStatus,2,0,1,2,Qt::AlignCenter);
   // click signal connected in spikeUserGUI
 
   status = new QLabel("waiting...");
-  QGroupBox *statusGroupBox = new QGroupBox("Status");
+  statusGroupBox = new QGroupBox("Status");
   statusGroupBox->setStyleSheet("QGroupBox{border: 1px solid black;border-radius: 5px; margin-top: 1ex;}" \
                 "QGroupBox::title{subcontrol-origin: margin; subcontrol-position:top center; padding: 0 3px;}");
   QVBoxLayout *statusBoxLayout = new QVBoxLayout;
   statusBoxLayout->addWidget(status,Qt::AlignCenter);
+  statusGroupBox->setLayout(statusBoxLayout);
   layout->addWidget(statusGroupBox,3,0,2,2);
 
   startFeedbackButton = new QPushButton("Start Feedback");
   layout->addWidget(startFeedbackButton,5,0, Qt::AlignCenter);
   // click signal connected in spikeUserGUI
+  startFeedbackButton->setEnabled(true);
 
   stopFeedbackButton = new QPushButton("Stop Feedback");
   layout->addWidget(stopFeedbackButton,5,1, Qt::AlignCenter);
   // click signal connected in spikeUserGUI
 
-  QStackedWidget *algorithmAlternativesStack = new QStackedWidget;
+  algorithmAlternativesStack = new QStackedWidget;
   QLabel *noAlgorithm = new QLabel("Select a Feedback Control Algorithm");
   algorithmAlternativesStack->addWidget(noAlgorithm);
 
@@ -88,6 +95,30 @@ void RealtimeFeedbackTab::setFeedbackAlgorithm (int index)
 
   qDebug("sending mode: %d\n", mode);
   SendUserDataMessage(DIO_STIMCONTROL_MODE, (char *)&mode, sizeof(int));
+}
+
+void RealtimeFeedbackTab::checkRealtimeStatus (void)
+/* check the status of real time processing */
+{
+  /* first see if the userdata is being sent */
+  if (sysinfo.userdataon) {
+    this->realtimeDataStatus->setText("Realtime Data Enabled");
+  }
+  else {
+    this->realtimeDataStatus->setText("Realtime Data Disabled");
+  }
+
+  /* now query spike_userdata to get the status of ripple disruption */
+  SendUserDataMessage(DIO_QUERY_RT_FEEDBACK_STATUS, NULL, 0);
+  return;
+}
+
+void RealtimeFeedbackTab::updateRealtimeStatus(RippleStatusMsg r)
+{
+  QString str;
+  str.sprintf("<b>Status:</b><p>Mean (Std): %f (%f)<br>Time since last: %d <br>Speed: %f", 
+        r.mean, r.std, r.sincelast, r.ratSpeed);
+  status->setText(str);
 }
 
 LatencyTest::LatencyTest(QWidget *parent)
@@ -161,40 +192,40 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   StimChan->insertStringList(*(daq_io_widget->ChannelStrings));
   parametersLayout->addRow("Tetrode / channel", StimChan); */
 
-  QLineEdit *ripCoeff1 = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_COEFF1));
+  ripCoeff1 = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_COEFF1));
   ripCoeff1->setValidator(new QDoubleValidator(0.0,2.0,3,this));
   ripCoeff1->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Rip. Coeff 1", ripCoeff1);
 
-  QLineEdit *ripCoeff2 = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_COEFF2));
+  ripCoeff2 = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_COEFF2));
   ripCoeff2->setValidator(new QDoubleValidator(0.0,2.0,3,this));
   ripCoeff2->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Rip. Coeff 2", ripCoeff2);
 
-  QLineEdit *ripThresh = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_THRESHOLD));
+  ripThresh = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_THRESHOLD));
   ripThresh->setValidator(new QDoubleValidator(0.0,20.0,2,this));
   ripThresh->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Ripple Threshold (sd)", ripThresh);
 
-  QSpinBox *lockoutPeriod = new QSpinBox;
+  lockoutPeriod = new QSpinBox;
   lockoutPeriod->setRange(0,20000);
   lockoutPeriod->setValue(DIO_RT_DEFAULT_RIPPLE_LOCKOUT);
   lockoutPeriod->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Lockout period (usec)", lockoutPeriod);
 
-  QSpinBox *timeDelay = new QSpinBox;
+  timeDelay = new QSpinBox;
   timeDelay->setRange(0,10000);
   timeDelay->setValue(DIO_RT_DEFAULT_RIPPLE_TIME_DELAY);
   timeDelay->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Time delay (msec)", timeDelay);
 
-  QSpinBox *timeJitter = new QSpinBox;
+  timeJitter = new QSpinBox;
   timeJitter->setRange(0,10000);
   timeJitter->setValue(DIO_RT_DEFAULT_RIPPLE_JITTER);
   timeJitter->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Jitter (msec)", timeJitter);
 
-  QLineEdit *speedThresh = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH), this);
+  speedThresh = new QLineEdit(QString::number(DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH), this);
   speedThresh->setValidator(new QDoubleValidator(0.0,100.0,2,this));
   speedThresh->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Maximum speed (cm/s)", speedThresh);
@@ -203,22 +234,19 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   // file:///usr/share/qt4/doc/html/qsignalmapper.html
 
 //  connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
-  connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
+//  connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
 
   // connect(StimChan, SIGNAL(activated(int)), this, SLOT(updateRippleData(void)));
-  //connect(pulse_len, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
-  //connect(ripCoeff2, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
-  //connect(ripCoeff1, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
-  //connect(ripThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
-  //connect(lockoutPeriod, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
-  //connect(timeDelay, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
-  //connect(timeJitter, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
-  //connect(speedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
+  connect(ripCoeff1, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
+  connect(ripCoeff2, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
+  connect(ripThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
+  connect(lockoutPeriod, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
+  connect(timeDelay, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
+  connect(timeJitter, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
+  connect(speedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
 
-  //connect(daq_io_widget, SIGNAL(rippleStatusUpdate(RippleStatusMsg)), this, SLOT(updateRippleStatus(RippleStatusMsg)));
+  connect(daq_io_widget, SIGNAL(rippleStatusUpdate(RippleStatusMsg)), parentWidget(), SLOT(updateRealtimeStatus(RippleStatusMsg)));
   //connect(enableButton, SIGNAL(toggled(bool)), this, SLOT(enableRipStim(bool)));
-  //connect(startButton, SIGNAL(toggled(bool)), this, SLOT(startRTData(bool)));
-  //connect(stopButton, SIGNAL(toggled(bool)), this, SLOT(stopRTData(bool)));
 
   
   algorithmParametersGroupBox->setLayout(parametersLayout);
@@ -236,3 +264,79 @@ RippleDisruption::RippleDisruption(QWidget *parent)
     connect(StimChan, SIGNAL(activated( int )), daq_io_widget, SLOT(updateChan(int)));
     connect(daq_io_widget, SIGNAL(updateChanDisplay(int)), this, SLOT(changeStimChanDisplay(int)));
 */
+
+
+void RippleDisruption::updateRippleData(void)
+{
+  RippleStimParameters data;
+
+  fprintf(stderr, "updating ripple data\n");
+
+  data.ripCoeff1 = ripCoeff1->text().toDouble();
+  data.ripCoeff2 = ripCoeff2->text().toDouble();
+  data.time_delay = timeDelay->value();
+  data.jitter = timeJitter->value();
+  data.ripple_threshold = ripThresh->text().toDouble();
+  data.lockout = lockoutPeriod->value();
+  data.speed_threshold = speedThresh->text().toDouble();
+
+  SendUserDataMessage(DIO_SET_RIPPLE_STIM_PARAMS, (char *) &data, sizeof(RippleStimParameters));
+}
+
+/*void RippleDisruption::startRTData(bool on)
+{
+  if (on) {
+    updateRippleData();
+    SendUserDataMessage(DIO_START_RT_FEEDBACK), NULL, 0);
+    startButton->setPaletteForegroundColor("green");
+    startButton->setText("Running");
+    stopButton->setPaletteForegroundColor("black");
+    stopButton->setText("Stop");
+    stopButton->setOn(false);
+    enableButton->setEnabled(true);
+    timer->start(500);
+  }
+}
+
+void RippleDisruption::stopRTData(bool on)
+{
+  if (on) {
+    SendUserDataMessage(DIO_STOP_RT_FEEDBACK, NULL, 0);
+    startButton->setPaletteForegroundColor("black");
+    startButton->setText("Start");
+    stopButton->setPaletteForegroundColor("red");
+    stopButton->setText("Stopped");
+    startButton->setOn(false);
+
+    if (enableButton->isOn()) {
+      enableRipStim(false);
+      enableButton->setOn(false);
+      enableButton->setEnabled(false);
+    }
+    else
+      enableButton->setEnabled(false);
+
+    timer->stop();
+  }
+} */
+
+/*void RippleDisruption::enableRipStim(bool on)
+{
+  if (on) {
+    SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_START, NULL, 0);
+    enableButton->setText("Disable Stim");
+  }
+  else {
+    SendMessage(digioinfo.outputfd, DIO_RIPPLE_STIM_STOP, NULL, 0);
+    enableButton->setText("Enable Stim");
+  }
+}
+
+
+
+void RippleDisruption::showEvent(QShowEvent *e) {
+  QWidget::showEvent(e);
+  updateRippleData();
+  stopRTData(TRUE);
+} */
+

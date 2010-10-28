@@ -2,7 +2,7 @@
 #define __SPIKE_USER_REALTIME_FEEDBACK_H__
 
 #include <QtGui>
-
+#include "spike_stimcontrol_defines.h"
 #define DEFAULT_TMP_PULSE_COMMANDS_FILE "/tmp/tmp_pulse_commands"
 
 class LatencyTest : public QWidget
@@ -27,6 +27,16 @@ class RippleDisruption : public QWidget
 
 public:
   RippleDisruption (QWidget *parent);
+  QLineEdit *ripCoeff1;
+  QLineEdit *ripCoeff2;
+  QLineEdit *ripThresh;
+  QSpinBox *lockoutPeriod;
+  QSpinBox *timeDelay;
+  QSpinBox *timeJitter;
+  QLineEdit *speedThresh;
+
+private slots:
+  void updateRippleData(void);
 };
 
 class RealtimeFeedbackTab : public QWidget
@@ -40,18 +50,18 @@ public:
   QStackedWidget *algorithmAlternativesStack;
 
   QLabel *status;
+  QGroupBox *statusGroupBox;
 
-  QPushButton *realtimeEnableButton;
+  QLabel *realtimeDataStatus;
   QPushButton *startFeedbackButton;
   QPushButton *stopFeedbackButton;
-  //LatencyTest *latencyTest;
-  //ThetaPhaseStim *thetaPhaseStim;
-  //RippleDisruption *rippleDisruption;
 
 public slots:
   void setFeedbackAlgorithm(int index);
 
-private:
+private slots:
+  void checkRealtimeStatus(void); 
+  void updateRealtimeStatus(RippleStatusMsg status); 
 
 protected:
 };

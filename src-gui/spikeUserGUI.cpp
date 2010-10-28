@@ -38,8 +38,6 @@ DIOInterface::DIOInterface(QWidget* parent,
 	const char* name, bool modal, Qt::WFlags fl)
     : QDialog( parent, name, modal, fl)
 {
-    int i;
-
     /* check to make sure that the userdata program is running */
     if (!sysinfo.userdataoutput) {
       DisplayErrorMessage("Error: USERDATA not enabled in config file");
@@ -86,7 +84,6 @@ DIOInterface::DIOInterface(QWidget* parent,
         realtimeFeedbackTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(realtimeFeedbackTab->stimulatorSelectComboBox, 
         SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
-    connect(realtimeFeedbackTab->realtimeEnableButton, SIGNAL(clicked()), this, SLOT(enableRealtimeStim()));
     connect(realtimeFeedbackTab->startFeedbackButton, SIGNAL(clicked()), this, SLOT(startRealtimeStim()));
     connect(realtimeFeedbackTab->stopFeedbackButton, SIGNAL(clicked()), this, SLOT(stopRealtimeStim()));
 
@@ -161,8 +158,11 @@ void DIOInterface::enableTabs(bool enable)
 
   if (qtab->isTabEnabled(CONFIG_STIMULATORS_TAB) != enable)
     qtab->setTabEnabled(CONFIG_STIMULATORS_TAB,enable);
-  //qtab->setTabEnabled(OUTPUT_ONLY_TAB,enable>=0);
-  //qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,enable>=0);
+
+  if (sysinfo.userdataoutput) {
+      qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,enable);
+      qtab->setTabEnabled(OUTPUT_ONLY_TAB,enable);
+  }
 
   //qDebug("Enabled == %d\n", enable);
 }
@@ -278,9 +278,9 @@ void DIOInterface::abortOutputOnlyStim(void)
   SendUserDataMessage(DIO_PULSE_SEQ_STOP,NULL,0);
 }
 
-void DIOInterface::enableRealtimeStim(void)
+void DIOInterface::enableRealtimeData(void)
 {
-  qDebug("enableRealtimeStim signal received");
+  qDebug("enableRealtimeData signal received");
   //SendUserDataMessage(DIO_STIMCONTROL_MODE, DIO_RT_MODE????, sizeof(int));
 
   //SendUserDataMessage(DIO_SET_RT_STIM_PARAMS, NULL, 0);
@@ -294,12 +294,14 @@ void DIOInterface::enableRealtimeStim(void)
 void DIOInterface::startRealtimeStim(void)
 {
   qDebug("startRealtimeStim signal received");
+  SendUserDataMessage(DIO_START_RT_FEEDBACK, NULL, 0);
 }
 
 
 void DIOInterface::stopRealtimeStim(void)
 {
   qDebug("stopRealtimeStim signal received");
+  SendUserDataMessage(DIO_STOP_RT_FEEDBACK, NULL, 0);
 }
 
 DAQ_IO::DAQ_IO (QWidget *parent)

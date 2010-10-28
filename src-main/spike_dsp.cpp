@@ -670,6 +670,10 @@ u32 ReadDSPTimestamp(short dspnum)
     unsigned short  	tmpcount[3];
     u32			count;
 
+#ifdef NO_DSP_DEBUG
+    return sysinfo.approxtime;
+#endif
+
     if (dspnum > 0) {
 	/* get the time from the specified Aux DSP */
 	ReadDSPData(dspnum, DSP_SRAM, SAMPLE_COUNT_LOW_ADDR, 2, tmpcount);

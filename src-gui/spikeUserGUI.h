@@ -67,7 +67,7 @@ public slots:
   void startOutputOnlyStim(void);
   void abortOutputOnlyStim(void);
 
-  void enableRealtimeStim(void);
+  void enableRealtimeData(void);
   void startRealtimeStim(void);
   void stopRealtimeStim(void);
 

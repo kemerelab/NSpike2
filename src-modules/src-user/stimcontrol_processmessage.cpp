@@ -20,8 +20,6 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 
   int pulseArraySize;
 
-  /* real initializations */
-  InitPulseArray();
 
   switch(message) {
     case DIO_EVENT:
@@ -36,6 +34,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       fprintf(stderr,"rt_user: Setting cm/pix = %f.\n",cmPerPix);
       break;
     case DIO_STIMCONTROL_MODE:
+      InitPulseArray();
       memcpy((char *)&stimcontrolMode, messagedata, sizeof(int));
       switch (stimcontrolMode) {
 	case DIO_RTMODE_OUTPUT_ONLY:
@@ -68,6 +67,11 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       //memcpy((char *)&rtStimParameters, messagedata,
 	  //sizeof(rtStimParameters));
       break;
+    case DIO_SET_RIPPLE_STIM_PARAMS:
+      fprintf(stderr, "updating ripple stim parameters\n");
+      memcpy((char *)&rippleStimParameters, messagedata,
+	      sizeof(RippleStimParameters));
+      break;
     case DIO_QUERY_RT_FEEDBACK_STATUS:
       switch (stimcontrolMode) {
 	case DIO_RTMODE_RIPPLE_DISRUPT:
@@ -78,7 +82,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 	case DIO_RTMODE_LATENCY_TEST:
 	case DIO_RTMODE_DEFAULT:
 	default:
-	  fprintf(stderr,"rt_user: Recieved status query.\n");
+	  //fprintf(stderr,"rt_user: Recieved status query.\n");
 	  break;
       }
       break;

@@ -458,7 +458,7 @@ void SQCompat::spikeProcessMessages(void)
            * DSP */
           if ((message = GetMessage(server_data[i].fd, (char *) 
                   tmpdatabuf, messagedatalen, 1)) != -1) {
-            //fprintf(stderr,"spike_main: message from user: %d\n", message);
+            //fprintf(stderr,"spike_main: message from spike user: %d\n", message);
             switch(message) {
               case DIO_COMMAND:
                 fprintf(stderr, "master DSP timestamp = %d\n", ReadDSPTimestamp(0));
@@ -488,8 +488,9 @@ void SQCompat::spikeProcessMessages(void)
                 }
                 break;
               default:
-                // fprintf(stderr, "unknown message type from user program %d.\n", message);
-                ((DIOInterface *)dispinfo.userguiptr)->msgFromUser(message, (char *)tmpdatabuf);
+		if (dispinfo.userguiptr) {
+		  ((DIOInterface *)dispinfo.userguiptr)->msgFromUser(message, (char *)tmpdatabuf);
+		}
                 break;
             }
           }
@@ -819,11 +820,6 @@ void SQCompat::spikeProcessMessages(void)
     /* continue until we go through without getting data */
   } while (datareceived);
   tmpm = 0;
-
-
-  /* Is this where I'd put in code to send data to the user
-   * program? */
-
 
   /* display all of the buffers. This could be problematic if it takes too
    * long to display them and we run out of socket space, but on my machine
@@ -1811,7 +1807,7 @@ void SendDigIOUserMessage(char *message, int len)
 
 void SendUserDataMessage(int messagetype, char *message, int len)
 {
-    SendMessage(server_message[SPIKE_USER_DATA].fd, messagetype, message,
+  SendMessage(client_message[SPIKE_USER_DATA].fd, messagetype, message,
         len);
 }
 
