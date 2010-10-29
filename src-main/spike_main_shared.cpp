@@ -228,12 +228,28 @@ int StopAcquisition(void)
     return ret;
 }
 
+void UpdateUserDataCount(void)
+{
+    /* go through the userdata structure and count the number of spike and
+     * continuous channels selected */
+    int i;
+    userdatainfo.ncont = userdatainfo.nspike = 0;
+    for(i = 0; i < MAX_ELECTRODE_NUMBER; i++) {
+	if (userdatainfo.contelect[i]) userdatainfo.ncont++;
+	if (userdatainfo.spikeelect[i]) userdatainfo.nspike++;
+    }
+    return;
+}
+
+
 
 void SendUserDataInfo(void)
     /* send the userdatainfo structure to the slaves and the local modules. This
      * is only called by the master machine */
 {
    int i, id;
+
+   UpdateUserDataCount();
 
    for(i = 0; i < netinfo.nslaves; i++) {
 	SendMessage(netinfo.slavefd[i], USER_DATA_INFO, (char *) &userdatainfo, 

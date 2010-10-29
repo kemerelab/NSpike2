@@ -16,6 +16,8 @@ typedef struct _UserDataInfo {
     bool	senddigio;  // 1 if we are supposed to send digital IO data
     bool	contelect[MAX_ELECTRODE_NUMBER]; // 1 for continuous electrode that should be sent to spike_userdata  This will cause the continuous system to send whichever channel of the selected electrode out to spike_userdata
     bool	spikeelect[MAX_ELECTRODE_NUMBER]; // 1 for spiking electrodes that should be sent out to spike_userdata
+    int 	ncont;  // the number of continuous electrodes selected
+    int 	nspike;  // the number of spike electrodes selected
 } UserDataInfo;
 
 typedef struct _UserDataContBuffer {
