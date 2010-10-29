@@ -6,8 +6,6 @@
 
 #include "filtercoeffs.h"
 
-extern DaqToUserInfo           daq_to_user_info;
-
 extern RippleStimParameters rippleStimParameters;
 extern PulseCommand rippleStimPulseCmd;
 
@@ -19,8 +17,6 @@ int counter;
 
 double rippleMean;
 double rippleSd;
-double muaMean;
-double muaSd;
 int timeSinceLast;
 
 double fX[NFILT];
@@ -32,12 +28,9 @@ void InitRipple(void)
   rippleStimParameters.sampDivisor = DIO_RT_DEFAULT_SAMP_DIVISOR;
   rippleStimParameters.ripCoeff1 = DIO_RT_DEFAULT_RIPPLE_COEFF1;
   rippleStimParameters.ripCoeff2 = DIO_RT_DEFAULT_RIPPLE_COEFF2;
-  rippleStimParameters.muaCoeff1 = DIO_RT_DEFAULT_MUA_COEFF1;
-  rippleStimParameters.muaCoeff2 = DIO_RT_DEFAULT_MUA_COEFF2;
   rippleStimParameters.time_delay = DIO_RT_DEFAULT_RIPPLE_TIME_DELAY;
   rippleStimParameters.jitter = DIO_RT_DEFAULT_RIPPLE_JITTER;
   rippleStimParameters.ripple_threshold = DIO_RT_DEFAULT_RIPPLE_THRESHOLD;
-  rippleStimParameters.mua_threshold = DIO_RT_DEFAULT_MUA_THRESHOLD;
   rippleStimParameters.lockout = DIO_RT_DEFAULT_RIPPLE_LOCKOUT;
   rippleStimParameters.speed_threshold = DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH;
 
@@ -61,8 +54,6 @@ void ResetRippleData(void)
 
   rippleMean = 0.0;
   rippleSd = 0.0;
-  muaMean = 0.0;
-  muaSd = 0.0;
   timeSinceLast = 0;
 }
 
@@ -197,7 +188,6 @@ int ProcessRippleData(double d) {
   if (ratSpeed > rippleStimParameters.speed_threshold) // Escape if rat is running too fast (speed is too high)
     return 0;
   /* --------------------------------------------------- */
-
   if (stim == 1) {
     timeSinceLast = 0; // If we're going to stimulate, reset lockout counter
     lastStimTimestamp = timestamp;
@@ -206,16 +196,10 @@ int ProcessRippleData(double d) {
 }
 
 void sendRippleStatusUpdate (void) {
-  RippleStatusMsg status;
-
-  status.ripMean = rippleMean;
-  status.ripStd = rippleSd;
-  status.muaMean = muaMean;
-  status.muaStd = muaSd;
-  status.sincelast = timeSinceLast;
-  status.isRunning = realtimeProcessingEnabled;
-  status.ratSpeed = ratSpeed;
-  SendMessage(client_data[SPIKE_MAIN].fd, DIO_RT_STATUS_RIPPLE_DISRUPT, (char *) &(status),  sizeof(RippleStatusMsg)); 
+  char tmps[200];
+  
+  sprintf(tmps, "Ripple mean (std): %2.2f (%2.2f)\nTimestamps since last %ld\n");
+  SendMessage(client_data[SPIKE_MAIN].fd, DIO_RT_STATUS_RIPPLE_DISRUPT, tmps, 200 ); 
 }
 
 

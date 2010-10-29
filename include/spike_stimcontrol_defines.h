@@ -95,12 +95,9 @@ typedef struct _RippleStimParameters {
     int pulse_length;
     int sampDivisor;
     double ripCoeff1, ripCoeff2;
-    double muaCoeff1, muaCoeff2;
-    bool muaEnabled;
     int time_delay;
     int jitter;
     double ripple_threshold;
-    double mua_threshold;
     int lockout;
     double speed_threshold;
 } RippleStimParameters;
@@ -108,8 +105,6 @@ typedef struct _RippleStimParameters {
 typedef struct _RippleStatusMsg {
   double ripMean;
   double ripStd;
-  double muaMean;
-  double muaStd;
   int sincelast;
   int isRunning;
   double ratSpeed;

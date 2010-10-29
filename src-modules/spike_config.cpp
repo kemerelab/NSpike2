@@ -579,10 +579,15 @@ int ReadConfigFile(char *configfilename, int datafile)
 		/* parse the dspinfo string. The string should contain the dsp
 		 * number, the sampling rate, a 0 or 1 to indicate whether the
 		 * data should be processed for spikes and the name of the
-		 * machine to which data are sent */
-                sscanf(tmp+7, "%d%d%s", tmpint, tmpint+1, tmpname);
+		 * machine to which data are sent.  It may also have two
+		 * additional arguments specifying the number of samples per
+		 * packet and the number of samples in an output buffer */
+		tmpint[2] = tmpint[3] = 0;
+                sscanf(tmp+7, "%d%d%s%d%d", tmpint, tmpint+1, tmpname, tmpint+2,
+			tmpint+3);
 		sysinfo.dspinfo[tmpint[0]].samprate = tmpint[1];
-		sysinfo.dspinfo[tmpint[0]].nsamp = 0;
+		sysinfo.dspinfo[tmpint[0]].nsamp = tmpint[2];
+		sysinfo.dspinfo[tmpint[0]].nsampout = tmpint[3];
 		if (!datafile) {
 		    sysinfo.dspinfo[tmpint[0]].machinenum = 
 			GetMachineNum(tmpname);
@@ -607,10 +612,6 @@ int ReadConfigFile(char *configfilename, int datafile)
 		    exit(-1);
 		}
             }
-            else if (strncmp(tmp, "dspsampperpacket", 16) == 0) {
-                sscanf(tmp+16, "%d%d", tmpint, tmpint+1);
-		sysinfo.dspinfo[tmpint[0]].nsamp = tmpint[1];
-	    }
             else if (strncmp(tmp, "rtmode", 4) == 0) {
                 sscanf(tmp+4, "%d", tmpint);
 		sysinfo.rtmode = (bool) *tmpint;
@@ -968,9 +969,10 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 
     /* dsp info */
     for (i = 0; i < sysinfo.ndsps; i++) {
-	gzprintf(outfile, "dspinfo\t%d\t%d\t%s\n", i, 
+	gzprintf(outfile, "dspinfo\t%d\t%d\t%s\t%d\t%d\n", i, 
 		sysinfo.dspinfo[i].samprate, 
-		netinfo.machinename[sysinfo.dspinfo[i].machinenum]);
+		netinfo.machinename[sysinfo.dspinfo[i].machinenum],
+		sysinfo.dspinfo[i].nsamp, sysinfo.dspinfo[i].nsampout);
     }
 
     /* eeg trace length */
@@ -1111,6 +1113,7 @@ int SetDSPInfo(void)
     int dspelectnum, chnum;
     int lastelect, dsp;
     int sampmult;
+    div_t divtmp;
     ChannelInfo *ch;
     DSPInfo *dptr;
 
@@ -1203,14 +1206,25 @@ int SetDSPInfo(void)
 		    return 0;
 		}
 	    }
-            /* aim for NCONT_BUF_PER_SEC continuous buffers per second */
-            sampmult = (dptr->samprate / NCONT_BUF_PER_SEC) / dptr->nsamp;
-            if ((sampmult > 1) && (!sysinfo.rtmode)) {
-                dptr->nsampout = dptr->nsamp * sampmult;
-            }
-            else {
-                dptr->nsampout = dptr->nsamp;
-            }
+	    if (dptr->nsampout) {
+		/* make sure that the number of output samples is a multiple of
+		 * the number of samples per packet */
+		divtmp = div(dptr->nsampout, dptr->nsamp);
+		if (divtmp.rem != 0) {
+		    fprintf(stderr, "Error: nsampout for dsp %d is not a mutiple of the number of samples per packet (%d)\n", dptr->nsampout, dptr->nsamp);
+		    return 0;
+		}
+	    }
+	    else {
+		/* aim for NCONT_BUF_PER_SEC continuous buffers per second */
+		sampmult = (dptr->samprate / NCONT_BUF_PER_SEC) / dptr->nsamp;
+		if (sampmult > 1) {
+		    dptr->nsampout = dptr->nsamp * sampmult;
+		}
+		else {
+		    dptr->nsampout = dptr->nsamp;
+		}
+	    }
 	    if (dptr->nsampout < m) {
 		m = dptr->nsampout;
 	    }

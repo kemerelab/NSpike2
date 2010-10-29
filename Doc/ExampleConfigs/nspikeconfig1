@@ -106,21 +106,19 @@ audio	1	100	0	0
 dspclock	1
 
 % dspinfo specifies the sampling rate (per channel) and machine names. 
+% it can optionally specify the number of samples per packet and the output
+% number of samples for each dsp, but these should only be set if you know what
+% you are doing
 % dsp 0 is the master DSP and should only communicate with the master. As it
 % does analog outputs, it will ignore the sampling rate, but make sure to put
 % some number in the sampling rate field below
-% 	    dsp num   	sampling rate  		machine receiving data
-dspinfo		0		110			localhost
-dspinfo		1		30000			localhost
-dspinfo		2		30000			localhost
+% 	    dsp num   	sampling rate  	machine receiving data
+dspinfo		0		110		localhost
+dspinfo		1		30000		localhost
+dspinfo		2		30000		localhost
 
-%dspsampperpacket controls the amount of data in each packet from the dsp.  This is useful if you want
-%to do rapid processing in spike_userdata of incoming continuous data that is sampled at 
-%relatively low rates (e.g. 1500 Hz).  
-%Don't set this otherwise, as the default values are optimal for minimizing cpu usage
-%dspsampperpacket	1	1
 
-%rtmode is similarly used to improve online analysis.  setting rtmode changes the number of samples per
+%rtmode is used to improve online analysis.  setting rtmode changes the number of samples per
 %packet for continuous channels to produce a data packet every millisecond.  This also causes 
 %spike_daq to send out data to spike_userdata (if it is running) as quickly as possible
 %As with dspsampperpacket, don't set this unless you need to minize data latency to spike_userdata

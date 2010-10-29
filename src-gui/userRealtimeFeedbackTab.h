@@ -31,10 +31,6 @@ public:
   QLineEdit *ripCoeff1;
   QLineEdit *ripCoeff2;
   QLineEdit *ripThresh;
-  QCheckBox *muaEnabled;
-  QLineEdit *muaCoeff1;
-  QLineEdit *muaCoeff2;
-  QLineEdit *muaThresh;
   QSpinBox *lockoutPeriod;
   QSpinBox *timeDelay;
   QSpinBox *timeJitter;
@@ -42,7 +38,6 @@ public:
 
 private slots:
   void updateRippleData(void);
-  void updateMUAStatus(int);
 };
 
 class RealtimeFeedbackTab : public QWidget
@@ -68,7 +63,7 @@ public slots:
 
 private slots:
   void checkRealtimeStatus(void); 
-  void updateRealtimeStatus(RippleStatusMsg status); 
+  void updateRealtimeStatus(char *s); 
 
 protected:
 };

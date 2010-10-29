@@ -117,12 +117,9 @@ void RealtimeFeedbackTab::checkRealtimeStatus (void)
   return;
 }
 
-void RealtimeFeedbackTab::updateRealtimeStatus(RippleStatusMsg r)
+void RealtimeFeedbackTab::updateRealtimeStatus(char *s)
 {
-  QString str;
-  str.sprintf("Ripple Mean (Std): %2.1f (%2.1f)<br>MUA Mean (Std) %2.2f (%2.2f)<br>Time since last: %d <br>Speed: %f", 
-        r.ripMean, r.ripStd, r.muaMean, r.muaStd, r.sincelast, r.ratSpeed);
-  status->setText(str);
+  status->setText(QString(s));
 }
 
 LatencyTest::LatencyTest(QWidget *parent)
@@ -217,25 +214,6 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   ripThresh->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Ripple Threshold (sd)", ripThresh);
 
-  muaEnabled = new QCheckBox(this);
-  muaEnabled->setChecked(true);
-  parametersLayout->addRow("MUA Enabled", muaEnabled);
-
-  muaCoeff1 = new QLineEdit(QString::number(DIO_RT_DEFAULT_MUA_COEFF1));
-  muaCoeff1->setValidator(new QDoubleValidator(0.0,2.0,3,this));
-  muaCoeff1->setAlignment(Qt::AlignRight);
-  parametersLayout->addRow("MUA Coeff 1", muaCoeff1);
-
-  muaCoeff2 = new QLineEdit(QString::number(DIO_RT_DEFAULT_MUA_COEFF2));
-  muaCoeff2->setValidator(new QDoubleValidator(0.0,2.0,3,this));
-  muaCoeff2->setAlignment(Qt::AlignRight);
-  parametersLayout->addRow("MUA Coeff 2", muaCoeff2);
-
-  muaThresh = new QLineEdit(QString::number(DIO_RT_DEFAULT_MUA_THRESHOLD));
-  muaThresh->setValidator(new QDoubleValidator(0.0,20.0,2,this));
-  muaThresh->setAlignment(Qt::AlignRight);
-  parametersLayout->addRow("MUA Threshold (sd)", muaThresh);
-
   lockoutPeriod = new QSpinBox;
   lockoutPeriod->setRange(0,20000);
   lockoutPeriod->setValue(DIO_RT_DEFAULT_RIPPLE_LOCKOUT);
@@ -267,10 +245,6 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   connect(ripCoeff2, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
   connect(ripThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
 
-  connect(muaEnabled, SIGNAL(stateChanged(int)), this, SLOT(updateMUAStatus(int)));
-  connect(muaCoeff1, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
-  connect(muaCoeff2, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
-  connect(muaThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
   connect(lockoutPeriod, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
   connect(timeDelay, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
   connect(timeJitter, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
@@ -286,15 +260,6 @@ RippleDisruption::RippleDisruption(QWidget *parent)
 }
 
 
-void RippleDisruption::updateMUAStatus(int checked)
-{ 
-    muaCoeff1->setEnabled((bool)checked);
-    muaCoeff2->setEnabled((bool)checked);
-    muaThresh->setEnabled((bool)checked);
-
-    return;
-}
-
 void RippleDisruption::updateRippleData(void)
 {
   RippleStimParameters data;
@@ -303,10 +268,6 @@ void RippleDisruption::updateRippleData(void)
   data.ripCoeff1 = ripCoeff1->text().toDouble();
   data.ripCoeff2 = ripCoeff2->text().toDouble();
   data.ripple_threshold = ripThresh->text().toDouble();
-  data.muaEnabled = muaEnabled->isChecked();
-  data.muaCoeff1 = muaCoeff1->text().toDouble();
-  data.muaCoeff2 = muaCoeff2->text().toDouble();
-  data.mua_threshold = muaThresh->text().toDouble();
   data.time_delay = timeDelay->value();
   data.jitter = timeJitter->value();
   data.lockout = lockoutPeriod->value();
