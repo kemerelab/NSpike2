@@ -4,26 +4,29 @@
 #include "stimcontrol_defines.h"
 #include "spike_stimcontrol_defines.h"
 
-#include "filtercoeffs.h"
+//#include "filtercoeffs.h"
+
+extern SysInfo sysinfo;
+extern UserDataInfo userdatainfo;
+extern double fNumerator[NFILT];
+extern double fDenominator[NFILT];
 
 extern RippleStimParameters rippleStimParameters;
 extern PulseCommand rippleStimPulseCmd;
 
-// ripple processing data:
-#define NLAST_VALS 20
+extern RippleFilterStatus ripFiltStat[MAX_ELECTRODES];
 
-double lastval[NLAST_VALS];
 int counter;
 
-double rippleMean;
-double rippleSd;
 int timeSinceLast;
 
-double fX[NFILT];
-double fY[NFILT];
 
 void InitRipple(void)
 {
+  RippleFilterStatus *rptr;
+  int i;
+
+
   rippleStimParameters.pulse_length = DIO_RT_DEFAULT_PULSE_LEN;
   rippleStimParameters.sampDivisor = DIO_RT_DEFAULT_SAMP_DIVISOR;
   rippleStimParameters.ripCoeff1 = DIO_RT_DEFAULT_RIPPLE_COEFF1;
@@ -31,85 +34,86 @@ void InitRipple(void)
   rippleStimParameters.time_delay = DIO_RT_DEFAULT_RIPPLE_TIME_DELAY;
   rippleStimParameters.jitter = DIO_RT_DEFAULT_RIPPLE_JITTER;
   rippleStimParameters.ripple_threshold = DIO_RT_DEFAULT_RIPPLE_THRESHOLD;
+  rippleStimParameters.n_above_thresh = DIO_RT_DEFAULT_RIPPLE_N_ABOVE_THRESH;
   rippleStimParameters.lockout = DIO_RT_DEFAULT_RIPPLE_LOCKOUT;
   rippleStimParameters.speed_threshold = DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH;
 
   //rippleStimPulseCmd = GenerateSimplePulseCmd(rippleStimParameters.pulse_length);
 
   ResetRippleData();
+  ResetRippleCounters();
 }
 
-void ResetRippleData(void)
+void ResetRippleData()
 {
   int i;
+  RippleFilterStatus *rptr = ripFiltStat;
 
-  for (i = 0; i < NLAST_VALS; i++)
-    lastval[i] = 0;
-
-  for (i = 0; i < NFILT; i++) {
-    fX[i] = 0; fY[i] = 0;
+  for (i = 0; i <= MAX_ELECTRODE_NUMBER ; i++, rptr++) {
+    memset(rptr, 0, sizeof(RippleFilterStatus));
   }
+}
 
+void ResetRippleCounters(void)
+{
   counter = 0;
-
-  rippleMean = 0.0;
-  rippleSd = 0.0;
   timeSinceLast = 0;
 }
 
-double updateLastval(double d) {
-  static int ind = 0;
+double updateLastval(RippleFilterStatus *rptr, double d) {
   int i;
   double mn = 0;
   
   for (i = 0; i < NLAST_VALS; i++) 
-    mn += lastval[i];
+    mn += rptr->lastval[i];
 
   mn = mn/NLAST_VALS;
 
-  lastval[ind++] = d;
-  if (ind == 20)
-    ind = 0;
+  rptr->lastval[rptr->lvind++] = d;
+  if (rptr->lvind == NLAST_VALS); 
+    rptr->lvind = 0;
 
   return mn;
 }
 
-double RippleFilter(double d) {
-  static int ind = 0;
+double RippleFilter(RippleFilterStatus *rptr, double d) {
   double val = 0;
   int jind;
   int i;
 
-  fX[ind] = d;
-  fY[ind] = 0;
+  rptr->fX[rptr->filtind] = d;
+  rptr->fY[rptr->filtind] = 0;
 
   for (i = 0; i < NFILT; i++) {
-    jind = (ind + i) % NFILT;
-    val = val + fX[jind] * fNumerator[i] - 
-                fY[jind] * fDenominator[i];
+    jind = (rptr->filtind + i) % NFILT;
+    val = val + rptr->fX[jind] * fNumerator[i] - 
+                rptr->fY[jind] * fDenominator[i];
   }
-  fY[ind] = val;
+  rptr->fY[rptr->filtind] = val;
 
-  ind--;
+  rptr->filtind--;
 
-  if (ind < 0)
-    ind += NFILT;
+  if (rptr->filtind < 0)
+    rptr->filtind += NFILT;
 
   return val;
 }
 
 
-int ProcessRippleData(double d) {
+int ProcessRippleData(short electnum, double d) {
   int stim = 0;
 
-  static double v = 0.0;
-  static double posgain = 0.0;
+//  static double v = 0.0;
+//  static double posgain = 0.0;
 
   static u32 lastStimTimestamp = 0;
 
   double gain;
   double rd;
 
+  RippleFilterStatus *rptr;
+
+  rptr = ripFiltStat + electnum;
 
   timeSinceLast = timestamp - lastStimTimestamp;
   /* --------------------------------------------------- */
@@ -118,12 +122,14 @@ int ProcessRippleData(double d) {
    */
   if (timeSinceLast < rippleStimParameters.lockout) {
     /* We're in lockout period: need to zero filter inputs. */
-    rd = RippleFilter(0.0); // zero filter inputs
+    rd = RippleFilter(rptr, 0.0); // zero filter inputs
+    // test
+    rptr->currentVal = 0;
     return 0;
   }
   /* --------------------------------------------------- */
 
-  rd = RippleFilter(d); // (filter maintains state across calls)
+  rd = RippleFilter(rptr, d); // (filter maintains state across calls)
 
   /* --------------------------------------------------- */
   /* 
@@ -141,33 +147,33 @@ int ProcessRippleData(double d) {
   /* 
      OK TO PROCESS DATA...
    */
-  double y = abs(rd); // y is absolute value of ripple filtered
+  double y = fabs(rd); // y is absolute value of ripple filtered
 
   /* Only update mean and standard deviation if NOT stimulating
    * this stops the stimulation artifact from changing the values */
   if (realtimeProcessingEnabled == 0) {
-    rippleMean = rippleMean + (y - rippleMean)/rippleStimParameters.sampDivisor;
-    rippleSd = (fabs(y - rippleMean) - rippleSd)/ 
-	(double) rippleStimParameters.sampDivisor + rippleSd;
+    rptr->rippleMean = rptr->rippleMean + (y - rptr->rippleMean)/rippleStimParameters.sampDivisor;
+    rptr->rippleSd = (fabs(y - rptr->rippleMean) - rptr->rippleSd)/ 
+	(double) rippleStimParameters.sampDivisor + rptr->rippleSd;
   }
 
-  // The threshold is expressed in standard deviations above mean
-  double thr_tmp = rippleMean + rippleStimParameters.ripple_threshold * rippleSd;
 
   /* --------------------------------------------------- */
   /* The goods from Jim. */
-  double df = y - v;
+  double df = y - rptr->currentVal;
 
   if (df > 0) {
+    /* use the mean of the last 20 values to determine the gain for this increase */
     gain = rippleStimParameters.ripCoeff1;
-    v = v + df * posgain;
+    rptr->currentVal = rptr->currentVal + df * rptr->posgain;
   }
   else {
+    /* the gain for the decrease is fixed */
     gain = rippleStimParameters.ripCoeff2;
-    v = v + df * posgain;
+    rptr->currentVal = rptr->currentVal + df * gain;
   }
 
-  posgain = updateLastval(gain); // ready for next time
+  rptr->posgain = updateLastval(rptr, gain); // ready for next time
   /* --------------------------------------------------- */
 
 
@@ -175,8 +181,12 @@ int ProcessRippleData(double d) {
   /* Jim's algorithm outputs a magic value "v" which is roughly
    * the envelope of ripple magnitude. Check to see if v has
    * crossed threshold and stimulate if so. */
-  if (v > thr_tmp) 
+
+  // The threshold is expressed in standard deviations above mean
+  rptr->currentThresh = rptr->rippleMean + rptr->rippleSd * rippleStimParameters.ripple_threshold;
+  if (nAboveRippleThresh(ripFiltStat) >= rippleStimParameters.n_above_thresh) {
     stim = 1;
+  }
 
   /* --------------------------------------------------- */
   /* 
@@ -195,11 +205,34 @@ int ProcessRippleData(double d) {
   return stim;
 }
 
-void sendRippleStatusUpdate (void) {
-  char tmps[200];
+int nAboveRippleThresh(RippleFilterStatus *rptr)
+{
+  int i, electnum;
+  int nAbove = 0;
+
+  for (i = 0; i <= userdatainfo.ncont; i++) {
+    electnum = userdatainfo.contnum[i];
+    if ((rptr[electnum].currentVal > rptr[electnum].currentThresh)) {
+      nAbove++;
+    }
+  }
+  return nAbove;
+}      
   
-  sprintf(tmps, "Ripple mean (std): %2.2f (%2.2f)\nTimestamps since last %ld\n");
-  SendMessage(client_data[SPIKE_MAIN].fd, DIO_RT_STATUS_RIPPLE_DISRUPT, tmps, 200 ); 
+
+void sendRippleStatusUpdate (void) {
+  char tmps[1000];
+  int i, electnum, offset = 0;;
+  
+  for (i = 0; i <= userdatainfo.ncont; i++) {
+    electnum = userdatainfo.contnum[i];
+    if (ripFiltStat[electnum].rippleMean != 0) {
+      offset += sprintf(tmps+offset, "Elect %d: Ripple mean (std): %2.2f (%2.2f)\n", electnum,
+	ripFiltStat[electnum].rippleMean, ripFiltStat[electnum].rippleSd);
+    }
+  }
+  sprintf(tmps+offset, "\nTimestamps since last %ld\n",timeSinceLast);
+  SendMessage(client_data[SPIKE_MAIN].fd, DIO_RT_STATUS_RIPPLE_DISRUPT, tmps, 1000); 
 }
 
 

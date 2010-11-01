@@ -54,6 +54,7 @@
 #define DIO_RT_DEFAULT_RIPPLE_TIME_DELAY 0
 #define DIO_RT_DEFAULT_RIPPLE_JITTER 0
 #define DIO_RT_DEFAULT_RIPPLE_THRESHOLD 3.0 
+#define DIO_RT_DEFAULT_RIPPLE_N_ABOVE_THRESH 1 
 #define DIO_RT_DEFAULT_MUA_THRESHOLD 3.0 
 #define DIO_RT_DEFAULT_RIPPLE_LOCKOUT 150 
 #define DIO_RT_DEFAULT_RIPPLE_SPEED_THRESH 1000.0 
@@ -98,6 +99,7 @@ typedef struct _RippleStimParameters {
     int time_delay;
     int jitter;
     double ripple_threshold;
+    int n_above_thresh;
     int lockout;
     double speed_threshold;
 } RippleStimParameters;

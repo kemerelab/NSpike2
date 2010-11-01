@@ -35,7 +35,7 @@ public:
 signals:
   void changedUserProgramStatus(int);
   void updateChanDisplay(int);
-  void rippleStatusUpdate(RippleStatusMsg);
+  void rippleStatusUpdate(char *);
 
   void pulseSeqLineExecuted(int);
   void pulseSeqFinished(int);

@@ -31,6 +31,7 @@ public:
   QLineEdit *ripCoeff1;
   QLineEdit *ripCoeff2;
   QLineEdit *ripThresh;
+  QSpinBox *nAboveThreshold;
   QSpinBox *lockoutPeriod;
   QSpinBox *timeDelay;
   QSpinBox *timeJitter;

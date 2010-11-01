@@ -18,6 +18,8 @@ typedef struct _UserDataInfo {
     bool	spikeelect[MAX_ELECTRODE_NUMBER]; // 1 for spiking electrodes that should be sent out to spike_userdata
     int 	ncont;  // the number of continuous electrodes selected
     int 	nspike;  // the number of spike electrodes selected
+    int 	contnum[MAX_ELECTRODE_NUMBER];  // the numbers for the selected continuous electrodes, in order
+    int 	spikenum[MAX_ELECTRODE_NUMBER];  // the numbers for the selected continuous electrodes, in order
 } UserDataInfo;
 
 typedef struct _UserDataContBuffer {

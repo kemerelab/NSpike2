@@ -330,7 +330,7 @@ void DAQ_IO::msgFromUser (int msg, char *data) {
       fprintf(stderr,"Got DIO_PULSE_SEQ_EXECUTED\n");
       break;
     case DIO_RT_STATUS_RIPPLE_DISRUPT:
-      emit rippleStatusUpdate(*((RippleStatusMsg *)data));
+      emit rippleStatusUpdate(data);
       break;
     default:
       fprintf(stderr,"Unknown message from user program (%d)\n",msg);

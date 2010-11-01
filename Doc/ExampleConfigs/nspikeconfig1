@@ -114,8 +114,8 @@ dspclock	1
 % some number in the sampling rate field below
 % 	    dsp num   	sampling rate  	machine receiving data
 dspinfo		0		110		localhost
-dspinfo		1		30000		localhost
-dspinfo		2		30000		localhost
+dspinfo		1		1500		localhost
+dspinfo		2		1500		localhost
 
 
 %rtmode is used to improve online analysis.  setting rtmode changes the number of samples per
@@ -131,6 +131,7 @@ dspinfo		2		30000		localhost
 % userdata SPIKE 4    this causes spike data from electrode 4 to be sent to spike_userdata
 % userdata CONTINUOUS 5    this causes continuous data from electrode 5 to be sent to spike_userdata
 userdata CONTINUOUS 2
+userdata CONTINUOUS 3
 
 %usergui is the name of the user gui that controls stimulation / real time
 %feedback.  This only needs to be defined if you're using it

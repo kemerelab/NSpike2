@@ -57,7 +57,6 @@ char tmpstring[200];
 SysInfo 		sysinfo;
 NetworkInfo		netinfo;
 UserDataInfo		userdatainfo;
-DSPInfo			*dptr;
 DigIOInfo		digioinfo;
 
 SocketInfo 		server_message[MAX_CONNECTIONS]; // the structure for the server messaging
@@ -98,11 +97,6 @@ int main(int argc, char **argv)
   int 		writesize;
 
   SysInfo		*systmp;
-/*  UserDataSpikeBuffer	*sptr;
-  UserDataContBuffer	*cptr;
-  UserDataDIOBuffer	*dptr;
-  UserDataPosBuffer	*pptr; */
-
   u32			*u32ptr;
 
 
@@ -209,13 +203,10 @@ int main(int argc, char **argv)
 	     break;
 	  case SYSTEM_INFO:
 	     systmp = (SysInfo *) messagedata;
-	     /* copy the DSPInfo structure */
-	     memcpy(sysinfo.dspinfo, systmp->dspinfo, 
-		    sizeof(DSPInfo) * MAX_DSPS);
-	     dptr = sysinfo.dspinfo;
+	     sysinfo.maxelectnum = systmp->maxelectnum;
 	     break;
 	  case DIGIO_INFO:
-	     /* copy the DSPInfo structure */
+	     /* copy the DigIOInfo structure */
 	     memcpy(messagedata, &digioinfo, sizeof(DigIOInfo));
 	     break;
 	  case EXIT:

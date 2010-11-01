@@ -214,6 +214,12 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   ripThresh->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Ripple Threshold (sd)", ripThresh);
 
+  nAboveThreshold = new QSpinBox;
+  nAboveThreshold->setRange(0,MAX_ELECTRODES);
+  nAboveThreshold->setValue(DIO_RT_DEFAULT_RIPPLE_N_ABOVE_THRESH);
+  nAboveThreshold->setAlignment(Qt::AlignRight);
+  parametersLayout->addRow("Num Above Threshold", nAboveThreshold);
+
   lockoutPeriod = new QSpinBox;
   lockoutPeriod->setRange(0,20000);
   lockoutPeriod->setValue(DIO_RT_DEFAULT_RIPPLE_LOCKOUT);
@@ -246,11 +252,12 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   connect(ripThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
 
   connect(lockoutPeriod, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
+  connect(nAboveThreshold, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
   connect(timeDelay, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
   connect(timeJitter, SIGNAL(valueChanged(int)), this, SLOT(updateRippleData(void)));
   connect(speedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateRippleData(void)));
 
-  connect(daq_io_widget, SIGNAL(rippleStatusUpdate(RippleStatusMsg)), parentWidget(), SLOT(updateRealtimeStatus(RippleStatusMsg)));
+  connect(daq_io_widget, SIGNAL(rippleStatusUpdate(char *)), parentWidget(), SLOT(updateRealtimeStatus(char *)));
   
   algorithmParametersGroupBox->setLayout(parametersLayout);
 
@@ -268,6 +275,7 @@ void RippleDisruption::updateRippleData(void)
   data.ripCoeff1 = ripCoeff1->text().toDouble();
   data.ripCoeff2 = ripCoeff2->text().toDouble();
   data.ripple_threshold = ripThresh->text().toDouble();
+  data.n_above_thresh = nAboveThreshold->value();
   data.time_delay = timeDelay->value();
   data.jitter = timeJitter->value();
   data.lockout = lockoutPeriod->value();

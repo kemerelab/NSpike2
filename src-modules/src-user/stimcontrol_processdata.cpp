@@ -13,6 +13,7 @@ void ProcessData(int datatype, char *data, int datalen)
   UserDataContBuffer *cptr;
   
   short *dataptr;
+  short *electnumptr;
 
   u32 stim_timestamp, curr_timestamp;
   int stim;
@@ -44,7 +45,8 @@ void ProcessData(int datatype, char *data, int datalen)
 
     /* go through each of the input channels */
     for (i = 0; i < cptr->nsamp; i++) {
-      for (j = 0; j < cptr->nchan; j++, dataptr++) {
+      electnumptr = cptr->electnum;
+      for (j = 0; j < cptr->nchan; j++, dataptr++, electnumptr++) {
 	switch (stimcontrolMode) {
 	  case DIO_RTMODE_THETA:
 	    curr_timestamp = timestamp + (i * DSP_BASE_SAMP_RATE) / 
@@ -57,7 +59,7 @@ void ProcessData(int datatype, char *data, int datalen)
 	    }
 	    break;
 	  case DIO_RTMODE_RIPPLE_DISRUPT:
-	    stim = ProcessRippleData((double) *dataptr);
+	    stim = ProcessRippleData(*electnumptr, (double) *dataptr);
 	    if ((stim > 0) && (realtimeProcessingEnabled)) {
 	      PulseLaserCommand(rippleStimPulseCmd, PULSE_IMMEDIATELY);
 	    }

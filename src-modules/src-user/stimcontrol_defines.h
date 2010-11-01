@@ -29,7 +29,8 @@
 
 #define PULSE_IMMEDIATELY 1
 
-
+#define NLAST_VALS 20
+#define NFILT 20
 
 /* Globals */
 
@@ -62,6 +63,18 @@ extern int pending;
 extern double cmPerPix; // global mapping between video and reality
 extern double ratSpeed; // global measure of rat speed
 
+typedef struct {
+    double rippleMean;
+    double rippleSd;
+    double fX[NFILT];
+    double fY[NFILT];
+    int	   filtind;
+    double lastval[NLAST_VALS];
+    int	   lvind;
+    double currentVal;
+    double currentThresh;
+    double posgain;
+} RippleFilterStatus;
 
 
 typedef struct {
@@ -82,7 +95,6 @@ void InitTheta(void);
 void InitRipple(void);
 void InitPulseArray(void);
 
-void ProcessData(unsigned short *usptr, DSPInfo *dptr);
 void ProcessTimestamp(void);
 void ResetRealtimeProcessing(void);
 
@@ -97,9 +109,12 @@ void InitTheta(void);
 u32 ProcessThetaData(double d, u32 t);
 
 void InitRipple(void);
-int ProcessRippleData(double d);
+int ProcessRippleData(short electnum, double d);
 void sendRippleStatusUpdate (void);
 void ResetRippleData(void);
+void ResetRippleCounters(void);
+int nAboveRippleThresh(RippleFilterStatus *rptr);
+
 
 void InitLatency(void);
 int ProcessLatencyData(short d);

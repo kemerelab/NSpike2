@@ -231,12 +231,17 @@ int StopAcquisition(void)
 void UpdateUserDataCount(void)
 {
     /* go through the userdata structure and count the number of spike and
-     * continuous channels selected */
+     * continuous channels selected. Also save the maximum electrode number
+     * used */
     int i;
     userdatainfo.ncont = userdatainfo.nspike = 0;
     for(i = 0; i < MAX_ELECTRODE_NUMBER; i++) {
-	if (userdatainfo.contelect[i]) userdatainfo.ncont++;
-	if (userdatainfo.spikeelect[i]) userdatainfo.nspike++;
+	if (userdatainfo.contelect[i]) {
+	    userdatainfo.contnum[userdatainfo.ncont++] = i;
+	}
+	if (userdatainfo.spikeelect[i]) {
+	    userdatainfo.spikenum[userdatainfo.nspike++] = i;
+	}
     }
     return;
 }
