@@ -64,6 +64,8 @@ DataBuffer databuf[MAX_DSPS];
 
 void ExtractSpikes(DataBuffer *databuf, int dspnum);
 
+int	      userdatafd; // the file descriptor for the user data 
+
 int main() 
 {
 
@@ -197,7 +199,7 @@ int main()
               i = 0;
 	      if (sysinfo.userdataon) {
 		msize = MakeUserDataBuf(contbuf + j, &usercontdata);
-		if (SendMessage(client_data[SPIKE_USER_DATA].fd, 
+		if ((msize > 0) && SendMessage(userdatafd, 
 		      CONTINUOUS_DATA, (char *) &usercontdata, msize)==-1) {
 		   error = 1;
 		} 
@@ -257,7 +259,7 @@ int main()
             diobuf.status[i] = usptr[i+2];
           }
 	  if (sysinfo.userdataon) {
-	     SendMessage(client_data[SPIKE_USER_DATA].fd, DIGITALIO_EVENT, 
+	     SendMessage(userdatafd, DIGITALIO_EVENT, 
 		     	(char *) &diobuf, DIO_BUF_STATIC_SIZE);
 	  }
           /* send the digital IO event on to be saved */
@@ -623,6 +625,14 @@ int main()
             /* get the userdatainfo structure */
             memcpy((char *) &userdatainfo, messagedata,
                 sizeof(UserDataInfo));
+	    /* we also need to find the userdata file descriptor */
+	    j = 0;
+	    while ((id = netinfo.dataoutfd[j++]) != -1) {
+	        if (client_data[id].toid == SPIKE_USER_DATA) {
+                    userdatafd = client_data[id].fd;
+		    break;
+		}
+	    }
             break;
           case USER_DATA_START:
             sysinfo.userdataon = 1;
@@ -946,7 +956,7 @@ void ExtractSpikes(DataBuffer *databuf, int dspnum)
       }
       /* if any of the spikes should go to userdata, send them */
       if (nuserspikes) {
-	SendMessage(client_data[SPIKE_USER_DATA].fd, SPIKE_DATA, 
+	SendMessage(userdatafd, SPIKE_DATA, 
 	    (char *) userdataspikebuf, nuserspikes * sizeof(SpikeBuffer));
       }
     }

@@ -194,7 +194,7 @@ RippleDisruption::RippleDisruption(QWidget *parent)
   parametersLayout->addRow("Tetrode / channel", StimChan); */
 
   sampDivisor = new QSpinBox;
-  sampDivisor->setRange(0,20000);
+  sampDivisor->setRange(0,1000000);
   sampDivisor->setValue(DIO_RT_DEFAULT_SAMP_DIVISOR);
   sampDivisor->setAlignment(Qt::AlignRight);
   parametersLayout->addRow("Sample Divisor", sampDivisor);

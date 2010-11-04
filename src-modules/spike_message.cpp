@@ -965,9 +965,15 @@ void SetupModuleMessaging(void)
         strcpy(netinfo.conn[c].to, netinfo.machinename[userdataind]);
         netinfo.conn[c].toid = SPIKE_USER_DATA;
         netinfo.conn[c].type = DATA;
-        /* this is a remote connection */
-        netinfo.conn[c].protocol = TCPIP;
-        netinfo.conn[c++].port = netinfo.port[p++];
+        if (i == userdataind) {
+          /* this is a local connection */
+          netinfo.conn[c++].protocol = UNIX;
+        }
+        else {
+          /* this is a remote connection */
+          netinfo.conn[c].protocol = TCPIP;
+          netinfo.conn[c++].port = netinfo.port[p++];
+        }
       }
     }
 

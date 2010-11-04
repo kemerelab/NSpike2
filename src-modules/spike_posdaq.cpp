@@ -72,6 +72,7 @@ int main()
   int         message;
   int			messagedata[MAX_BUFFER_SIZE]; // message data can contain a sysinfo struct
   int			messagedatalen; // the length of the data in the message
+  int			userdatafd; // the file descriptor for the userdata program
   u32			bufferinfo[3];	/* information about the buffer to be 
 					 *  sent
 					 * the bufferinfo array contains the 
@@ -100,7 +101,7 @@ int main()
   char		filename[200];
   int 		done;
   int			error;
-  int 		i, j, id;
+  int 		i, j, k, id;
   int			tmpint;
 
   /* tracked pixels buffer for userdata output */
@@ -205,8 +206,7 @@ int main()
 	   * mass out, send it on to spike_userdata and spike_main */
 	  if (!sysinfo.sendalltrackedpixels) {
 	    if (sysinfo.userdataon) {
-	      if (SendMessage(client_data[SPIKE_USER_DATA].fd, 
-		      POS_DATA, (char *) bufferinfo, 
+	      if (SendMessage(userdatafd, POS_DATA, (char *) bufferinfo, 
 		      bufferinfosize) == -1) {
 		    sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_userdata: Resetting");
 		    fprintf(STATUSFILE, "%s\n", tmpstring);
@@ -235,7 +235,7 @@ int main()
 	    memcpy(trackedx + ntracked, trackedy, ntracked * 
 		    sizeof(short));
 	    if (sysinfo.userdataon) {
-	      if (SendMessage(client_data[SPIKE_USER_DATA].fd, POS_DATA,
+	      if (SendMessage(userdatafd, POS_DATA,
 			(char *) userposdata, 2 * 
 			(ntracked + 2) * sizeof(short)) == -1) {
 		sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_userdata: Resetting");
@@ -405,7 +405,7 @@ int main()
 	     * array */
 	    memcpy(trackedx + ntracked, trackedy, ntracked * 
 		    sizeof(short));
-	    if (SendMessage(client_data + SPIKE_USER_DATA, POS_DATA, 
+	    if (SendMessage(userdatafd, POS_DATA, 
 		      (char *) userposdata, 2 * (ntracked + 2) * 
 		      sizeof(short)) == -1) {
 	      error = 1;
@@ -507,8 +507,15 @@ int main()
 	    break;
 	  case USER_DATA_INFO:
 	    /* get the userdatainfo structure */
-	    memcpy(messagedata, (char *) &userdatainfo, 
-		   sizeof(UserDataInfo));
+	    memcpy(messagedata, (char *) &userdatainfo, sizeof(UserDataInfo));
+	    /* we also need to find the userdata file descriptor */
+	    k = 0;
+	    while ((id = netinfo.dataoutfd[k++]) != -1) {
+	        if (client_data[id].toid == SPIKE_USER_DATA) {
+                    userdatafd = client_data[id].fd;
+		    break;
+		}
+	    }
 	    break;
 	  case USER_DATA_START:
 	    sysinfo.userdataon = 1;
