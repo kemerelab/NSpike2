@@ -196,7 +196,7 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
 
 
     /* we first need to find a free state machine */
-    if ((s = NextDIOStateMachine()) == -1) {
+    if ((s == -1) && ((s = NextDIOStateMachine()) == -1)) {
 	sprintf(tmpstring, "Error: all state machines busy, cannot program digital IO");
 	DisplayErrorMessage(tmpstring);
 	return 0;
@@ -249,39 +249,13 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
 int SendStartDIOCommand(int s)
     /* write data to the dsp. data must contain < 24 words */
 {
-    int                 size;
-    unsigned short      dataout[1000];
-    unsigned short address;
     unsigned short command[1];
-    short n = 1;
-
-
-    size = n*sizeof(unsigned short);
     command[0] = 1;
-    address = digioinfo.statemachineptr[s];
-
-    /* create the programming command */
-    dataout[0] = DEVICE_CONTROL_ADDR;
-    dataout[1] = SHORT_WRITE;
-    dataout[2] = DSP_SRAM;
-    dataout[3] = address;
-    dataout[4] = size;
-    /* append data to the end of dataout */
-    memcpy(dataout + 5, command, size);
-
-    /* increment size to be the size of the full dataout array */
-    size += 5 * sizeof(unsigned short);
-    
-    ByteSwap(dataout, 5 + n);
-
-#ifdef NO_DSP_DEBUG
-    return 1;
-#else
-    /* send out the command */
-    if (write(client_message[DSPDIO].fd, dataout, size) != size) {
-        fprintf(stderr, "Error sending message to digital IO dsp");
-    }
-#endif
+    if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command)) {
+        sprintf(tmpstring, "Error writing digital IO state machine pointer to DIO DSP");
+        DisplayErrorMessage(tmpstring);
+	return 0;
+      }
     return 1;
 }
 
@@ -342,7 +316,7 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
     offset = address;
 
 #ifdef NO_DSP_DEBUG
-    //fprintf(stderr, "Data to DSP %d: %d shorts \n ", dspnum, n);
+    fprintf(stderr, "Data to DSP %d: %d shorts \n ", dspnum, n);
     return 1;
 #else
     dspacq = 0;

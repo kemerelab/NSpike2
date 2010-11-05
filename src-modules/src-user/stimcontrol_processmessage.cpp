@@ -63,6 +63,13 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 	  sizeof(PulseCommand));
       PrepareStimCommand(rtStimPulseCmd);
       break;
+    case DIO_SET_RIPPLE_STIM_PULSE_PARAMS:
+      memcpy((char *)&rippleStimPulseCmd, messagedata,
+	  sizeof(PulseCommand));
+      PrepareStimCommand(rippleStimPulseCmd);
+      fprintf(stderr, "Updating ripple stimulation pulse parameters\n");
+
+      break;
     case DIO_SET_RT_FEEDBACK_PARAMS:
       //memcpy((char *)&rtStimParameters, messagedata,
 	  //sizeof(rtStimParameters));

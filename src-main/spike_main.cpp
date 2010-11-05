@@ -324,7 +324,7 @@ int main(int argc, char **argv)
 #endif
   }
 
-  if (sysinfo.userdataoutput) {
+  if ((sysinfo.userdataoutput)) {
     fprintf(STATUSFILE, "Sending userdata config\n");
     SendUserDataInfo();
     fprintf(STATUSFILE, "Sending digio config to spike_userdata\n");
@@ -471,6 +471,7 @@ void SQCompat::spikeProcessMessages(void)
                 statemachine = *((int *)tmpdatabuf);
                 break;
               case DIO_COMMAND_TO_STATEMACHINE:
+		fprintf(stderr, "dio command to statemachine %d\n", statemachine);
                 if (!WriteDSPDIOCommand((unsigned short *) tmpdatabuf, (int) *messagedatalen / sizeof(unsigned short),statemachine,0)) { 
                   sprintf(tmpstring, "Error writing user program digital IO command to Master DSP\n");
                   DisplayErrorMessage(tmpstring);

@@ -287,7 +287,15 @@ void DIOInterface::resetRealtimeStim(void)
 
 void DIOInterface::startRealtimeStim(void)
 {
+  PulseCommand pCmd; // one pulse command for real time ripple disruption
+
+  pCmd = stimConfigTab->stimConfigA->stimPulseCmd;
+  pCmd.pre_delay = 0;
+  pCmd.n_repeats = -1;
+  pCmd.line = 0;
   qDebug("startRealtimeStim signal received");
+  SendUserDataMessage(DIO_SET_RIPPLE_STIM_PULSE_PARAMS, (char *) &pCmd, 
+		  sizeof(PulseCommand));
   SendUserDataMessage(DIO_START_RT_FEEDBACK, NULL, 0);
 }
 

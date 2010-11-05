@@ -84,27 +84,27 @@ class SpikeMainWindow : public QMainWindow {
     void       digioOutput() { triggerOutput(); };
     void       runProgram(int prognum) {StartDigIOProgram(prognum);};
     void       setOutputs() { 
-      if (!rewardGUIOn) {
+    //  if (!rewardGUIOn) {
         setOut = new setRewardsDialog(
             this, "Set Rewards", FALSE, 0);
         rewardGUIOn = true;
         connect(setOut, SIGNAL(finished() ), 
             this, SLOT(rewardGUIOff() ) );
-      }
-      else 
-        QMessageBox::information(this, "Reward GUI Warning", "Only one Reward GUI can be open at a time.");
+     // }
+      //else 
+       // QMessageBox::information(this, "Reward GUI Warning", "Only one Reward GUI can be open at a time.");
 
     };
     void       startRewardControl() { 
-      if (!rewardGUIOn) {
+    //  if (!rewardGUIOn) {
         rewardCont = new rewardControl(this, "Set Rewards",
             FALSE, 0);
         rewardGUIOn = true;
         connect(rewardCont, SIGNAL(finished() ), 
             this, SLOT(rewardGUIOff() ) );
-      }
-      else
-        QMessageBox::information(this, "Reward GUI Warning", "Only one Reward GUI can be open at a time.");
+     // }
+      //else
+       // QMessageBox::information(this, "Reward GUI Warning", "Only one Reward GUI can be open at a time.");
     }
     void       	outputToUserProgram() { getOutputToUserProgram(); };
     void       	userProgramGUI() { launchUserGUI() ; };

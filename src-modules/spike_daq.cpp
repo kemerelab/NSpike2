@@ -956,17 +956,20 @@ void ExtractSpikes(DataBuffer *databuf, int dspnum)
       }
       /* if any of the spikes should go to userdata, send them */
       if (nuserspikes) {
-	SendMessage(userdatafd, SPIKE_DATA, 
-	    (char *) userdataspikebuf, nuserspikes * sizeof(SpikeBuffer));
+	if (SendMessage(userdatafd, SPIKE_DATA, 
+	    (char *) userdataspikebuf, nuserspikes * sizeof(SpikeBuffer)) == -1) {
+	  fprintf(stderr, "Error sending spike data to spike_userdata\n");
+        }
       }
     }
     while ((id = netinfo.dataoutfd[l++]) != -1) {
       if (client_data[id].toid != SPIKE_USER_DATA) {
-        //fprintf(stderr, "sending spike to %d\n", id);
-        if (SendMessage(client_data[id].fd, SPIKE_DATA, 
-            (char *) &spikebuf, sizeof(SpikeBuffer) * snum) 
-            == -1) {
-        } 
+	//fprintf(stderr, "sending spike to %d\n", id);
+	if (SendMessage(client_data[id].fd, SPIKE_DATA, 
+	    (char *) &spikebuf, sizeof(SpikeBuffer) * snum) 
+	    == -1) {
+	  fprintf(stderr, "Error sending spike data to %d\n", client_data[id].toid);
+	} 
       }
     }
   }

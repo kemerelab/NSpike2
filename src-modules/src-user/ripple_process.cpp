@@ -64,13 +64,15 @@ double updateLastval(RippleFilterStatus *rptr, double d) {
   int i;
   double mn = 0;
   
-  for (i = 0; i < NLAST_VALS; i++) 
+  for (i = 0; i < NLAST_VALS; i++) {
     mn += rptr->lastval[i];
+  }
 
-  mn = mn/NLAST_VALS;
+  mn = mn / (double) NLAST_VALS;
 
   rptr->lastval[rptr->lvind++] = d;
-  if (rptr->lvind == NLAST_VALS); 
+
+  if (rptr->lvind == NLAST_VALS)
     rptr->lvind = 0;
 
   return mn;
@@ -124,7 +126,7 @@ int ProcessRippleData(short electnum, double d) {
     /* We're in lockout period: need to zero filter inputs. */
     rd = RippleFilter(rptr, 0.0); // zero filter inputs
     // test
-    rptr->currentVal = 0;
+    rptr->currentVal = rptr->rippleMean;
     return 0;
   }
   /* --------------------------------------------------- */
@@ -165,15 +167,18 @@ int ProcessRippleData(short electnum, double d) {
   if (df > 0) {
     /* use the mean of the last 20 values to determine the gain for this increase */
     gain = rippleStimParameters.ripCoeff1;
+    rptr->posgain = updateLastval(rptr, gain); // update to include this point
     rptr->currentVal = rptr->currentVal + df * rptr->posgain;
   }
   else {
     /* the gain for the decrease is fixed */
     gain = rippleStimParameters.ripCoeff2;
+    rptr->posgain = updateLastval(rptr, gain); // update to include this point
     rptr->currentVal = rptr->currentVal + df * gain;
   }
 
-  rptr->posgain = updateLastval(rptr, gain); // ready for next time
+  //fprintf(stderr, "y = %2.2f, df = %2.2f, currentval = %2.2f, gain = %2.2f, pg = %2.2f\n", y, df, rptr->currentVal, gain, rptr->posgain);
+
   /* --------------------------------------------------- */
 
 

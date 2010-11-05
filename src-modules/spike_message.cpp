@@ -791,21 +791,15 @@ void SetupModuleMessaging(void)
           netinfo.conn[c].protocol = TCPIP;
           netinfo.conn[c++].port = netinfo.port[p++];
         }
+      }
+      if (i == userdataind) {
         /* User data to master */
         strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
         netinfo.conn[c].fromid = SPIKE_USER_DATA;
-        strcpy(netinfo.conn[c].to, netinfo.machinename[0]);
+        strcpy(netinfo.conn[c].to, netinfo.machinename[i]);
         netinfo.conn[c].toid = SPIKE_MAIN;
         netinfo.conn[c].type = DATA;
-        if (i == userdataind) {
-          /* this is a local connection */
-          netinfo.conn[c++].protocol = UNIX;
-        }
-        else {
-          /* this is a remote connection */
-          netinfo.conn[c].protocol = TCPIP;
-          netinfo.conn[c++].port = netinfo.port[p++];
-        }
+        netinfo.conn[c++].protocol = UNIX;
       }
 #ifndef NO_DSP_DEBUG
       /* DSP Connections */
