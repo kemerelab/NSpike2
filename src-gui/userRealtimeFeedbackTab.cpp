@@ -30,13 +30,9 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   layout->addWidget(new QLabel("Realtime Feedback Program"),1,0, Qt::AlignRight);
   layout->addWidget(feedbackAlgorithmComboBox,1,1);
 
-  realtimeDataStatus = new QLabel();
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkRealtimeStatus()));
   timer->start(500);
- 
-  layout->addWidget(realtimeDataStatus,2,0,1,2,Qt::AlignCenter);
-  // click signal connected in spikeUserGUI
 
   status = new QLabel("waiting...");
   statusGroupBox = new QGroupBox("Status");
@@ -103,16 +99,7 @@ void RealtimeFeedbackTab::setFeedbackAlgorithm (int index)
 void RealtimeFeedbackTab::checkRealtimeStatus (void)
 /* check the status of real time processing */
 {
-  /* first see if the userdata is being sent */
-  if (sysinfo.userdataon) {
-    this->realtimeDataStatus->setText("Realtime Data Enabled");
-
-  }
-  else {
-    this->realtimeDataStatus->setText("Realtime Data Disabled");
-  }
-
-  /* now query spike_userdata to get the status of ripple disruption */
+  /* query spike_userdata to get the status of ripple disruption */
   SendUserDataMessage(DIO_QUERY_RT_FEEDBACK_STATUS, NULL, 0);
   return;
 }
@@ -259,6 +246,7 @@ RippleDisruption::RippleDisruption(QWidget *parent)
 
   connect(daq_io_widget, SIGNAL(rippleStatusUpdate(char *)), parentWidget(), SLOT(updateRealtimeStatus(char *)));
   
+
   algorithmParametersGroupBox->setLayout(parametersLayout);
 
   QVBoxLayout *layout = new QVBoxLayout;

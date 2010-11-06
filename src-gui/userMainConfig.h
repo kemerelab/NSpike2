@@ -11,9 +11,7 @@ public:
     MainConfigTab( QWidget* parent = 0);
     ~MainConfigTab();
 
-    QComboBox* UserProgramCombo;
-    QPushButton* RunUserProgramButton;
-    QLabel* UserProgramStatus;
+    QLabel* UserDataStatus;
 
     QButtonGroup *modeButtonGroup;
     QPushButton *outputOnlyModeButton;
@@ -24,9 +22,8 @@ public:
     QPushButton *saveSettingsButton;
 
 public slots:
-    void updateStatus(int);
+    void updateStatus(void);
     void updateCmPerPix(void);
-    void runProgram(void);
     void initializeValues(void);
 
 protected:

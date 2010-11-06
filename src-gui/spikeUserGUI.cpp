@@ -126,27 +126,30 @@ void DIOInterface::changeOperatingMode(int mode)
   switch (mode) {
   case OUTPUT_ONLY_MODE: 
     // enable output only mode tab
-    diomode = DIO_RTMODE_OUTPUT_ONLY;
     qtab->setTabEnabled(OUTPUT_ONLY_TAB,true);
     qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,false);
+    diomode = DIO_RTMODE_OUTPUT_ONLY;
+    SendUserDataMessage(DIO_STIMCONTROL_MODE, (char *)&diomode, sizeof(int));
     break;
   case REALTIME_FEEDBACK_MODE: 
     // enable realtime feedback mode tab
     qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,true);
     qtab->setTabEnabled(OUTPUT_ONLY_TAB,false);
-    /* set to default mode.  This should be changed by the algorithm selector
-     * on the tab */
-    diomode = DIO_RTMODE_OUTPUT_ONLY;
+    /* set to the correct mode */
+    realtimeFeedbackTab->setFeedbackAlgorithm(
+          realtimeFeedbackTab->algorithmAlternativesStack->currentIndex());
     break;
   case DEFAULT_MODE:
   default:
     // disable all mode tabs
     qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,false);
     qtab->setTabEnabled(OUTPUT_ONLY_TAB,false);
-    diomode = DIO_RTMODE_OUTPUT_ONLY;
+    fprintf(stderr, "disabled tabs\n");
+    diomode = DIO_RTMODE_DEFAULT;
+    SendUserDataMessage(DIO_STIMCONTROL_MODE, (char *)&diomode, sizeof(int));
     break;
   }
-  SendUserDataMessage(DIO_STIMCONTROL_MODE, (char *) &diomode, sizeof(int));
+  return;
 }
 
 void DIOInterface::loadSettings(void) {
@@ -166,11 +169,6 @@ void DIOInterface::enableTabs(bool enable)
 
   if (qtab->isTabEnabled(CONFIG_STIMULATORS_TAB) != enable)
     qtab->setTabEnabled(CONFIG_STIMULATORS_TAB,enable);
-
-  if (sysinfo.userdataoutput) {
-      qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,enable);
-      qtab->setTabEnabled(OUTPUT_ONLY_TAB,enable);
-  }
 
   //qDebug("Enabled == %d\n", enable);
 }

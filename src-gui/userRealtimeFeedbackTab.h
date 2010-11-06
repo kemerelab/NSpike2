@@ -54,7 +54,6 @@ public:
   QLabel *status;
   QGroupBox *statusGroupBox;
 
-  QLabel *realtimeDataStatus;
   QPushButton *resetFeedbackButton;
   QPushButton *startFeedbackButton;
   QPushButton *stopFeedbackButton;

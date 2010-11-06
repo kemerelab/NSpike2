@@ -12,6 +12,7 @@
 #include "userMainConfig.h"
 
 extern DigIOInfo digioinfo;
+extern SysInfo sysinfo;
 
 /*
  *  Constructs a MainConfigTab as a child of 'parent', with the
@@ -20,23 +21,17 @@ extern DigIOInfo digioinfo;
 MainConfigTab::MainConfigTab( QWidget* parent )
     : QWidget( parent )
 {
-  int i;
 
     QGridLayout *grid = new QGridLayout;
 
-    UserProgramStatus  = new QLabel("User Program [Not Running]",this);
-    grid->addWidget(UserProgramStatus, 1,0, Qt::AlignRight);
-    UserProgramCombo = new QComboBox(FALSE, this);
-    grid->addWidget(UserProgramCombo, 1, 1);
-    for (i = 0; i < digioinfo.nprograms; i++) {
-      UserProgramCombo->insertItem(QString(digioinfo.progname[i]), i);
-    }
-    RunUserProgramButton = new QPushButton("Start", this);
-    //RunUserProgramButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    grid->addWidget(RunUserProgramButton, 1, 2);
-    connect(RunUserProgramButton, SIGNAL(clicked()), this, SLOT(runProgram(void)));
-    connect(daq_io_widget, SIGNAL(changedUserProgramStatus(int)), this, SLOT(updateStatus(int)));
-    
+
+    UserDataStatus  = new QLabel("User data off",this);
+    grid->addWidget(UserDataStatus, 1,0, Qt::AlignRight);
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateStatus()));
+    timer->start(500);
+ 
     grid->addWidget(new QLabel("Camera cm/pixel:", this), 2, 0,
         Qt::AlignRight);
     CmPerPix = new QLineEdit;
@@ -84,7 +79,7 @@ MainConfigTab::MainConfigTab( QWidget* parent )
     //marginsLayout->addLayout(grid,1,0);
 
     setLayout(grid);
-    updateStatus(digioinfo.currentprogram);
+    updateStatus();
 }
 
 /*
@@ -99,22 +94,16 @@ void MainConfigTab::initializeValues(void) {
   CmPerPix->setText(QString::number(DIO_DEFAULT_CM_PER_PIX));
 }
 
-void MainConfigTab::updateStatus(int whichProgram)
+void MainConfigTab::updateStatus(void)
 {
 
-  if (whichProgram < 0) { // no user program running
-    UserProgramStatus->setText(QString("User Program [Not Running]"));
-    UserProgramCombo->setCurrentItem(0);
-    RunUserProgramButton->setText(QString("Run"));
-
+  if (!sysinfo.userdataon) { // no user data being sent
+    UserDataStatus->setText(QString("User data off"));
     outputOnlyModeButton->setEnabled(false);
     realtimeFeedbackModeButton->setEnabled(false);
   }
   else {
-    UserProgramStatus->setText(QString("User Program [Running]"));
-    UserProgramCombo->setCurrentItem(whichProgram);
-    RunUserProgramButton->setText(QString("Restart"));
-
+    UserDataStatus->setText(QString("User data on"));
     outputOnlyModeButton->setEnabled(true);
     realtimeFeedbackModeButton->setEnabled(true);
   }
@@ -130,9 +119,4 @@ void MainConfigTab::updateCmPerPix(void)
   SendUserDataMessage(DIO_SET_CM_PER_PIX, (char *) &data, sizeof(double));
   fprintf(stderr,"Sent pin\n");
 }
-
-void MainConfigTab::runProgram(void)
-{
-  StartDigIOProgram(UserProgramCombo->currentItem());
-};
 

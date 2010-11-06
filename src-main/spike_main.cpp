@@ -1808,8 +1808,14 @@ void SendDigIOUserMessage(char *message, int len)
 
 void SendUserDataMessage(int messagetype, char *message, int len)
 {
-  SendMessage(client_message[SPIKE_USER_DATA].fd, messagetype, message,
-        len);
+  if (digioinfo.outputfd) {
+      SendMessage(digioinfo.outputfd, messagetype, message,
+	    len);
+  }
+  else {
+      SendMessage(client_message[SPIKE_USER_DATA].fd, messagetype, message,
+	    len);
+  }
 }
 
 

@@ -54,7 +54,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 	  break;
 	case DIO_RTMODE_DEFAULT:
 	default:
-	  fprintf(stderr,"rt_user: Entering realtime feedback mode with no operation.\n");
+	  fprintf(stderr,"rt_user: Entering default gui mode.\n");
 	  break;
       }
       break;
