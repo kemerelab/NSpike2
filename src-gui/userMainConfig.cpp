@@ -25,8 +25,8 @@ MainConfigTab::MainConfigTab( QWidget* parent )
     QGridLayout *grid = new QGridLayout;
 
 
-    UserDataStatus  = new QLabel("User data off",this);
-    grid->addWidget(UserDataStatus, 1,0, Qt::AlignRight);
+    UserDataStatus  = new QLabel("");
+    grid->addWidget(UserDataStatus, 1,1, Qt::AlignCenter);
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateStatus()));
@@ -99,11 +99,13 @@ void MainConfigTab::updateStatus(void)
 
   if (!sysinfo.userdataon) { // no user data being sent
     UserDataStatus->setText(QString("User data off"));
+    UserDataStatus->setStyleSheet("QLabel {color : red; }");
     outputOnlyModeButton->setEnabled(false);
     realtimeFeedbackModeButton->setEnabled(false);
   }
   else {
     UserDataStatus->setText(QString("User data on"));
+    UserDataStatus->setStyleSheet("QLabel {color : green; }");
     outputOnlyModeButton->setEnabled(true);
     realtimeFeedbackModeButton->setEnabled(true);
   }
