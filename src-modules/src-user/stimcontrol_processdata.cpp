@@ -16,6 +16,7 @@ void ProcessData(int datatype, char *data, int datalen)
   short *electnumptr;
 
   u32 stim_timestamp, curr_timestamp;
+  u32 *posdataptr;
   int stim;
   int i, j;
 
@@ -25,7 +26,6 @@ void ProcessData(int datatype, char *data, int datalen)
    // return;
 
   if (stimcontrolMode == DIO_RTMODE_DEFAULT) {// not processing data
-      fprintf(stderr, "default mode, returning\n");
     return;
   }
 
@@ -80,7 +80,18 @@ void ProcessData(int datatype, char *data, int datalen)
     ProcessTimestamp();
   }
   else if (datatype == SPIKE_DATA_TYPE) {
-      fprintf(stderr, "got spike data\n");
+  }
+  if (datatype == POSITION_DATA_TYPE) {
+    /* get the timestamp and the estimate of animal position */ 
+    posdataptr = (u32 *) data;
+    if (datalen != 3*sizeof(u32)) {
+      fprintf(stderr,"rt_user: Misunderstood POS_DATA message received (wrong size: %d)\n",datalen);
+    }
+    else {
+      timestamp = *posdataptr;
+      ProcessTimestamp();
+      ratSpeed = filterPosSpeed(posdataptr[1],posdataptr[2]);
+    }
   }
 }
 

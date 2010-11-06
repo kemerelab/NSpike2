@@ -236,6 +236,7 @@ void sendRippleStatusUpdate (void) {
 	ripFiltStat[electnum].rippleMean, ripFiltStat[electnum].rippleSd);
     }
   }
+  offset += sprintf(tmps+offset, "\nRat speed: %2.2f cm/sec\n",ratSpeed);
   sprintf(tmps+offset, "\nTimestamps since last %ld\n",timeSinceLast);
   SendMessage(client_data[SPIKE_MAIN].fd, DIO_RT_STATUS_RIPPLE_DISRUPT, tmps, 1000); 
 }

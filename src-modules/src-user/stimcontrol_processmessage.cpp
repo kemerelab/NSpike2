@@ -131,12 +131,6 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       // reset real time processing for new tetrode
       ResetRealtimeProcessing();
       break;
-    case POS_DATA:
-      if (messagedatalen != 3*sizeof(u32))
-	fprintf(stderr,"rt_user: Misunderstood POS_DATA message received (wrong size: %d)\n",messagedatalen);
-      else
-	ratSpeed = filterPosSpeed(*(((u32*)messagedata)+1),*(((u32*)messagedata)+2));
-      break;
     case EXIT:
       fprintf(stderr, "rt_user: exiting\n");
       unlink(DAQ_TO_USER_DATA);
