@@ -781,15 +781,21 @@ void SpikeMainWindow::setEEGTraceLength(void)
 void SpikeMainWindow::launchUserGUI(void)
 {
   char tmpstring[200];
-  if (strncmp(sysinfo.usergui, "stim", 4) == 0) {
-    if (dispinfo.userguiptr == NULL)
-      dispinfo.userguiptr = new DIOInterface();
-    else
-      ((DIOInterface *)dispinfo.userguiptr)->show();
+  /* the usergui requires an associate USERDATA data type, so check this */
+  if (sysinfo.datatype[sysinfo.machinenum] & USERDATA) {
+    if (strncmp(sysinfo.usergui, "stim", 4) == 0) {
+      if (dispinfo.userguiptr == NULL)
+	dispinfo.userguiptr = new DIOInterface();
+      else
+	((DIOInterface *)dispinfo.userguiptr)->show();
+    }
+    else {
+      sprintf(tmpstring,"Unknown user gui program %s", sysinfo.usergui);
+      DisplayErrorMessage(tmpstring);
+    }
   }
   else {
-    sprintf(tmpstring,"Unknown user gui program %s", sysinfo.usergui);
-    DisplayErrorMessage(tmpstring);
+     QMessageBox::critical(this, "Error", "Error: USERDATA is not enabled for this machine.\nEdit the config file and restart NSpike."); 
   }
 }
 

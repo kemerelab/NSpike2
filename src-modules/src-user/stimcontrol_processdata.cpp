@@ -21,11 +21,13 @@ void ProcessData(int datatype, char *data, int datalen)
 
   static int flag = 1;
 
-  if (stimcontrolMode == DIO_RTMODE_OUTPUT_ONLY) // not processing data
-    return;
+  //if (stimcontrolMode == DIO_RTMODE_OUTPUT_ONLY) // not processing data
+   // return;
 
-  if (stimcontrolMode == DIO_RTMODE_DEFAULT) // not processing data
+  if (stimcontrolMode == DIO_RTMODE_DEFAULT) {// not processing data
+      fprintf(stderr, "default mode, returning\n");
     return;
+  }
 
   //if (realtimeProcessingEnabled == 0) // start button not pushed
     //return;
@@ -75,6 +77,7 @@ void ProcessData(int datatype, char *data, int datalen)
 	}
       }
     }
+    ProcessTimestamp();
   }
   else if (datatype == SPIKE_DATA_TYPE) {
       fprintf(stderr, "got spike data\n");
@@ -97,7 +100,8 @@ void ProcessTimestamp( void )
     return;
 
   if ( (timestamp * SAMP_TO_TIMESTAMP > last_future_timestamp) && 
-       (timestamp > nextPulseCmd->start_samp_timestamp/3 - 500) ) { // consider sending another command
+       (timestamp > nextPulseCmd->start_samp_timestamp/3 - 500) ) { 
+      // consider sending another command
     fprintf(stderr,"\n\nrt_user: next command timestamp %d (%d) (%d)\n", nextPulseCmd->start_samp_timestamp/3, last_future_timestamp/3, timestamp);
     PulseLaserCommand(*nextPulseCmd); // send current next command
     SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_STEP, (char *) &(nextPulseCmd->line),  sizeof(int));  // send info back to user program

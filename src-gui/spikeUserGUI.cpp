@@ -122,24 +122,31 @@ DIOInterface::~DIOInterface()
 
 void DIOInterface::changeOperatingMode(int mode)
 {
+  int diomode;
   switch (mode) {
   case OUTPUT_ONLY_MODE: 
+    // enable output only mode tab
+    diomode = DIO_RTMODE_OUTPUT_ONLY;
     qtab->setTabEnabled(OUTPUT_ONLY_TAB,true);
     qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,false);
-    // enable output only mode tab
     break;
   case REALTIME_FEEDBACK_MODE: 
     // enable realtime feedback mode tab
     qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,true);
     qtab->setTabEnabled(OUTPUT_ONLY_TAB,false);
+    /* set to default mode.  This should be changed by the algorithm selector
+     * on the tab */
+    diomode = DIO_RTMODE_OUTPUT_ONLY;
     break;
   case DEFAULT_MODE:
   default:
     // disable all mode tabs
     qtab->setTabEnabled(REALTIME_FEEDBACK_TAB,false);
     qtab->setTabEnabled(OUTPUT_ONLY_TAB,false);
+    diomode = DIO_RTMODE_OUTPUT_ONLY;
     break;
   }
+  SendUserDataMessage(DIO_STIMCONTROL_MODE, (char *) &diomode, sizeof(int));
 }
 
 void DIOInterface::loadSettings(void) {

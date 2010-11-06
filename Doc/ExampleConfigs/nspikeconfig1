@@ -63,7 +63,7 @@ port		10020
 % If you want POSITION data, both the master and the rtslave must have POSITION
 % as a datatype
 %
-% Only one machine can have a datatype of DIGITALIO or MATLAB
+% Only one machine can have a datatype of DIGITALIO or USERDATA
 % 
 % e.g.
 % datatype	machinename	SPIKE

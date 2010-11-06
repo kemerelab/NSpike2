@@ -348,37 +348,55 @@ int main()
       //fprintf(stderr, "sending buffer, time %d, size %d, ntracked = %d\n", bufferinfo[0], imagesize, j);
       /* first send the position information to spike_main */
       if (!sysinfo.sendalltrackedpixels) {
-	    if (client_data[SPIKE_MAIN].fd) {
-	      if (SendMessage(client_data[SPIKE_MAIN].fd, 
-		      POS_DATA, (char *) bufferinfo, 
-		      bufferinfosize) == -1) {
-		    sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_main: Resetting");
-		    fprintf(STATUSFILE, "%s\n", tmpstring);
-		    ErrorMessage(tmpstring, client_message);
-		    break;
-	      }
-	    } 
+	if (sysinfo.userdataon) {
+	  if (SendMessage(userdatafd, POS_DATA, (char *) bufferinfo, 
+	        	  bufferinfosize) == -1) {
+	    sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_userdata: Resetting");
+	    fprintf(STATUSFILE, "%s\n", tmpstring);
+	    ErrorMessage(tmpstring, client_message);
+	    break;
+	  }
+	}
+	if (client_data[SPIKE_MAIN].fd) {
+	  if (SendMessage(client_data[SPIKE_MAIN].fd, 
+		  POS_DATA, (char *) bufferinfo, 
+		  bufferinfosize) == -1) {
+		sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_main: Resetting");
+		fprintf(STATUSFILE, "%s\n", tmpstring);
+		ErrorMessage(tmpstring, client_message);
+		break;
+	  }
+	} 
       } 
       else {
-	    /* create the userdata data array to send to the main
-	     * program */
-	    /* put the timestamp in the beginning of the userposdata
-	     * array */
-	    memcpy(userposdata, bufferinfo, sizeof(u32));
-	    memcpy(userposdata + 2, &ntracked, sizeof(u32));
-	    /* we need to create a single data buffer, so we copy
-	     * the y tracked pixel coordinates to the end of the x
-	     * array */
-	    memcpy(trackedx + ntracked, trackedy, ntracked * 
-		    sizeof(short));
-	    if (SendMessage(client_data[SPIKE_MAIN].fd, POS_DATA, 
-		      (char *) userposdata, 2 * 
-		      (ntracked + 2) * sizeof(short)) == -1) {
-	      error = 1;
-	    }
-	    if (error) {
-	      fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_main\n");
-	    }
+	/* create the userdata data array to send to the main
+	 * program */
+	/* put the timestamp in the beginning of the userposdata
+	 * array */
+	memcpy(userposdata, bufferinfo, sizeof(u32));
+	memcpy(userposdata + 2, &ntracked, sizeof(u32));
+	/* we need to create a single data buffer, so we copy
+	 * the y tracked pixel coordinates to the end of the x
+	 * array */
+	memcpy(trackedx + ntracked, trackedy, ntracked * 
+		sizeof(short));
+	/* if userdata saving is on, put the data in a buffer and send it 
+	 * to spike_userdata */
+	if (sysinfo.userdataon) {
+	  if (SendMessage(userdatafd, POS_DATA, 
+		    (char *) userposdata, 2 * (ntracked + 2) * 
+		    sizeof(short)) == -1) {
+	    fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_userdata\n");
+	  }
+	}
+	if (SendMessage(client_data[SPIKE_MAIN].fd, POS_DATA, 
+		  (char *) userposdata, 2 * 
+		  (ntracked + 2) * sizeof(short)) == -1) {
+	  error = 1;
+	}
+	if (error) {
+	  fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_main\n");
+	}
       }
       if (SendMessage(client_data + SPIKE_PROCESS_POSDATA, POS_DATA, 
 		    (char *) bufferinfo, bufferinfosize) == -1) {
@@ -391,28 +409,6 @@ int main()
       }
       if (error) {
 	    fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_process_posdata\n");
-      }
-
-      /* if userdata saving is on, put the data in a buffer and send it 
-       * to spike_userdata */
-      if (sysinfo.userdataon) {
-	    /* put the timestamp in the beginning of the userposdata
-	     * array */
-	    memcpy(userposdata, bufferinfo, sizeof(u32));
-	    memcpy(userposdata + 2, &ntracked, sizeof(u32));
-	    /* we need to create a single data buffer, so we copy
-	     * the y tracked pixel coordinates to the end of the x
-	     * array */
-	    memcpy(trackedx + ntracked, trackedy, ntracked * 
-		    sizeof(short));
-	    if (SendMessage(userdatafd, POS_DATA, 
-		      (char *) userposdata, 2 * (ntracked + 2) * 
-		      sizeof(short)) == -1) {
-	      error = 1;
-	    }
-	    if (error) {
-	      fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_userdata\n");
-	    }
       }
     }
 #endif
