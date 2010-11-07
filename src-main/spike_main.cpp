@@ -121,6 +121,7 @@ int main(int argc, char **argv)
   sysinfo.acq = 0;
   sysinfo.dspacq = 0;
   sysinfo.posinputnum = -1;
+  sysinfo.posthresh = 255;
   sysinfo.posimagesize[0] = PIXELS_PER_LINE;
   sysinfo.posimagesize[1] = LINES_PER_FIELD;
   sysinfo.mpegquality = 80;
