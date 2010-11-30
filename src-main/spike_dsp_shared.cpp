@@ -175,7 +175,7 @@ int ResetStateMachines()
 int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int sendResetStateMachine)
 {
   // ---- statemachine defaults to -1, sendreset to 0
-    int i, s;
+    int i, s = -1;
     unsigned short addr;
     
     /* check to see that the length is in bounds */
@@ -196,15 +196,14 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
 
 
     /* we first need to find a free state machine */
-    if ((s == -1) && ((s = NextDIOStateMachine()) == -1)) {
+    if ((s = NextDIOStateMachine()) == -1) {
 	sprintf(tmpstring, "Error: all state machines busy, cannot program digital IO");
 	DisplayErrorMessage(tmpstring);
 	return 0;
     }
-    //fprintf(stderr,"GOT STATE MACHINE: %d\n",s);
 
     if (statemachine >= 0) {
-      if (s > statemachine)
+      if (s >= statemachine) 
         s = statemachine;
       else {
 	sprintf(tmpstring, "Error: requested state machine (%d) busy, cannot program digital IO", statemachine);
@@ -217,6 +216,7 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
      * machine to jump back to the first instruction, which is "wait forever,"
      * when it completes the command */
     command[len++] = DIO_S_JUMP_ABS | 0;
+    //fprintf(stderr, "writing to statemachine %d\n", s);
 
     /* Now write the command to the DSP */
     if (!WriteDSPData(DSPDIO, digioinfo.statemachinebaseaddr[s], 
@@ -233,12 +233,12 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
       if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command)) {
           sprintf(tmpstring, "Error writing digital IO state machine pointer to master DSP");
           DisplayErrorMessage(tmpstring);
-    return 0;
+          return 0;
       }
     }
-    /* TEST: read back the pointer */
-/*    ReadDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command);
-	    fprintf(stderr, "pointer at %d\n", command[0]);
+    /* TEST: read back the pointer  
+    ReadDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command);
+	    fprintf(stderr, "in writedspdio: pointer at %d\n", command[0]);
     ReadDSPData(DSPDIO, digioinfo.statemachinebaseaddr[s], digioinfo.statemachinebuffer[s] + command[0] - 1, 1, command);
 	    fprintf(stderr, "contents of pointer: %x\n", command[0]); */
 
@@ -251,11 +251,12 @@ int SendStartDIOCommand(int s)
 {
     unsigned short command[1];
     command[0] = 1;
+    fprintf(stderr, "writing start command to statemachine %d\n", s);
     if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command)) {
-        sprintf(tmpstring, "Error writing digital IO state machine pointer to DIO DSP");
-        DisplayErrorMessage(tmpstring);
-	return 0;
-      }
+      sprintf(tmpstring, "Error writing digital IO state machine pointer to DIO DSP");
+      DisplayErrorMessage(tmpstring);
+      return 0;
+    }
     return 1;
 }
 
@@ -353,7 +354,7 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 		acqmessage = 1;
 	    }
 	    /* if this is not check to see if 
-	     * 1) this is not the master dsp
+	     * 1) this is not the dio dsp
 	     * 2) acquisition is on. 
 	     * If so, turn it off. This will do nothing if acquisition has already 
 	     * been stopped  */
@@ -362,6 +363,11 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 		dspacq = 1;
 	    }
 	}
+	else {
+	  sprintf(tmpstring, "Error: no connection to dsp %d", dspnum);
+	  DisplayErrorMessage(tmpstring);
+	}
+
 
 	/* send out the command */
 	do {
@@ -372,8 +378,9 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 	    }
 	    usleep(DSP_PAUSE_USEC);
 	} while (!GetDSPResponse(dspnum, 0, NULL));
+	//fprintf(stderr, "wrote to dsp %d, program = %d\n", dspnum, sysinfo.program_type);
 	totalsize -= size;
-    } while (size > 0);
+    } while (totalsize > 0);
     if (!acqmessage && dspacq) {
 	StartLocalAcq();
     }
@@ -426,8 +433,9 @@ int ReadDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 	/* if this is not check to see if this is not the master DSP and
 	 * if acquisition is on. If so, local dsp acquisition is stopped */
 	dspacq = 0;
-	if ((dspnum > 0) && !acqmessage && sysinfo.dspacq) {
+	if ((dspnum != 0) && (dspnum != DSPDIO) && !acqmessage && sysinfo.dspacq) {
 	    StopLocalAcq();
+	    fprintf(stderr, "stopping local DSP acquisition\n");
 	    dspacq = 1;
 	}
 	
@@ -477,6 +485,7 @@ int ReadDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 	if (!acqmessage && dspacq) {
 	    usleep(DSP_PAUSE_USEC);
 	    StartLocalAcq();
+	    fprintf(stderr, "restarting local DSP acquisition\n");
 	}
     }
 #endif

@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 	     break;
 	  case DIGIO_INFO:
 	     /* copy the DigIOInfo structure */
-	     memcpy(messagedata, &digioinfo, sizeof(DigIOInfo));
+	     memcpy(&digioinfo, messagedata, sizeof(DigIOInfo));
 	     break;
 	  case EXIT:
 	     userdataexit(0);		    

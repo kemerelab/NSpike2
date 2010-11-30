@@ -103,7 +103,8 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
 
     setWindowFlags(fl | Qt::Window);
     show();
-    /* set the number of wells to 3 to create the second set of tabs */
+    /* create the tabs */
+    createTabsButton->click();
 }
 
 

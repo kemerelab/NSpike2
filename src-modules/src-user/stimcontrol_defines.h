@@ -31,6 +31,7 @@
 
 #define NLAST_VALS 20
 #define NFILT 20
+#define NSPEED_FILT_POINTS 15
 
 /* Globals */
 
@@ -76,6 +77,12 @@ typedef struct {
     double posgain;
 } RippleFilterStatus;
 
+typedef struct {
+    double speed[NSPEED_FILT_POINTS];
+    double lastx;
+    double lasty;
+    int	   ind;
+} SpeedFilterStatus;
 
 typedef struct {
   double w1,w2;
@@ -115,6 +122,7 @@ void ResetRippleData(void);
 void ResetRippleCounters(void);
 int nAboveRippleThresh(RippleFilterStatus *rptr);
 
+void ResetSpeedData(void);
 
 void InitLatency(void);
 int ProcessLatencyData(short d);

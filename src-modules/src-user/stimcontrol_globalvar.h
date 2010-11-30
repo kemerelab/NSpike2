@@ -14,6 +14,7 @@ PulseCommand *nextPulseCmd;
 PulseCommand pulseArray[MAX_PULSE_SEQS+1];
 
 RippleFilterStatus ripFiltStat[MAX_ELECTRODES];
+SpeedFilterStatus speedFiltStat;
 
 u32 last_future_timestamp;
 
@@ -73,5 +74,23 @@ double fDenominator[NFILT] = {
    4.683913633549676270e+00,
   -9.165841559639211766e-01,
    9.461443242601841330e-02};
+
+double speedFilt[NSPEED_FILT_POINTS] = {
+   0.0779,
+   0.0775,
+   0.0768,
+   0.0758,
+   0.0745,
+   0.0728,
+   0.0709,
+   0.0688,
+   0.0663,
+   0.0637,
+   0.0610,
+   0.0581,
+   0.0551,
+   0.0520,
+   0.0488};
+
 
 #endif

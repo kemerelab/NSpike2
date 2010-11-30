@@ -4,8 +4,6 @@
 #include "stimcontrol_defines.h"
 #include "spike_stimcontrol_defines.h"
 
-//#include "filtercoeffs.h"
-
 extern SysInfo sysinfo;
 extern UserDataInfo userdatainfo;
 extern double fNumerator[NFILT];
@@ -15,6 +13,7 @@ extern RippleStimParameters rippleStimParameters;
 extern PulseCommand rippleStimPulseCmd;
 
 extern RippleFilterStatus ripFiltStat[MAX_ELECTRODES];
+extern SpeedFilterStatus speedFiltStat;
 
 int counter;
 
@@ -42,6 +41,16 @@ void InitRipple(void)
 
   ResetRippleData();
   ResetRippleCounters();
+
+  ResetSpeedData();
+}
+
+void ResetSpeedData()
+{
+  memset(speedFiltStat.speed, 0, sizeof(double) * NSPEED_FILT_POINTS);
+  speedFiltStat.ind = NSPEED_FILT_POINTS - 1;
+  speedFiltStat.lastx = 0;
+  speedFiltStat.lasty = 0;
 }
 
 void ResetRippleData()

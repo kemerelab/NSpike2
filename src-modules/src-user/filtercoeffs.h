@@ -45,4 +45,9 @@ double fDenominator[NFILT] = {
   -9.165841559639211766e-01,
    9.461443242601841330e-02};
 
+#define 
+
+#endif
+#define 
+
 #endif

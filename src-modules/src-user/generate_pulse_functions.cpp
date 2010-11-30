@@ -87,11 +87,12 @@ void PulseLaserCommand (PulseCommand pulseCmd, int ignoreTimestamp) {
       len = GeneratePulseCommand(pulseCmd, command);
     }
 
-    //if (!WriteDSPDIOCommand(command, len ,0 ,0)) {
-     //   fprintf(stderr, "Error writing Digital IO command to Master DSP\n");
-    //}
+    if (!WriteDSPDIOCommand(command, len ,0 ,0)) {
+        fprintf(stderr, "Error writing Digital IO command to Master DSP\n");
+    }
  
-    SendMessage(client_data[SPIKE_MAIN].fd, DIO_COMMAND, (char *) command,  len * sizeof(unsigned short)); 
+    //SendMessage(client_data[SPIKE_MAIN].fd, DIO_COMMAND, (char *) command,  len * sizeof(unsigned short)); 
+    //SendStartDIOCommand(0);
 }
 
 u32 PulseCommandLength(PulseCommand pulseCmd) {
@@ -121,10 +122,7 @@ void PrepareStimCommand(PulseCommand pulseCmd)
 
   len = GeneratePulseCommand(pulseCmd, command);
 
-  //WriteDSPDIOCommand(command, len ,whichstatemachine ,0);
-  SendMessage(client_data[SPIKE_MAIN].fd, DIO_SPEC_STATEMACHINE, (char *)&whichstatemachine,  sizeof(int)); 
-  SendMessage(client_data[SPIKE_MAIN].fd, DIO_COMMAND, (char *) command,  len * sizeof(unsigned short)); 
-  //SendMessage(client_data[SPIKE_MAIN].fd, DIO_RUN_STATEMACHINE, (char *)&whichstatemachine,  sizeof(int)); 
+  WriteDSPDIOCommand(command, len ,whichstatemachine ,0);
   fprintf(stderr,"rt_user: setting up pulse command on statemachine %d\n", whichstatemachine);
 
   commandCached = 1;

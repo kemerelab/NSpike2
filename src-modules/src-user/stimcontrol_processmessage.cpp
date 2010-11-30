@@ -117,6 +117,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       }
       nextPulseCmd = pulseArray;
       nextPulseCmd->start_samp_timestamp = 0; // wait for start
+      PrepareStimCommand(*nextPulseCmd);
       break;
     case DIO_PULSE_SEQ_START:
       pending = 1;

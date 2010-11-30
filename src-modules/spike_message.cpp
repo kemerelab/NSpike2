@@ -816,6 +816,7 @@ void SetupModuleMessaging(void)
 	      /* set up the bidirectional connection to the DSP */
 	      /* First we set up the messaging to / from the main program
 	       * */
+		fprintf(stderr, "setting up connection to dsp %d\n", j);
 	      strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
 	      netinfo.conn[c].fromid = SPIKE_MAIN;
 	      strcpy(netinfo.conn[c].to, netinfo.dspname[j]);
@@ -838,17 +839,17 @@ void SetupModuleMessaging(void)
 	netinfo.conn[c++].protocol = UDP;
 	dspdataconn = 1; 
       }
-      if (sysinfo.system_type[sysinfo.machinenum] == MASTER) {
-	 /* we need to create a connection to the echo port of the master
-	 * DSP so that we can send out packets once a minute to prevent the
-	 * switch from losing track of this machines location */
-	 strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
-	 netinfo.conn[c].fromid = SPIKE_MAIN;
-	 strcpy(netinfo.conn[c].to, "dsp0");
-	 netinfo.conn[c].toid = DSP0ECHO;
-	 netinfo.conn[c].type = MESSAGE;
-	 netinfo.conn[c].port = DSP_ECHO_PORT;
-	 netinfo.conn[c++].protocol = UDP;
+      /* we need to create a connection to the echo port of the master
+      * DSP so that we can send out packets once a minute to prevent the
+      * switch from losing track of this machines location */
+      strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
+      netinfo.conn[c].fromid = SPIKE_MAIN;
+      strcpy(netinfo.conn[c].to, "dsp0");
+      netinfo.conn[c].toid = DSP0ECHO;
+      netinfo.conn[c].type = MESSAGE;
+      netinfo.conn[c].port = DSP_ECHO_PORT;
+      netinfo.conn[c++].protocol = UDP;
+      if (sysinfo.system_type[i] == MASTER) {
 	 /* if this is a user data system we also want spike_userdata to
 	    * be able to talk to the Master DSP */
 	if (sysinfo.datatype[i] & USERDATA) {
@@ -870,16 +871,6 @@ void SetupModuleMessaging(void)
 	 netinfo.conn[c].type = MESSAGE;
 	 netinfo.conn[c].port = DSP_MESSAGE_PORT;
 	 netinfo.conn[c++].protocol = UDP;
-	 /* we also need to create a connection to the echo port of the 
-	 * digio DSP so that we can send out packets once a minute to prevent the
-	 * switch from losing track of this machines location */
-	strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
-	netinfo.conn[c].fromid = SPIKE_MAIN;
-	strcpy(netinfo.conn[c].to, "dspdio");
-	netinfo.conn[c].toid = DSPDIOECHO;
-	netinfo.conn[c].type = MESSAGE;
-	netinfo.conn[c].port = DSP_ECHO_PORT;
-	netinfo.conn[c++].protocol = UDP; 
 #endif
       }
 #endif

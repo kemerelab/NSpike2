@@ -5,6 +5,8 @@
 #include "spike_stimcontrol_defines.h"
 
 extern SocketInfo client_data[MAX_CONNECTIONS]; // the structure for sending data
+extern SpeedFilterStatus speedFiltStat;
+extern double speedFilt[NSPEED_FILT_POINTS];
 
 
 void ProcessData(int datatype, char *data, int datalen)
@@ -216,21 +218,37 @@ void ResetRealtimeProcessing(void) {
 
 
 double filterPosSpeed (u32 x, u32 y) {
-  static double lastx = 0.0;
-  static double lasty = 0.0;
-  static double smoothSpd = 0.0;
 
-  /* Calculate instantaneous speed... */
-  double spd = sqrt( (x*cmPerPix-lastx)*(x*cmPerPix-lastx) + 
-     (y*cmPerPix-lasty)*(y*cmPerPix-lasty) );
+  int i, ind;
 
-  spd = spd * 29.97; // adjust to cm/second
+  /* make sure this can't crash */
+  double smoothSpd = 0.0;
 
-  lastx = x*cmPerPix; // save for next time
-  lasty = y*cmPerPix;
+  /* Calculate instantaneous speed and adjust to cm/sec */
 
-  /* Smooth instantaneous speed. */
-  smoothSpd = 0.5*spd + 0.5*smoothSpd;
+  speedFiltStat.speed[speedFiltStat.ind] = ((x*cmPerPix-speedFiltStat.lastx)*
+	                     (x*cmPerPix-speedFiltStat.lastx) + 
+     			     (y*cmPerPix-speedFiltStat.lasty) * 
+     			     (y*cmPerPix-speedFiltStat.lasty))* 29.97;
+
+  /* make sure this can't crash */
+  if (speedFiltStat.speed[speedFiltStat.ind] != 0) {
+     speedFiltStat.speed[speedFiltStat.ind] = sqrt(speedFiltStat.speed[speedFiltStat.ind]);
+  }
+
+
+  speedFiltStat.lastx = x*cmPerPix; // save for next time
+  speedFiltStat.lasty = y*cmPerPix;
+
+  /* apply the filter to the speed points */
+  for (i = 0; i < NSPEED_FILT_POINTS; i++) {
+    ind = (speedFiltStat.ind + i) % NSPEED_FILT_POINTS;
+    smoothSpd = smoothSpd + speedFiltStat.speed[ind] * speedFilt[i];
+  }
+  speedFiltStat.ind--;
+  if (speedFiltStat.ind < 0) {
+     speedFiltStat.ind = NSPEED_FILT_POINTS - 1;
+  }
 
   // if (posOutputFile != NULL)
     // fprintf(posOutputFile,"%f %f %f\n",lastx,lasty,smoothSpd);
