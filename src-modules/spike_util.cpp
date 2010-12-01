@@ -55,13 +55,13 @@ char	timestr[100];
     switch(ncolons){
     case 0:
 	if(fracptr){
-	    sscanf(timestr,"%ld",(long int*)(&sec));
+	    sscanf(timestr,"%d",(u32*)(&sec));
 	    time = (u32) (((u32) sec)*1e4 + (fracsec*1e4 + 0.5)); 
 	} else {
 	    /*
 	    ** straight timestamp
 	    */
-	    sscanf(timestr,"%ld",(long int*)(&time));
+	    sscanf(timestr,"%d",(u32*)(&time));
 	}
 	break;
     case 1:
@@ -74,13 +74,13 @@ char	timestr[100];
 	*/
 	*ptr = '\0';
 	/*
-	** read the minutes before the colon
-	*/
-	sscanf(timestr,"%ld",(long int*)(&min));
-	/*
 	** read the seconds after the colon
 	*/
-	sscanf(ptr+1,"%ld",(long int*)(&sec));
+	sscanf(ptr+1,"%d",&sec);
+	/*
+	** read the minutes before the colon
+	*/
+	sscanf(timestr,"%d",&min);
 	/*
 	** compute the timestamp
 	*/
@@ -103,15 +103,15 @@ char	timestr[100];
 	/*
 	** read the hours before the first colon
 	*/
-	sscanf(timestr,"%ld",(long int*)(&hour));
+	sscanf(timestr,"%d",&hour);
 	/*
 	** read the minutes before the second colon
 	*/
-	sscanf(ptr+1,"%ld",(long int*)(&min));
+	sscanf(ptr+1,"%d",&min);
 	/*
 	** read the seconds after the colon
 	*/
-	sscanf(ptr2+1,"%ld",(long int*)(&sec));
+	sscanf(ptr2+1,"%d",&sec);
 	/*
 	** compute the timestamp
 	*/

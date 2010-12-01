@@ -181,7 +181,7 @@ DiodePosInfo		LastUserDefinedSpecs;
 SysInfo    		sysinfo;
 NetworkInfo		netinfo;
 DigIOInfo		digioinfo;
-MatlabInfo		matlabinfo;
+UserDataInfo		userdatainfo;
 CommonDSPInfo		cdspinfo;
 struct Image    	*imageptr, *tmpimageptr, *firstimageptr;
 InterpInfo 		info;
@@ -381,6 +381,10 @@ int main(int argc, char **argv) {
 	else if (strcmp(argv[nxtarg], "-displayall") == 0) {
 	    displayall = atoi(argv[++nxtarg]);
 	}
+	else if (strcmp(argv[nxtarg], "-imagesize") == 0) {
+	    sysinfo.posimagesize[0] = atoi(argv[++nxtarg]);
+	    sysinfo.posimagesize[1] = atoi(argv[++nxtarg]);
+	}
 	else if (strcmp(argv[nxtarg], "-append") == 0) {
 	    info.append = 1;
 	}
@@ -394,7 +398,7 @@ int main(int argc, char **argv) {
             }
 	}
 	else {
-	    fprintf(stderr, "Usage: nspike_fixpos -p mpegfile -t timestampfile [[-f offsetfile] [-f64 64bitoffsetfile]] -o outputfile [-append] [-playback] [-tstart tstart] [-tend tend] [-b brightpixelsfile] [-thresh threshold divisor] [-skip nframes] [-black 0/1] [-lights 1/2] [-displayall 0/1] [-speed speed_up_factor]\n");
+	    fprintf(stderr, "Usage: nspike_fixpos -p mpegfile -t timestampfile [[-f offsetfile] [-f64 64bitoffsetfile]] -o outputfile [-append] [-playback] [-tstart tstart] [-tend tend] [-b brightpixelsfile] [-thresh threshold divisor] [-skip nframes] [-black 0/1] [-lights 1/2] [-displayall 0/1] [-speed speed_up_factor] [-imagesize x y]\n");
 	    fprintf(stderr, "       append indicates that you want to append to a previously started output file.\n");
 	    fprintf(stderr, "       tstart and tend are the desired start and end timestamps\n");
 	    fprintf(stderr, "       brightpixels fgile is the name of a file previously created by spike_fixpos\n");
@@ -569,7 +573,6 @@ int Init()
     wininfo.timeloc.y = -10;
     wininfo.inputloc.x = 5;
     wininfo.inputloc.y = -20;
-
     if (sysinfo.posimagesize[0] == 0) {
         sysinfo.posimagesize[0] = PIXELS_PER_LINE;
 	sysinfo.posimagesize[1] = LINES_PER_FIELD;

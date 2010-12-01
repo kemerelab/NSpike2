@@ -148,15 +148,8 @@ int main(int argc, char **argv)
 
 	while ((cpudsp2[0] < cpupos) && nextvalidcpudsptime(cpudsptimefile,
 			cpudsp2)) {
-	    /* check for a valid time */
-	    if ((fabs((float) cpudsp1[2] - (float) cpudsp1[1]) * 10) > 
-	         fabs((float) cpudsp2[2] - (float) cpudsp2[1])) {
-		/* move cpudsp2 to cpudsp1 and move on */
-		memcpy(cpudsp1, cpudsp2, 3 * sizeof(u32));
-	    }
-	    else {
-		fprintf(stderr, "warning: inconsistent cpudsp time, skipping\n");
-	    }
+	    /* move cpudsp2 to cpudsp1 and move on */
+	    memcpy(cpudsp1, cpudsp2, 3 * sizeof(u32));
 	}
 
 	/* use the closest cpudsp time to convert the current frame time to a
