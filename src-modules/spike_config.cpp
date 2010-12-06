@@ -25,7 +25,7 @@
 
 extern SysInfo 		sysinfo;
 extern NetworkInfo 	netinfo;
-extern UserDataInfo 	userdatainfo;
+extern FSDataInfo 	fsdatainfo;
 extern CommonDSPInfo 	cdspinfo;
 extern DigIOInfo 	digioinfo;
 
@@ -76,7 +76,7 @@ int ReadConfigFile(char *configfilename, int datafile)
 
     netinfo.nslaves = 0;
     netinfo.rtslave = -1;
-    netinfo.userdataslave = -1;
+    netinfo.fsdataslave = -1;
     currentslave = 0;
     currentconn = 0;
     currentport = 0;
@@ -135,16 +135,16 @@ int ReadConfigFile(char *configfilename, int datafile)
                 }
             }
 	    else if ((strncmp(tmpbuf, "slave", 5) == 0) || 
-	             (strncmp(tmpbuf, "userdataslave", 13) == 0)) {
+	             (strncmp(tmpbuf, "fsdataslave", 13) == 0)) {
 	        if (strncmp(tmpbuf, "slave", 5) == 0) {
 		    tmpptr = tmpbuf+6;
 		}
-		else if (strncmp(tmpbuf, "userdataslave", 13) == 0) {
+		else if (strncmp(tmpbuf, "fsdataslave", 13) == 0) {
 		    tmpptr = tmpbuf+12;
-		    sysinfo.userdataoutput = 1;
-		    /* we use userdataslave to index into the machinename array, 
+		    sysinfo.fsdataoutput = 1;
+		    /* we use fsdataslave to index into the machinename array, 
 		     * so we need to set it to the current slave numnber + 1 */
-		    netinfo.userdataslave = currentslave + 1;
+		    netinfo.fsdataslave = currentslave + 1;
 		}
 	        if ((netinfo.nslaves == 0) || (currentslave == netinfo.nslaves)) {
 		    fprintf(STATUSFILE, "spike_main: Error in slave section of  %s\n", configfilename);
@@ -283,9 +283,9 @@ int ReadConfigFile(char *configfilename, int datafile)
 			sysinfo.datatype[tmpint[0]] |= DIGITALIO;
 			tmp+=9;
 		    }
-		    else if (strncmp(tmp, "USERDATA", 8) == 0) {
-			sysinfo.datatype[tmpint[0]] |= USERDATA;
-			sysinfo.userdataoutput = 1;
+		    else if (strncmp(tmp, "FSDATA", 6) == 0) {
+			sysinfo.datatype[tmpint[0]] |= FSDATA;
+			sysinfo.fsdataoutput = 1;
 			tmp+=8;
 		    }
 		    else {
@@ -492,17 +492,17 @@ int ReadConfigFile(char *configfilename, int datafile)
 			[strlen(digioinfo.progname[*tmpint])+1] = '\0';
                 }
             }
-            else if (strncmp(tmp, "usergui", 7) == 0) {
+            else if (strncmp(tmp, "fsgui", 7) == 0) {
 		tmp += 7;
 		while (isspace(*tmp)) tmp++;
 		if (*tmp == '\0') break;
-		strcpy(sysinfo.usergui, tmp);
+		strcpy(sysinfo.fsgui, tmp);
 	    }
             else if (strncmp(tmp, "enable_daq", 10) == 0) {
                 /* read in the enable_daq command (0/1) */
                 sscanf(tmp+10, "%d", tmpint);
                 if (*tmpint >= 1) {
-                    digioinfo.enable_DAQ_TO_USER = *tmpint;
+                    digioinfo.enable_DAQ_TO_FS = *tmpint;
                     for (i = 0; i < MAX_DSPS; i++)
                       sysinfo.daq_to_user.dsps[i] = 0;
                     for (i = 0; i < MAX_CHANNELS; i++)
@@ -510,7 +510,7 @@ int ReadConfigFile(char *configfilename, int datafile)
                     sysinfo.daq_to_user.is_enabled = 0;
                 }
                 else {
-                    digioinfo.enable_DAQ_TO_USER = 0;
+                    digioinfo.enable_DAQ_TO_FS = 0;
                 }
             }
 	    /* local references */
@@ -521,41 +521,41 @@ int ReadConfigFile(char *configfilename, int datafile)
                 }
 	    }
 	    /* Matlab output */
-            else if (strncmp(tmp, "userdata", 8) == 0) {
+            else if (strncmp(tmp, "fsdata", 8) == 0) {
 		tmp += 8;
 		tmpbool = NULL;
 		/* skip spaces until we get to the datatype string */
 		tmpint[0] = 0;
 		while (isspace(*tmp)) tmp++;
 		if (strncmp(tmp, "SPIKE", 5) == 0) {
-		    tmpbool = userdatainfo.spikeelect;
+		    tmpbool = fsdatainfo.spikeelect;
 		    tmp+=6;
-		    userdatainfo.sendspike = 1;
+		    fsdatainfo.sendspike = 1;
 		}
 		else if (strncmp(tmp, "CONTINUOUS", 10) == 0) {
-		    tmpbool = userdatainfo.contelect;
+		    tmpbool = fsdatainfo.contelect;
 		    tmp+=11;
-		    userdatainfo.sendcont = 1;
+		    fsdatainfo.sendcont = 1;
 		}
 		if (tmpbool) {
 		    /* it is a SPIKE or CONTINUOUS line */
 		    if (sscanf(tmp, "%d", tmpint) != 1) {
-			fprintf(stderr, "Error in config file: no electrode number on userdata line, ignoring\n");
+			fprintf(stderr, "Error in config file: no electrode number on fsdata line, ignoring\n");
 		    }
 		    else {
 			/* set this electrode to be saved */
 			tmpbool[*tmpint] = 1;
 		    }
-		    fprintf(stderr, "cont data chan %d\n", userdatainfo.contelect[*tmpint]);
+		    fprintf(stderr, "cont data chan %d\n", fsdatainfo.contelect[*tmpint]);
 		}
 		else if (strncmp(tmp, "POSITION", 8) == 0) {
-		    userdatainfo.sendpos = 1;
+		    fsdatainfo.sendpos = 1;
 		}
 		else if (strncmp(tmp, "DIGITALIO", 9) == 0) {
-		    userdatainfo.senddigio = 1;
+		    fsdatainfo.senddigio = 1;
 		}
 		else {
-		    fprintf(stderr, "Error in config file: no userdata datatype on line %s\n", tmpbuf);
+		    fprintf(stderr, "Error in config file: no fsdata datatype on line %s\n", tmpbuf);
 		}
 	    }
 	    /* audio settings */
@@ -843,8 +843,8 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 	if (sysinfo.datatype[i] & DIGITALIO) {
 	    gzprintf(outfile, "DIGITALIO\t");
 	}
-	if (sysinfo.datatype[i] & USERDATA) {
-	    gzprintf(outfile, "USERDATA\t");
+	if (sysinfo.datatype[i] & FSDATA) {
+	    gzprintf(outfile, "FSDATA\t");
 	}
 	gzprintf(outfile, "\n");
 	/* write out the default data directory */
@@ -900,24 +900,24 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 	/* clock source */
 	gzprintf(outfile, "dspclock\t%d\n", sysinfo.dspclock);
 
-	/* write out the userdata data */
-	if (userdatainfo.sendpos) {
-	    gzprintf(outfile, "userdata\tPOSITION\t");
+	/* write out the fsdata data */
+	if (fsdatainfo.sendpos) {
+	    gzprintf(outfile, "fsdata\tPOSITION\t");
 	}
-	if (userdatainfo.senddigio) {
-	    gzprintf(outfile, "userdata\tDIGITALIO\t");
+	if (fsdatainfo.senddigio) {
+	    gzprintf(outfile, "fsdata\tDIGITALIO\t");
 	}
-	if (userdatainfo.sendcont) {
+	if (fsdatainfo.sendcont) {
 	    for (i = 1; i < MAX_ELECTRODE_NUMBER; i++) {
-		if (userdatainfo.contelect[i]) {
-		    gzprintf(outfile, "userdata\tCONTINUOUS\t%d", i);
+		if (fsdatainfo.contelect[i]) {
+		    gzprintf(outfile, "fsdata\tCONTINUOUS\t%d", i);
 		}
 	    }
 	}
-	if (userdatainfo.sendspike) {
+	if (fsdatainfo.sendspike) {
 	    for (i = 1; i < MAX_ELECTRODE_NUMBER; i++) {
-		if (userdatainfo.spikeelect[i]) {
-		    gzprintf(outfile, "userdata\tSPIKE\t%d", i);
+		if (fsdatainfo.spikeelect[i]) {
+		    gzprintf(outfile, "fsdata\tSPIKE\t%d", i);
 		}
 	    }
 	}
@@ -961,11 +961,11 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
     for (i = 0; i < digioinfo.nprograms; i++) {
         gzprintf(outfile, "program\t%d\t%s\n", i, digioinfo.progname[i]);
     }
-    if (strlen(sysinfo.usergui)) {
-	gzprintf(outfile, "usergui\t%s\n", sysinfo.usergui);
+    if (strlen(sysinfo.fsgui)) {
+	gzprintf(outfile, "fsgui\t%s\n", sysinfo.fsgui);
     }
 
-	gzprintf(outfile, "enable_daq\t%d\n", digioinfo.enable_DAQ_TO_USER);
+	gzprintf(outfile, "enable_daq\t%d\n", digioinfo.enable_DAQ_TO_FS);
 
     /* dsp info */
     for (i = 0; i < sysinfo.ndsps; i++) {

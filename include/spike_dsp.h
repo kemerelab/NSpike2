@@ -8,8 +8,8 @@
 void StartDigIOProgram(int prognum);
 int TriggerOutput(int output);
 void ChangeOutput(int output, int raise);
-//void SendDAQUserMessage(int message, char *data, int datalen);
-void SendDigIOUserMessage(char *message, int len);
+//void SendDAQFSMessage(int message, char *data, int datalen);
+void SendDigIOFSMessage(char *message, int len);
 
 /* Defines for DSPs */
 
@@ -209,7 +209,7 @@ typedef struct _DigIOInfo {
     int outputfd;
     int rewardlength[MAX_BITS];
     int raised[MAX_BITS];
-    int enable_DAQ_TO_USER;
+    int enable_DAQ_TO_FS;
 } DigIOInfo;
 
 

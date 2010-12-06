@@ -134,8 +134,8 @@ nprograms	1
 % program
 program		0	Behavior/rt_devel/filter
 
-% user the stim usergui
-usergui	stim
+% user the stim fsgui
+fsgui	stim
 
 
 % the mapping from electrodes to dsp channels.  This mapping is set by the

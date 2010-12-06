@@ -56,7 +56,7 @@ Send out packets with either
 Interleaved data (s samples from all channels in user specified order)
 	Alternate outputs
 		Analog line level audio out
-User selectable set of 4 channels, probably output from DSP that handles EEG data, but should be an option to have on any DSP.
+FS selectable set of 4 channels, probably output from DSP that handles EEG data, but should be an option to have on any DSP.
 	Inputs to DSP
 		UDP packets in p64 from master computer.
 

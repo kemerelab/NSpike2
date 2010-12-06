@@ -5,7 +5,7 @@
 #include "../src-gui/spikeInput.h"
 #include "../src-gui/spikeStatusbar.h"
 #include "../src-gui/spikeGLPane.h"
-#include "../src-gui/spikeUserGUI.h"
+#include "../src-gui/spikeFSGUI.h"
 #include "qrect.h"
 #include "q3buttongroup.h"
 #include "qtabwidget.h"
@@ -155,7 +155,7 @@ typedef struct _DisplayInfo {
     QTabWidget		*qtab; // the list of tabbed pages;
     int 		ntabs;
     QWidget		**w; 	// the individual pages
-    void 	        *userguiptr;  // the usergui pointer
+    void 	        *fsguiptr;  // the fsgui pointer
     
     SpikeTetInput	**spikeTetInput; // the list button sets for thresholds, etc.
     SpikeTetInfo	**spikeTetInfo; // the depth and number info
@@ -286,15 +286,15 @@ void StopSave(void);
 void ClearAll(void);
 
 
-/* User Data Functions */
-void UpdateUserDataCount(void);
-void SendUserDataInfo(void);
-void SendUserDataMessage(int messagetype, char *message, int len);
+/* FS Data Functions */
+void UpdateFSDataCount(void);
+void SendFSDataInfo(void);
+void SendFSDataMessage(int messagetype, char *message, int len);
 void SendDigIOInfo(void);
-void MasterUserDataStart(void);
-void MasterUserDataStop(void);
-int UserDataStart(void);
-int UserDataStop(void);
+void MasterFSDataStart(void);
+void MasterFSDataStop(void);
+int FSDataStart(void);
+int FSDataStop(void);
 
 /* Master commands */
 void ToggleAcq(void);

@@ -1,15 +1,15 @@
 TEMPLATE = app
-TARGET = testUserGui
+TARGET = testFSGui
 
 INCLUDEPATH += ../../include
 SOURCES += main.cpp
-SOURCES += ../spikeUserGUI.cpp
-# SOURCES += ../spikeUserThetaGUI.cpp 
+SOURCES += ../spikeFSGUI.cpp
+# SOURCES += ../spikeFSThetaGUI.cpp 
 # SOURCES += ../userRippleGUI.cpp
-# SOURCES += ../spikeUserLatencyGUI.cpp 
-# SOURCES += ../spikeUserPulseGUI.cpp
-# SOURCES += ../spikeUserStimForm.cpp 
-HEADERS += ../spikeUserGUI.h 
+# SOURCES += ../spikeFSLatencyGUI.cpp 
+# SOURCES += ../spikeFSPulseGUI.cpp
+# SOURCES += ../spikeFSStimForm.cpp 
+HEADERS += ../spikeFSGUI.h 
 SOURCES += ../userMainConfig.cpp
 HEADERS += ../userMainConfig.h
 SOURCES += ../userConfigureStimulators.cpp

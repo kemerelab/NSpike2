@@ -52,18 +52,18 @@ port		10020
 % SPIKE 
 % DIGITALIO
 % and
-% USERDATA
+% FSDATA
 % or a combination of 
 % CONTINUOUS 
 % POSITION
 % DIGITALIO
 % and 
-% USERDATA
+% FSDATA
 % 
 % If you want POSITION data, both the master and the rtslave must have POSITION
 % as a datatype
 %
-% Only one machine can have a datatype of DIGITALIO or USERDATA
+% Only one machine can have a datatype of DIGITALIO or FSDATA
 % 
 % e.g.
 % datatype	machinename	SPIKE
@@ -71,7 +71,7 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype 	global		CONTINUOUS POSITION DIGITALIO USERDATA
+datatype 	global		CONTINUOUS POSITION DIGITALIO FSDATA
 
 ndioports	4
 dioport	0	output
@@ -120,22 +120,22 @@ dspinfo		2		1500		global
 
 %rtmode is used to improve online analysis.  setting rtmode changes the number of samples per
 %packet for continuous channels to produce a data packet every millisecond.  This also causes 
-%spike_daq to send out data to spike_userdata (if it is running) as quickly as possible
-%As with dspsampperpacket, don't set this unless you need to minize data latency to spike_userdata
+%spike_daq to send out data to spike_fsdata (if it is running) as quickly as possible
+%As with dspsampperpacket, don't set this unless you need to minize data latency to spike_fsdata
 %rtmode		1
 
-%userdata defines the types of data to send and the list of electrodes to send to spike_user_data
+%fsdata defines the types of data to send and the list of electrodes to send to spike_user_data
 %currently each datatype and electrode number need to be listed separately:
-% userdata DIGITALIO
-% userdata POSITION
-% userdata SPIKE 4    this causes spike data from electrode 4 to be sent to spike_userdata
-% userdata CONTINUOUS 5    this causes continuous data from electrode 5 to be sent to spike_userdata
-userdata CONTINUOUS 2
-userdata CONTINUOUS 3
+% fsdata DIGITALIO
+% fsdata POSITION
+% fsdata SPIKE 4    this causes spike data from electrode 4 to be sent to spike_fsdata
+% fsdata CONTINUOUS 5    this causes continuous data from electrode 5 to be sent to spike_fsdata
+fsdata CONTINUOUS 2
+fsdata CONTINUOUS 3
 
-%usergui is the name of the user gui that controls stimulation / real time
+%fsgui is the name of the user gui that controls stimulation / real time
 %feedback.  This only needs to be defined if you're using it
-usergui stim
+fsgui stim
 
 % calibration file specifies the name of the calibration file to set the
 % relative amplitudes of the channels.  See writecalfile.m for a matlab script

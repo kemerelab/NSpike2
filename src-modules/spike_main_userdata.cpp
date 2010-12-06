@@ -1,9 +1,9 @@
-/* spike_main_userdata.cpp: Program to allow running userdata on a separate machine
+/* spike_main_fsdata.cpp: Program to allow running fsdata on a separate machine
  * than used for data acquisition.  
  *
- * This code will eventually allow nspike_userdata to run, like nspike, on a
+ * This code will eventually allow nspike_fsdata to run, like nspike, on a
  * separate machine.  That machine would recieve data from the data acquisition
- * system and store it for transmission to a local userdata process.  This is not
+ * system and store it for transmission to a local fsdata process.  This is not
  * yet working
  *
  *
@@ -37,7 +37,7 @@ void DisplayStatusMessage(char *message);
 SysInfo 		sysinfo;
 NetworkInfo		netinfo;
 DigIOInfo		digioinfo;
-UserDataInfo		userdatainfo;
+FSDataInfo		fsdatainfo;
 EventBuffer		event;
 CommonDSPInfo		cdspinfo;
 
@@ -72,9 +72,9 @@ int main(int argc, char **argv)
     if (STATUSFILE == NULL) {
 	/* open up the status file if it is not stderr*/
 	gethostname(tmpstring,80);
-	sprintf(command, "spike_main_userdata_status_%s", tmpstring);
+	sprintf(command, "spike_main_fsdata_status_%s", tmpstring);
 	if ((STATUSFILE = fopen(command, "w")) == NULL) {
-	    fprintf(stderr, "spike_userdata: error opening status file\n");
+	    fprintf(stderr, "spike_fsdata: error opening status file\n");
 	    exit(-1);
 	}
     }
@@ -97,20 +97,20 @@ int main(int argc, char **argv)
     }
 
     sysinfo.acq = 0;
-    sysinfo.userdataon = 0;
+    sysinfo.fsdataon = 0;
 
     /* set the type of program we are in for messaging */
     sysinfo.program_type = SPIKE_MAIN;
 
     /* Read in the configuration file */
-    fprintf(STATUSFILE, "spike_main_userdata: Reading config file\n");
+    fprintf(STATUSFILE, "spike_main_fsdata: Reading config file\n");
     if (ReadConfigFile(configname, 0) < 0) {
        fprintf(STATUSFILE, "Error in configuration file, exiting.\n");
        exit(-1);
     }
 
     if (InitializeMasterSlaveNetworkMessaging() < 0) {
-	fprintf(STATUSFILE, "spike_main_userdata: Error initializing master/slave network messaging\n");
+	fprintf(STATUSFILE, "spike_main_fsdata: Error initializing master/slave network messaging\n");
 	spikeexit(1);
     }
 
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
     /* Establish the and messaging ethernet sockets */
     if (StartNetworkMessaging(server_message, client_message, server_data, 
 		client_data) < 0) {
-	fprintf(STATUSFILE, "spike_main_userdata: Error starting network data messaging\n");
+	fprintf(STATUSFILE, "spike_main_fsdata: Error starting network data messaging\n");
 	spikeexit(1);
     }
 
@@ -181,16 +181,16 @@ int main(int argc, char **argv)
 		case STOP_ACQUISITION:
 		    StopAcquisition();
 		    break;
-		case USER_DATA_START:
-		    if (UserDataStart()) {
+		case FS_DATA_START:
+		    if (FSDataStart()) {
 			SendMessage(netinfo.slavefd[netinfo.myindex], 
-				USER_DATA_STARTED, NULL, 0);
+				FS_DATA_STARTED, NULL, 0);
 		    }
 		    break;
-		case USER_DATA_STOP:
-		    if (UserDataStop()) {
+		case FS_DATA_STOP:
+		    if (FSDataStop()) {
 			SendMessage(netinfo.slavefd[netinfo.myindex], 
-				USER_DATA_STOPPED, NULL, 0);
+				FS_DATA_STOPPED, NULL, 0);
 		    }
 		    break;
 		/* the following commands require a reply, but we don't have to

@@ -49,7 +49,7 @@ StateMachineBuffer3 (0x0002C0)
 StateMachinePtr0 (0x0000F0)
 Pointer to currently executed instruction in the state machine buffer, 
 relative to the beginning of the buffer.  Range is 0x0000 to 0x00FF.  
-User may change this value to force the state machine to execute from a 
+FS may change this value to force the state machine to execute from a 
 specific instruction, or read it to monitor the progress of the state 
 machine.
 StateMachinePtr1 (0x0000F3)

@@ -1,23 +1,23 @@
 /*
- * spike_userdata.cpp: Program for storing data from acquisition modules for
- * tranmission to UserData.  
+ * spike_fsdata.cpp: Program for storing data from acquisition modules for
+ * tranmission to FSData.  
  *
- * Eventually it will be possible to run the userdata interface in two ways, but
+ * Eventually it will be possible to run the fsdata interface in two ways, but
  * currently only the second option below is supported:
  *
  * 1.  As a module on a separate (non-data acquisition) computer. In this case 
- * the user must start spike2_userdata which will start this program. The
- * computer this runs on must have USERDATA as its datatype
+ * the user must start spike2_fsdata which will start this program. The
+ * computer this runs on must have FSDATA as its datatype
  *
  * 2.  As a module on the master or on a slave machine.  In this case the
  * program will be launched automatically on the system it is supposed to run 
  * on. In this case the datatype line in the main configuration file must have
- * USERDATA as one of the datatypes for the machine on which this program is to
- * run. No other machine should have userdata in the datatype line
+ * FSDATA as one of the datatypes for the machine on which this program is to
+ * run. No other machine should have fsdata in the datatype line
  *
  * The program stores the incoming data in a cicularly
  * linked list of data buffers and sends out data whenever it can open a socket
- * to the UserData mex file that connects to it.  Note that if more data come in
+ * to the FSData mex file that connects to it.  Note that if more data come in
  * than can be stored in the list of buffers, the oldest data is erased 
  *
  *
@@ -45,7 +45,7 @@
 /* Global variables */
 SysInfo 		sysinfo;
 NetworkInfo		netinfo;
-UserDataInfo		userdatainfo;
+FSDataInfo		fsdatainfo;
 DSPInfo			*dptr;
 
 SocketInfo 		server_message[MAX_CONNECTIONS]; // the structure for the server messaging
@@ -53,28 +53,28 @@ SocketInfo 		client_message[MAX_CONNECTIONS]; // the structure for the client me
 SocketInfo 		server_data[MAX_CONNECTIONS]; // the structure for receiving data
 SocketInfo 		client_data[MAX_CONNECTIONS]; // the structure for sendin data (currently unused)
 
-struct UserDataBuffer {
+struct FSDataBuffer {
   char 	*data;
   char 	*dataptr;
   char 	*endptr;
   int		offset;
-  bool	send;	// TRUE if we should send this buffer to UserData
-  UserDataBufferInfo bufferinfo;
-  struct UserDataBuffer *next;
+  bool	send;	// TRUE if we should send this buffer to FSData
+  FSDataBufferInfo bufferinfo;
+  struct FSDataBuffer *next;
 };
 
-void UpdateUserDataInfo(struct UserDataBuffer *buf);
-void ClearUserDataInfo(struct UserDataBuffer *buf);
-void userdataexit(int status);
+void UpdateFSDataInfo(struct FSDataBuffer *buf);
+void ClearFSDataInfo(struct FSDataBuffer *buf);
+void fsdataexit(int status);
 void Usage(void);
 
 
 int main(int argc, char **argv) 
 {
-  UserDataBuffer	*buf, *nextbuf, *bufptr, *sendbuf;
+  FSDataBuffer	*buf, *nextbuf, *bufptr, *sendbuf;
   // we save the buffer index each time we increment the size of the buffer
-  int 		bufsize =  USER_DATA_BUFFER_SIZE;
-  int			nbuffers = USER_DATA_NUM_BUFFERS;
+  int 		bufsize =  FS_DATA_BUFFER_SIZE;
+  int			nbuffers = FS_DATA_NUM_BUFFERS;
   int			retrysec;
   int			socketsec;
   int			socketusec;
@@ -103,22 +103,22 @@ int main(int argc, char **argv)
 
   SysInfo		*systmp;
   SpikeBuffer		*stmp;
-  UserDataContBuffer	*mptr;
+  FSDataContBuffer	*mptr;
 
   u32			*u32ptr;
 
 
-  sysinfo.program_type = SPIKE_USER_DATA;
+  sysinfo.program_type = SPIKE_FS_DATA;
 
-  fprintf(STATUSFILE, "spike_userdata: starting\n");
+  fprintf(STATUSFILE, "spike_fsdata: starting\n");
 
   sysinfo.statusfile == NULL;
   if (STATUSFILE == NULL) {
 	/* open up the status file if it is not stderr*/
 	gethostname(tmpstring,80);
-	sprintf(filename, "spike_userdata_status_%s", tmpstring);
+	sprintf(filename, "spike_fsdata_status_%s", tmpstring);
 	if ((STATUSFILE = fopen(filename, "w")) == NULL) {
-	  fprintf(stderr, "spike_userdata: error opening status file\n");
+	  fprintf(stderr, "spike_fsdata: error opening status file\n");
 	  exit(-1);
 	}
   }
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
 	  nbuffers = atoi(argv[++nxtarg]);
     }
     else {
-	  fprintf(stderr, "spike_userdata: unknown command line option %s, ignoring\n", argv[nxtarg]);
+	  fprintf(stderr, "spike_fsdata: unknown command line option %s, ignoring\n", argv[nxtarg]);
 	  Usage();
     }
   }
@@ -141,18 +141,18 @@ int main(int argc, char **argv)
   if ((bufsize < 100000) || (nbuffers < 3)) {
 	Usage();
 	fprintf(stderr, "Using default values\n");
-  	bufsize =  USER_DATA_BUFFER_SIZE;
-  	nbuffers = USER_DATA_NUM_BUFFERS;
+  	bufsize =  FS_DATA_BUFFER_SIZE;
+  	nbuffers = FS_DATA_NUM_BUFFERS;
   }
 
 
   sysinfo.acq = 0;
-  sysinfo.userdataon = 0;
+  sysinfo.fsdataon = 0;
 
   if (StartNetworkMessaging(server_message, client_message, server_data, 
 		client_data) < 0) {
-    fprintf(STATUSFILE, "spike_userdata: Error starting network data messaging\n");
-	userdataexit(1);
+    fprintf(STATUSFILE, "spike_fsdata: Error starting network data messaging\n");
+	fsdataexit(1);
   }
 
   /* set the retry times and the timeouts for checking for an open socket */
@@ -161,27 +161,27 @@ int main(int argc, char **argv)
   socketsec = 0;
 
   /* set the type of program we are in for messaging */
-  sysinfo.program_type = SPIKE_USER_DATA;
+  sysinfo.program_type = SPIKE_FS_DATA;
 
   /* allocate the circularly linked list of data buffers */
-  buf = (struct UserDataBuffer *) malloc(sizeof(struct UserDataBuffer));
+  buf = (struct FSDataBuffer *) malloc(sizeof(struct FSDataBuffer));
   buf->data = (char *) calloc(bufsize, sizeof(char));
   buf->dataptr = buf->data;
   buf->endptr = buf->data + bufsize - 1;
   buf->offset = 0;
   buf->send = 1;
-  ClearUserDataInfo(buf);
+  ClearFSDataInfo(buf);
   bufptr = buf;
   /* create the rest of the buffers */
   for (i = 1; i < nbuffers; i++) {
-    nextbuf = (struct UserDataBuffer *) 
-		    malloc(sizeof(struct UserDataBuffer));
+    nextbuf = (struct FSDataBuffer *) 
+		    malloc(sizeof(struct FSDataBuffer));
     nextbuf->data = (char *) calloc(bufsize, sizeof(char));
     nextbuf->dataptr = nextbuf->data;
     nextbuf->endptr = nextbuf->data + bufsize - 1;
     nextbuf->offset = 0;
     nextbuf->send = 0;
-    ClearUserDataInfo(nextbuf);
+    ClearFSDataInfo(nextbuf);
     bufptr->next = nextbuf;
     bufptr = bufptr->next;
   }
@@ -210,7 +210,7 @@ int main(int argc, char **argv)
 	 * disk is on.  */
 	message = GetMessage(server_data[i].fd, savebuf, &savebufsize, 
 		1);
-	if (sysinfo.userdataon) {
+	if (sysinfo.fsdataon) {
 	  /* check to see if adding the message on to the end of the
 	   * data buffer would push it past it's maximum size */
 	  if (bufptr->offset + savebufsize + sizeof(short) > 
@@ -224,13 +224,13 @@ int main(int argc, char **argv)
 	     * data */
 	    if (bufptr == sendbuf) {
 	      sendbuf = sendbuf->next;
-	      StatusMessage("Warning: filled all userdata buffers",
+	      StatusMessage("Warning: filled all fsdata buffers",
 		      client_message);
 	    }
 	    bufptr->send = 1;
 	    bufptr->offset = 0;
 	    bufptr->dataptr = bufptr->data;
-	    UpdateUserDataInfo(bufptr);
+	    UpdateFSDataInfo(bufptr);
 	  }
 	  switch(i) {
 	    case SPIKE_DAQ:
@@ -246,7 +246,7 @@ int main(int argc, char **argv)
 	      }
 	      else if (message == CONTINUOUS_DATA) {
 		datatype = CONTINUOUS_DATA_TYPE;
-		mptr = (UserDataContBuffer *) savebuf;
+		mptr = (FSDataContBuffer *) savebuf;
 		for (j = 0; j < mptr->nchan; j++) {
 		   bufptr->bufferinfo.ncontsamp[mptr->electnum[j]] += 
 		     mptr->nsamp;
@@ -297,18 +297,18 @@ int main(int argc, char **argv)
 	     sysinfo.acq = 1;
 	     SendMessage(client_message[SPIKE_MAIN].fd, ACQUISITION_STARTED, 			     NULL, 0);
 	     break;
-	  case USER_DATA_INFO:
-	     /* get the userdatainfo structure */
-	     memcpy((char *) &userdatainfo, messagedata,
-		    sizeof(UserDataInfo));
-	     /* we now update the userdatainfo of the current buffer */
-	     UpdateUserDataInfo(bufptr);
+	  case FS_DATA_INFO:
+	     /* get the fsdatainfo structure */
+	     memcpy((char *) &fsdatainfo, messagedata,
+		    sizeof(FSDataInfo));
+	     /* we now update the fsdatainfo of the current buffer */
+	     UpdateFSDataInfo(bufptr);
 	     break;
-	  case USER_DATA_START:
-	     sysinfo.userdataon = 1;
+	  case FS_DATA_START:
+	     sysinfo.fsdataon = 1;
 	     break;
-	  case USER_DATA_STOP:
-	     sysinfo.userdataon = 0;
+	  case FS_DATA_STOP:
+	     sysinfo.fsdataon = 0;
 	     /* move on to the next buffer so that we can start
 	     * fresh */
 	     bufptr = bufptr->next;
@@ -322,7 +322,7 @@ int main(int argc, char **argv)
 	     bufptr->send = 1;
 	     bufptr->offset = 0;
 	     bufptr->dataptr = bufptr->data;
-	     UpdateUserDataInfo(bufptr);
+	     UpdateFSDataInfo(bufptr);
 	     break;
 	  case SYSTEM_INFO:
 	     systmp = (SysInfo *) messagedata;
@@ -332,7 +332,7 @@ int main(int argc, char **argv)
 	     dptr = sysinfo.dspinfo;
 	     break;
 	  case EXIT:
-	     userdataexit(0);		    
+	     fsdataexit(0);		    
 	     break;
 	  default:
 	     break;
@@ -341,7 +341,7 @@ int main(int argc, char **argv)
       id++;
     }
     /* if the specified length of time has passed, try to open a client to
-     * send data to userdata */
+     * send data to fsdata */
     gettimeofday(&tval, &tzone);
     if (tval.tv_sec - lasttval.tv_sec > retrysec) {
       /* close the socket if it was open */
@@ -349,24 +349,24 @@ int main(int argc, char **argv)
 	    close(fd);
       }
       /* we should try to send a buffer */
-      //fprintf(stderr, "spike_userdata: trying to open UserData socket\n");
-      if ((fd = GetClientSocket(USER_DATA_SOCKET_NAME, socketsec, 
+      //fprintf(stderr, "spike_fsdata: trying to open FSData socket\n");
+      if ((fd = GetClientSocket(FS_DATA_SOCKET_NAME, socketsec, 
 		  socketusec)) > 0) {
 	/* we have sucessfully opened the socket, so we send the
 	 * data from the current buffer through and then close the
 	 * socket */
-	fprintf(stderr, "spike_userdata: opened UserData socket, sending data\n");
+	fprintf(stderr, "spike_fsdata: opened FSData socket, sending data\n");
 	/* we first get the information on what sort of data is in the
 	 * buffers and the total number of each type of buffer and send
 	 * that out first */
 	while (bufptr->send) {
 	  /* we first send the buffer information */
 	  if ((nwritten = write(fd, &bufptr->bufferinfo, 
-		  sizeof(UserDataBufferInfo))) != 
-		  sizeof(UserDataBufferInfo)) {
-	    fprintf(STATUSFILE, "Error: unable to write buffer information to UserData\n");
+		  sizeof(FSDataBufferInfo))) != 
+		  sizeof(FSDataBufferInfo)) {
+	    fprintf(STATUSFILE, "Error: unable to write buffer information to FSData\n");
 	  }
-	  fprintf(stderr, "wrote UserDataBufferInfo, datalen to write = %d\n", bufptr->offset);
+	  fprintf(stderr, "wrote FSDataBufferInfo, datalen to write = %d\n", bufptr->offset);
 
 	  /* now write out the buffer */
 	  datalen = bufptr->offset;
@@ -381,7 +381,7 @@ int main(int argc, char **argv)
 	    nwritten = write(fd, bufptr->dataptr, writesize);
 	    bufptr->dataptr += nwritten;
 	    if (nwritten == -1) {
-	       fprintf(STATUSFILE, "Error: unable to write complete buffer to UserData\n");
+	       fprintf(STATUSFILE, "Error: unable to write complete buffer to FSData\n");
 	       break;
 	    }
 	    else {
@@ -392,12 +392,12 @@ int main(int argc, char **argv)
 	  bufptr->send = 0;
 	  bufptr->offset = 0;
 	  bufptr->dataptr = bufptr->data;
-	  ClearUserDataInfo(bufptr);
+	  ClearFSDataInfo(bufptr);
 	  /* move on to the next buffer */
 	  bufptr = bufptr->next;
-	  UpdateUserDataInfo(bufptr);
+	  UpdateFSDataInfo(bufptr);
 	}
-	fprintf(stderr, "spike_userdata: done writing data \n");
+	fprintf(stderr, "spike_fsdata: done writing data \n");
 	/* we have sent all of the data, so we reset the timer */
 	lasttval.tv_sec = tval.tv_sec;
       }
@@ -410,13 +410,13 @@ int main(int argc, char **argv)
   return 0;
 }
 
-void ClearUserDataInfo(struct UserDataBuffer *buf)
+void ClearFSDataInfo(struct FSDataBuffer *buf)
 {
-  UserDataBufferInfo *iptr;
+  FSDataBufferInfo *iptr;
   int i;
 
   /* set all the bytes in the structure to 0 to clear it out */
-  memset(&buf->bufferinfo, 0, sizeof(UserDataBufferInfo));
+  memset(&buf->bufferinfo, 0, sizeof(FSDataBufferInfo));
 
   /* set the starttime to be very large so that we can set it by looking for
    * a smaller time */
@@ -424,30 +424,30 @@ void ClearUserDataInfo(struct UserDataBuffer *buf)
   return;
 }
 
-void UpdateUserDataInfo(struct UserDataBuffer *buf)
-  /* combine the current userdata information with that already stored to
+void UpdateFSDataInfo(struct FSDataBuffer *buf)
+  /* combine the current fsdata information with that already stored to
    * produce a complete list of the types of data and channels in the current
    * buffer */
 {
-  UserDataBufferInfo *iptr;
+  FSDataBufferInfo *iptr;
   int i;
 
   iptr = &buf->bufferinfo;
 
   /* copy the DSPInfo from sysinfo */
-  iptr->userdatainfo.sendcont |= userdatainfo.sendcont;
-  iptr->userdatainfo.sendspike |= userdatainfo.sendspike;
-  iptr->userdatainfo.sendpos |= userdatainfo.sendpos;
-  iptr->userdatainfo.senddigio |= userdatainfo.senddigio;
+  iptr->fsdatainfo.sendcont |= fsdatainfo.sendcont;
+  iptr->fsdatainfo.sendspike |= fsdatainfo.sendspike;
+  iptr->fsdatainfo.sendpos |= fsdatainfo.sendpos;
+  iptr->fsdatainfo.senddigio |= fsdatainfo.senddigio;
 
   for (i = 0; i < MAX_ELECTRODE_NUMBER; i++) {
-	iptr->userdatainfo.contelect[i] |= userdatainfo.contelect[i];
-	if (iptr->userdatainfo.contelect[i] && 
+	iptr->fsdatainfo.contelect[i] |= fsdatainfo.contelect[i];
+	if (iptr->fsdatainfo.contelect[i] && 
 		(i > iptr->maxconttetnum)) {
 	  iptr->maxconttetnum = i;
 	}
-	iptr->userdatainfo.spikeelect[i] |= userdatainfo.spikeelect[i]; 
-	if (iptr->userdatainfo.spikeelect[i] && 
+	iptr->fsdatainfo.spikeelect[i] |= fsdatainfo.spikeelect[i]; 
+	if (iptr->fsdatainfo.spikeelect[i] && 
 		(i > iptr->maxspiketetnum)) {
 	  iptr->maxspiketetnum = i;
 	}
@@ -455,7 +455,7 @@ void UpdateUserDataInfo(struct UserDataBuffer *buf)
   return;
 }
 
-void userdataexit(int status)
+void fsdataexit(int status)
 {
    SendMessage(client_message[SPIKE_MAIN].fd, EXITING, NULL, 0);
    /* sleep so that all of the other programs have a chance to get the message*/
@@ -469,6 +469,6 @@ void userdataexit(int status)
 
 void Usage(void) 
 {
-  fprintf(stderr, "Usage: spike_userdata -config configfile -netconfig networkconfigfile [-bufsize #] [-nbuffers #]\n\bufsize must be > 100000\n\t nbufs must be >= 3\n");
+  fprintf(stderr, "Usage: spike_fsdata -config configfile -netconfig networkconfigfile [-bufsize #] [-nbuffers #]\n\bufsize must be > 100000\n\t nbufs must be >= 3\n");
 }
 

@@ -39,7 +39,7 @@ extern DisplayInfo dispinfo;
 extern SysInfo sysinfo;
 extern NetworkInfo netinfo;
 extern DigIOInfo digioinfo;
-extern UserDataInfo userdatainfo;
+extern FSDataInfo fsdatainfo;
 
 SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f ) 
 : QMainWindow(parent, name, f)
@@ -260,13 +260,6 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
     masterMenu->addAction( "&Audio Settings", this, SLOT(masterAudioSettings()));
     masterMenu->insertSeparator();
 
-    if (sysinfo.userdataoutput) {
-      masterMenu->addAction( "User Data Start", this, SLOT(masterUserDataStart()));
-      masterMenu->addAction( "User Data Stop", this, SLOT(masterUserDataStop()));
-      userDataSettingsAction = masterMenu->addAction( "User Data Settings", this, SLOT(masterUserDataSettings()));
-    }
-    masterMenu->insertSeparator();
-
     masterMenu->addAction( "Reprogram Master DSP", this, SLOT(masterReprogramMasterDSP()));
     masterMenu->addAction( "Reprogram Aux DSPs", this, SLOT(masterReprogramAuxDSPs()));
     masterMenu->addAction( "Display DSP Code Revision", this, SLOT(masterShowDSPCodeRev()));
@@ -322,20 +315,35 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
   }
   if (sysinfo.datatype[sysinfo.machinenum] & DIGITALIO) {
     /* create the digital IO menu */
-    digioMenu = new QMenu("Digital &IO", this);
+    digioMenu = new QMenu("Digital / Analog &IO", this);
     digioMenu->addAction( "Trigger Output", this, SLOT(digioOutput()), Qt::Key_O );
+    digioMenu->addAction( "Set &Outputs", this, SLOT(setOutputs()), Qt::Key_R );
+    digioMeny->addSeparator();
 
-    digioProgMenu = new QMenu("Digital IO Programs", this);
+    digioMenu->addAction( "Reward Control GUI", this, SLOT(startRewardControl()));
+    digioMenu->addAction( "Feedback / Stim GUI", this, SLOT(feedbackStimGUI()), Qt::CTRL+Qt::Key_G );
+    digioMeny->addSeparator();
+    digioMenu->addAction( "Reset State Machines", this, SLOT(resetStateMachines()));
+    if (sysinfo.fsdataoutput) {
+      digioMenu->addSeparator();
+      digioFeedbackStimDataMenu = new QMenu("Feedback / Stim Data", this);
+      feedbackStimDataStartAction = digioFeedbackStimDataMenu->addAction( "Send Data", this, SLOT(feedbackStimDataStart()));
+      /* the data are sent by default, so this is disabled unless the user
+       * stops it */
+      feedbackStimDataStartAction->setEnabled(false);
+      feedbackStimDataStopAction = digioFeedbackStimDataMenu->addAction( "Stop Sending Data", this, SLOT(feedbackStimDataStop()));
+      feedbackStimDataSettingsAction = masterMenu->addAction( "Data Settings", this, SLOT(feedbackStimDataSettings()));
+    }
+
+    digioMenu->addSeparator();
+
+    digioProgMenu = new QMenu("Digital/Analog IO Programs", this);
     for (i = 0; i < digioinfo.nprograms; i++) {
       digioProgMenu->addAction(QString(digioinfo.progname[i]));
     }
     connect(digioProgMenu, SIGNAL(activated(int)), this, SLOT(runProgram(int)));
     digioMenu->addMenu( digioProgMenu);
-    digioMenu->addAction( "Set &Outputs", this, SLOT(setOutputs()), Qt::Key_R );
-    digioMenu->addAction( "Reward Control", this, SLOT(startRewardControl()));
-    digioMenu->addAction( "Send Message to User Program", this, SLOT(outputToUserProgram()), Qt::CTRL+Qt::Key_U );
-    digioMenu->addAction( "User Program GUI", this, SLOT(userProgramGUI()), Qt::CTRL+Qt::Key_G );
-    digioMenu->addAction( "Reset State Machines", this, SLOT(resetStateMachines()));
+    digioMenu->addAction( "Send Message to FS Program", this, SLOT(outputToFSProgram()), Qt::CTRL+Qt::Key_U );
     menuBar->addMenu( digioMenu);
   }
 
@@ -747,7 +755,7 @@ void SpikeMainWindow::triggerOutput(void)
     }
 }
 
-void SpikeMainWindow::getOutputToUserProgram(void)
+void SpikeMainWindow::getOutputToFSProgram(void)
 {    
     char userstring[1000];
     bool ok;
@@ -758,7 +766,7 @@ void SpikeMainWindow::getOutputToUserProgram(void)
   /* send the text to the user's program*/
   if (text.length() < 1000) {
       strcpy(userstring, text.ascii());
-      SendDigIOUserMessage(userstring, (int) text.length() + 1);
+      SendDigIOFSMessage(userstring, (int) text.length() + 1);
   }
   else {
       sprintf(userstring, "Error: string too long");
@@ -778,24 +786,24 @@ void SpikeMainWindow::setEEGTraceLength(void)
   }
 }
 
-void SpikeMainWindow::launchUserGUI(void)
+void SpikeMainWindow::launchFSGUI(void)
 {
   char tmpstring[200];
-  /* the usergui requires an associate USERDATA data type, so check this */
-  if (sysinfo.datatype[sysinfo.machinenum] & USERDATA) {
-    if (strncmp(sysinfo.usergui, "stim", 4) == 0) {
-      if (dispinfo.userguiptr == NULL)
-	dispinfo.userguiptr = new DIOInterface();
+  /* the fsgui requires an associate FSDATA data type, so check this */
+  if (sysinfo.datatype[sysinfo.machinenum] & FSDATA) {
+    if (strncmp(sysinfo.fsgui, "stim", 4) == 0) {
+      if (dispinfo.fsguiptr == NULL)
+	dispinfo.fsguiptr = new DIOInterface();
       else
-	((DIOInterface *)dispinfo.userguiptr)->show();
+	((DIOInterface *)dispinfo.fsguiptr)->show();
     }
     else {
-      sprintf(tmpstring,"Unknown user gui program %s", sysinfo.usergui);
+      sprintf(tmpstring,"Unknown user gui program %s", sysinfo.fsgui);
       DisplayErrorMessage(tmpstring);
     }
   }
   else {
-     QMessageBox::critical(this, "Error", "Error: USERDATA is not enabled for this machine.\nEdit the config file and restart NSpike."); 
+     QMessageBox::critical(this, "Error", "Error: FSDATA is not enabled for this machine.\nEdit the config file and restart NSpike."); 
   }
 }
 

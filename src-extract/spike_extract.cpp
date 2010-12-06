@@ -55,7 +55,7 @@ SysInfo		sysinfo;
 NetworkInfo	netinfo;
 DigIOInfo	digioinfo;
 CommonDSPInfo	cdspinfo;
-UserDataInfo	userdatainfo;
+FSDataInfo	fsdatainfo;
 char		*tmpdata;
 char 		datafilename[200];
 

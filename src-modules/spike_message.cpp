@@ -655,8 +655,8 @@ int GetModuleID(char *modulename)
     return SPIKE_PROCESS_POSDATA;
   else if (strcmp(modulename, "SPIKE_SAVE_DATA") == 0)
     return SPIKE_SAVE_DATA;
-  else if (strcmp(modulename, "SPIKE_USER_DATA") == 0)
-    return SPIKE_USER_DATA;
+  else if (strcmp(modulename, "SPIKE_FS_DATA") == 0)
+    return SPIKE_FS_DATA;
   else if (strcmp(modulename, "SPIKE_MAIN") == 0)
     return SPIKE_MAIN;
   else {
@@ -691,7 +691,7 @@ void SetupModuleMessaging(void)
   /* using the data type on each machine we set up the essential connections*/
 {
   int i, c, p;
-  int userdataind = -1;
+  int fsdataind = -1;
 #ifndef NO_DSP_DEBUG
   int j;
 #endif
@@ -704,8 +704,8 @@ void SetupModuleMessaging(void)
   
   /* check to see if there is a user data system, and if so record it's index */
   for (i = 0; i <= netinfo.nslaves; i++) {
-    if (sysinfo.datatype[i] & USERDATA) {
-      userdataind = i;
+    if (sysinfo.datatype[i] & FSDATA) {
+      fsdataind = i;
       break;
     }
   }
@@ -717,9 +717,9 @@ void SetupModuleMessaging(void)
 
   /* go through each machine in order. Note that machine 0 is the master */
   for (i = 0; i <= netinfo.nslaves; i++) {
-    if (i != netinfo.userdataslave) {
+    if (i != netinfo.fsdataslave) {
       /* Common messaging connections on all but the standalone
-       * USERDATA system */
+       * FSDATA system */
       /* MAIN to SAVE_DATA MESSAGE*/
       strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
       netinfo.conn[c].fromid = SPIKE_MAIN;
@@ -775,14 +775,14 @@ void SetupModuleMessaging(void)
       netinfo.conn[c].type = DATA;
       netinfo.conn[c++].protocol = UNIX;
 
-      if (userdataind != -1) {
-        /* User data connection */
+      if (fsdataind != -1) {
+        /* FS data connection */
         strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
         netinfo.conn[c].fromid = SPIKE_DAQ;
-        strcpy(netinfo.conn[c].to, netinfo.machinename[userdataind]);
-        netinfo.conn[c].toid = SPIKE_USER_DATA;
+        strcpy(netinfo.conn[c].to, netinfo.machinename[fsdataind]);
+        netinfo.conn[c].toid = SPIKE_FS_DATA;
         netinfo.conn[c].type = DATA;
-        if (i == userdataind) {
+        if (i == fsdataind) {
           /* this is a local connection */
           netinfo.conn[c++].protocol = UNIX;
         }
@@ -792,10 +792,10 @@ void SetupModuleMessaging(void)
           netinfo.conn[c++].port = netinfo.port[p++];
         }
       }
-      if (i == userdataind) {
-        /* User data to master */
+      if (i == fsdataind) {
+        /* FS data to master */
         strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
-        netinfo.conn[c].fromid = SPIKE_USER_DATA;
+        netinfo.conn[c].fromid = SPIKE_FS_DATA;
         strcpy(netinfo.conn[c].to, netinfo.machinename[i]);
         netinfo.conn[c].toid = SPIKE_MAIN;
         netinfo.conn[c].type = DATA;
@@ -850,11 +850,11 @@ void SetupModuleMessaging(void)
       netinfo.conn[c].port = DSP_ECHO_PORT;
       netinfo.conn[c++].protocol = UDP;
       if (sysinfo.system_type[i] == MASTER) {
-	 /* if this is a user data system we also want spike_userdata to
+	 /* if this is a user data system we also want spike_fsdata to
 	    * be able to talk to the Master DSP */
-	if (sysinfo.datatype[i] & USERDATA) {
+	if (sysinfo.datatype[i] & FSDATA) {
 	   strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
-	   netinfo.conn[c].fromid = SPIKE_USER_DATA;
+	   netinfo.conn[c].fromid = SPIKE_FS_DATA;
 	   strcpy(netinfo.conn[c].to, "dspdio");
 	   netinfo.conn[c].toid = DSPDIO;
 	   netinfo.conn[c].type = MESSAGE;
@@ -943,14 +943,14 @@ void SetupModuleMessaging(void)
       netinfo.conn[c].type = DATA;
       netinfo.conn[c++].protocol = UNIX;
 
-      if (userdataind != -1) {
-        /* USERDATA data connection */
+      if (fsdataind != -1) {
+        /* FSDATA data connection */
         strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
         netinfo.conn[c].fromid = SPIKE_POSDAQ;
-        strcpy(netinfo.conn[c].to, netinfo.machinename[userdataind]);
-        netinfo.conn[c].toid = SPIKE_USER_DATA;
+        strcpy(netinfo.conn[c].to, netinfo.machinename[fsdataind]);
+        netinfo.conn[c].toid = SPIKE_FS_DATA;
         netinfo.conn[c].type = DATA;
-        if (i == userdataind) {
+        if (i == fsdataind) {
           /* this is a local connection */
           netinfo.conn[c++].protocol = UNIX;
         }
@@ -963,17 +963,17 @@ void SetupModuleMessaging(void)
     }
 
 
-    if (sysinfo.datatype[i] & USERDATA) {
-      /* MAIN to USERDATA */
+    if (sysinfo.datatype[i] & FSDATA) {
+      /* MAIN to FSDATA */
       strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
       netinfo.conn[c].fromid = SPIKE_MAIN;
       strcpy(netinfo.conn[c].to, netinfo.machinename[i]);
-      netinfo.conn[c].toid = SPIKE_USER_DATA;
+      netinfo.conn[c].toid = SPIKE_FS_DATA;
       netinfo.conn[c].type = MESSAGE;
       netinfo.conn[c++].protocol = UNIX;
-      /* USERDATA to MAIN */
+      /* FSDATA to MAIN */
       strcpy(netinfo.conn[c].from, netinfo.machinename[i]);
-      netinfo.conn[c].fromid = SPIKE_USER_DATA;
+      netinfo.conn[c].fromid = SPIKE_FS_DATA;
       strcpy(netinfo.conn[c].to, netinfo.machinename[i]);
       netinfo.conn[c].toid = SPIKE_MAIN;
       netinfo.conn[c].type = MESSAGE;

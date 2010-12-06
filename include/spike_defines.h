@@ -46,7 +46,7 @@
 #define SPIKE		((unsigned char) (1<<1))
 #define CONTINUOUS	((unsigned char) (1<<2))
 #define DIGITALIO	((unsigned char) (1<<3))
-#define USERDATA	((unsigned char) (1<<4))
+#define FSDATA	((unsigned char) (1<<4))
 
 /* the maximum number of DSPS.  Note that if you change this you will have to
  * remove or add definitions to keep the number of defined DSPS equal to
@@ -93,7 +93,7 @@
 #define	SPIKE_DAQ		14
 #define	SPIKE_PROCESS_POSDATA	15
 #define	SPIKE_SAVE_DATA		16
-#define	SPIKE_USER_DATA		17
+#define	SPIKE_FS_DATA		17
 #define	SPIKE_MAIN		18
 #define MAX_MODULE_ID		18
 
@@ -241,14 +241,14 @@ when adding new messages */
 #define         DIGITALIO_EVENT         57 // the message contains a digital IO event 
 #define         TRIGGER_OUTPUT          58 // the message contains a the number of a digital output to trigger 
 #define         CHANGE_OUTPUT           59 // the message contains a the number of a digital output to trigger 
-#define         USER_DATA_INFO             60 // the message contains information for the spike_user process 
-#define         USER_DATA_START       61 // the message contains information for the spike_user process 
-#define         USER_DATA_STOP        62 // the message contains information for the spike_user process 
-#define         USER_DATA_STARTED     63 // the message contains information for the spike_user process 
-#define         USER_DATA_STOPPED     64 // the message contains information for the spike_user process 
-#define         OPEN_DAQ_TO_USER        65
-#define         CLOSE_DAQ_TO_USER       66
-#define         SETUP_DAQ_TO_USER       67
+#define         FS_DATA_INFO             60 // the message contains information for the spike_user process 
+#define         FS_DATA_START       61 // the message contains information for the spike_user process 
+#define         FS_DATA_STOP        62 // the message contains information for the spike_user process 
+#define         FS_DATA_STARTED     63 // the message contains information for the spike_user process 
+#define         FS_DATA_STOPPED     64 // the message contains information for the spike_user process 
+#define         OPEN_DAQ_TO_FS        65
+#define         CLOSE_DAQ_TO_FS       66
+#define         SETUP_DAQ_TO_FS       67
 #define         SAVE_ERROR              68 // an error occurred while saving data to disk
 #define         DATA_ERROR              69 // an error occurred while reading in data from the acquisition card
 #define         ERROR_MESSAGE           70 // an error occured in a critical routine
@@ -366,7 +366,7 @@ typedef struct _NetworkInfo {
     unsigned short 	*slaveport;	// the port numbers for the slave 
     int 		*slavefd;	// the fd for the slave to master connections
     int			rtslave;	// the index of the rt-linux slave
-    int			userdataslave;	// the index of the user slave if there is one
+    int			fsdataslave;	// the index of the user slave if there is one
     
     unsigned short	port[MAX_NETWORK_PORTS];// the port numbers to use for TCP/IP and UDP connections
     int			nports;		// the number of port numbers
@@ -434,12 +434,12 @@ typedef struct _DSPInfo {
 } DSPInfo;
 
 /* info for running programs which interface with DAQ */
-typedef struct _DaqToUserInfo {
-    bool  is_enabled; // state of the DAQ_TO_USER messaging interface
+typedef struct _DaqToFSInfo {
+    bool  is_enabled; // state of the DAQ_TO_FS messaging interface
     int		dsps[MAX_DSPS];		// the DSPs processing data to be sent to the user program
     int		channels[MAX_CHANNELS];		// the DSP channels to be sent to the user program
     DSPInfo		dspinfo[MAX_DSPS]; // the sampling rates etc. for the dsps
-} DaqToUserInfo;
+} DaqToFSInfo;
 
 
 /* system information */	
@@ -465,8 +465,8 @@ typedef struct _SystemInfo {
     int 		diskon;		// 1 if data is being saved
     u32	disktime;	// the last time disk status was modified/
     int 		fileopen;	// 1 or 0 depending on whether the file is open
-    int 		userdataoutput;	// 1 if we have the option of sending data to spike_user
-    int 		userdataon;	// 1 or 0 depending on whether we should be sending data to the spike_user process
+    int 		fsdataoutput;	// 1 if we have the option of sending data to spike_user
+    int 		fsdataon;	// 1 or 0 depending on whether we should be sending data to the spike_user process
     char		datafilename[200];   // the name of the data file
     char		origdatafilename[200];   // the original name of the data file (used only when a second data file is opened)
     char		digioconfigfilename[200]; // the name of the digital IO configuration file to use
@@ -523,8 +523,8 @@ typedef struct _SystemInfo {
 
     bool	localref;  // true if references should be local to each machine
 
-    DaqToUserInfo 	daq_to_user;
-    char		usergui[200]; // the name of the users gui program to run
+    DaqToFSInfo 	daq_to_user;
+    char		fsgui[200]; // the name of the users gui program to run
 
   // default c'tor
   _SystemInfo() : use_compression(1), compression_level(6) {}

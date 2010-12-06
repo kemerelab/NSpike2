@@ -1320,12 +1320,12 @@ if test -n "$ac_init_help"; then
   cat <<\_ACEOF
 
 Optional Features:
-  --enable-nspike-fixpos     Enable compilation of nspike-fixpos (requires glut and mpeg2 libraries)
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
+  --enable-nspike-fixpos     Enable compilation of nspike-fixpos (requires glut and mpeg2 libraries)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]

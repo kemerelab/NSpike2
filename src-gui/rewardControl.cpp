@@ -31,7 +31,7 @@ extern DisplayInfo dispinfo;
 extern SysInfo sysinfo;
 extern NetworkInfo netinfo;
 extern DigIOInfo digioinfo;
-extern UserDataInfo userdatainfo;
+extern FSDataInfo fsdatainfo;
 
 
 /* Reward control gui */

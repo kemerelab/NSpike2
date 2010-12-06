@@ -51,11 +51,11 @@ dioport	1	output
 dioport	2	output
 dioport	3	output
 nprograms	4
-program	0	/home/lorenlab/NSpike/UserPrograms/laser  &                
+program	0	/home/lorenlab/NSpike/FSPrograms/laser  &                
 program	1	&              
 program	2	&              
 program	3	&              
-usergui	stim
+fsgui	stim
 
 enable_daq	1
 dspinfo	0	1	snowstorm

@@ -42,7 +42,7 @@ NetworkInfo     netinfo;
 DisplayInfo     dispinfo;
 DigIOInfo       digioinfo;
 CommonDSPInfo   cdspinfo;
-UserDataInfo    userdatainfo;
+FSDataInfo    fsdatainfo;
 
 struct DisplayData *displaybuf;    // the buffer to be displayed next
 struct DisplayData *databuf;    // the buffer to be filled with data
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
     sysinfo.commonfilt = FALSE;
 
 
-  digioinfo.enable_DAQ_TO_USER = 0;
+  digioinfo.enable_DAQ_TO_FS = 0;
 
   /* Get the current time as for timing the packet output to the dsp network
    * switch */
@@ -292,8 +292,8 @@ int main(int argc, char **argv)
     sprintf(command, "spike_process_posdata &");
     system(command); 
   }
-  if (sysinfo.datatype[sysinfo.machinenum] & USERDATA) {
-    sprintf(command, "spike_userdata &");
+  if (sysinfo.datatype[sysinfo.machinenum] & FSDATA) {
+    sprintf(command, "spike_fsdata &");
     system(command); 
   }
 
@@ -325,10 +325,10 @@ int main(int argc, char **argv)
 #endif
   }
 
-  if ((sysinfo.userdataoutput)) {
-    fprintf(STATUSFILE, "Sending userdata config\n");
-    SendUserDataInfo();
-    fprintf(STATUSFILE, "Sending digio config to spike_userdata\n");
+  if ((sysinfo.fsdataoutput)) {
+    fprintf(STATUSFILE, "Sending fsdata config\n");
+    SendFSDataInfo();
+    fprintf(STATUSFILE, "Sending digio config to spike_fsdata\n");
     SendDigIOInfo();
   }
 
@@ -451,7 +451,7 @@ void SQCompat::spikeProcessMessages(void)
     id = 0;
     while ((i = netinfo.datainfd[id]) != -1) {
       if (FD_ISSET(server_data[i].fd, &readfds)) {
-        if (i == SPIKE_USER_DATA) {
+        if (i == SPIKE_FS_DATA) {
           /* this is a message from the user's digital IO program.
            * The message should contain a series of unsigned short
            * programming commands for the digital IO state machine
@@ -490,14 +490,14 @@ void SQCompat::spikeProcessMessages(void)
                 }
                 break;
               default:
-		if (dispinfo.userguiptr) {
-		  ((DIOInterface *)dispinfo.userguiptr)->msgFromUser(message, (char *)tmpdatabuf);
+		if (dispinfo.fsguiptr) {
+		  ((DIOInterface *)dispinfo.fsguiptr)->msgFromFS(message, (char *)tmpdatabuf);
 		}
                 break;
             }
           }
           else {
-            fprintf(stderr, "Error getting spike_userdata program output %d\n", i);
+            fprintf(stderr, "Error getting spike_fsdata program output %d\n", i);
           }
         }
 	else if (i == SPIKE_DAQ) {
@@ -740,16 +740,16 @@ void SQCompat::spikeProcessMessages(void)
                   SAVE_STOPPED, NULL, 0);
             }
             break;
-          case USER_DATA_START:
-            if (UserDataStart()) {
+          case FS_DATA_START:
+            if (FSDataStart()) {
               SendMessage(netinfo.slavefd[netinfo.myindex], 
-                  USER_DATA_STARTED, NULL, 0);
+                  FS_DATA_STARTED, NULL, 0);
             }
             break;
-          case USER_DATA_STOP:
-            if (UserDataStart()) {
+          case FS_DATA_STOP:
+            if (FSDataStart()) {
               SendMessage(netinfo.slavefd[netinfo.myindex], 
-                  USER_DATA_STOPPED, NULL, 0);
+                  FS_DATA_STOPPED, NULL, 0);
             }
             break;
           case CLEAR_SCREEN: 
@@ -1722,8 +1722,8 @@ void StartDigIOProgram(int prognum)
     /* if we had an open digioioral program, we need to send it an exit
      * message and then close it */
     if (digioinfo.inputfd) {
-      if (digioinfo.enable_DAQ_TO_USER) {
-        SendMessage(client_message[SPIKE_DAQ].fd, CLOSE_DAQ_TO_USER, NULL, 0);
+      if (digioinfo.enable_DAQ_TO_FS) {
+        SendMessage(client_message[SPIKE_DAQ].fd, CLOSE_DAQ_TO_FS, NULL, 0);
       }
       sleep(1);
       SendMessage(digioinfo.outputfd, EXIT, NULL, 0);
@@ -1731,8 +1731,8 @@ void StartDigIOProgram(int prognum)
       sleep(1);
       close(digioinfo.inputfd);
       close(digioinfo.outputfd);
-      unlink(USER_TO_DIO_MESSAGE);
-      unlink(DIO_TO_USER_MESSAGE);
+      unlink(FS_TO_DIO_MESSAGE);
+      unlink(DIO_TO_FS_MESSAGE);
       sprintf(tmpstring, "Stopped digital IO program %s", digioinfo.progname[digioinfo.currentprogram]);
       DisplayStatusMessage(tmpstring);
       /* remove the program from the file descriptor list
@@ -1755,26 +1755,26 @@ void StartDigIOProgram(int prognum)
       else {
         error = 0;
         /* open server socket (blocks until user program opens client) */
-        if ((digioinfo.inputfd = GetServerSocket(USER_TO_DIO_MESSAGE, 
+        if ((digioinfo.inputfd = GetServerSocket(FS_TO_DIO_MESSAGE, 
                 1, 0)) == -1) {
           sprintf(tmpstring, "Error getting server socket %s for user program\n", 
-              USER_TO_DIO_MESSAGE);
+              FS_TO_DIO_MESSAGE);
           DisplayStatusMessage(tmpstring);
           error = 1;
         }
         /* open client socket (blocks until user program opens server) */
-        else if ((digioinfo.outputfd = GetClientSocket(DIO_TO_USER_MESSAGE, 
+        else if ((digioinfo.outputfd = GetClientSocket(DIO_TO_FS_MESSAGE, 
                 1, 0)) == -1) {
           error = 1;
           /* close the server socket */
           close(digioinfo.inputfd);
-          unlink(USER_TO_DIO_MESSAGE);
+          unlink(FS_TO_DIO_MESSAGE);
           sprintf(tmpstring, "Error getting server socket %s for user program\n", 
-              USER_TO_DIO_MESSAGE);
+              FS_TO_DIO_MESSAGE);
           DisplayStatusMessage(tmpstring);
         }
-        else if (digioinfo.enable_DAQ_TO_USER) {
-          SendMessage(client_message[SPIKE_DAQ].fd, OPEN_DAQ_TO_USER, NULL, 0);
+        else if (digioinfo.enable_DAQ_TO_FS) {
+          SendMessage(client_message[SPIKE_DAQ].fd, OPEN_DAQ_TO_FS, NULL, 0);
           memcpy(sysinfo.daq_to_user.dspinfo, sysinfo.dspinfo, MAX_DSPS*sizeof(DSPInfo));
         }
 
@@ -1794,11 +1794,11 @@ void StartDigIOProgram(int prognum)
   }
 }
 
-void SendDigIOUserMessage(char *message, int len)
+void SendDigIOFSMessage(char *message, int len)
 {
 
   if (digioinfo.outputfd) {
-    SendMessage(digioinfo.outputfd, DIO_USER_MESSAGE, message,
+    SendMessage(digioinfo.outputfd, DIO_FS_MESSAGE, message,
         len * sizeof(char));
   }
   else {
@@ -1807,14 +1807,14 @@ void SendDigIOUserMessage(char *message, int len)
   }
 }
 
-void SendUserDataMessage(int messagetype, char *message, int len)
+void SendFSDataMessage(int messagetype, char *message, int len)
 {
   if (digioinfo.outputfd) {
       SendMessage(digioinfo.outputfd, messagetype, message,
 	    len);
   }
   else {
-      SendMessage(client_message[SPIKE_USER_DATA].fd, messagetype, message,
+      SendMessage(client_message[SPIKE_FS_DATA].fd, messagetype, message,
 	    len);
   }
 }
@@ -2917,17 +2917,17 @@ void SetReference(int electnum, int refelect, int refchan)
 
 
 
-void MasterUserDataStart(void) 
+void MasterFSDataStart(void) 
 {
   int i, error = 0;
-  if (!sysinfo.userdataon) {
+  if (!sysinfo.fsdataon) {
     /* send a message to the slaves to start saving */
     for(i = 0; i < netinfo.nslaves; i++) {
-      SendMessage(netinfo.slavefd[i], USER_DATA_START, NULL, 0);
+      SendMessage(netinfo.slavefd[i], FS_DATA_START, NULL, 0);
     }
     if (!error) {
       /* if we started the save on all of the slaves, start it here as well */ 
-      UserDataStart();
+      FSDataStart();
     }
     /* disable the settings menu item */
     spikeMainWindow->userDataSettingsAction->setEnabled(false);
@@ -2937,17 +2937,17 @@ void MasterUserDataStart(void)
 }
 
 
-void MasterUserDataStop(void)
+void MasterFSDataStop(void)
 {
   int i, error = 0;
-  if (sysinfo.userdataon) {
+  if (sysinfo.fsdataon) {
     /* send a message to the slaves to stop saving */
     for(i = 0; i < netinfo.nslaves; i++) {
-      SendMessage(netinfo.slavefd[i], USER_DATA_STOP, NULL, 0);
+      SendMessage(netinfo.slavefd[i], FS_DATA_STOP, NULL, 0);
     }
     if (!error) {
       /* if we stopped the save on all of the slaves, stop it here as well */ 
-      UserDataStop();
+      FSDataStop();
     }
     /* enable the settings menu */
     spikeMainWindow->userDataSettingsAction->setEnabled(true);

@@ -15,25 +15,25 @@ HEADERS += spikeStatusbar.h
 SOURCES += rewardControl.cpp
 HEADERS += rewardControl.h
 
-SOURCES += spikeUserData.cpp
-HEADERS += spikeUserData.h
+SOURCES += spikeFSData.cpp
+HEADERS += spikeFSData.h
 
-# SOURCES += spikeUserThetaGUI.cpp 
-# SOURCES += userRippleGUI.cpp
-# SOURCES += spikeUserLatencyGUI.cpp 
-# SOURCES += spikeUserPulseGUI.cpp
-# SOURCES += spikeUserStimForm.cpp 
+# SOURCES += spikeFSThetaGUI.cpp 
+# SOURCES += fsRippleGUI.cpp
+# SOURCES += spikeFSLatencyGUI.cpp 
+# SOURCES += spikeFSPulseGUI.cpp
+# SOURCES += spikeFSStimForm.cpp 
 
-SOURCES += spikeUserGUI.cpp
-HEADERS += spikeUserGUI.h 
-SOURCES += userMainConfig.cpp
-HEADERS += userMainConfig.h
-SOURCES += userConfigureStimulators.cpp
-HEADERS += userConfigureStimulators.h 
-SOURCES += userOutputOnlyTab.cpp
-HEADERS += userOutputOnlyTab.h 
-SOURCES += userRealtimeFeedbackTab.cpp
-HEADERS += userRealtimeFeedbackTab.h 
+SOURCES += spikeFSGUI.cpp
+HEADERS += spikeFSGUI.h 
+SOURCES += fsMainConfig.cpp
+HEADERS += fsMainConfig.h
+SOURCES += fsConfigureStimulators.cpp
+HEADERS += fsConfigureStimulators.h 
+SOURCES += fsOutputOnlyTab.cpp
+HEADERS += fsOutputOnlyTab.h 
+SOURCES += fsRealtimeFeedbackTab.cpp
+HEADERS += fsRealtimeFeedbackTab.h 
 
 RESOURCES += guiresources.qrc
 QT += qt3support

@@ -133,58 +133,58 @@ In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeInput.cpp at line 1634 colu
 In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeInput.cpp at line 1655 column 39: Below -> TicksBelow
 In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeInput.cpp: Added the following include directives:
 	#include <Q3HBoxLayout> 	#include <QLabel> 	#include <Q3GridLayout> 
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 27 column 22: qbuttongroup.h -> q3buttongroup.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 32 column 21: qfiledialog.h -> q3filedialog.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 38 column 22: qwidgetstack.h -> q3widgetstack.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 51 column 37: WFlags -> Qt::WFlags
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 64 column 15: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 64 column 43: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 66 column 15: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 66 column 44: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 69 column 33: QButtonGroup -> Q3ButtonGroup
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp at line 117 column 27: QWidgetStack -> Q3WidgetStack
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.cpp: Added the following include directives:
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 27 column 22: qbuttongroup.h -> q3buttongroup.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 32 column 21: qfiledialog.h -> q3filedialog.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 38 column 22: qwidgetstack.h -> q3widgetstack.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 51 column 37: WFlags -> Qt::WFlags
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 64 column 15: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 64 column 43: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 66 column 15: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 66 column 44: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 69 column 33: QButtonGroup -> Q3ButtonGroup
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp at line 117 column 27: QWidgetStack -> Q3WidgetStack
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.cpp: Added the following include directives:
 	#include <Q3GridLayout> 
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserThetaGUI.cpp at line 28 column 22: qbuttongroup.h -> q3buttongroup.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserThetaGUI.cpp at line 40 column 15: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserThetaGUI.cpp at line 40 column 39: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserThetaGUI.cpp: Added the following include directives:
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSThetaGUI.cpp at line 28 column 22: qbuttongroup.h -> q3buttongroup.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSThetaGUI.cpp at line 40 column 15: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSThetaGUI.cpp at line 40 column 39: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSThetaGUI.cpp: Added the following include directives:
 	#include <Q3GridLayout> 	#include <QLabel> 
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserRippleGUI.cpp at line 29 column 22: qbuttongroup.h -> q3buttongroup.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserRippleGUI.cpp at line 40 column 15: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserRippleGUI.cpp at line 40 column 39: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserRippleGUI.cpp: Added the following include directives:
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSRippleGUI.cpp at line 29 column 22: qbuttongroup.h -> q3buttongroup.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSRippleGUI.cpp at line 40 column 15: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSRippleGUI.cpp at line 40 column 39: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSRippleGUI.cpp: Added the following include directives:
 	#include <Q3GridLayout> 	#include <QShowEvent> 	#include <QLabel> 
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserLatencyGUI.cpp at line 39 column 15: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserLatencyGUI.cpp at line 39 column 39: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserLatencyGUI.cpp: Added the following include directives:
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSLatencyGUI.cpp at line 39 column 15: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSLatencyGUI.cpp at line 39 column 39: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSLatencyGUI.cpp: Added the following include directives:
 	#include <Q3GridLayout> 	#include <QLabel> 
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 30 column 22: qbuttongroup.h -> q3buttongroup.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 34 column 21: qfiledialog.h -> q3filedialog.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 46 column 15: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 46 column 40: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 50 column 29: QPopupMenu -> Q3PopupMenu
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 58 column 28: QTextEdit -> Q3TextEdit
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 59 column 38: PlainText -> Qt::PlainText
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 94 column 25: QFileDialog -> Q3FileDialog
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 99 column 32: IO_ReadOnly -> QIODevice::ReadOnly
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 101 column 16: QTextStream -> Q3TextStream
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 113 column 27: QFileDialog -> Q3FileDialog
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 115 column 33: IO_WriteOnly -> QIODevice::WriteOnly
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp at line 117 column 15: QTextStream -> Q3TextStream
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserPulseGUI.cpp: Added the following include directives:
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 30 column 22: qbuttongroup.h -> q3buttongroup.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 34 column 21: qfiledialog.h -> q3filedialog.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 46 column 15: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 46 column 40: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 50 column 29: QPopupMenu -> Q3PopupMenu
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 58 column 28: QTextEdit -> Q3TextEdit
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 59 column 38: PlainText -> Qt::PlainText
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 94 column 25: QFileDialog -> Q3FileDialog
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 99 column 32: IO_ReadOnly -> QIODevice::ReadOnly
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 101 column 16: QTextStream -> Q3TextStream
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 113 column 27: QFileDialog -> Q3FileDialog
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 115 column 33: IO_WriteOnly -> QIODevice::WriteOnly
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp at line 117 column 15: QTextStream -> Q3TextStream
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSPulseGUI.cpp: Added the following include directives:
 	#include <Q3GridLayout> 	#include <Q3TextStream> 	#include <QLabel> 	#include <Q3PopupMenu> 
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserStimForm.cpp at line 21 column 20: qwhatsthis.h -> q3whatsthis.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserStimForm.cpp at line 26 column 61: WFlags -> Qt::WFlags
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserStimForm.cpp at line 29 column 15: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserStimForm.cpp at line 29 column 39: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserStimForm.cpp: Added the following include directives:
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSStimForm.cpp at line 21 column 20: qwhatsthis.h -> q3whatsthis.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSStimForm.cpp at line 26 column 61: WFlags -> Qt::WFlags
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSStimForm.cpp at line 29 column 15: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSStimForm.cpp at line 29 column 39: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSStimForm.cpp: Added the following include directives:
 	#include <Q3GridLayout> 
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserConfigForm.cpp at line 21 column 20: qwhatsthis.h -> q3whatsthis.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserConfigForm.cpp at line 25 column 65: WFlags -> Qt::WFlags
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserConfigForm.cpp at line 31 column 15: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserConfigForm.cpp at line 31 column 39: QGridLayout -> Q3GridLayout
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserConfigForm.cpp: Added the following include directives:
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSConfigForm.cpp at line 21 column 20: qwhatsthis.h -> q3whatsthis.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSConfigForm.cpp at line 25 column 65: WFlags -> Qt::WFlags
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSConfigForm.cpp at line 31 column 15: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSConfigForm.cpp at line 31 column 39: QGridLayout -> Q3GridLayout
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSConfigForm.cpp: Added the following include directives:
 	#include <Q3GridLayout> 
 No changes made to file /home/ckemere/Code/NSpike_2.0.0/include/sqcompat.h
 In file /home/ckemere/Code/NSpike_2.0.0/include/spike_main.h at line 10 column 25: qbuttongroup.h -> q3buttongroup.h
@@ -227,16 +227,16 @@ In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeMainForm.h: Added the follo
 	#include <QKeyEvent> 	#include <QLabel> 	#include <Q3GridLayout> 	#include <Q3PopupMenu> 
 In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeInput.h at line 237 column 20: WFlags -> Qt::WFlags
 In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeInput.h at line 339 column 8: WFlags -> Qt::WFlags
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 11 column 19: qtextedit.h -> q3textedit.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 13 column 18: qlistbox.h -> q3listbox.h
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 64 column 65: WFlags -> Qt::WFlags
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 116 column 12: QPopupMenu -> Q3PopupMenu
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 118 column 10: QTextEdit -> Q3TextEdit
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 229 column 63: WFlags -> Qt::WFlags
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 268 column 9: WFlags -> Qt::WFlags
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 278 column 14: QButtonGroup -> Q3ButtonGroup
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h at line 279 column 14: QWidgetStack -> Q3WidgetStack
-In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeUserGUI.h: Added the following include directives:
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 11 column 19: qtextedit.h -> q3textedit.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 13 column 18: qlistbox.h -> q3listbox.h
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 64 column 65: WFlags -> Qt::WFlags
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 116 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 118 column 10: QTextEdit -> Q3TextEdit
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 229 column 63: WFlags -> Qt::WFlags
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 268 column 9: WFlags -> Qt::WFlags
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 278 column 14: QButtonGroup -> Q3ButtonGroup
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h at line 279 column 14: QWidgetStack -> Q3WidgetStack
+In file /home/ckemere/Code/NSpike_2.0.0/src-gui/spikeFSGUI.h: Added the following include directives:
 	#include <QShowEvent> 	#include <QLabel> 	#include <Q3PopupMenu> 
 In file nspike.pro: Added entry QT +=  opengl 
 

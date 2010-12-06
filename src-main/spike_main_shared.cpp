@@ -228,19 +228,19 @@ int StopAcquisition(void)
     return ret;
 }
 
-void UpdateUserDataCount(void)
+void UpdateFSDataCount(void)
 {
-    /* go through the userdata structure and count the number of spike and
+    /* go through the fsdata structure and count the number of spike and
      * continuous channels selected. Also save the maximum electrode number
      * used */
     int i;
-    userdatainfo.ncont = userdatainfo.nspike = 0;
+    fsdatainfo.ncont = fsdatainfo.nspike = 0;
     for(i = 0; i < MAX_ELECTRODE_NUMBER; i++) {
-	if (userdatainfo.contelect[i]) {
-	    userdatainfo.contnum[userdatainfo.ncont++] = i;
+	if (fsdatainfo.contelect[i]) {
+	    fsdatainfo.contnum[fsdatainfo.ncont++] = i;
 	}
-	if (userdatainfo.spikeelect[i]) {
-	    userdatainfo.spikenum[userdatainfo.nspike++] = i;
+	if (fsdatainfo.spikeelect[i]) {
+	    fsdatainfo.spikenum[fsdatainfo.nspike++] = i;
 	}
     }
     return;
@@ -248,33 +248,33 @@ void UpdateUserDataCount(void)
 
 
 
-void SendUserDataInfo(void)
-    /* send the userdatainfo structure to the slaves and the local modules. This
+void SendFSDataInfo(void)
+    /* send the fsdatainfo structure to the slaves and the local modules. This
      * is only called by the master machine */
 {
    int i, id;
 
-   UpdateUserDataCount();
+   UpdateFSDataCount();
 
    for(i = 0; i < netinfo.nslaves; i++) {
-	SendMessage(netinfo.slavefd[i], USER_DATA_INFO, (char *) &userdatainfo, 
-		    sizeof(UserDataInfo));
+	SendMessage(netinfo.slavefd[i], FS_DATA_INFO, (char *) &fsdatainfo, 
+		    sizeof(FSDataInfo));
    }
-   /* now send the userdatainfo structure to all of the modules. Most of the 
+   /* now send the fsdatainfo structure to all of the modules. Most of the 
     * modules will ignore this message. */
     i = 0;
     while ((id = netinfo.messageinfd[i++]) != -1) {
 	/* only send the message to the local modules */
 	if (strcmp(netinfo.myname, client_message[id].to) == 0) {
-	    SendMessage(client_message[id].fd, USER_DATA_INFO, (char *)&userdatainfo,
-		    sizeof(UserDataInfo)); 
+	    SendMessage(client_message[id].fd, FS_DATA_INFO, (char *)&fsdatainfo,
+		    sizeof(FSDataInfo)); 
 	}
     } 
     return;
 }
 
 void SendDigIOInfo(void)
-    /* send the digio structure to the spike_userdata module. This
+    /* send the digio structure to the spike_fsdata module. This
      * is only called by the master machine */
 {
     int id, i = 0;
@@ -288,50 +288,50 @@ void SendDigIOInfo(void)
     return;
 }
 
-int UserDataStart(void) 
+int FSDataStart(void) 
 {
     int i, id;
-   /* Send the USER_DATA_START message to all of the modules. Most of the 
+   /* Send the FS_DATA_START message to all of the modules. Most of the 
     * modules will ignore this message. */
     i = 0;
     while ((id = netinfo.messageinfd[i++]) != -1) {
 	/* only send the message to the local modules */
 	if (strcmp(netinfo.myname, client_message[id].to) == 0) {
-	    SendMessage(client_message[id].fd, USER_DATA_START, NULL, 0);
-	   /* if (!WaitForMessage(server_message[id].fd, USER_DATA_STARTED, 2)){
+	    SendMessage(client_message[id].fd, FS_DATA_START, NULL, 0);
+	   /* if (!WaitForMessage(server_message[id].fd, FS_DATA_STARTED, 2)){
 		sprintf(tmpstring,"spike_main: Error starting user data output, no response from module %d\n", id);
 		DisplayStatusMessage(tmpstring);
 		return 0;
 	    } */
 	}
     }
-    sysinfo.userdataon = 1;
+    sysinfo.fsdataon = 1;
     FormatTS(timestring, sysinfo.approxtime);
-    sprintf(tmpstring,"User data output ON at appoximately %s", timestring);
+    sprintf(tmpstring,"FS data output ON at appoximately %s", timestring);
     DisplayStatusMessage(tmpstring);
     return 1;
 } 
 
-int UserDataStop(void) 
+int FSDataStop(void) 
 {
     int i, id;
-   /* Send the USER_DATA_STOP message to all of the modules. Most of the 
+   /* Send the FS_DATA_STOP message to all of the modules. Most of the 
     * modules will ignore this message. */
     i = 0;
     while ((id = netinfo.messageinfd[i++]) != -1) {
 	/* only send the message to the local modules */
 	if (strcmp(netinfo.myname, client_message[id].to) == 0) {
-	    SendMessage(client_message[id].fd, USER_DATA_STOP, NULL, 0);
-	    /*if (!WaitForMessage(server_message[id].fd, USER_DATA_STOPPED, 2)){
+	    SendMessage(client_message[id].fd, FS_DATA_STOP, NULL, 0);
+	    /*if (!WaitForMessage(server_message[id].fd, FS_DATA_STOPPED, 2)){
 		sprintf(tmpstring,"spike_main: Error starting user data output, no response from module %d\n", id);
 		DisplayStatusMessage(tmpstring);
 		return 0;
 	    } */
 	}
     }
-    sysinfo.userdataon = 0;
+    sysinfo.fsdataon = 0;
     FormatTS(timestring, sysinfo.approxtime);
-    sprintf(tmpstring,"User data output OFF at appoximately %s\n", timestring);
+    sprintf(tmpstring,"FS data output OFF at appoximately %s\n", timestring);
     DisplayStatusMessage(tmpstring);
     return 1;
 }
@@ -370,8 +370,8 @@ void spikeexit(int status)
 		sleep(1);
 		close(digioinfo.outputfd);
 		close(digioinfo.inputfd);
-		unlink(DIO_TO_USER_MESSAGE);
-		unlink(USER_TO_DIO_MESSAGE);
+		unlink(DIO_TO_FS_MESSAGE);
+		unlink(FS_TO_DIO_MESSAGE);
 	    }
 	}
     }

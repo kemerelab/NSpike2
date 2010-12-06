@@ -5,15 +5,15 @@
 /* defines for the programs associated with behavior */
 #define MAX_DIO_PROGRAMS 	10
 
-#define DIO_TO_USER_MESSAGE		"/tmp/spike_digio_to_user_message"
-#define USER_TO_DIO_MESSAGE		"/tmp/spike_user_to_digio_message"
+#define DIO_TO_FS_MESSAGE		"/tmp/spike_digio_to_user_message"
+#define FS_TO_DIO_MESSAGE		"/tmp/spike_user_to_digio_message"
 
-#define DAQ_TO_USER_DATA      "/tmp/spike_daq_to_user_data"
+#define DAQ_TO_FS_DATA      "/tmp/spike_daq_to_user_data"
 
 // state machine commands
 /* commands that can be sent to the master dsps state machine */
 #define DIO_COMMAND			200	// for simplicity, this is set to avoid overlap with the messages in spike_defines.h
-#define DIO_USER_MESSAGE		201	// for simplicity, this is set to avoid overlap with the messages in spike_defines.h
+#define DIO_FS_MESSAGE		201	// for simplicity, this is set to avoid overlap with the messages in spike_defines.h
 #define DIO_EVENT			202	// a status packet from the master dsp
 #define DIO_POSITION			203	// the current animal position
 #define DIO_EXPECT_DIO_RESPONSE		204	// 

@@ -55,7 +55,7 @@ int GetRatPos(unsigned char *buffer, u32 *ratx, u32 *raty, short *trackedx, shor
 SysInfo 		sysinfo;
 
 NetworkInfo		netinfo;
-UserDataInfo		userdatainfo;
+FSDataInfo		fsdatainfo;
 SocketInfo 		server_message[MAX_CONNECTIONS]; // the structure for receiving messages
 SocketInfo 		server_data[MAX_CONNECTIONS]; // the structure for receiving messages
 SocketInfo 		client_message[MAX_CONNECTIONS]; // the structure for sending messages
@@ -72,7 +72,7 @@ int main()
   int         message;
   int			messagedata[MAX_BUFFER_SIZE]; // message data can contain a sysinfo struct
   int			messagedatalen; // the length of the data in the message
-  int			userdatafd; // the file descriptor for the userdata program
+  int			fsdatafd; // the file descriptor for the fsdata program
   u32			bufferinfo[3];	/* information about the buffer to be 
 					 *  sent
 					 * the bufferinfo array contains the 
@@ -104,8 +104,8 @@ int main()
   int 		i, j, k, id;
   int			tmpint;
 
-  /* tracked pixels buffer for userdata output */
-  short		*userposdata;
+  /* tracked pixels buffer for fsdata output */
+  short		*fsposdata;
   short		*trackedx;
   short		*trackedy;
   u32			ntracked;
@@ -120,7 +120,7 @@ int main()
 	int 		setfaketime = 0;
 
   sysinfo.acq = 0;
-  sysinfo.userdataon = 0;
+  sysinfo.fsdataon = 0;
 
 
   /* set the type of program we are in for messaging */
@@ -203,12 +203,12 @@ int main()
 	if (sysinfo.acq) {
 	  /* send the data out */
 	  /* if we are sending only the position of the center of
-	   * mass out, send it on to spike_userdata and spike_main */
+	   * mass out, send it on to spike_fsdata and spike_main */
 	  if (!sysinfo.sendalltrackedpixels) {
-	    if (sysinfo.userdataon) {
-	      if (SendMessage(userdatafd, POS_DATA, (char *) bufferinfo, 
+	    if (sysinfo.fsdataon) {
+	      if (SendMessage(fsdatafd, POS_DATA, (char *) bufferinfo, 
 		      bufferinfosize) == -1) {
-		    sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_userdata: Resetting");
+		    sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_fsdata: Resetting");
 		    fprintf(STATUSFILE, "%s\n", tmpstring);
 		    ErrorMessage(tmpstring, client_message);
 		    break;
@@ -224,28 +224,28 @@ int main()
 	    }
 	  } 
 	  else {
-	    /* create the userdata data array 
-	     * put the timestamp in the beginning of the userposdata
+	    /* create the fsdata data array 
+	     * put the timestamp in the beginning of the fsposdata
 	     * array */
-	    memcpy(userposdata, bufferinfo, sizeof(u32));
-	    memcpy(userposdata + 2, &ntracked, sizeof(u32));
+	    memcpy(fsposdata, bufferinfo, sizeof(u32));
+	    memcpy(fsposdata + 2, &ntracked, sizeof(u32));
 	    /* we need to create a single data buffer, so we copy
 	     * the y tracked pixel coordinates to the end of the x
 	     * array */
 	    memcpy(trackedx + ntracked, trackedy, ntracked * 
 		    sizeof(short));
-	    if (sysinfo.userdataon) {
-	      if (SendMessage(userdatafd, POS_DATA,
-			(char *) userposdata, 2 * 
+	    if (sysinfo.fsdataon) {
+	      if (SendMessage(fsdatafd, POS_DATA,
+			(char *) fsposdata, 2 * 
 			(ntracked + 2) * sizeof(short)) == -1) {
-		sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_userdata: Resetting");
+		sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_fsdata: Resetting");
 		fprintf(STATUSFILE, "%s\n", tmpstring);
 		ErrorMessage(tmpstring, client_message);
 		break;
 	      }
 	    }
 	    if (SendMessage(client_data[SPIKE_MAIN].fd, POS_DATA, 
-		      (char *) userposdata, 2 * 
+		      (char *) fsposdata, 2 * 
 		      (ntracked + 2) * sizeof(short)) == -1) {
 	      sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_main: Resetting");
 	      fprintf(STATUSFILE, "%s\n", tmpstring);
@@ -348,10 +348,10 @@ int main()
       //fprintf(stderr, "sending buffer, time %d, size %d, ntracked = %d\n", bufferinfo[0], imagesize, j);
       /* first send the position information to spike_main */
       if (!sysinfo.sendalltrackedpixels) {
-	if (sysinfo.userdataon) {
-	  if (SendMessage(userdatafd, POS_DATA, (char *) bufferinfo, 
+	if (sysinfo.fsdataon) {
+	  if (SendMessage(fsdatafd, POS_DATA, (char *) bufferinfo, 
 	        	  bufferinfosize) == -1) {
-	    sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_userdata: Resetting");
+	    sprintf(tmpstring, "spike_posdaq: Error sending data from spike_posdaq to spike_fsdata: Resetting");
 	    fprintf(STATUSFILE, "%s\n", tmpstring);
 	    ErrorMessage(tmpstring, client_message);
 	    break;
@@ -369,28 +369,28 @@ int main()
 	} 
       } 
       else {
-	/* create the userdata data array to send to the main
+	/* create the fsdata data array to send to the main
 	 * program */
-	/* put the timestamp in the beginning of the userposdata
+	/* put the timestamp in the beginning of the fsposdata
 	 * array */
-	memcpy(userposdata, bufferinfo, sizeof(u32));
-	memcpy(userposdata + 2, &ntracked, sizeof(u32));
+	memcpy(fsposdata, bufferinfo, sizeof(u32));
+	memcpy(fsposdata + 2, &ntracked, sizeof(u32));
 	/* we need to create a single data buffer, so we copy
 	 * the y tracked pixel coordinates to the end of the x
 	 * array */
 	memcpy(trackedx + ntracked, trackedy, ntracked * 
 		sizeof(short));
-	/* if userdata saving is on, put the data in a buffer and send it 
-	 * to spike_userdata */
-	if (sysinfo.userdataon) {
-	  if (SendMessage(userdatafd, POS_DATA, 
-		    (char *) userposdata, 2 * (ntracked + 2) * 
+	/* if fsdata saving is on, put the data in a buffer and send it 
+	 * to spike_fsdata */
+	if (sysinfo.fsdataon) {
+	  if (SendMessage(fsdatafd, POS_DATA, 
+		    (char *) fsposdata, 2 * (ntracked + 2) * 
 		    sizeof(short)) == -1) {
-	    fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_userdata\n");
+	    fprintf(STATUSFILE, "spike_posdaq: ERROR sending data to spike_fsdata\n");
 	  }
 	}
 	if (SendMessage(client_data[SPIKE_MAIN].fd, POS_DATA, 
-		  (char *) userposdata, 2 * 
+		  (char *) fsposdata, 2 * 
 		  (ntracked + 2) * sizeof(short)) == -1) {
 	  error = 1;
 	}
@@ -491,33 +491,33 @@ int main()
 	    AddFD(video_fd, server_data, netinfo.datainfd);
 #endif
 	    /* allocate space for the tracked pixels that could be
-	     * sent to userdata including two elements for the timestamp. */
-	    userposdata = (short *) calloc(2*imagesize+4, sizeof(short));
-	    /* userposdata's first four elements are the timestamp
+	     * sent to fsdata including two elements for the timestamp. */
+	    fsposdata = (short *) calloc(2*imagesize+4, sizeof(short));
+	    /* fsposdata's first four elements are the timestamp
 	     * and the number of pixels */
-	    trackedx = userposdata + 4;
+	    trackedx = fsposdata + 4;
 	    trackedy = trackedx + imagesize;
 	    break;
 	  case POSITION_INFO:
 	    sysinfo.posthresh = (unsigned char) messagedata[0];
 	    break;
-	  case USER_DATA_INFO:
-	    /* get the userdatainfo structure */
-	    memcpy(messagedata, (char *) &userdatainfo, sizeof(UserDataInfo));
-	    /* we also need to find the userdata file descriptor */
+	  case FS_DATA_INFO:
+	    /* get the fsdatainfo structure */
+	    memcpy(messagedata, (char *) &fsdatainfo, sizeof(FSDataInfo));
+	    /* we also need to find the fsdata file descriptor */
 	    k = 0;
 	    while ((id = netinfo.dataoutfd[k++]) != -1) {
-	        if (client_data[id].toid == SPIKE_USER_DATA) {
-                    userdatafd = client_data[id].fd;
+	        if (client_data[id].toid == SPIKE_FS_DATA) {
+                    fsdatafd = client_data[id].fd;
 		    break;
 		}
 	    }
 	    break;
-	  case USER_DATA_START:
-	    sysinfo.userdataon = 1;
+	  case FS_DATA_START:
+	    sysinfo.fsdataon = 1;
 	    break;
-	  case USER_DATA_STOP:
-	     sysinfo.userdataon = 0;
+	  case FS_DATA_STOP:
+	     sysinfo.fsdataon = 0;
 	     break;
 	  case EXIT:
 	    posdaqexit(0);		    

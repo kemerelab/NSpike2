@@ -24,6 +24,6 @@
 #include "spike_dsp.h"
 #include "spike_functions.h"
 #include "spike_rtl.h"
-#include "spike_userdata.h"
+#include "spike_fsdata.h"
 
 #endif

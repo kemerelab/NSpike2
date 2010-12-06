@@ -2,7 +2,7 @@
 #define __SPIKE_MAIN_WINDOW_H__
 
 #include "spikeGLPane.h"
-#include "spikeUserGUI.h"
+#include "spikeFSGUI.h"
 #include "spike_dsp.h"
 #include "spike_dio.h"
 
@@ -28,8 +28,8 @@ class SpikeMainWindow : public QMainWindow {
     SpikeGLPane     **spikeGLPane;
     QButtonGroup     *audioGroup1;
     QButtonGroup     *audioGroup2;
-    QButtonGroup     *fsaudioGroup1;
-    QButtonGroup     *fsaudioGroup2;
+    QButtonGroup     *feedbackStimaudioGroup1;
+    QButtonGroup     *feedbackStimaudioGroup2;
     QButtonGroup     *EEGButtonGroup;
     QLabel         *timeLabel;
     QTabWidget     *qtab;
@@ -53,10 +53,10 @@ class SpikeMainWindow : public QMainWindow {
     void       masterCloseFiles() { masterCloseDataFiles(); };
     void       masterAudioSettings() { new SpikeAudio(this, "AudioDialog", 
         FALSE, 0);};
-    void       masterUserDataStart() { MasterUserDataStart(); };
-    void       masterUserDataStop() { MasterUserDataStop(); };
-    void       masterUserDataSettings() { new userDataDialog(this, 
-        "UserDataDialog", FALSE, 0);};
+    void       feedbackStimDataStart() { feedbackStimDataStart(); };
+    void       feedbackStimDataStop() { feedbackStimDataStop(); };
+    void       feedbackStimDataSettings() { new feedbackStimDataDialog(this, 
+        "feedbackStimDataDialog", FALSE, 0);};
     void       masterResetClock() { ResetClock(); };
     void       masterReprogramMasterDSP() { reprogramDSPDialog(1); };
     void       masterReprogramAuxDSPs() { reprogramDSPDialog(0); };
@@ -84,30 +84,17 @@ class SpikeMainWindow : public QMainWindow {
     void       digioOutput() { triggerOutput(); };
     void       runProgram(int prognum) {StartDigIOProgram(prognum);};
     void       setOutputs() { 
-    //  if (!rewardGUIOn) {
-        setOut = new setRewardsDialog(
-            this, "Set Rewards", FALSE, 0);
+        setOut = new setRewardsDialog(this, "Set Rewards", FALSE, 0);
         rewardGUIOn = true;
-        connect(setOut, SIGNAL(finished() ), 
-            this, SLOT(rewardGUIOff() ) );
-     // }
-      //else 
-       // QMessageBox::information(this, "Reward GUI Warning", "Only one Reward GUI can be open at a time.");
-
+        connect(setOut, SIGNAL(finished()), this, SLOT(rewardGUIOff()));
     };
     void       startRewardControl() { 
-    //  if (!rewardGUIOn) {
-        rewardCont = new rewardControl(this, "Set Rewards",
-            FALSE, 0);
+        rewardCont = new rewardControl(this, "Set Rewards", FALSE, 0);
         rewardGUIOn = true;
-        connect(rewardCont, SIGNAL(finished() ), 
-            this, SLOT(rewardGUIOff() ) );
-     // }
-      //else
-       // QMessageBox::information(this, "Reward GUI Warning", "Only one Reward GUI can be open at a time.");
+        connect(rewardCont, SIGNAL(finished()), this, SLOT(rewardGUIOff()));
     }
-    void       	outputToUserProgram() { getOutputToUserProgram(); };
-    void       	userProgramGUI() { launchUserGUI() ; };
+    void       	outputToFSProgram() { getOutputToFSProgram(); };
+    void       	feedbackStimGUI() { launchFeedbackStimGUI() ; };
     void       	resetStateMachines() { ResetStateMachines(); };
     void       	toggleUsesCompression();
     void       	doCompressionSettingsDialog();
@@ -120,18 +107,18 @@ class SpikeMainWindow : public QMainWindow {
     QAction *ctAction;
     QAction *cmdvAction;
     QAction *cfAction;
-    QAction	*masterAcqAction;
-    QAction	*masterStartSaveAction;
-    QAction	*masterStopSaveAction;
-    QAction	*masterOpenFilesAction;
-    QAction	*masterCloseFilesAction;
-    QAction	*masterResetClockAction;
-    QAction	*masterReprogramDSPSAction;
-    QAction	*userDataSettingsAction;
-    QAction	*startSaveAction;
-    QAction	*stopSaveAction;
-    QAction	*openFileAction;
-    QAction	*closeFileAction;
+    QAction *masterAcqAction;
+    QAction *masterStartSaveAction;
+    QAction *masterStopSaveAction;
+    QAction *masterOpenFilesAction;
+    QAction *masterCloseFilesAction;
+    QAction *masterResetClockAction;
+    QAction *masterReprogramDSPSAction;
+    QAction *feedbackStimSettingsAction;
+    QAction *startSaveAction;
+    QAction *stopSaveAction;
+    QAction *openFileAction;
+    QAction *closeFileAction;
     QAction *usecompAction, *compsetAction; // for file->usescompression
     QAction *posOutputAction;
     QAction *posAllowSCAction;
@@ -143,29 +130,29 @@ class SpikeMainWindow : public QMainWindow {
     /* Master menu items */
     void    masterOpenDataFiles();
     void    masterCloseDataFiles();
-    void	reprogramDSPDialog(int master);
-    void	showDSPCodeRev();
+    void    reprogramDSPDialog(int master);
+    void    showDSPCodeRev();
     /* file menu items */
     void    openDataFile();
     void    closeDataFile();
     void    saveConfigFile();
-    void 	updateUsesCompression();
+    void    updateUsesCompression();
     /* display menu items */
     void    setEEGTraceLength();
     /* tetrode settings menu items */
-    void 	updateCommonRef();
-    void 	updateCommonThresh();
-    void 	updateCommonMDV();
-    void 	updateCommonFilt();
+    void    updateCommonRef();
+    void    updateCommonThresh();
+    void    updateCommonMDV();
+    void    updateCommonFilt();
     /* position menu items */
-    void 	updatePositionOutput();
-    void 	updateAllowSyncChange();
+    void    updatePositionOutput();
+    void    updateAllowSyncChange();
     /* digioior menu items */
     void    triggerOutput();
-    void    getOutputToUserProgram();
-    void    launchUserGUI();
-    QMenu    *masterMenu;
-    QMenu    *fileMenu;
+    void    getOutputToFSProgram();
+    void    launchFeedbackStimGUI();
+    QMenu   *masterMenu;
+    QMenu   *fileMenu;
 
   protected:
     QPushButton   *b1, *b2, *b3;  
@@ -175,6 +162,7 @@ class SpikeMainWindow : public QMainWindow {
     QMenu    *posMenu;
     QMenu    *digioMenu;
     QMenu    *digioProgMenu;
+    QMenu    *feedbackStimMenu;
     QMenu    *tetrodeSettingsMenu;
 
     SpikeInfo *spikeInfo;

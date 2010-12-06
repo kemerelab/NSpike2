@@ -7,7 +7,7 @@
 killall spike_process_posdata
 killall spike_posdaq
 killall spike_save_data
-killall spike_userdata
+killall spike_fsdata
 killall user_program
 killall spike_daq
 killall nspike

@@ -1,11 +1,11 @@
 
-#include "../spikeUserGUI.h"
+#include "../spikeFSGUI.h"
 
 DigIOInfo digioinfo;
 SysInfo sysinfo;
 
-void  SendDAQUserMessage(int message, char *data, int datalen) {
-  qDebug("Sending DAQ User message %d",message);
+void  SendDAQFSMessage(int message, char *data, int datalen) {
+  qDebug("Sending DAQ FS message %d",message);
   return;
 }
 

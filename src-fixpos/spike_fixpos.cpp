@@ -177,11 +177,11 @@ DiodePosInfo 		CurrentSpecs;
 DiodePosInfo 		NextSpecs;
 DiodePosInfo		PreviousSpecs;
 DiodePosInfo		LastValidSpecs;
-DiodePosInfo		LastUserDefinedSpecs;
+DiodePosInfo		LastFSDefinedSpecs;
 SysInfo    		sysinfo;
 NetworkInfo		netinfo;
 DigIOInfo		digioinfo;
-UserDataInfo		userdatainfo;
+FSDataInfo		fsdatainfo;
 CommonDSPInfo		cdspinfo;
 struct Image    	*imageptr, *tmpimageptr, *firstimageptr;
 InterpInfo 		info;
@@ -622,7 +622,7 @@ int Init()
     CurrentSpecs.Back.x = 0;
     CurrentSpecs.Back.y = 0;
     LastValidSpecs = CurrentSpecs;
-    LastUserDefinedSpecs = CurrentSpecs;
+    LastFSDefinedSpecs = CurrentSpecs;
     PreviousSpecs = CurrentSpecs;
     NextSpecs.CenterOfMass.x = 0;
     NextSpecs.CenterOfMass.y = 0;
@@ -1517,7 +1517,7 @@ void Keyboard(unsigned char key, int x, int y)
 		    brightinfoptr->fronty = CurrentSpecs.Front.y;
 		    brightinfoptr->backx = CurrentSpecs.Back.x;
 		    brightinfoptr->backy = CurrentSpecs.Back.y;
-		    LastUserDefinedSpecs = LastValidSpecs = CurrentSpecs;
+		    LastFSDefinedSpecs = LastValidSpecs = CurrentSpecs;
 
 		    userinput = 0;
 		    userpause = 0;
@@ -1608,7 +1608,7 @@ void Keyboard(unsigned char key, int x, int y)
 		    CurrentSpecs.Front.y = brightinfoptr->fronty;
 		    CurrentSpecs.Back.x = brightinfoptr->backx;
 		    CurrentSpecs.Back.y = brightinfoptr->backy;
-		    LastUserDefinedSpecs = LastValidSpecs = CurrentSpecs;
+		    LastFSDefinedSpecs = LastValidSpecs = CurrentSpecs;
 		}
 		break;
 	    case 'B':
@@ -1623,7 +1623,7 @@ void Keyboard(unsigned char key, int x, int y)
 		CurrentSpecs.Front.y = brightinfoptr->fronty;
 		CurrentSpecs.Back.x = brightinfoptr->backx;
 		CurrentSpecs.Back.y = brightinfoptr->backy;
-		LastUserDefinedSpecs = LastValidSpecs = CurrentSpecs;
+		LastFSDefinedSpecs = LastValidSpecs = CurrentSpecs;
 		break;
 	    case 'n':
 		/* step through a single image */
@@ -1656,7 +1656,7 @@ void Keyboard(unsigned char key, int x, int y)
 		break;
 	    case '\'':
 
-		CurrentSpecs = LastUserDefinedSpecs;
+		CurrentSpecs = LastFSDefinedSpecs;
 		brightinfoptr->frontx = CurrentSpecs.Front.x;
 		brightinfoptr->fronty = CurrentSpecs.Front.y;
 		brightinfoptr->backx = CurrentSpecs.Back.x;
