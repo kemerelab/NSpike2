@@ -45,7 +45,6 @@ SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
     QWidget *FileDiskStatus = new QWidget();
     QGridLayout *statusLayout = new QGridLayout(FileDiskStatus);
 
-    //statusLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
     clear = new QPushButton("Clear Status", this, "ClearStatus");
     connect(clear, SIGNAL( clicked() ), this, SLOT(clearStatus()) );
@@ -54,35 +53,33 @@ SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
     message = new QLabel("test", this, 0);
     message->setFont(f);
     message->setText("");
-    //addPermanentWidget(message,3);
+    message->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 
-
-    statusLayout->addWidget(message, 0, 1, 1, 6, Qt::AlignLeft);
+    statusLayout->addWidget(message, 0, 1, 1, 11, Qt::AlignLeft);
 
     fileStatus = new QLabel(FileDiskStatus);
     fileStatus->setFont(f);
     fileStatus->setAutoFillBackground(true);
     //addPermanentWidget(fileStatus);
-    statusLayout->addWidget(fileStatus,1,0,1,2);
+    statusLayout->addWidget(fileStatus,1,0,1,8);
 
     fileSize = new QLabel(FileDiskStatus);
     fileSize->setFont(f);
     fileSize->setAutoFillBackground(true);
     //addPermanentWidget(fileSize);
-    statusLayout->addWidget(fileSize,1,2,1,1);
+    statusLayout->addWidget(fileSize,1,8,1,1);
 
     diskStatus = new QLabel(FileDiskStatus);
     diskStatus->setFont(f);
     diskStatus->setAutoFillBackground(true);
     //addPermanentWidget(diskStatus);
-    statusLayout->addWidget(diskStatus,1,3,1,2);
+    statusLayout->addWidget(diskStatus,1,9,1,2);
 
     diskFree = new QLabel(FileDiskStatus);
     diskFree->setFont(f);
     diskFree->setAutoFillBackground(true);
     //addPermanentWidget(diskFree);
-    statusLayout->addWidget(diskFree,1,5,1,1,Qt::AlignRight);
-
+    statusLayout->addWidget(diskFree,1,11,1,1,Qt::AlignRight);
 
     FileDiskStatus->setLayout(statusLayout);
     addWidget(FileDiskStatus,1);
@@ -114,22 +111,28 @@ void SpikeInfo::updateInfo(void)
   diskStatus->setPalette(palDefault);
   diskFree->setPalette(palDefault);
 
+  QSize mainsize = ((QWidget *) this->parent())->size();
+  QSize tmpsize = message->size();
+  tmpsize.setWidth((int) (mainsize.rwidth() * 0.8));
+  message->setMaximumSize(tmpsize);
+
   if (sysinfo.newmessage) { // display the current status message
-    message->setText(QString(dispinfo.statusmessage));
-  }
-  if (dispinfo.errormessage[0] == '\0') {
-    message->setStyleSheet("color: black;");
-  }
-  else {
-    /* display the current error message in red*/
-    message->setStyleSheet("color: red;");
+    fileStatus->setMaximumSize(tmpsize);
+    if (dispinfo.errormessage[0] == '\0') {
+      message->setText(QString(dispinfo.statusmessage));
+      message->setStyleSheet("color: black;");
+    }
+    else {
+      /* display the current error message in red*/
+      message->setText(QString(dispinfo.errormessage));
+      message->setStyleSheet("color: red;");
+    }
   }
 
   if (sysinfo.fileopen) {
-    QSize mainsze = ((QWidget *) this->parent())->size();
-    QSize fsze = fileStatus->size();
-    fsze.setWidth((int) (mainsze.rwidth() * 0.47));
-    fileStatus->setMaximumSize(fsze);
+    tmpsize = fileStatus->size();
+    tmpsize.setWidth((int) (mainsize.rwidth() * 0.65));
+    fileStatus->setMaximumSize(tmpsize);
     fileStatus->setText(QString(sysinfo.datafilename));
     fileSize->setText(QString("%1 MB").arg(sysinfo.datafilesize, 0, 'f',1));
 
@@ -154,8 +157,13 @@ void SpikeInfo::updateInfo(void)
     diskStatus->setPalette(palRed);
   }
 
-  diskFree->setText(QString("%1 GB free").arg(sysinfo.diskfree/1000, 0, 'f',1));
-  if (sysinfo.diskfree < 500) 
-    diskFree->setPalette(palRed);
+  if (sysinfo.diskfree > 0) {
+    diskFree->setText(QString("%1 GB free").arg(sysinfo.diskfree/1000, 0, 'f',1));
+    if (sysinfo.diskfree < 500) 
+      diskFree->setPalette(palRed);
+  }
+  else {
+    diskFree->setText(QString("?? GB free"));
+  }
 }
 

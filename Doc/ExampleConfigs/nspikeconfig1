@@ -15,7 +15,7 @@ nslaves 	0
 % change the port number if the software complains that it cannot open a
 % connection on the specified port.  
 % The port numbers must be > 1024 and < 65335
-master    	localhost    10000
+master    	virga    10000
 
 % optional slave lines, one for each slave, would go here
 
@@ -71,7 +71,7 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype 	localhost		CONTINUOUS DIGITALIO FSDATA
+datatype 	virga		CONTINUOUS DIGITALIO FSDATA
 
 ndioports	4
 dioport	0	output
@@ -85,7 +85,7 @@ dioport	3	output
 % doesn't save data, the datadirectory does not need to be specified for that
 % machine.
 
-datadirectory   localhost		/data
+datadirectory   virga		/data
 
 % the audio settings set the initial gain factor (volume), cutoff for diode
 % emulation, and delay in milliseconds.
@@ -113,9 +113,9 @@ dspclock	1
 % does analog outputs, it will ignore the sampling rate, but make sure to put
 % some number in the sampling rate field below
 % 	    dsp num   	sampling rate  	machine receiving data
-dspinfo		0		110		localhost
-dspinfo		1		1500		localhost
-dspinfo		2		1500		localhost
+dspinfo		0		110		virga
+dspinfo		1		1500		virga
+dspinfo		2		1500		virga
 
 
 %rtmode is used to improve online analysis.  setting rtmode changes the number of samples per
@@ -181,7 +181,7 @@ electmap	25		0	115
 % first comes the name of the host. All channels following the hostname line
 % are assumed to be from the same host until the next hostname line is
 % encoutered
-hostname 	localhost
+hostname 	virga
     channel 	0
 	    dspnum		1
 	    dspchan		96

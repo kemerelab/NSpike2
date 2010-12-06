@@ -1370,6 +1370,7 @@ void DisplayTime(void)
 void DisplayStatusMessage(const char *message)
 {
   strcpy(dispinfo.statusmessage, message);
+  dispinfo.errormessage[0] = '\0';
   /* Update spikeInfo */
   sysinfo.newmessage = 1;
   /* make sure the main form has been created */
@@ -1382,6 +1383,7 @@ void DisplayStatusMessage(const char *message)
 void DisplayStatusMessage(char *message)
 {
   strcpy(dispinfo.statusmessage, message);
+  dispinfo.errormessage[0] = '\0';
   /* Update spikeInfo */
   sysinfo.newmessage = 1;
   /* make sure the main form has been created */
