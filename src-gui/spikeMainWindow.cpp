@@ -322,20 +322,15 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
 
     digioMenu->addAction( "Reward Control GUI", this, SLOT(startRewardControl()));
     if (sysinfo.fsdataoutput) {
-      digioMenu->addAction( "Feedback / Stim GUI", this, SLOT(fsGUI()), Qt::CTRL+Qt::Key_G );
-    }
-    digioMenu->addSeparator();
-    digioMenu->addAction( "Reset State Machines", this, SLOT(resetStateMachines()));
-    if (sysinfo.fsdataoutput) {
       digioMenu->addSeparator();
+      digioMenu->addAction( "Feedback / Stim GUI", this, SLOT(fsGUI()), Qt::CTRL+Qt::Key_G );
       digioFSDataMenu = new QMenu("Feedback / Stim Data", this);
       fsDataStartAction = digioFSDataMenu->addAction( "Send Data", this, SLOT(fsDataStart()));
-      /* the data are sent by default, so this is disabled unless the user
-       * stops it */
-      fsDataStartAction->setEnabled(false);
       fsDataStopAction = digioFSDataMenu->addAction( "Stop Sending Data", this, SLOT(fsDataStop()));
-      fsDataSettingsAction = masterMenu->addAction( "Data Settings", this, SLOT(fsDataSettings()));
+      fsDataSettingsAction = digioFSDataMenu->addAction( "Data Settings", this, SLOT(fsDataSettings()));
+      setFSMenuEnables();
     }
+    digioMenu->addMenu(digioFSDataMenu);
 
     digioMenu->addSeparator();
 
@@ -346,6 +341,8 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
     connect(digioProgMenu, SIGNAL(activated(int)), this, SLOT(runProgram(int)));
     digioMenu->addMenu( digioProgMenu);
     digioMenu->addAction( "Send Message to FS Program", this, SLOT(outputToFSProgram()), Qt::CTRL+Qt::Key_U );
+    digioMenu->addSeparator();
+    digioMenu->addAction( "Reset State Machines", this, SLOT(resetStateMachines()));
     menuBar->addMenu( digioMenu);
   }
 
@@ -800,7 +797,7 @@ void SpikeMainWindow::launchFSGUI(void)
 	((DIOInterface *)dispinfo.fsguiptr)->show();
     }
     else {
-      sprintf(tmpstring,"Unknown user gui program %s", sysinfo.fsgui);
+      sprintf(tmpstring,"Unknown fs gui:%s", sysinfo.fsgui);
       DisplayErrorMessage(tmpstring);
     }
   }

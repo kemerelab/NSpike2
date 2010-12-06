@@ -492,8 +492,8 @@ int ReadConfigFile(char *configfilename, int datafile)
 			[strlen(digioinfo.progname[*tmpint])+1] = '\0';
                 }
             }
-            else if (strncmp(tmp, "fsgui", 7) == 0) {
-		tmp += 7;
+            else if (strncmp(tmp, "fsgui", 5) == 0) {
+		tmp += 5;
 		while (isspace(*tmp)) tmp++;
 		if (*tmp == '\0') break;
 		strcpy(sysinfo.fsgui, tmp);

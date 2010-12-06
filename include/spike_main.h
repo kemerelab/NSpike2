@@ -291,10 +291,11 @@ void UpdateFSDataCount(void);
 void SendFSDataInfo(void);
 void SendFSDataMessage(int messagetype, char *message, int len);
 void SendDigIOInfo(void);
-void MasterFSDataStart(void);
+bool MasterFSDataStart(void);
 void MasterFSDataStop(void);
 int FSDataStart(void);
 int FSDataStop(void);
+bool FSDataSelected(void);
 
 /* Master commands */
 void ToggleAcq(void);

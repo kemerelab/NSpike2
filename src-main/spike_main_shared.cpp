@@ -307,7 +307,7 @@ int FSDataStart(void)
     }
     sysinfo.fsdataon = 1;
     FormatTS(timestring, sysinfo.approxtime);
-    sprintf(tmpstring,"FS data output ON at appoximately %s", timestring);
+    sprintf(tmpstring,"FS data output ON at approximately %s", timestring);
     DisplayStatusMessage(tmpstring);
     return 1;
 } 

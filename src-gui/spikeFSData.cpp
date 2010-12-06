@@ -152,6 +152,7 @@ void fsDataDialog::setFSDataInfo() {
 
     /* now we need to send out these new settings to everyone */
     SendFSDataInfo();
+
     emit finished();
     return;
 }

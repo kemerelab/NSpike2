@@ -404,6 +404,11 @@ int main(int argc, char **argv)
 
   UpdateMenus();
 
+  if ((sysinfo.fsdataoutput)) {
+    fprintf(STATUSFILE, "Starting Feedback / Stim. Data Transmission\n");
+    MasterFSDataStart();
+  }
+
 
   return a.exec();
 }
@@ -2917,10 +2922,10 @@ void SetReference(int electnum, int refelect, int refchan)
 
 
 
-void MasterFSDataStart(void) 
+bool MasterFSDataStart(void) 
 {
   int i, error = 0;
-  if (!sysinfo.fsdataon) {
+  if (FSDataSelected()) {
     /* send a message to the slaves to start saving */
     for(i = 0; i < netinfo.nslaves; i++) {
       SendMessage(netinfo.slavefd[i], FS_DATA_START, NULL, 0);
@@ -2930,9 +2935,15 @@ void MasterFSDataStart(void)
       FSDataStart();
     }
     /* disable the settings menu item */
-    spikeMainWindow->fsDataSettingsAction->setEnabled(false);
+    //spikeMainWindow->fsDataSettingsAction->setEnabled(false);
     /* disable the acquisition toggle menu item */
     spikeMainWindow->masterAcqAction->setEnabled(false); 
+    return true;
+  }
+  else {
+      sysinfo.fsdataon = 0;
+      DisplayErrorMessage("no feedback / stimulation data selected\n");
+      return false;
   }
 }
 
@@ -2949,11 +2960,16 @@ void MasterFSDataStop(void)
       /* if we stopped the save on all of the slaves, stop it here as well */ 
       FSDataStop();
     }
-    /* enable the settings menu */
-    spikeMainWindow->fsDataSettingsAction->setEnabled(true);
     /* enable the acquisition toggle menu item */
     spikeMainWindow->masterAcqAction->setEnabled(true); 
   }
+}
+
+bool FSDataSelected(void)
+{
+    /* return 1 if any data are being sent */
+    return (fsdatainfo.sendcont | fsdatainfo.sendspike | fsdatainfo.sendpos |
+	    fsdatainfo.senddigio);
 }
 
 

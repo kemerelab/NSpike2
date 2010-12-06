@@ -16,6 +16,7 @@
 #define MAX_WELLS	8
 
 extern DigIOInfo digioinfo;
+extern SysInfo sysinfo;
 extern DisplayInfo dispinfo;
 
 class SpikeMainWindow : public QMainWindow {
@@ -35,6 +36,7 @@ class SpikeMainWindow : public QMainWindow {
     QTabWidget     *qtab;
     setRewardsDialog  *setOut;
     rewardControl	*rewardCont;
+    fsDataDialog	*fsData;
     int         ntabs;
     int         prevPage;
     QWidget     **w;
@@ -53,10 +55,37 @@ class SpikeMainWindow : public QMainWindow {
     void       masterCloseFiles() { masterCloseDataFiles(); };
     void       masterAudioSettings() { new SpikeAudio(this, "AudioDialog", 
         FALSE, 0);};
-    void       fsDataStart() { fsDataStart(); };
-    void       fsDataStop() { fsDataStop(); };
-    void       fsDataSettings() { new fsDataDialog(this, 
-        "fsDataDialog", FALSE, 0);};
+    void       fsDataStart() {  
+		    MasterFSDataStart();
+		    setFSMenuEnables();
+    	       };
+    void       fsDataStop() {   
+		    MasterFSDataStop(); 
+		    setFSMenuEnables();
+	       };
+    void       fsDataSettings() { fsData = new fsDataDialog(this, 
+				                     "fsDataDialog", FALSE, 0);
+				  connect(fsData, SIGNAL(finished()), 
+					  this, SLOT(setFSMenuEnables()));
+				}
+    void       setFSMenuEnables() {
+	          if (sysinfo.fsdataon) {
+		    fsDataStartAction->setEnabled(false);
+		    fsDataStopAction->setEnabled(true);
+		    fsDataSettingsAction->setEnabled(false);
+		  }
+		  else if (FSDataSelected()) {
+		    fsDataStartAction->setEnabled(true);
+		    fsDataStopAction->setEnabled(false);
+		    fsDataSettingsAction->setEnabled(true);
+		  }
+		  else {
+		    fsDataStartAction->setEnabled(false);
+		    fsDataStopAction->setEnabled(false);
+		    fsDataSettingsAction->setEnabled(true);
+		  }
+                }
+
     void       masterResetClock() { ResetClock(); };
     void       masterReprogramMasterDSP() { reprogramDSPDialog(1); };
     void       masterReprogramAuxDSPs() { reprogramDSPDialog(0); };
