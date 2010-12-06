@@ -1,6 +1,6 @@
 
 #include "spikecommon.h"
-#include "userRealtimeFeedbackTab.h"
+#include "fsRealtimeFeedbackTab.h"
 #include "spikeFSGUI.h"
 
 extern DAQ_IO *daq_io_widget; // global

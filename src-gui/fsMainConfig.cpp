@@ -9,7 +9,7 @@
 //#include <string.h>
 //#include <stdio.h>
 #include "spikeFSGUI.h"
-#include "userMainConfig.h"
+#include "fsMainConfig.h"
 
 extern DigIOInfo digioinfo;
 extern SysInfo sysinfo;

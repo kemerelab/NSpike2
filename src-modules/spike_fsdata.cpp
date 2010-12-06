@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 	     memcpy((char *) &fsdatainfo, messagedata,
 		    sizeof(FSDataInfo));
 	     /* we also need to reset any relevant variables */
-	     ResetFeedbackStimStatus();
+	     ResetFSStatus();
 	     break;
 	  case FS_DATA_START:
 	     sysinfo.fsdataon = 1;

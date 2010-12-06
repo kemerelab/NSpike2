@@ -58,7 +58,7 @@ port		10020
 % POSITION
 % DIGITALIO
 % and 
-% FSDATA
+% FSDATA (data to control feedback / stimulation)
 % 
 % If you want POSITION data, both the master and the rtslave must have POSITION
 % as a datatype
@@ -124,7 +124,7 @@ dspinfo		2		1500		global
 %As with dspsampperpacket, don't set this unless you need to minize data latency to spike_fsdata
 %rtmode		1
 
-%fsdata defines the types of data to send and the list of electrodes to send to spike_user_data
+%fsdata defines the types of data to send and the list of electrodes to send to spike_fs_data
 %currently each datatype and electrode number need to be listed separately:
 % fsdata DIGITALIO
 % fsdata POSITION

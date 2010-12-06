@@ -690,7 +690,7 @@ PACKAGE_NAME
 PATH_SEPARATOR
 SHELL'
 ac_subst_files=''
-ac_user_opts='
+ac_fs_opts='
 enable_option_checking
 enable_dependency_tracking
 with_qt_dir
@@ -819,7 +819,7 @@ do
       as_fn_error "invalid feature name: $ac_useropt"
     ac_useropt_orig=$ac_useropt
     ac_useropt=`$as_echo "$ac_useropt" | sed 's/[-+.]/_/g'`
-    case $ac_user_opts in
+    case $ac_fs_opts in
       *"
 "enable_$ac_useropt"
 "*) ;;
@@ -845,7 +845,7 @@ do
       as_fn_error "invalid feature name: $ac_useropt"
     ac_useropt_orig=$ac_useropt
     ac_useropt=`$as_echo "$ac_useropt" | sed 's/[-+.]/_/g'`
-    case $ac_user_opts in
+    case $ac_fs_opts in
       *"
 "enable_$ac_useropt"
 "*) ;;
@@ -1049,7 +1049,7 @@ do
       as_fn_error "invalid package name: $ac_useropt"
     ac_useropt_orig=$ac_useropt
     ac_useropt=`$as_echo "$ac_useropt" | sed 's/[-+.]/_/g'`
-    case $ac_user_opts in
+    case $ac_fs_opts in
       *"
 "with_$ac_useropt"
 "*) ;;
@@ -1065,7 +1065,7 @@ do
       as_fn_error "invalid package name: $ac_useropt"
     ac_useropt_orig=$ac_useropt
     ac_useropt=`$as_echo "$ac_useropt" | sed 's/[-+.]/_/g'`
-    case $ac_user_opts in
+    case $ac_fs_opts in
       *"
 "with_$ac_useropt"
 "*) ;;

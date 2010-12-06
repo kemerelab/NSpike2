@@ -19,19 +19,19 @@ spike_process_posdata_LDFLAGS = -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET
 spike_save_data_SOURCES = spike_save_data.cpp spike_message.cpp 
 spike_save_data_LDADD = -lz 
 
-# add your user functions in src-user and to the two fsdata definitions
+# add your fs functions in src-fs and to the two fsdata definitions
 #nspike_fsdata_SOURCES = spike_main_fsdata.cpp spike_message.cpp \
-#		spike_config.cpp src-user/stimcontrol_processmessage.cpp \
-#		src-user/stimcontrol_processdata.cpp \
-#		src-user/generate_pulse_functions.cpp \
-#		src-user/ripple_process.cpp 
+#		spike_config.cpp src-fs/stimcontrol_processmessage.cpp \
+#		src-fs/stimcontrol_processdata.cpp \
+#		src-fs/generate_pulse_functions.cpp \
+#		src-fs/ripple_process.cpp 
 #
 #nspike_fsdata_LDADD = -lm -lz
 
 spike_fsdata_SOURCES = spike_fsdata.cpp spike_message.cpp \
-		src-user/stimcontrol_processmessage.cpp \
-		src-user/stimcontrol_processdata.cpp \
-		src-user/generate_pulse_functions.cpp \
-		src-user/ripple_process.cpp 
+		src-fs/stimcontrol_processmessage.cpp \
+		src-fs/stimcontrol_processdata.cpp \
+		src-fs/generate_pulse_functions.cpp \
+		src-fs/ripple_process.cpp 
 
-INCLUDES = -I@top_srcdir@/include -I@top_srcdir@/src-modules/src-user
+INCLUDES = -I@top_srcdir@/include -I@top_srcdir@/src-modules/src-fs

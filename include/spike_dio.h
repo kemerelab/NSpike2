@@ -5,10 +5,10 @@
 /* defines for the programs associated with behavior */
 #define MAX_DIO_PROGRAMS 	10
 
-#define DIO_TO_FS_MESSAGE		"/tmp/spike_digio_to_user_message"
-#define FS_TO_DIO_MESSAGE		"/tmp/spike_user_to_digio_message"
+#define DIO_TO_FS_MESSAGE		"/tmp/spike_digio_to_fs_message"
+#define FS_TO_DIO_MESSAGE		"/tmp/spike_fs_to_digio_message"
 
-#define DAQ_TO_FS_DATA      "/tmp/spike_daq_to_user_data"
+#define DAQ_TO_FS_DATA      "/tmp/spike_daq_to_fs_data"
 
 // state machine commands
 /* commands that can be sent to the master dsps state machine */

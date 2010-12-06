@@ -28,8 +28,8 @@ class SpikeMainWindow : public QMainWindow {
     SpikeGLPane     **spikeGLPane;
     QButtonGroup     *audioGroup1;
     QButtonGroup     *audioGroup2;
-    QButtonGroup     *feedbackStimaudioGroup1;
-    QButtonGroup     *feedbackStimaudioGroup2;
+    QButtonGroup     *fsaudioGroup1;
+    QButtonGroup     *fsaudioGroup2;
     QButtonGroup     *EEGButtonGroup;
     QLabel         *timeLabel;
     QTabWidget     *qtab;
@@ -53,10 +53,10 @@ class SpikeMainWindow : public QMainWindow {
     void       masterCloseFiles() { masterCloseDataFiles(); };
     void       masterAudioSettings() { new SpikeAudio(this, "AudioDialog", 
         FALSE, 0);};
-    void       feedbackStimDataStart() { feedbackStimDataStart(); };
-    void       feedbackStimDataStop() { feedbackStimDataStop(); };
-    void       feedbackStimDataSettings() { new feedbackStimDataDialog(this, 
-        "feedbackStimDataDialog", FALSE, 0);};
+    void       fsDataStart() { fsDataStart(); };
+    void       fsDataStop() { fsDataStop(); };
+    void       fsDataSettings() { new fsDataDialog(this, 
+        "fsDataDialog", FALSE, 0);};
     void       masterResetClock() { ResetClock(); };
     void       masterReprogramMasterDSP() { reprogramDSPDialog(1); };
     void       masterReprogramAuxDSPs() { reprogramDSPDialog(0); };
@@ -94,7 +94,7 @@ class SpikeMainWindow : public QMainWindow {
         connect(rewardCont, SIGNAL(finished()), this, SLOT(rewardGUIOff()));
     }
     void       	outputToFSProgram() { getOutputToFSProgram(); };
-    void       	feedbackStimGUI() { launchFeedbackStimGUI() ; };
+    void       	fsGUI() { launchFSGUI() ; };
     void       	resetStateMachines() { ResetStateMachines(); };
     void       	toggleUsesCompression();
     void       	doCompressionSettingsDialog();
@@ -114,7 +114,9 @@ class SpikeMainWindow : public QMainWindow {
     QAction *masterCloseFilesAction;
     QAction *masterResetClockAction;
     QAction *masterReprogramDSPSAction;
-    QAction *feedbackStimSettingsAction;
+    QAction *fsDataStartAction;
+    QAction *fsDataStopAction;
+    QAction *fsDataSettingsAction;
     QAction *startSaveAction;
     QAction *stopSaveAction;
     QAction *openFileAction;
@@ -150,7 +152,7 @@ class SpikeMainWindow : public QMainWindow {
     /* digioior menu items */
     void    triggerOutput();
     void    getOutputToFSProgram();
-    void    launchFeedbackStimGUI();
+    void    launchFSGUI();
     QMenu   *masterMenu;
     QMenu   *fileMenu;
 
@@ -161,8 +163,9 @@ class SpikeMainWindow : public QMainWindow {
     QMenu    *displayMenu;
     QMenu    *posMenu;
     QMenu    *digioMenu;
+    QMenu    *digioFSDataMenu;
     QMenu    *digioProgMenu;
-    QMenu    *feedbackStimMenu;
+    QMenu    *fsMenu;
     QMenu    *tetrodeSettingsMenu;
 
     SpikeInfo *spikeInfo;

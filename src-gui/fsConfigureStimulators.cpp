@@ -1,7 +1,7 @@
 
 #include "spikecommon.h"
 #include "spikeFSGUI.h"
-#include "userConfigureStimulators.h"
+#include "fsConfigureStimulators.h"
 
 
 StimConfigTab::StimConfigTab (QWidget *parent)

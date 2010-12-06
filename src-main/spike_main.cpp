@@ -2930,7 +2930,7 @@ void MasterFSDataStart(void)
       FSDataStart();
     }
     /* disable the settings menu item */
-    spikeMainWindow->userDataSettingsAction->setEnabled(false);
+    spikeMainWindow->fsDataSettingsAction->setEnabled(false);
     /* disable the acquisition toggle menu item */
     spikeMainWindow->masterAcqAction->setEnabled(false); 
   }
@@ -2950,7 +2950,7 @@ void MasterFSDataStop(void)
       FSDataStop();
     }
     /* enable the settings menu */
-    spikeMainWindow->userDataSettingsAction->setEnabled(true);
+    spikeMainWindow->fsDataSettingsAction->setEnabled(true);
     /* enable the acquisition toggle menu item */
     spikeMainWindow->masterAcqAction->setEnabled(true); 
   }

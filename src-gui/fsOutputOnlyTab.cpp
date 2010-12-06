@@ -1,7 +1,7 @@
 
 
 #include "spikecommon.h"
-#include "userOutputOnlyTab.h"
+#include "fsOutputOnlyTab.h"
 #include "spikeFSGUI.h"
 
 extern DAQ_IO *daq_io_widget; // global

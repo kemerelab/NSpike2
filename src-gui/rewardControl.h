@@ -175,14 +175,14 @@ class setRewardsDialog : public QDialog {
 
 };
 
-class userDataDialog : public QDialog {
+class fsDataDialog : public QDialog {
 	Q_OBJECT
 
     public:
-	    userDataDialog(QWidget *parent = 0, 
+	    fsDataDialog(QWidget *parent = 0, 
 		    const char *name = 0, bool model = FALSE, 
 		    Qt::WFlags fl = 0);
-	    ~userDataDialog();
+	    ~fsDataDialog();
 	    void setFSDataInfo();
 
     public slots:

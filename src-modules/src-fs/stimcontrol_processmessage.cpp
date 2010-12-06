@@ -1,7 +1,7 @@
 /* the following include files must be present in all behavioral programs */
 #include "spikecommon.h"
 #include "spike_dio.h"
-#include "spike_user_defines.h"
+#include "spike_fs_defines.h"
 #include "stimcontrol_globalvar.h"
 
 void ProcessMessage(int message, char *messagedata, int messagedatalen)

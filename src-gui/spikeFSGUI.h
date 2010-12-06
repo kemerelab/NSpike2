@@ -6,10 +6,10 @@
 #include "spike_main.h"
 
 #include "spike_stimcontrol_defines.h"
-#include "userMainConfig.h"
-#include "userConfigureStimulators.h"
-#include "userOutputOnlyTab.h"
-#include "userRealtimeFeedbackTab.h"
+#include "fsMainConfig.h"
+#include "fsConfigureStimulators.h"
+#include "fsOutputOnlyTab.h"
+#include "fsRealtimeFeedbackTab.h"
 
 #include <QtGui>
 #include <q3textedit.h>

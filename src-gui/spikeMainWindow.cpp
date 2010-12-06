@@ -318,21 +318,23 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
     digioMenu = new QMenu("Digital / Analog &IO", this);
     digioMenu->addAction( "Trigger Output", this, SLOT(digioOutput()), Qt::Key_O );
     digioMenu->addAction( "Set &Outputs", this, SLOT(setOutputs()), Qt::Key_R );
-    digioMeny->addSeparator();
+    digioMenu->addSeparator();
 
     digioMenu->addAction( "Reward Control GUI", this, SLOT(startRewardControl()));
-    digioMenu->addAction( "Feedback / Stim GUI", this, SLOT(feedbackStimGUI()), Qt::CTRL+Qt::Key_G );
-    digioMeny->addSeparator();
+    if (sysinfo.fsdataoutput) {
+      digioMenu->addAction( "Feedback / Stim GUI", this, SLOT(fsGUI()), Qt::CTRL+Qt::Key_G );
+    }
+    digioMenu->addSeparator();
     digioMenu->addAction( "Reset State Machines", this, SLOT(resetStateMachines()));
     if (sysinfo.fsdataoutput) {
       digioMenu->addSeparator();
-      digioFeedbackStimDataMenu = new QMenu("Feedback / Stim Data", this);
-      feedbackStimDataStartAction = digioFeedbackStimDataMenu->addAction( "Send Data", this, SLOT(feedbackStimDataStart()));
+      digioFSDataMenu = new QMenu("Feedback / Stim Data", this);
+      fsDataStartAction = digioFSDataMenu->addAction( "Send Data", this, SLOT(fsDataStart()));
       /* the data are sent by default, so this is disabled unless the user
        * stops it */
-      feedbackStimDataStartAction->setEnabled(false);
-      feedbackStimDataStopAction = digioFeedbackStimDataMenu->addAction( "Stop Sending Data", this, SLOT(feedbackStimDataStop()));
-      feedbackStimDataSettingsAction = masterMenu->addAction( "Data Settings", this, SLOT(feedbackStimDataSettings()));
+      fsDataStartAction->setEnabled(false);
+      fsDataStopAction = digioFSDataMenu->addAction( "Stop Sending Data", this, SLOT(fsDataStop()));
+      fsDataSettingsAction = masterMenu->addAction( "Data Settings", this, SLOT(fsDataSettings()));
     }
 
     digioMenu->addSeparator();

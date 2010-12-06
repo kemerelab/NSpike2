@@ -32,7 +32,7 @@ extern FSDataInfo fsdatainfo;
 
 
 
-userDataDialog::userDataDialog(QWidget* parent, 
+fsDataDialog::fsDataDialog(QWidget* parent, 
 	const char* name, bool modal, Qt::WFlags fl)
     : QDialog( parent, name, modal, fl)
 {
@@ -46,7 +46,7 @@ userDataDialog::userDataDialog(QWidget* parent,
     ncols = 2 * (sysinfo.maxelectnum / 16 + 1) + 1;
     midcol = ncols / 2 + 1;
 
-    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "userDataDialogLayout");
+    Q3GridLayout *grid = new Q3GridLayout(this, nrows, ncols, 0, 0, "fsDataDialogLayout");
 
     QSizePolicy p(QSizePolicy::Preferred, QSizePolicy::Preferred, FALSE);
     QSizePolicy p2(QSizePolicy::Maximum, QSizePolicy::Maximum, FALSE);
@@ -122,7 +122,7 @@ userDataDialog::userDataDialog(QWidget* parent,
     show();
 }
 
-void userDataDialog::setFSDataInfo() {
+void fsDataDialog::setFSDataInfo() {
     int i;
     /* use the state of the buttons to set the user data info */
     if (posSelect->isChecked()) {
@@ -156,7 +156,7 @@ void userDataDialog::setFSDataInfo() {
     return;
 }
 
-userDataDialog::~userDataDialog() {
+fsDataDialog::~fsDataDialog() {
 }
 
 
