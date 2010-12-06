@@ -35,50 +35,57 @@ extern SysInfo sysinfo;
 
 SpikeInfo::SpikeInfo(QWidget* parent) : QStatusBar(parent)
 {
+    fprintf(stderr, "Making Spike Info");
     // Now implemented in Status Bar
 
     QString s;
 
     QFont f( "SansSerif", 12, QFont::Normal );
 
+    QWidget *FileDiskStatus = new QWidget();
+    QGridLayout *statusLayout = new QGridLayout(FileDiskStatus);
+
+    //statusLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+
     clear = new QPushButton("Clear Status", this, "ClearStatus");
     connect(clear, SIGNAL( clicked() ), this, SLOT(clearStatus()) );
-    addPermanentWidget(clear);
+    statusLayout->addWidget(clear, 0, 0, 1, 1, Qt::AlignLeft);
 
     message = new QLabel("test", this, 0);
     message->setFont(f);
     message->setText("");
-    addPermanentWidget(message,3);
+    //addPermanentWidget(message,3);
 
-    QWidget *FileDiskStatus = new QWidget(this);
-    QGridLayout *statusLayout = new QGridLayout(FileDiskStatus);
+
+    statusLayout->addWidget(message, 0, 1, 1, 6, Qt::AlignLeft);
 
     fileStatus = new QLabel(FileDiskStatus);
     fileStatus->setFont(f);
     fileStatus->setAutoFillBackground(true);
     //addPermanentWidget(fileStatus);
-    statusLayout->addWidget(fileStatus,0,0,1,1);
+    statusLayout->addWidget(fileStatus,1,0,1,2);
 
     fileSize = new QLabel(FileDiskStatus);
     fileSize->setFont(f);
     fileSize->setAutoFillBackground(true);
     //addPermanentWidget(fileSize);
-    statusLayout->addWidget(fileSize,0,1,1,1);
+    statusLayout->addWidget(fileSize,1,2,1,1);
 
     diskStatus = new QLabel(FileDiskStatus);
     diskStatus->setFont(f);
     diskStatus->setAutoFillBackground(true);
     //addPermanentWidget(diskStatus);
-    statusLayout->addWidget(diskStatus,1,0,1,1);
+    statusLayout->addWidget(diskStatus,1,3,1,2);
 
     diskFree = new QLabel(FileDiskStatus);
     diskFree->setFont(f);
     diskFree->setAutoFillBackground(true);
     //addPermanentWidget(diskFree);
-    statusLayout->addWidget(diskFree,1,1,1,1);
+    statusLayout->addWidget(diskFree,1,5,1,1,Qt::AlignRight);
+
 
     FileDiskStatus->setLayout(statusLayout);
-    addPermanentWidget(FileDiskStatus);
+    addWidget(FileDiskStatus,1);
 }
 
 
@@ -119,6 +126,10 @@ void SpikeInfo::updateInfo(void)
   }
 
   if (sysinfo.fileopen) {
+    QSize mainsze = ((QWidget *) this->parent())->size();
+    QSize fsze = fileStatus->size();
+    fsze.setWidth((int) (mainsze.rwidth() * 0.47));
+    fileStatus->setMaximumSize(fsze);
     fileStatus->setText(QString(sysinfo.datafilename));
     fileSize->setText(QString("%1 MB").arg(sysinfo.datafilesize, 0, 'f',1));
 

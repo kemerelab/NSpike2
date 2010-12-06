@@ -373,6 +373,7 @@ SpikeMainWindow::~SpikeMainWindow() {
 void SpikeMainWindow::updateAllInfo(void) {
     int i;
      
+    this->spikeInfo->updateInfo();
     i = dispinfo.qtab->currentPageIndex();
     this->spikeGLPane[i]->updateAllInfo();
 }
@@ -499,13 +500,11 @@ void SpikeMainWindow::openDataFile(void)
 void SpikeMainWindow::closeDataFile(void)
 {
    if (sysinfo.fileopen) {
-       if (QMessageBox::question( this,
-    tr("Close File?"),
-    tr("Are you sure you want to close the data file?"),
-    tr("&Yes"), tr("&No"),
-    QString::null, 1, 1 )  == 0) {
-      CloseFile();
-  }
+      if  (QMessageBox::question(this, tr("Close File?"),
+		 tr("Are you sure you want to close the data file?"),
+                  QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+        CloseFile();
+      }
    }
     else {
   DisplayStatusMessage("Error: no file is open\n");
