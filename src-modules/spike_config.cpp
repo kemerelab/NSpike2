@@ -286,7 +286,7 @@ int ReadConfigFile(char *configfilename, int datafile)
 		    else if (strncmp(tmp, "FSDATA", 6) == 0) {
 			sysinfo.datatype[tmpint[0]] |= FSDATA;
 			sysinfo.fsdataoutput = 1;
-			tmp+=8;
+			tmp+=6;
 		    }
 		    else {
 			fprintf(stderr, "Warning: datatype %s unknown\n", tmp);
@@ -520,9 +520,9 @@ int ReadConfigFile(char *configfilename, int datafile)
                     sysinfo.localref = true;
                 }
 	    }
-	    /* Matlab output */
-            else if (strncmp(tmp, "fsdata", 8) == 0) {
-		tmp += 8;
+	    /* userdata output */
+            else if (strncmp(tmp, "fsdata", 6) == 0) {
+		tmp += 6;
 		tmpbool = NULL;
 		/* skip spaces until we get to the datatype string */
 		tmpint[0] = 0;

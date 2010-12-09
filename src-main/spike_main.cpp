@@ -402,13 +402,13 @@ int main(int argc, char **argv)
     fprintf(STATUSFILE, "Acquistion started\n");
   }
 
-  UpdateMenus();
 
   if ((sysinfo.fsdataoutput)) {
     fprintf(STATUSFILE, "Starting Feedback / Stim. Data Transmission\n");
     MasterFSDataStart();
   }
 
+  UpdateMenus();
 
   return a.exec();
 }
@@ -1693,6 +1693,10 @@ void UpdateMenus(void)
       }
     }
   }
+  /* update the FS menu if relevant */
+  if (sysinfo.fsdataoutput) {
+      spikeMainWindow->setFSMenuEnables();
+  }
 }
 
 
@@ -2939,7 +2943,6 @@ bool MasterFSDataStart(void)
     /* disable the settings menu item */
     //spikeMainWindow->fsDataSettingsAction->setEnabled(false);
     /* disable the acquisition toggle menu item */
-    spikeMainWindow->masterAcqAction->setEnabled(false); 
     return true;
   }
   else {
