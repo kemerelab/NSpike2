@@ -328,7 +328,6 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
       fsDataStartAction = digioFSDataMenu->addAction( "Send Data", this, SLOT(fsDataStart()));
       fsDataStopAction = digioFSDataMenu->addAction( "Stop Sending Data", this, SLOT(fsDataStop()));
       fsDataSettingsAction = digioFSDataMenu->addAction( "Data Settings", this, SLOT(fsDataSettings()));
-      setFSMenuEnables();
     }
     digioMenu->addMenu(digioFSDataMenu);
 
