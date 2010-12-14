@@ -1694,7 +1694,8 @@ void UpdateMenus(void)
     }
   }
   /* update the FS menu if relevant */
-  if (sysinfo.fsdataoutput) {
+  if ((sysinfo.fsdataoutput) &&
+      (sysinfo.system_type[sysinfo.machinenum] == MASTER)) {
       spikeMainWindow->setFSMenuEnables();
   }
 }

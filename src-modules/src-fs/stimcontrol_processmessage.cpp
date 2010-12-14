@@ -45,8 +45,8 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 	  fprintf(stderr,"rt_user: Received request to do theta stimulation.\n");
 	  break;
 	case DIO_RTMODE_RIPPLE_DISRUPT:
-	  InitRipple();
 	  fprintf(stderr,"rt_user: Received request to do ripple disruption.\n");
+	  InitRipple();
 	  break;
 	case DIO_RTMODE_LATENCY_TEST:
 	  InitLatency();

@@ -45,6 +45,7 @@ typedef struct _ExtractInfo {
     int   extractdiotext;
     int   extractevent;
     int   fixtime;
+    bool  flush;
     u32   toffset;
 } ExtractInfo;
 
@@ -81,48 +82,52 @@ int main(int argc, char **argv)
     extractinfo.extractevent = 0;
     extractinfo.fixtime = 0;
     extractinfo.toffset = 0;
+    extractinfo.flush = 0;
     datafilename[0] = '\0';
 
     while (++nxtarg < argc) {
         if (strcmp(argv[nxtarg], "-spike") == 0) {
-      extractinfo.extractspike = 1;
+	  extractinfo.extractspike = 1;
         }
         else if (strcmp(argv[nxtarg], "-cont") == 0) {
-      extractinfo.extractcont = 1;
+	  extractinfo.extractcont = 1;
         }
         else if (strcmp(argv[nxtarg], "-pos") == 0) {
-      extractinfo.extractpos = 1;
+	  extractinfo.extractpos = 1;
         }
         else if (strcmp(argv[nxtarg], "-pos64") == 0) {
-      extractinfo.extractpos = 1;
-      extractinfo.extractpos64 = 1;
+	  extractinfo.extractpos = 1;
+	  extractinfo.extractpos64 = 1;
         }
         else if (strcmp(argv[nxtarg], "-dio") == 0) {
-      extractinfo.extractdio = 1;
+	  extractinfo.extractdio = 1;
         }
         else if (strcmp(argv[nxtarg], "-diotext") == 0) {
-      extractinfo.extractdiotext = 1;
+	  extractinfo.extractdiotext = 1;
         }
         else if (strcmp(argv[nxtarg], "-event") == 0) {
-      extractinfo.extractevent = 1;
+	  extractinfo.extractevent = 1;
         }
         else if (strcmp(argv[nxtarg], "-all") == 0) {
-      extractinfo.extractspike = 1;
-      extractinfo.extractcont = 1;
-      extractinfo.extractpos = 1;
-      extractinfo.extractdiotext = 1;
-      extractinfo.extractevent = 1;
+	  extractinfo.extractspike = 1;
+	  extractinfo.extractcont = 1;
+	  extractinfo.extractpos = 1;
+	  extractinfo.extractdiotext = 1;
+	  extractinfo.extractevent = 1;
         }
         else if (strcmp(argv[nxtarg], "-toffset") == 0) {
-      extractinfo.toffset = ParseTimestamp(argv[++nxtarg]);
-  }
+	  extractinfo.toffset = ParseTimestamp(argv[++nxtarg]);
+        }
+        else if (strcmp(argv[nxtarg], "-flush") == 0) {
+	  extractinfo.flush = 1;
+        }
         else if (argv[nxtarg][0] != '-') {
             /* this is the name of the data file */
-      strcpy(datafilename, argv[nxtarg]);
-        }
+	  strcpy(datafilename, argv[nxtarg]);
+	}
         else {
-      Usage();
-            exit(0);
+	  Usage();
+          exit(0);
         }    
     } 
     if (datafilename[0] == '\0') {
@@ -309,6 +314,9 @@ int WriteSpikeData(u32 offset)
           fprintf(stderr, "Error: unable to write spike data\n");
           return -1;
         }
+	if (extractinfo.flush) {
+	  fflush(outfile[electnumfile[stmp->electnum]]); 
+	}
       }
     }
   } while (!gzeof(extractinfo.datafile));
@@ -444,6 +452,9 @@ int WriteContData(u32 offset)
             fprintf(stderr, "Error: unable to write continuous data\n");
             return -1;
           }
+	  if (extractinfo.flush) {
+	    fflush(outfile[index]);
+	  }
         }
       }
       /* write out the samples */
@@ -462,11 +473,17 @@ int WriteContData(u32 offset)
                 fprintf(stderr, "Error: unable to write position sync data\n");
                 return -1;
               }
+	      if (extractinfo.flush) {
+		fflush(outfile[index]);
+	      }
               transition = lastodd ? DSP_ODD_TO_EVEN_SYNC : DSP_EVEN_TO_ODD_SYNC;
               if (fwrite(&transition, sizeof(char), 1, outfile[index]) != 1) {
                 fprintf(stderr, "Error: unable to write position sync data\n");
                 return -1;
               }
+	      if (extractinfo.flush) {
+		fflush(outfile[index]);
+	      }
               lastodd = !lastodd;
             }
           }
@@ -476,6 +493,9 @@ int WriteContData(u32 offset)
               fprintf(stderr, "Error: unable to write continuous data for electrode %d\n", i);
               return -1;
             }
+	    if (extractinfo.flush) {
+	      fflush(outfile[index]);
+	    }
           }
           shortptr++;
         }
@@ -668,15 +688,24 @@ int WritePosData(u32 offset)
           fprintf(stderr, "Error: unable to write mpeg frame timestamp to %s\n", mpegfilename);
           return -1;
         } 
+	if (extractinfo.flush) {
+	  fflush(tstampout);
+	}
         /* write out the current offset in the mpeg */
         if (!extractinfo.extractpos64) {
           mpegoffset = (u32) ftell(mpegout);
           fwrite(&mpegoffset, 1, sizeof(u32), foffsetout);
+	  if (extractinfo.flush) {
+	    fflush(foffsetout);
+	  }
         }
         else {
           mpegoffset64 = (unsigned long long) ftello(mpegout);
           fwrite(&mpegoffset64, 1, sizeof(unsigned long long), 
               foffsetout);
+	  if (extractinfo.flush) {
+	    fflush(foffsetout);
+	  }
         } 
         for (i = 0; i < currentslice; i++) {
           size += ptmp[i].size;
@@ -688,6 +717,9 @@ int WritePosData(u32 offset)
             fprintf(stderr, "Error: unable to write mpeg data to %s\n", mpegfilename);
             return -1; 
           }
+	  if (extractinfo.flush) {
+	    fflush(mpegout);
+	  }
         }
         /* copy the last frame to the first frame */
         memcpy(ptmp, ptmp+currentslice, sizeof(PosBuffer));
@@ -707,8 +739,10 @@ int WritePosData(u32 offset)
         fprintf(stderr, "Error: unable to write time check data to %s\n", tcheckname);
         return -1; 
       }
+      if (extractinfo.flush) {
+	fflush(tcheckout);
+      }
     }
-
   } while (!gzeof(extractinfo.datafile));
   fclose(tstampout);
   fclose(mpegout);
@@ -770,33 +804,39 @@ int WriteDIOData(u32 offset)
     fileoffset = offset;
 
     do {
-  recordtype = GetNextRecord(tmpdata, &fileoffset, &datasize);
-  /* write out the record if it is digital IO data */
-  if (recordtype == DIGITALIO_DATA_TYPE) {
-      if (extractinfo.extractdiotext == 0) {
-    if (fwrite(tmpdata, 1, datasize, outfile) != datasize) {
-        fprintf(stderr, "Error: unable to write digital IO data to %s\n", 
-          outfilename);
-        return -1;
-    }
+      recordtype = GetNextRecord(tmpdata, &fileoffset, &datasize);
+      /* write out the record if it is digital IO data */
+      if (recordtype == DIGITALIO_DATA_TYPE) {
+	  if (extractinfo.extractdiotext == 0) {
+	    if (fwrite(tmpdata, 1, datasize, outfile) != datasize) {
+		fprintf(stderr, "Error: unable to write digital IO data to %s\n", 
+		  outfilename);
+		return -1;
+	    }
+	    if (extractinfo.flush) {
+	      fflush(outfile);
+	    }
+	  }
+	  else {
+	    dtmp = (DIOBuffer *) tmpdata;
+	    fprintf(outfile, "%u\t", dtmp->timestamp);
+	    /* write out 64 binary digits to represent the status */
+	    for (pnum = 0; pnum < MAX_DIO_PORTS; pnum++) {
+		for (i = 0; i < 16; i++) {
+	      if (dtmp->status[pnum] & (1 << 15-i)) {
+		  fprintf(outfile, "1");
+	      }
+	      else {
+		  fprintf(outfile, "0");
+	      }
+	    }
+	  }
+	  fprintf(outfile, "\n");
+	  if (extractinfo.flush) {
+	    fflush(outfile);
+	  }
+	}
       }
-      else {
-    dtmp = (DIOBuffer *) tmpdata;
-    fprintf(outfile, "%u\t", dtmp->timestamp);
-    /* write out 64 binary digits to represent the status */
-    for (pnum = 0; pnum < MAX_DIO_PORTS; pnum++) {
-        for (i = 0; i < 16; i++) {
-      if (dtmp->status[pnum] & (1 << 15-i)) {
-          fprintf(outfile, "1");
-      }
-      else {
-          fprintf(outfile, "0");
-      }
-        }
-    }
-    fprintf(outfile, "\n");
-      }
-  }
     } while (!gzeof(extractinfo.datafile));
     fclose(outfile);
     return 0;
@@ -1019,6 +1059,6 @@ void Usage(void)
 {
 
   fprintf(stderr,"nspike_extract version %s\n", VERSION);
-  fprintf(stderr,"Usage: nspike_extract [-spike] [-cont] [[-pos] [-pos64]] [-dio] [-diotext] [-event] [-all] [-toffset time_to_add] [-fixtime actualtime computedtime] datafile\n");
+  fprintf(stderr,"Usage: nspike_extract [-spike] [-cont] [[-pos] [-pos64]] [-dio] [-diotext] [-event] [-all] [-toffset time_to_add] [-fixtime actualtime computedtime] [-flush] datafile\n");
   fprintf(stderr,"\t-toffset will add the specified amount of time to each timestamp.  Use this if data collection was interrupted and you need to append data from one session to the end of another. \n");
 }

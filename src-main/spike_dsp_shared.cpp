@@ -305,7 +305,7 @@ int WriteDSPDIORestartStateMachine(int s)
 
 int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 	short n, unsigned short *data)
-    /* write data to the dsp. data must contain < 24 words */
+    /* write data to the dsp. data must contain < 500 words */
 {
     int 		size, writesize, totalsize, ntowrite;
     unsigned short 	dataout[1000], offset;
@@ -361,6 +361,7 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 	    if ((dspnum != DSPDIO) && !acqmessage && sysinfo.dspacq) {
 		StopLocalAcq();
 		dspacq = 1;
+		fprintf(stderr, "stopping local acq\n");
 	    }
 	}
 	else {
@@ -383,6 +384,7 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
     } while (totalsize > 0);
     if (!acqmessage && dspacq) {
 	StartLocalAcq();
+		fprintf(stderr, "starting local acq\n");
     }
     return 1;
 #endif
