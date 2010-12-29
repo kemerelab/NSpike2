@@ -16,7 +16,7 @@ nslaves 	0
 % connection on the specified port. Note that if a slave collects position
 % data, it should be specified as "rtslave" 
 % The port numbers must be > 1024 and < 65335
-master    	zephyr    9999
+master    	localhost    9999
 
 % optional slave lines, one for each slave, would go here
 
@@ -68,14 +68,14 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype 	zephyr		CONTINUOUS POSITION DIGITALIO
+datatype 	localhost		CONTINUOUS POSITION DIGITALIO
 
 % the data directory specifies the default location for data files on each
 % machine.  Note that the Master menu open all files command assumes that the
 % same directory exists on all machines. Also note that as the rtlinux machine
 % doesn't save data, the datadirectory does not need to be specified for that
 % machine.
-datadirectory   zephyr		/data
+datadirectory   localhost		/data
 
 % the audio settings set the initial gain factor (volume), cutoff for diode
 % emulation, and delay in milliseconds.
@@ -96,9 +96,9 @@ dspclock	1
 
 % dspinfo specifies the sampling rate and machine name for each dsp
 % 	    dsp num   sampling rate  machine receiving data
-dspinfo		0	1500		zephyr
-dspinfo		1	30000		zephyr
-dspinfo		2	30000		zephyr
+dspinfo		0	1500		localhost
+dspinfo		1	30000		localhost
+dspinfo		2	30000		localhost
 
 % the colorfile specifies the location of the spike_rgbcolor file which gives
 % the indeces for eeg trace colors.  If unspecified, it assumes
@@ -176,7 +176,7 @@ electmap	28		0	63
 % first comes the name of the host. All channels following the hostname line
 % are assumed to be from the same host until the next hostname line is
 % encoutered
-hostname 	zephyr
+hostname 	localhost
 
 % first comes the number of the channel, then the parameters for that channel
 % the channels should be numbered from 0 upward (0 based)

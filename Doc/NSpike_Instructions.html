@@ -4,6 +4,9 @@
 
 
 
+
+
+
   
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8"><title>NSpike Instructions</title>
   
@@ -130,11 +133,17 @@ The software and hardware supports position data, continuous data&nbsp;
 at 30 KHz per channel across up to 127 channels, combined continuous /
 spike snippet data acquisition, digital input and output as well as
 analog output. <br>
-<br>
+</p>
+<p><span style="font-weight: bold; text-decoration: underline;">If you
+are going&nbsp; to use NSpike for data collection, please read through
+all of this documentation, as there is important information throughout.</span><br>
+</p>
+<p>
 Conventions: Instructions are in normal typeface, while
 commands that should be typed into a terminal window or into a file
 are in <font face="monospace">fixed width</font> typeface.
 Directories are in <b>bold face</b>. </p>
+
 
 <p><a name="NSpike_NDAQ_Hardware_overview"></a><font size="4">NSpike
 NDAQ Hardware Overview </font><br>
@@ -732,7 +741,7 @@ distributions software configuration tools (drakconf for Mandrake) </p>
     </li>
     <li>
       <p style="margin-bottom: 0in;">Install the libmpeg2dec
-librarie if you plan to use collect and&nbsp;video data. </p>
+and libffmpegdevel libraries if you plan to use collect and&nbsp;video data. </p>
     </li>
     <li>
       <p>Install xawtv if you plan to collect video data.</p></li>
@@ -2965,16 +2974,14 @@ tetrodes have two connected channels (e.g. tetrode 7, channels 0 and
 channel 0).&nbsp; </p>
 
   
-<p><a name="Hostname_and_Channel_Section_of_Config"></a>The
+<p>The
 DSP
 channel number column indicates the number of the dsp channel that
 contains data from the specified channel of the specified
 electrode.&nbsp;
 This is derived from the channel map above. <br>
   <br>
-  <br>
-  <br>
-  <br>
+  <a name="Hostname_and_Channel_Section_of_Config"></a><br>
   <font size="4">Hostname
 and Channel Section of Config File</font><br>
 &nbsp;The next sections
@@ -3007,16 +3014,14 @@ Channel numbers</p>
 </ul>
 
   
-<p>Thus, for the seven channels of EEG data processed by the
+<p>Thus, for the seven channels of continuous data processed by the
 master
-machine in franklab8tetconfig, the channel numbers go from 0 to
+machine, the channel numbers go from 0 to
 6.<br>
-  <br>
-If you are collecting EEG/LFP data, each tetrode should
-have a single entry where you have chosen a single channel from that
-tetrode for EEG data.&nbsp; If you specify multiple channels from the
-same tetrode the data will not extract correctly, so ...
-don't.<br>
+  <br>Note
+that you can save multiple channels from a single electrode, but if you
+do so, make sure to extract the data from the datafile correctly (see
+Extracting Data below)<br>
   <br>
 Channel 1 is specified as follows:<br>
 &nbsp;&nbsp;&nbsp; <font face="monospace">channel &nbsp;&nbsp;&nbsp; 1</font><br>
@@ -3057,8 +3062,7 @@ the second trace (channel 0 is the first trace) that will be
 displayed will be processed by dsp 1 and corresponds to tetrode 2,
 channel 0, which is dsp channel 112.<br>
   <br>
-  <br>
-If you are collecting
+  If you are collecting
 spike data from tetrodes, each set of four channels (in order) should
 correspond to the four channels from a single tetrode, and thus they
 should all have the same <br>
@@ -3148,7 +3152,50 @@ tetrode 1</font><br>
 These
 channels should also all have the same depth (and, for scientific
 reasons, the same filter settings) but can have different thresholds,
-maximum displayed values, and colors. </p>
+maximum displayed values, and colors.<br>
+</p>
+<p>If you are collecting position data, you should add an additional
+continous channel to the end of the list of continuous channels:<br>
+</p>
+<p><span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp; channel 7</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+dspnum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+dspchan&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+63</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+number&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+10</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+electchan&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+depth&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+refelect&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+refchan&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+thresh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+10000</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+maxdispval&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 65500</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+filter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 11000</span><br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+color&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+2<br>
+</span></p>
+<p>DSP channel 63 will show a square wave indicating the transition
+from odd to even frames off of the camera.&nbsp; You will use this
+later to correctly time stamp each position frame. <br>
+<br>
+ </p>
+
 
   
 <p><a name="Using_the_NSpike_GUI"></a><font size="4">Using
@@ -3230,16 +3277,7 @@ master DSP and the RT system. </p>
         </li>
       </ul>
     </li>
-    <li>
-      <p style="margin-bottom: 0in;">Test Sync </p>
-      <ul>
-        <li>
-          <p style="margin-bottom: 0in;">Checks the sample
-count and the
-time on the RT system and reports agreement or disagreement.&nbsp; </p>
-        </li>
-      </ul>
-    </li>
+    
     <li>
       <p style="margin-bottom: 0in;">Audio Settings </p>
       <ul>
@@ -3288,12 +3326,29 @@ window. </p>
           <p style="margin-bottom: 0in;">Note that to listen to
 or view a
 channel from one of the Analog outputs of the Master DSP you will need
-to select that channel from the tetrode window screen. </p>
-        </li>
-      </ul>
+to select that channel from the tetrode window screen.</p></li>
+      </ul><br>
+
     </li>
     <li>
-      <p style="margin-bottom: 0in;">Quit </p>
+    <p>Reprogram Master / Aux DSPs</p>
+</li>
+  <ul>
+    <li>
+      <p>Write a new program to the master or aux dsps.&nbsp; Note that this no longer works on newer DSPs.</p>
+    </li>
+  </ul>
+  <li>
+    <p>Display DSP Code Revision</p>
+  </li>
+  <ul>
+    <li>
+      <p>Shows the version of the code running on the DSPs</p>
+    </li>
+  </ul>
+  <li>
+    <p style="margin-bottom: 0in;">Quit </p>
+
       <ul>
         <li>
           <p>Exits out of NSpike on all systems.&nbsp; This is
@@ -3302,6 +3357,7 @@ available if there is no open file. </p>
         </li>
       </ul>
     </li>
+
   
 </ul>
 
@@ -3325,15 +3381,33 @@ on this machine only. </p>
         </li>
       </ul>
     </li>
-    <li>
-      <p style="margin-bottom: 0in;">Open Local File / Close
+    
+  <li>
+  <p style="margin-bottom: 0in;">Open Local File / Close
 Local File </p>
-      <ul>
-        <li>
-          <p>Opens or closes a data file on this system only. </p>
-        </li>
-      </ul>
+
+      <ul><li>
+          
+      <p>Opens or closes a data file on this system only.</p>
+    </li></ul>
+
     </li>
+  <li>
+    <p style="margin-bottom: 0in;">Use Compression&nbsp; / Compression Settings<br>
+ </p>
+
+      <ul>
+        
+      <li>
+          
+        <p>Toggles compression and sets compression levels<br>
+        </p>
+      </li>
+
+      </ul><br>
+
+    </li>
+
   
 </ul>
 
@@ -3369,7 +3443,7 @@ erases projection windows / spike overlay. </p>
       <p style="margin-bottom: 0in;">EEG Trace Length </p>
       <ul>
         <li>
-          <p>Set the length of the displayed EEG traces in
+          <p>Set the length of the displayed continuous traces in
 seconds.&nbsp;
 Minimum 0.000001 sec, maximum 99 seconds. </p>
         </li>
@@ -3380,7 +3454,7 @@ Minimum 0.000001 sec, maximum 99 seconds. </p>
 
   
 <p><a name="Behavior_Menu_Items"></a><br>
-Digital IO Menu Items
+Digital /Analog IO Menu Items
 (Available only on digital IO system):</p>
 
   
@@ -3397,21 +3471,7 @@ set using the Calibrate Outputs menu item. </p>
         </li>
       </ul>
     </li>
-    <li>
-      <p style="margin-bottom: 0in;">Behavioral Programs </p>
-      <ul>
-        <li>
-          <p style="margin-bottom: 0in;">Brings up a list of
-programs,
-specified in the configuration file, that can be run.&nbsp; These
-programs establish messaging with either spike_behav (UEI digital IO
-card on RT system) or with the main program (main DSP digital
-IO).&nbsp; Example programs can be found in the <b>NSpike/Behavior</b>
-directory and additional documentation for creating behavior programs
-is below. </p>
-        </li>
-      </ul>
-    </li>
+    
     <li>
       <p style="margin-bottom: 0in;">Set Outputs </p>
       <ul>
@@ -3424,18 +3484,74 @@ outputs. </p>
         </li>
       </ul>
     </li>
+    
+  <li>
+      
+    <p style="margin-bottom: 0in;">Reward Control GUI</p>
+  </li>
+  <ul>
     <li>
-      <p style="margin-bottom: 0in;">Send Message to FS Program </p>
-      <ul>
-        <li>
-          <p>Brings up an input window where the user can send
-a string
-to the running behavioral program. </p>
-        </li>
-      </ul>
+      <p>Launches the reward control GUI which can be used to control reward or stimulus delivery in sequential tasks.&nbsp; </p>
     </li>
+  </ul>
+  <li>
+    <p style="margin-bottom: 0in;">Feedback / Stim GUI<br>
+ </p>
+
+      <ul><li>
+          <p>Launches the Feedback / Stim GUI <br>
+</p></li><ul><li>Note that while we have tested the code in this GUI for our
+purposes, we recommend that other users check it to ensure that it does
+what they want it to do.</li></ul></ul>
+
+    </li>
+</ul>
+<ul>
+  <li>
+    <p style="margin-bottom: 0in;">Feedback / Stim Data Menu<br>
+ </p>
+
+      <ul><li>
+        <p>Allows the user to start or stop sending data to spike_fsdata and to change which data are sent (when data are stopped). </p>
+      </li></ul></li>
+  <li>
+    
+    <p>Digital / Analog IO User Programs<br>
+    </p>
+    <ul>
+      <li>Allows the user to lauch an external program that interacts
+with nspike.&nbsp; Note that we do not use this anymore, so it has not
+been tested in the latest version of the code</li>
+    </ul>
+    <p> </p>
+  </li>
+  <li>
+    <p>Send Message to User Program</p>
+  </li>
+  <ul>
+    <li>
+      <p>Allows the user to send a message to the currently running program.&nbsp; Not tested in new version of code.</p>
+    </li>
+  </ul>
+</ul>
+<ul>
+<li>
+    <p style="margin-bottom: 0in;">Reset State Machines<br>
+ </p>
+
+      <ul><li>
+        <p>Allows the user to stop all ongoing Digital or Analog IO programs immediately.<br>
+ </p>
+      </li></ul><br>
+
+    </li>
+</ul>
+
+<ul>
+
   
 </ul>
+
 
   
 <p><a name="PositionMenu"></a>Position Menu Items (Available
@@ -3522,7 +3638,6 @@ all tetrodes on this machine. </p>
 <p><a name="Status_Information"></a><br>
   <br>
   <br>
-  <br>
   <font size="4">Status
 Information</font></p>
 
@@ -3583,12 +3698,18 @@ off, a continuous version of the tetrode data.&nbsp; </p>
 Mode Display</font><br>
   <br>
 A snapshot of the Continuous / Position
-mode looks like this:&nbsp; <img src="EEG_Position_Screen.jpg" name="graphics7" alt="EEG Position Screen" align="bottom" border="0" height="995" width="1250"> </p>
+mode looks like this:&nbsp; <img style="border: 0px solid ; width: 1243px; height: 988px;" src="EEG_Position_Screen.png" name="graphics7" alt="EEG Position Screen"> </p>
 
   
 <p>The two sections with sine waves show simulated EEG data,
 and the
-upper right section shows simulated position data.&nbsp; </p>
+upper right section shows simulated position data.&nbsp; In this case
+electrode 1 was defined with eight channels and the rest of the
+electrodes with one channel each. The status bar shows the most recent
+status message, the name of the current file, the size of that file,
+the status of the disk and the time of the last change of that status,
+and the amount of space free on the disk.<br>
+ </p>
 
   
 <p>The numbers in large font are derived from the <font face="monospace">number</font>
@@ -3620,7 +3741,8 @@ selected a tetrode with four channels, the channel can be 0, 1, 2 or
 enter the
 depth in 12ths of a turn of an 0-80 screew and displays the
 corresponding depth in mm. &nbsp;If you want a different depth
-conversion, change&nbsp; </p>
+conversion, <br>
+ </p>
     </li>
     <li>
       <p style="margin-bottom: 0in;">The Reference button, when
@@ -3675,7 +3797,7 @@ next or previous channel on this computer. </p>
   <br>
   <font size="4">Spike
 Mode Display<br>
-  <img src="Spike_Window.jpg" name="graphics9" alt="Spike Mode Window" align="bottom" border="0" height="994" width="1250"><br>
+  <img style="border: 0px solid ; width: 1621px; height: 1037px;" src="Spike_Window.jpg" name="graphics9" alt="Spike Mode Window"><br>
   <br>
   </font><font size="3">This
 tab of the spike mode window shows four tetrodes at a time.&nbsp; Any
@@ -3795,9 +3917,9 @@ the user to select the channels that are converted to an analog signal
 and output from the master DSP.&nbsp; </font> </p>
     </li>
     <li>
-      <p><font size="3">The left button is for digital output 0
+      <p><font size="3">The left button is for output 0
 and the
-right for digital output 1.</font></p>
+right for output 1.</font></p>
     </li>
   
 </ul>
@@ -3829,14 +3951,11 @@ DSPs </p>
 and
 slaves </p>
     </li>
-    <li>
-      <p style="margin-bottom: 0in;">Start nspike_rt on the RT
-system </p>
-    </li>
+    
     <li>
       <p style="margin-bottom: 0in;">Select the appropriate
 camera.&nbsp; <br>
-Note that it is essential to stop acquisition before switching cameras.
+Note that it may be&nbsp; essential to stop acquisition before switching cameras.
       </p>
     </li>
     <li>
@@ -3879,7 +3998,7 @@ synchronization </p>
 </ol>
 
   
-<p><a name="Extracting_Data_from_NSpike"></a><a name="Working_with_Extracted_Data"></a>...This list could also include
+<p>...This list could also include
 launching behavior programs and/or
 triggering digital outputs.<br>
   <br>
@@ -3887,7 +4006,7 @@ triggering digital outputs.<br>
   <br>
   <br>
   <br>
-  <br>
+  <a name="Extracting_Data_from_NSpike"></a><br>
   <font size="5">Extracting
 Data from NSpike<br>
   <br>
@@ -3904,11 +4023,23 @@ on a separate workstation. &nbsp;We then run<br>
 nspike_extract <br>
   </font><br>
 will give you a list of available options for
-extraction. &nbsp;<br>
+extraction.&nbsp; <br>
+</p>
+<p><br>
+Note that the software currently limits files to 2 GB each and will
+create multiple files when necessary.&nbsp; To extract these files,
+start with the first one and then extract them in order.&nbsp; You will
+get a message that indicates that the data are being appended to each
+file.<br>
+</p>
+<p>Also note that if you take continuous data from more than one
+channel of an electrode, you need to use the "-usechannum" option when
+you call nspike_extract to create separate files for each channel.<br>
+</p>
+<p> 
   <br>
   <br>
-  <br>
-  <br>
+  <a name="Working_with_Extracted_Data"></a><br>
   <font size="5">Working with
 Extracted Data<br>
   <br>
@@ -3938,38 +4069,47 @@ of the spikes from a
 ttfile.<br>
   <br>
   <br>
-  <u>Continuous Data (EEG or LFP)</u>:<br>
-&nbsp;&nbsp;&nbsp;
-Continuous data are stored in a .eeg file, so the data from tetrode
-#2 at depth 110 is stored in 02-110.eeg. &nbsp;The continuous data
-have a header similar to that of the tt files, followed by data
+  <u>Continuous Data (EEG or LFP)</u>:<br>&nbsp;&nbsp;&nbsp;
+Continuous data are stored in a .cont file, so the data from tetrode
+#2 at depth 110 is stored in 02-110.eeg or 02-01-110.eeg if you used
+the -usechannum option in nspike_extract. &nbsp;The continuous data
+have a header similar to that of the tt files, which specifies the
+sampling rate and the number of samples per saved data record, followed
+by data
 records with the following format:<br>
 timestamp&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-unsigned integer (32 bit)<br>
-nsamples&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;
-int<br>
-sampling_rate&nbsp;&nbsp; double<br>
-samples&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; nspikes signed shorts<br>
+unsigned integer (32 bit)<br>samples&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; nsamples signed shorts<br>
   <br>
 The mex
-code readeeg.c in the Matlab directory will read in the eeg data from
+code nreadcont.c and the matlab file readcont.m in the Matlab directory will read in the eeg data from
 a file. &nbsp;Compile within matlab as follows:<br>
   <br>
-  <font face="monospace">mex
--o readeeg readeeg.c fileiomat.c</font><br>
+  <font face="monospace">mex -o nreadcont nreadcont.c nfileiomat.c</font></p>
+<p>use readcont to read in the data.<br>
   <br>
-  <u>Position Data:</u><br>
-&nbsp;&nbsp;&nbsp;
-Position data are extracted to&nbsp;two files, named as the directory
-name where the extraction occured (e.g. rat5day1) followed by .mpeg
-or .postimestamp. &nbsp;The .mpeg file is a normal mpeg file that can
+  <u>Position Data:</u><br>Video frames are extracted into the following files<br>
+</p>
+<p style="margin-left: 40px;">datafile.mpeg&nbsp;&nbsp; -&nbsp; the video frames</p>
+<p style="margin-left: 40px;">datafile.mpegoffset&nbsp; - the byte offsets of each frame to allow rapid seeking to specific frames<br>
+</p>
+<p style="margin-left: 40px;">datafile.cpupostimestamp - the cputime associated with each position frame</p>
+<p style="margin-left: 40px;">datafile.cpudsptimecheck - a file containing corresponding cpu and dsp times<br>
+</p>
+<p>In addition, the continuous data extraction should produce a possynctimes file with the times of each sync pulse.<br>
+</p>
+<p>The cpu and the dsps run on different clocks, so you need to use the
+nspike_postimestamp program to create a&nbsp; list of dsp timestamps
+for the frames as follows:</p>
+<p><span style="font-family: monospace;">&nbsp;nspike_postimestamp -cd datafile.cpudsptimecheck -cp datafile.cpupostimestamp -ps possynctime -o datafile.postimestamps</span><br>
+</p>
+<p>The .mpeg file is a normal mpeg file that can
 be played with any mpeg player. &nbsp;The .postimestamp file has the
 complete header from the data file followed by a list of timestamps
 (all unsigned integers), one for each frame of the mpeg. &nbsp;We use
 nspike_fixpos to compute the locations of the large and small diode
 arrays on our animals' heads. &nbsp;See the top of spike_fixpos.c for
-usage.<br>
+usage, and remember to redo the ./configure line to include nspike_fixpos if you want to use it.<br>
   <br>
   <br>
   <u>Digital IO Data</u><br>
@@ -3995,6 +4135,7 @@ future.<br>
 Each datafile also has a header which is the configuration file used
 to collect those data. &nbsp;This is extracted to
 datafilename.config.</p>
+
 
   
 <hr>

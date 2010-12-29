@@ -277,7 +277,7 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
   closeFileAction = fileMenu->addAction( "&Close Local File", this, SLOT(close())); 
   fileMenu->insertSeparator();
   usecompAction = fileMenu->addAction("Compress Data File", this, SLOT(toggleUsesCompression()));
-  compsetAction = fileMenu->addAction("  Compression Settings...", this, SLOT(doCompressionSettingsDialog()));
+  compsetAction = fileMenu->addAction("Compression Settings...", this, SLOT(doCompressionSettingsDialog()));
     updateUsesCompression();
   menuBar->addMenu( fileMenu );
 
@@ -333,13 +333,13 @@ SpikeMainWindow::SpikeMainWindow(QWidget *parent, const char *name, Qt::WFlags f
 
     digioMenu->addSeparator();
 
-    digioProgMenu = new QMenu("Digital/Analog IO Programs", this);
+    digioProgMenu = new QMenu("Digital/Analog IO User Programs", this);
     for (i = 0; i < digioinfo.nprograms; i++) {
       digioProgMenu->addAction(QString(digioinfo.progname[i]));
     }
     connect(digioProgMenu, SIGNAL(activated(int)), this, SLOT(runProgram(int)));
     digioMenu->addMenu( digioProgMenu);
-    digioMenu->addAction( "Send Message to FS Program", this, SLOT(outputToFSProgram()), Qt::CTRL+Qt::Key_U );
+    digioMenu->addAction( "Send Message to User Program", this, SLOT(outputToFSProgram()), Qt::CTRL+Qt::Key_U );
     digioMenu->addSeparator();
     digioMenu->addAction( "Reset State Machines", this, SLOT(resetStateMachines()));
     menuBar->addMenu( digioMenu);
@@ -651,17 +651,18 @@ void SpikeMainWindow::showDSPCodeRev(void)
 
 void   SpikeMainWindow::toggleUsesCompression()
 {
-    if (sysinfo.use_compression) { // uncheck
+  if (sysinfo.use_compression) { // uncheck
     /* uncheck the item */
-  sysinfo.use_compression = 0;
-    } else {
-  /* check the item */
-  sysinfo.use_compression = 1;
-    }
-    if (sysinfo.fileopen) {
-  warnCompSettingsTakeEffect();
-    }
-    updateUsesCompression();
+    sysinfo.use_compression = 0;
+  } 
+  else {
+    /* check the item */
+    sysinfo.use_compression = 1;
+  }
+  if (sysinfo.fileopen) {
+    warnCompSettingsTakeEffect();
+  }
+  updateUsesCompression();
 }
 
 void SpikeMainWindow::updateUsesCompression()
@@ -687,8 +688,8 @@ void SpikeMainWindow::doCompressionSettingsDialog()
     bool ok;
     int lvl = QInputDialog::getInteger("Compression Level", "Compression level to use for data files 0 (none) - 9 (slowest)", sysinfo.compression_level, 0, 9, 1, &ok, this, "CompLvlDlg");
     if (ok) {
-  sysinfo.compression_level = lvl;
-  if (sysinfo.fileopen) warnCompSettingsTakeEffect();
+      sysinfo.compression_level = lvl;
+      if (sysinfo.fileopen) warnCompSettingsTakeEffect();
       }
 }
 

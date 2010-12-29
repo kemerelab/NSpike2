@@ -704,18 +704,18 @@ int getcont(ContBuffer *contbuf)
   nchan = dptr->nchan;
   for (i = 0; i < dptr->nsampout; i++) {
     for (j = 0; j < nchan; j++) {
-	mod = sin(TWOPI * ampfreq * (time + ((float) i) / 
+/*	mod = sin(TWOPI * ampfreq * (time + ((float) i) / 
 			       ((float) dptr->samprate)));  
 	mod =  (mod > .98) ? 50 * (mod - .98): 0;
         stmp = (short) (250.0 * mod * sin(TWOPI * freq * (time + 
 			       ((float) i) / ((float) dptr->samprate))) + 
 			25 * (float) rand() / (float) RAND_MAX);
-      *(dataptr++) =  stmp;
+      *(dataptr++) =  stmp; */
 
 //                
-//        *(dataptr++) = (short) (250.0 * sin(TWOPI * 40 * (time + 
-//                 ((float) i) / ((float) dptr->samprate))));
-//                
+        *(dataptr++) = (short) (250.0 * sin(TWOPI * 8 * (time + 
+                 ((float) i) / ((float) dptr->samprate))));
+                
 //                //50.0 * (float) rand() / RAND_MAX);
 //      else
 //        *(dataptr++) = 0;

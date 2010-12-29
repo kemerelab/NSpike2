@@ -1,0 +1,2 @@
+to compile the nreadcont.c file, do the following in Matlab:
+mex -o nreadcont nreadcont.c nfileiomat.c

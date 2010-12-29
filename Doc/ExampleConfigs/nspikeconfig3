@@ -15,8 +15,8 @@ nslaves 	1
 % change the port number if the software complains that it cannot open a
 % connection on the specified port.  
 % The port numbers must be > 1024 and < 65335
-master    	virga    10000
-slave		minime	9998
+master    	snow    10000
+slave		rain	9998
 
 % optional slave lines, one for each slave, would go here
 
@@ -71,8 +71,8 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype 	virga		CONTINUOUS POSITION
-datatype	minime		SPIKE
+datatype 	snow		CONTINUOUS POSITION
+datatype	rain		SPIKE
 
 % the data directory specifies the default location for data files on each
 % machine.  Note that the Master menu open all files command assumes that the
@@ -80,8 +80,8 @@ datatype	minime		SPIKE
 % doesn't save data, the datadirectory does not need to be specified for that
 % machine.
 
-datadirectory   virga		/data
-datadirectory   minime		/data
+datadirectory   snow		/data
+datadirectory   rain		/data
 
 % the audio settings set the initial gain factor (volume), cutoff for diode
 % emulation, and delay in milliseconds.
@@ -107,10 +107,10 @@ dspclock	1
 % some number in the sampling rate field below
 % should not be listed here.
 % 	    dsp num   sampling rate  machine receiving data
-dspinfo		0		110			virga
-dspinfo		1		1500			virga
-dspinfo		2		30000			minime
-dspinfo		3		30000			minime
+dspinfo		0		110			snow
+dspinfo		1		1500			snow
+dspinfo		2		30000			rain
+dspinfo		3		30000			rain
 
 % calibration file specifies the name of the calibration file to set the
 % relative amplitudes of the channels.  See writecalfile.m for a matlab script
@@ -160,7 +160,7 @@ electmap	8		0	115
 % first comes the name of the host. All channels following the hostname line
 % are assumed to be from the same host until the next hostname line is
 % encoutered
-hostname 	virga
+hostname 	snow
 
 % first comes the number of the channel, then the parameters for that channel
 % the channels should be numbered from 0 upward (0 based)
@@ -288,7 +288,7 @@ hostname 	virga
 	    color		0
 
 % Note that this last channel (channel 7) is the sync signal from the camera,
-% which is mapped onto dspchannel 63.
+% which is mapped onto dsp channel 63.
 
      channel 7
             dspnum      	1
@@ -305,7 +305,7 @@ hostname 	virga
 
 
 % Now come the channels of the data tetrodes
-hostname minime
+hostname rain
 
 % tetrode 1
     channel 	0
