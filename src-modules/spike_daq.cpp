@@ -92,7 +92,7 @@ int main()
   int        	size;
   short        	tmpsize;
 
-  int         nspikepoints;
+  int         nspikepoints = 0;  // gets reset when the system info is received
   fd_set      readfds;  // the set of readable fifo file descriptors 
   struct timeval  timeout;
   int         maxfds;
@@ -692,7 +692,7 @@ int getcont(ContBuffer *contbuf)
 {
   int i, j, nchan;
   short *dataptr;
-  float    time, freq, ampfreq, modfreq, mod;
+  float    time, freq, ampfreq, mod;
   short    stmp;
   DSPInfo *dptr;
 
@@ -734,7 +734,6 @@ int MakeFSDataBuf(ContBuffer *cptr, FSDataContBuffer *udptr)
   DSPInfo   *dptr;
   ChannelInfo   *chptr;
 
-  int		sz;
   bool    savechan[MAX_CHANNELS];
   short     i, j;
 
@@ -771,9 +770,6 @@ int MakeFSDataBuf(ContBuffer *cptr, FSDataContBuffer *udptr)
       }
     }
   }
-  /* calculate and return the size */
-//  sz = sizeof(FSDataContBuffer) - (MAX_CONT_BUF_SIZE - sizeof(short) *
-//	 udptr->nsamp * udptr->nchan);
   return sizeof(FSDataContBuffer);
 
 }

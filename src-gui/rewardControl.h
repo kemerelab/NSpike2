@@ -16,7 +16,7 @@
 #include <Q3BoxLayout>
 
 #include "spikeGLPane.h"
-#include "spikeUserGUI.h"
+#include "spikeFSGUI.h"
 #include "spike_dsp.h"
 #include "spike_dio.h"
 #include "spike_main.h"
@@ -197,18 +197,18 @@ class setRewardsDialog : public QDialog {
 
 };
 
-class userDataDialog : public QDialog {
+class fsDataDialog : public QDialog {
 	Q_OBJECT
 
     public:
-	    userDataDialog(QWidget *parent = 0, 
+	    fsDataDialog(QWidget *parent = 0, 
 		    const char *name = 0, bool model = FALSE, 
 		    Qt::WFlags fl = 0);
-	    ~userDataDialog();
-	    void setUserDataInfo();
+	    ~fsDataDialog();
+	    void setFSDataInfo();
 
     public slots:
-	    void acceptSettings(void) { setUserDataInfo(); };
+	    void acceptSettings(void) { setFSDataInfo(); };
 
     signals:
 	    void finished(void);

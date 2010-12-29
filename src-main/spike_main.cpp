@@ -1043,32 +1043,12 @@ void UpdatePosImage(PosBuffer *posbuf)
 {
   int                 i;
   int                 *trackedptr;
-  unsigned char       *newpixelptr;
   GLubyte             *tmpptr;
 
   YUV422PtoRGB24( posbuf->image, dispinfo.posimage, dispinfo.imagesize, 
       dispinfo.posoverlay, dispinfo.posoverlaypixels );
 
 
-  /*    
-  // go through all of the pixels and assign the RGB elements of dispinfo.posimage
-  // accordingly 
-  newpixelptr = posbuf->image;
-  tmpptr = dispinfo.posimage;
-
-  for (i = 0; i < dispinfo.imagesize; i++) {
-  if ((!dispinfo.posoverlay) || (!dispinfo.posoverlaypixels[i])) {
-  // assign the new color to the appropriate three elements 
-   *(tmpptr++) = *newpixelptr;
-   *(tmpptr++) = *newpixelptr;
-   *(tmpptr++) = *(newpixelptr++);
-   }
-   else {
-   tmpptr += 3;
-   newpixelptr++;
-   }
-   }
-   */
   // now gow through the list of tracked pixels and make them red 
   //fprintf(STATUSFILE, "%d tracked pixels\n", posbuf->ntracked);
   trackedptr = dispinfo.posbuf->trackedpixels;

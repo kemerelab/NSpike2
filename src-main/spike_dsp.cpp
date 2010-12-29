@@ -119,8 +119,7 @@ int ProgramMasterDSP(void)
     /* this programming MUST take place before acquisition has been started */
     /* note that we won't program the audio channels until the user selects a channel */
 {
-    unsigned short data[24];
-    int i, error = 0;
+    int i;
     
     fprintf(stderr, "Programming Master DSP\n");
     /* set up the analog outputs */
@@ -203,7 +202,7 @@ int ProgramDSPDIO(short dspnum)
 #else
     for (i = 0; i < DIO_N_STATE_MACHINES; i++) {
 	if (!WriteDSPData(dspnum, DSP_SRAM, DIO_STATE0_ENABLE + i, 1, data)) {
-	    sprintf(tmpstring, "Error writing Digital IO state machine %d enable to master DSP, i");
+	    sprintf(tmpstring, "Error writing Digital IO state machine %d enable to master DSP", i);
 	    DisplayErrorMessage(tmpstring);
 	    error = 1;
 	}

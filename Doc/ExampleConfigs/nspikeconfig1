@@ -15,7 +15,7 @@ nslaves 	0
 % change the port number if the software complains that it cannot open a
 % connection on the specified port.  
 % The port numbers must be > 1024 and < 65335
-master    	virga    10000
+master    	localhost    10000
 
 % optional slave lines, one for each slave, would go here
 
@@ -71,8 +71,10 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype 	virga		CONTINUOUS DIGITALIO FSDATA
+datatype 	localhost		CONTINUOUS DIGITALIO FSDATA
 
+% set the number of 16 bit ports and, for each port, set it as either an input
+% port or an output port
 ndioports	4
 dioport	0	output
 dioport	1	input
@@ -85,7 +87,7 @@ dioport	3	output
 % doesn't save data, the datadirectory does not need to be specified for that
 % machine.
 
-datadirectory   virga		/data
+datadirectory   localhost		/data
 
 % the audio settings set the initial gain factor (volume), cutoff for diode
 % emulation, and delay in milliseconds.
@@ -109,19 +111,22 @@ dspclock	1
 % it can optionally specify the number of samples per packet and the output
 % number of samples for each dsp, but these should only be set if you know what
 % you are doing
+%
 % dsp 0 is the master DSP and should only communicate with the master. As it
 % does analog outputs, it will ignore the sampling rate, but make sure to put
 % some number in the sampling rate field below
 % 	    dsp num   	sampling rate  	machine receiving data
-dspinfo		0		110		virga
-dspinfo		1		1500		virga
-dspinfo		2		1500		virga
+dspinfo		0		110		localhost
+dspinfo		1		1500		localhost
+dspinfo		2		1500		localhost
 
 
-%rtmode is used to improve online analysis.  setting rtmode changes the number of samples per
-%packet for continuous channels to produce a data packet every millisecond.  This also causes 
-%spike_daq to send out data to spike_fsdata (if it is running) as quickly as possible
-%As with dspsampperpacket, don't set this unless you need to minize data latency to spike_fsdata
+%rtmode is used to improve online analysis.  setting rtmode changes the number 
+% of samples per packet for continuous channels to produce a data packet every 
+% millisecond.  This also causes spike_daq to send out data to spike_fsdata 
+%(if it is running) as quickly as possible.
+% As with the dsp settings of samples per packet, don't set this unless you 
+% need to minize data latency to spike_fsdata
 %rtmode		1
 
 %fsdata defines the types of data to send and the list of electrodes to send to spike_fs_data
@@ -134,12 +139,17 @@ fsdata CONTINUOUS 2
 fsdata CONTINUOUS 3
 
 %fsgui is the name of the user gui that controls stimulation / real time
-%feedback.  This only needs to be defined if you're using it
+%feedback.  Right now there is only one gui: stim.  Note that while we have
+%tested this code for our purposes, you should test it carefully to make sure
+%it does what you want it to if you are going to use it.
+
 fsgui stim
 
 % calibration file specifies the name of the calibration file to set the
 % relative amplitudes of the channels.  See writecalfile.m for a matlab script
-% that generates an example calibration file
+% that generates an example calibration file.  Note that this assumes you are
+% running the code from the NSpike directory, as the nspikecalfile is in the
+% NSpike/data directory
 calibrationfile		data/nspikecalfile
 
 % set the length (in seconds) of the eeg trace 
@@ -181,7 +191,7 @@ electmap	25		0	115
 % first comes the name of the host. All channels following the hostname line
 % are assumed to be from the same host until the next hostname line is
 % encoutered
-hostname 	virga
+hostname 	localhost
     channel 	0
 	    dspnum		1
 	    dspchan		96

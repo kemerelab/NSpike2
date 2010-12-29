@@ -100,8 +100,9 @@ void StimOutputOnlyTab::startStimulation(int count)
 void StimOutputOnlyTab::endStimulation(int flag)
 {
   continuousButton->setEnabled(true);
-  if (!continuousButton->isChecked())
+  if (!continuousButton->isChecked()) {
     nTrainsSpinBox->setEnabled(true);
+  }
   trainIntervalSpinBox->setEnabled(true);
 
   nTrainsSpinBox->setValue(nTrains);

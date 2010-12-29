@@ -31,7 +31,7 @@ extern DisplayInfo dispinfo;
 extern SysInfo sysinfo;
 extern NetworkInfo netinfo;
 extern DigIOInfo digioinfo;
-extern UserDataInfo userdatainfo;
+extern FSDataInfo fsdatainfo;
 
 
 /* Reward control gui */
@@ -108,6 +108,7 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
     setWindowFlags(fl | Qt::Window);
     show();
     /* set the number of wells to 3 to create the second set of tabs */
+    createTabsButton->click();
 }
 
 
@@ -314,9 +315,9 @@ void rewardControl::createLogicTab(int n)
     w->setSizePolicy(es); 
 
     /* create the well labels and the logic */
-    prevLabel = new QLabel(QString("Previous Well"), w, "prev label", 0);
+    prevLabel = new QLabel(QString("Prev Prev Well(s)"), w, "PP label", 0);
     grid1->addMultiCellWidget(prevLabel, 1, 1, 0, 0);
-    currLabel = new QLabel(QString("Current Well"), w, "curr label", 0);
+    currLabel = new QLabel(QString("Prev Well(s)"), w, "P label", 0);
     grid1->addMultiCellWidget(currLabel, 2, 2, 0, 0);
     inputBitLabel = new QLabel(QString("Input Bit"), w, "input label", 0);
     grid1->addMultiCellWidget(inputBitLabel, 3, 3, 0, 0);
@@ -339,7 +340,7 @@ void rewardControl::createLogicTab(int n)
     rewardPercent = new QSpinBox* [n];
     for (i = 0; i < n; i++) {
 	col = i+1;
-	wellLabel[i] = new QLabel(QString("Next Well %1").arg(i), w, 
+	wellLabel[i] = new QLabel(QString("Activate Well %1").arg(i), w, 
 		"well label", 0);
 	wellLabel[i]->setAlignment(Qt::AlignHCenter);
 	grid1->addMultiCellWidget(wellLabel[i], 0, 0, col, col);

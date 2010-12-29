@@ -175,8 +175,7 @@ int ResetStateMachines()
 int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int sendResetStateMachine)
 {
   // ---- statemachine defaults to -1, sendreset to 0
-    int i, s = -1;
-    unsigned short addr;
+    int s = -1;
     
     /* check to see that the length is in bounds */
     if (len > DIO_MAX_COMMAND_LEN) {
@@ -317,7 +316,7 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
     offset = address;
 
 #ifdef NO_DSP_DEBUG
-    fprintf(stderr, "Data to DSP %d: %d shorts \n ", dspnum, n);
+    //fprintf(stderr, "Data to DSP %d: %d shorts \n ", dspnum, n);
     return 1;
 #else
     dspacq = 0;
