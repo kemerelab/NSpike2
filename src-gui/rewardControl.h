@@ -16,11 +16,12 @@
 #include <Q3BoxLayout>
 
 #include "spikeGLPane.h"
-#include "spikeFSGUI.h"
+#include "spikeUserGUI.h"
 #include "spike_dsp.h"
 #include "spike_dio.h"
 #include "spike_main.h"
 #define MAX_WELLS	8
+#define MAX_REST	90000	
 
 extern DigIOInfo digioinfo;
 extern DisplayInfo dispinfo;
@@ -44,7 +45,11 @@ class rewardControl : public QDialog {
     void 	save() { saveFile(); };
     void	createTabs(void) { 
       createLogicTab(nWells->value());
-      createStatusTab(nWells->value()); }; 
+      createStatusTab(nWells->value()); 
+      if(avoidButton->isChecked()) { 
+        createAvoidTab(); 
+      }
+    };
     void  	setNextReward() { rewardWell(getNextWell(), true); };
     void  	setReward(int well) { rewardWell(well, true); };
     void  	setFirstReward(int well) { 
@@ -64,14 +69,17 @@ class rewardControl : public QDialog {
 
   protected slots:
     void reject();
-    void resetRewardCounters(void); 
-
+    void resetRewardCounters(void);
+    void setAirTimer(void); 
+    void	warnOff() { TriggerOutput(outputBit[0]->value()); };
+    void	airOn() { TriggerOutput(outputBitAir->value()); };
 
   protected:
     void 		loadFile(void);
-    void 	  saveFile(void);
+    void 	  	saveFile(void);
     void		createLogicTab(int n);
     void		createStatusTab(int n);
+    void		createAvoidTab(void);
     void		createListBoxItems(int nwells);
     void		createRewardListBox(Q3ListBox *lb);
 
@@ -100,6 +108,7 @@ class rewardControl : public QDialog {
     QSpinBox 	*nWells;
     QPushButton	*createTabsButton;
     QPushButton	*close;
+    QRadioButton *avoidButton;
 
     /* second tab - logic */
     QLabel		**wellLabel;
@@ -126,6 +135,19 @@ class rewardControl : public QDialog {
     QRadioButton	**next;
     QLabel		**status;
     QPushButton	*nextReward;
+
+    /* fourth tab */
+    QLabel		*restLengthLabel;
+    QSpinBox		*restLength;
+    QLabel		*warnLengthLabel;
+    QSpinBox		*warnLength;
+    QLabel		*warnPulseLabel;
+    QSpinBox		*warnPulse;
+    QLabel		*outputBitAirLabel;
+    QSpinBox		*outputBitAir;
+    QTimer		*timerRest;
+    QTimer		*timerWarn;
+    QTimer		*timerWarnOff;
 };
 
 class setRewardsDialog : public QDialog {
@@ -175,18 +197,18 @@ class setRewardsDialog : public QDialog {
 
 };
 
-class fsDataDialog : public QDialog {
+class userDataDialog : public QDialog {
 	Q_OBJECT
 
     public:
-	    fsDataDialog(QWidget *parent = 0, 
+	    userDataDialog(QWidget *parent = 0, 
 		    const char *name = 0, bool model = FALSE, 
 		    Qt::WFlags fl = 0);
-	    ~fsDataDialog();
-	    void setFSDataInfo();
+	    ~userDataDialog();
+	    void setUserDataInfo();
 
     public slots:
-	    void acceptSettings(void) { setFSDataInfo(); };
+	    void acceptSettings(void) { setUserDataInfo(); };
 
     signals:
 	    void finished(void);

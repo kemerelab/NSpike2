@@ -31,7 +31,7 @@ extern DisplayInfo dispinfo;
 extern SysInfo sysinfo;
 extern NetworkInfo netinfo;
 extern DigIOInfo digioinfo;
-extern FSDataInfo fsdatainfo;
+extern UserDataInfo userdatainfo;
 
 
 /* Reward control gui */
@@ -49,7 +49,7 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
 
     // Create a multitabbed window
     qtab = new QTabWidget(this, 0, 0);
-    this->ntabs = 3;
+    this->ntabs = 4; 
     QWidget *w = new QWidget(this, 0, 0);
     qtab->setTabPosition(QTabWidget::South);
 
@@ -92,6 +92,10 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
     connect(createTabsButton, SIGNAL( clicked() ), this, SLOT( createTabs() ) );
     grid0->addMultiCellWidget(createTabsButton, 2, 2, 1, 1);
 
+    avoidButton = new QRadioButton("Avoidance Task", w, 0);
+    avoidButton->setAutoExclusive(false);
+    grid0->addMultiCellWidget(avoidButton, 2, 2, 0, 0);
+
     close = new QPushButton("Close", w, "CloseDialog");
     connect( close, SIGNAL( clicked() ), this, SLOT( dialogClosed() ) );
     grid0->addMultiCellWidget(close, 3, 3, 1, 1);
@@ -103,8 +107,7 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
 
     setWindowFlags(fl | Qt::Window);
     show();
-    /* create the tabs */
-    createTabsButton->click();
+    /* set the number of wells to 3 to create the second set of tabs */
 }
 
 
@@ -299,7 +302,7 @@ void rewardControl::createLogicTab(int n)
 	delete w;
     }
 
-    prevWell = -1;
+    prevWell = -1;	/* set as first trial */
 
     w = new QWidget(qtab, 0, 0);
     QString tablabel2 = QString("Logic"); 
@@ -336,7 +339,7 @@ void rewardControl::createLogicTab(int n)
     rewardPercent = new QSpinBox* [n];
     for (i = 0; i < n; i++) {
 	col = i+1;
-	wellLabel[i] = new QLabel(QString("Reward Well %1").arg(i), w, 
+	wellLabel[i] = new QLabel(QString("Next Well %1").arg(i), w, 
 		"well label", 0);
 	wellLabel[i]->setAlignment(Qt::AlignHCenter);
 	grid1->addMultiCellWidget(wellLabel[i], 0, 0, col, col);
@@ -516,6 +519,7 @@ void rewardControl::rewardWell(int well, bool reward)
 	 * reward */
 	if ((drand48() * 100) <=  rewardPercent[well]->value()) {
 	    TriggerOutput(outputBit[well]->value());
+	    setAirTimer();  // no effect if avoidButton is checked.
 	    prevRewarded = 1;
 	}
 	else {
@@ -541,7 +545,7 @@ void rewardControl::rewardWell(int well, bool reward)
 	    }
 	}
     }
-    next[well]->setChecked(false);
+    // next[well]->setChecked(false);
     prevWell = well;
     this->setStatus();
 }
@@ -589,10 +593,76 @@ void rewardControl::DIOInput(DIOBuffer *diobuf)
 }
 
 
+void rewardControl::createAvoidTab(void)
+{
+  /* create the avoid tab. We first get rid
+   * of the current tab if it exists */
+  QWidget *w = qtab->page(3);
+  if (w) {
+    qtab->removePage(w);
+    delete w;
+  }
+  w = new QWidget(qtab, "Avoid");
+  /* create the avoid tab with the correct number of wells */
+  QString tablabel3 = QString("Avoid"); 
+  qtab->insertTab(w, tablabel3, 3); 
+  Q3GridLayout *grid3 = new Q3GridLayout(w, 6, 3, 0, 0, "grid 3");
+
+  /* I don't know if the following is necessary */
+  QSizePolicy es(QSizePolicy::Expanding, QSizePolicy::Expanding, 1, 1);
+  w->setSizePolicy(es); 
+
+  restLengthLabel = new QLabel("Rest Length (ms)", w, "restLength label", 0);
+  grid3->addMultiCellWidget(restLengthLabel, 1, 1, 0, 0);
+  restLength = new QSpinBox(1, MAX_REST, 1, w, "Rest Length");
+  grid3->addMultiCellWidget(restLength, 1, 1, 1, 1);
+  restLength->setValue(30000);
+
+  warnPulseLabel = new QLabel("Warn Pulse (ms)", w, "warnPulse label", 0);
+  grid3->addMultiCellWidget(warnPulseLabel, 4, 4, 0, 0);
+  warnPulse = new QSpinBox(1, MAX_REST, 1, w, "Warn Pulse");
+  grid3->addMultiCellWidget(warnPulse, 4, 4, 1, 1);
+  warnPulse->setValue(200);
+ 
+  warnLengthLabel = new QLabel("Warn Length (ms)", w, "warnLength label", 0);
+  grid3->addMultiCellWidget(warnLengthLabel, 3, 3, 0, 0);
+  warnLength = new QSpinBox(1, MAX_REST, 1, w, "Warn Length");
+  grid3->addMultiCellWidget(warnLength, 3, 3, 1, 1);
+  warnLength->setValue(25000);
+
+  outputBitAirLabel = new QLabel("Output Bit - Air On", w, "outputBitAir label", 0);
+  grid3->addMultiCellWidget(outputBitAirLabel, 2, 2, 0, 0);
+  outputBitAir = new QSpinBox(0, MAX_BITS, 1, w, "Output Bit - Air On");
+  grid3->addMultiCellWidget(outputBitAir, 2, 2, 1, 1);
+  outputBitAir->setValue(11);
+
+  timerRest = new QTimer(this);
+  connect(timerRest, SIGNAL(timeout()), this, SLOT(airOn()));
+  timerRest->setSingleShot(true);
+
+  timerWarn = new QTimer(this);
+  connect(timerWarn, SIGNAL(timeout()), this, SLOT(airOn()));
+  timerWarn->setSingleShot(true);
+
+  timerWarnOff = new QTimer(this);
+  connect(timerWarnOff, SIGNAL(timeout()), this, SLOT(warnOff())); 
+  timerWarnOff->setSingleShot(true);
+}
+
+void rewardControl::setAirTimer()
+{
+  if(avoidButton->isChecked()) {
+    timerRest->start(restLength->value());
+    timerWarn->start(warnLength->value()); 
+    timerWarnOff->start(warnLength->value()+ warnPulse->value()); 
+  };
+}
+
 void setRewardsDialog::reject() {
   emit finished();
   QDialog::reject();
 }
+
 
 setRewardsDialog::setRewardsDialog(QWidget* parent, 
 	const char* name, bool modal, Qt::WFlags fl, int port)
