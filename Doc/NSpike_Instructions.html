@@ -3,6 +3,7 @@
 
 
 
+
   
   <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8"><title>NSpike Instructions</title>
   
@@ -712,7 +713,7 @@ packages so
 that you get gcc, the gnu debugger, and so on </p>
     </li>
     <li>
-      <p style="margin-bottom: 0in;">Install the Qt and Qt
+      <p style="margin-bottom: 0in;">Install the Qt4 and Qt4
 development
 libraries. </p>
     </li>
@@ -1017,96 +1018,44 @@ directory and run the file that generates the configure script:<br>
 <span style="font-family: monospace;">remember to run it as ./configure --bindir=/usr/local/nspike</span><br style="font-family: monospace;">
 <span style="font-family: monospace;">or as ./configure --bindir=/usr/local/nspike --enable-nspike_fixpos</span><br>
 </p>
-<p>o create the local Makefile. This depends on having qt
+<p>For the moment, run configure without the nspike_fixpos enabling command to create the Makefiles:<br>
+</p>
+<p><span style="font-family: monospace;">./configure --bindir=/usr/local/nspike<br>
+</span></p>
+<p><span style="font-family: monospace;"></span>This depends on having qt4
 installed,
 so if this doesn't work, make sure that the qt and qt development
-libraries are installed. Now do<br>
-  <br>
-  <font face="monospace">makeallclean</font> <br>
-  <br>
-to get rid of old files and<br>
+libraries are installed. <br>
+  </p>
+<p>now cd into the <span style="font-weight: bold;">src-gui</span> directory and run&nbsp; <span style="font-weight: bold;"><span style="font-weight: bold;"><span style="font-weight: bold;"></span></span></span>qmake there:<br>
+</p>
+<p style="font-family: monospace;">cd src-gui<br>
+qmake<br>
+cd .. <br>
+  </p>
+<p>The code should be ready to compile.&nbsp; Run<font face="monospace"><br>
+</font></p>
+<p><font face="monospace">make clean</font> <br>
+  </p>
+<p>to get rid of old files and<br>
   <font face="monospace"><br>
 make</font> </p>
 
 
+
   
-<p>to compile the main program. This will compile the nspike
-code in
-the NSpike base directory and some, but not all of the code in the
-Modules subdirectory. You should see a few warnings but no errors.
+<p>to compile the programs. You should see a few warnings but no errors.
 The warnings result from the -Wall compiler flag and can be ignored.
 If there are errors, they are most likely due to the absence of
 libraries that are necessary, and you will have to track these down
-and install them. </p>
-
+and install them. </p><p>When everything compiles without warnings, install the code in <b>/usr/local/nspike</b>
+by running <br>
+</p>
+<p><span style="font-family: monospace;">make install</span><br>
+</p>
+<p>If you prefer for the code to go somewhere other than /usr/local/nspike, go back and run <span style="font-family: monospace;">./configure --bindir=your_bin_directory_here</span><br>
   
-<p>NOTE: For reasons that are not clear to me, the make
-utility does
-not always properly detect cases when the header files (e.g.
-spike_defines.h) are changed, so after changing a header file, make
-sure to do “makeallclean” and then “make” or “makeall”. </p>
-
-  
-<p>Now change to the Modules subdirectory and configure the
-makefile: <br>
   <br>
-  <font face="monospace">cd Modules</font><br>
-  <font face="monospace">configure</font><br>
-  <br>
-If
-configure gives errors they are once again likely to be due to the
-absence of necessary libraries. Once it works it will generates the
-local makefile for the modules using Makefile.am as the automake
-template file. <br>
-  <br>
-If you are not using video you can copy
-Makefile.am.novideo to Makefile.am:<br>
-  <br>
-  <font face="monospace">cp
-Makefile.am.novideo Makefile.am<br>
-  <br>
-  </font>Now run<br>
-  <br>
-&nbsp; <br>
-  <font face="monospace">automake<br>
-make<br>
-  <br>
-  </font>to compile
-the modules. <br>
-  <br>
-When both nspike and the modules have been
-compiled, go back to the Nspike directory and install the code in <b>/usr/local/nspike</b>
-by running the makeallinstall script
-as
-root. Note that for future reference, the makeall script is available
-to compile both nspike and the modules in one command. <br>
-  <br>
-  <font face="monospace">cd
-/home/lorenlab/Nspike </font><br>
-  <font face="monospace">makeallinstall</font></p>
-
-  
-<p>Check to see that the follow files exist in /<b>usr/local/nspike</b>
-(Note that the “*” after each file means that it is executable
-and is not part of the name): </p>
-
-  
-<p><font face="monospace">ls /usr/local/nspike<br>
-  <br>
-  </font>should
-produce a listing like this:<br>
-  <font face="monospace"><br>
-nspike
-spike_behav spike_fixpos spike_process_posdata</font><br>
-  <font face="monospace">nspike_matlab
-spike_daq spike_matlab spike_rgbcolor</font><br>
-  <font face="monospace">spike_extract
-spike_posdaq spike_save_data<br>
-  <br>
-  <br>
-  <br>
-  <br>
-  </font><br>
   <br>
   </p>
 
@@ -1119,7 +1068,7 @@ the NSpike Code</font></p>
   
 <p style="page-break-before: always;"><br>
 Make sure that
-/usr/local/nspike is in your path. <br>
+<span style="font-weight: bold;">/usr/local/nspike</span> is in your path. <br>
   <br>
   <br>
   <br>
@@ -1130,10 +1079,9 @@ Make sure that
 Configuration files</font> </p>
 
   
-<p>The majority of the program configuration is specified in
+<p>The program configuration is specified in
 the
-configuration files. nspikeconfig is the default name of the main
-configuration file. The various options for each item are given
+configuration file.&nbsp; The various options for each item are given
 within that file.<br>
 &nbsp;<br>
 NOTE: at the moment, while it is
@@ -1160,11 +1108,15 @@ acquisition until they recieve a message from the master, and
 similarly, exiting from the program requires exiting on the master
 machine.<br>
   <br>
-The NSpike directory has a number of example
+The <span style="font-weight: bold;">NSpike/Doc/ExampleConfigs</span>
+directory has a number of example
 configuration files which are named “nspikeconfig#”. These files
 are internally documented (comments begin with '%') and contain all
 of the configuration information to set datatypes, channel numbers,
-position tracking variables and behavior / digital IO variables.&nbsp; </p>
+position tracking variables and behavior / digital IO variables.&nbsp;
+nspikeconfig1 has the most complete list of configuration file options.
+<br>
+ </p>
 
   
 <p><a name="Running_the_Program_on_One_Computer"></a><font size="4">Running
@@ -1297,8 +1249,7 @@ acquisition</font><br>
   <font face="monospace">Acquistion started</font><br>
   <br>
 &nbsp;You
-should now have&nbsp;a simulated EEG display with 24 channels. Every
-channel should have a 8 or so Hz sinewave on it. If it doesn’t
+should now have&nbsp;a simulated EEG display with 24 channels. If it doesn’t
 work, the problem is likely to be in your modification to the config
 file, and you should carefully look through the output of the program
 to identify any errors it caught. To quit, select "Quit"
@@ -1333,7 +1284,7 @@ on both the master and a slave
 machine (the names must, of course, match the names you put into
 nspikeconfig3, and you will need to run it from a directory where you
 can see spikeconfig3 on both machines e.g. /home/lorenlab/NSpike for
-us). You should see 8 channels of EEG on the master and simulated
+us). You should see 8 channels of EEG and position on the master and simulated
 spike data on the slave. </p>
 
   
@@ -1355,10 +1306,22 @@ master.&nbsp;</p>
   
 <p><a name="Collecting_Data_with_the_NSpike_Hardware"></a><a name="Setting_up_Your_Configuration_File"></a><a name="DSP_Channel_Mapping"></a><br>
   <font size="5">Collecting Data with the NSpike Hardware and
-Software<br>
-  </font><br>
-  <font size="4"><br>
-  <br>
+Software</font></p>
+<p><font size="4">
+Recompiling the Code</font></p>
+<p>Edit the spike_defines.h file in the <b>include</b> subdirectory.&nbsp; Comment out all the first two #defines as follows</p>
+<p style="font-family: monospace;">//#define NO_DSP_DEBUG<br>
+</p>
+<p style="font-family: monospace;">//#define NO_POS_DEBUG<br>
+</p>
+<p>The #define DSP_DEBUG can be left as is or commented out as you prefer.</p>
+<p>Run&nbsp;</p>
+<p><span style="font-family: monospace;">make<br>
+make install<br>
+</span></p>
+<p>to install the new code.;<span style="font-family: monospace;"><br style="font-family: monospace;">
+</span><br>
+<font size="4">
 Setting up Your
 Configuration File<br>
   </font><br>
@@ -1369,17 +1332,9 @@ to collect when a threshold crossing is detected) are defined in the
 spike_defines.h file in the <b>include</b> subdirectory.&nbsp; If you
 want to change those parameters, substantial recoding of a number of
 files will be required.&nbsp; <br>
-  <br>
-An example of an actual
+  <br>nspikeconfig3 was adapted from an actual
 configuration file for a microdrive with 8 tetrodes (6 spike
-tetrodes, one eeg tetrode, and one reference tetrode) is in the
-franklab8tetconfig file.&nbsp; This configuration file sets the
-master (snow) to display 7 channels of EEG data (one channel from
-each tetrode with the exception of the reference), position data from
-the frame-grabber on the rtslave (graupel) and behavioral data
-(digital I/O) from the UEI card on graupel.&nbsp; Hail, the non-rt
-slave, processes spike data from the 6 spike tetrodes (24 channels of
-data total).&nbsp; Here we go through the most complex parts of the
+tetrodes, one eeg tetrode, and one reference tetrode).&nbsp; Here we go through the most complex parts of the
 configuration file, the mapping from the tetrodes on the animal to
 the dsp channels and the specification of channels for each
 machine.<br>
@@ -1394,8 +1349,12 @@ per channel (the fixed sampling rate of the A/D box).&nbsp; The
 "electmap" lines in the configuration file define the
 relationship between individual input channels and DSP channels.&nbsp;
 This mapping is given in the DSP Channel Mapping section
-below.<br>
-  <br>
+below.</p>
+<p>It is also important to know that the frame sync signal from the
+camera(s) is put onto DSP channel 63.&nbsp; This channel must be
+included as a continuous channel if you want to be able to correctly
+timestamp position data. <br>
+ 
   <br>
   <br>
   <font size="4">DSP Channel Mapping<br>
@@ -1432,6 +1391,7 @@ associated DSP channls are as follows:<br>
   <br>
   <br>
   </p>
+
 
   
 <center>
@@ -2868,7 +2828,7 @@ count</p>
 Section of Config File</font></p>
 
   
-<p>The electmap section of franklab8tetconfig is shown below:</p>
+<p>The electmap section of nspikeconfig3 is shown below:</p>
 
   
 <p><font face="monospace">%&nbsp;&nbsp;&nbsp;

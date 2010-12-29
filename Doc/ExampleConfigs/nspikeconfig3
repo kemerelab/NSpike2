@@ -71,7 +71,7 @@ port		10020
 % datatype	machinename	CONTINOUS POSITION 
 % datatype	machinename	CONTINOUS POSITION DIGITALIO
 
-datatype 	virga		CONTINUOUS 
+datatype 	virga		CONTINUOUS POSITION
 datatype	minime		SPIKE
 
 % the data directory specifies the default location for data files on each
@@ -286,6 +286,22 @@ hostname 	virga
 	    maxdispval		1000
 	    filter 		1	400
 	    color		0
+
+% Note that this last channel (channel 7) is the sync signal from the camera,
+% which is mapped onto dspchannel 63.
+
+     channel 7
+            dspnum      	1
+            dspchan     	63
+            number      	10
+            electchan   	0
+            depth       	0
+            refelect    	0
+            refchan     	0
+            thresh      	10000
+            maxdispval  	65500
+            filter      	1 11000
+            color       	2
 
 
 % Now come the channels of the data tetrodes

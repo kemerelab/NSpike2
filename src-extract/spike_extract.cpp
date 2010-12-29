@@ -44,7 +44,7 @@ typedef struct _ExtractInfo {
     int   extractdio;
     int   extractdiotext;
     int   extractevent;
-    int   fixtime;
+    bool  usechannum;
     bool  flush;
     u32   toffset;
 } ExtractInfo;
@@ -80,9 +80,9 @@ int main(int argc, char **argv)
     extractinfo.extractdio = 0;
     extractinfo.extractdiotext = 0;
     extractinfo.extractevent = 0;
-    extractinfo.fixtime = 0;
     extractinfo.toffset = 0;
     extractinfo.flush = 0;
+    extractinfo.usechannum = 0;
     datafilename[0] = '\0';
 
     while (++nxtarg < argc) {
@@ -112,8 +112,12 @@ int main(int argc, char **argv)
 	  extractinfo.extractspike = 1;
 	  extractinfo.extractcont = 1;
 	  extractinfo.extractpos = 1;
+	  extractinfo.extractpos64 = 1;
 	  extractinfo.extractdiotext = 1;
 	  extractinfo.extractevent = 1;
+        }
+        else if (strcmp(argv[nxtarg], "-usechannum") == 0) {
+	  extractinfo.usechannum = 1;
         }
         else if (strcmp(argv[nxtarg], "-toffset") == 0) {
 	  extractinfo.toffset = ParseTimestamp(argv[++nxtarg]);
@@ -365,7 +369,6 @@ int WriteContData(u32 offset)
   for (i = 0; i < sysinfo.nchannels[sysinfo.machinenum]; i++) {
     /* get the electrode number, depth, and ndays for the first channel of this electrode */
     ch = sysinfo.channelinfo[sysinfo.machinenum] + i;
-    electnum = ch->number;
     /* check to see if this is the position sync channel and if so,
      * overwrite the name */
     if (ch->dspchan == DSP_POS_SYNC_CHAN) {
@@ -393,11 +396,15 @@ int WriteContData(u32 offset)
       }
     }
     else {
-      depth = sysinfo.channelinfo[sysinfo.machinenum][i].depth;
-      depth = ch->depth;
       /* construct strings for each of them so that all of the directory 
        * names are the same length */
-      sprintf(outfilename, "%02d-%03d", electnum, depth);
+      if (extractinfo.usechannum) {
+	sprintf(outfilename, "%02d-%02d-%03d", ch->number, ch->electchan, 
+		ch->depth);
+      }
+      else {
+        sprintf(outfilename, "%02d-%03d", ch->number, ch->depth);
+      }
       /* put .cont on the end of the spike file */
       strcat(outfilename, ".cont");
 
@@ -1059,6 +1066,9 @@ void Usage(void)
 {
 
   fprintf(stderr,"nspike_extract version %s\n", VERSION);
-  fprintf(stderr,"Usage: nspike_extract [-spike] [-cont] [[-pos] [-pos64]] [-dio] [-diotext] [-event] [-all] [-toffset time_to_add] [-fixtime actualtime computedtime] [-flush] datafile\n");
+  fprintf(stderr,"Usage: nspike_extract [-spike] [-cont] [[-pos] [-pos64]] [-dio] [-diotext] [-event] [-all] [-toffset time_to_add] [-flush] [-usechannum] datafile\n");
+  fprintf(stderr,"\t-pos or -pos64 specifies that the offsets that indicate the location for the beginning of eachh mpeg frame should be 32bit (-pos) or 64bit (-pos64) integers rather than 32 bit. pos64 is the default if -all is used.\n");
   fprintf(stderr,"\t-toffset will add the specified amount of time to each timestamp.  Use this if data collection was interrupted and you need to append data from one session to the end of another. \n");
+  fprintf(stderr,"\t-flush will write out each piece of data as it is read in.  Use this if nspike hung and you are trying to extract the data from a partial datafile\n");
+  fprintf(stderr,"\t-usechannum will write out channel numbers as part of each continuous datafile name.  Use this if you have continuous data from more than one channel per electrode/\n");
 }
