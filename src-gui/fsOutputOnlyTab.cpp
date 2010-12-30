@@ -17,13 +17,23 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
   stimulatorSelectComboBox->addItem("B");
   stimulatorSelectComboBox->addItem("Both (Alternating)");
 
+  aOutSelectComboBox = new QComboBox;
+  aOutSelectComboBox->addItem("None");
+  aOutSelectComboBox->addItem("AOut 1");
+  aOutSelectComboBox->addItem("AOut 2");
+  aOut1Mode = aOut2Mode = 0;
+
   // Signals/Slots for stimulatorSelectComboBox are connected in
   //  main GUI code to StimConfigTab.
   layout->addWidget(new QLabel("Active Stimulator"),0,0, 
       Qt::AlignRight | Qt::AlignVCenter);
   layout->addWidget(stimulatorSelectComboBox,0,1);
+  
+  layout->addWidget(new QLabel("Active Analog Out"),0,2, 
+      Qt::AlignRight | Qt::AlignVCenter);
+  layout->addWidget(aOutSelectComboBox,0,3);
 
-  layout->addWidget(new QLabel("Number of pulse trains"), 1, 0,
+  layout->addWidget(new QLabel("Number of output trains"), 1, 0,
       1,1, Qt::AlignRight | Qt::AlignTop);
 
   QVBoxLayout *nTrainsLayout = new QVBoxLayout;
@@ -31,12 +41,12 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
   nTrainsSpinBox = new QSpinBox();
   nTrainsSpinBox->setAlignment(Qt::AlignRight);
   nTrainsSpinBox->setRange(1,200);
-  nTrainsSpinBox->setToolTip("Number of pulse/pulse sequences to trigger before returning.");
+  nTrainsSpinBox->setToolTip("Number of output sequences to trigger before returning.");
   nTrainsLayout->addWidget(nTrainsSpinBox);
   continuousButton = new QPushButton("Continuous");
   continuousButton->setCheckable(true);
   continuousButton->setStyle("Windows");
-  continuousButton->setToolTip("Execute pulse/pulse sequences until Abort button is pressed.");
+  continuousButton->setToolTip("Execute digital or analog outputs until Abort button is pressed.");
   connect(continuousButton, SIGNAL(toggled(bool)), this, SLOT(toggleContinuousMode(bool)));
 
   nTrainsLayout->addWidget(continuousButton);
@@ -54,15 +64,15 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
   layout->addWidget(new QLabel("[pulse onset to pulse onset]"), 3, 2,
       Qt::AlignRight | Qt::AlignVCenter);
 
-  stimSingleButton = new QPushButton("Trigger Single Pulse Sequence");
+  stimSingleButton = new QPushButton("Trigger Single Output");
   layout->addWidget(stimSingleButton,5,0);
-  stimSingleButton->setToolTip("Trigger a single stimulation.\n (ignore value set of 'Number of pulse trains'/Continuous).");
+  stimSingleButton->setToolTip("Trigger a single output.\n (ignore value set of 'Number of outputs'/Continuous).");
 
-  startStimButton = new QPushButton("Start Pulse Sequence");
+  startStimButton = new QPushButton("Start Output");
   layout->addWidget(startStimButton,5,1);
-  startStimButton->setToolTip("Start stimulation program.");
+  startStimButton->setToolTip("Start digital or analog output");
 
-  abortStimButton = new QPushButton("Abort Pulse Sequence");
+  abortStimButton = new QPushButton("Abort Output Sequence");
   layout->addWidget(abortStimButton,5,2);
   abortStimButton->setToolTip("End stimulation program.");
   abortStimButton->setEnabled(false);
@@ -76,6 +86,40 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
   setLayout(layout);
 
 }
+
+void StimOutputOnlyTab::updateActiveAOut(int aOutIndex, int aO1Mode, 
+    int aO2Mode) 
+{
+
+  /* updatet the local analog out selector without sending a signal */
+  aOutSelectComboBox->blockSignals(true);
+  aOutSelectComboBox->setCurrentIndex(aOutIndex);
+  aOutSelectComboBox->blockSignals(false);
+
+  aOut1Mode = aO1Mode;
+  aOut2Mode = aO2Mode;
+  updateAOutEnable();
+}
+
+void StimOutputOnlyTab::updateAOutEnable()
+{
+  /* if either is in continuous mode we disable the ntrains buttons and the single
+   * stim button;  FIX -- separate control of the two outputs */
+  if ((aOutSelectComboBox->currentIndex() != 0) && 
+      ((aOut1Mode == DIO_AO_MODE_CONTINUOUS) || 
+      (aOut2Mode == DIO_AO_MODE_CONTINUOUS))) {
+    continuousButton->setEnabled(false);
+    nTrainsSpinBox->setEnabled(false);
+    trainIntervalSpinBox->setEnabled(false);
+    stimSingleButton->setEnabled(false);
+  }
+  else {
+    nTrainsSpinBox->setEnabled(true);
+    trainIntervalSpinBox->setEnabled(true);
+    stimSingleButton->setEnabled(true);
+  }
+}
+
 
 void StimOutputOnlyTab::startStimulation(int count)
 {
@@ -111,6 +155,7 @@ void StimOutputOnlyTab::endStimulation(int flag)
   stimSingleButton->setEnabled(true);
   startStimButton->setEnabled(true);
   abortStimButton->setEnabled(false);
+  updateAOutEnable();
 }
 
 void StimOutputOnlyTab::stepStimulation(int count)

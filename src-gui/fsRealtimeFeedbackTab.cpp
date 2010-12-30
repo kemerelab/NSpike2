@@ -22,13 +22,24 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
       Qt::AlignRight | Qt::AlignVCenter);
   layout->addWidget(stimulatorSelectComboBox,0,1);
 
+  aOutSelectComboBox = new QComboBox;
+  aOutSelectComboBox->addItem("None");
+  aOutSelectComboBox->addItem("A");
+  aOutSelectComboBox->addItem("B");
+  // Signals/Slots for aOutSelectComboBox are connected in
+  //  main GUI code to StimConfigTab.
+  layout->addWidget(new QLabel("Active AOut"),1,0, 
+      Qt::AlignRight | Qt::AlignVCenter);
+  layout->addWidget(aOutSelectComboBox,1,1);
+
+
   QComboBox *feedbackAlgorithmComboBox = new QComboBox;
   feedbackAlgorithmComboBox->addItem("None");
   feedbackAlgorithmComboBox->addItem("Latency Test");
   feedbackAlgorithmComboBox->addItem("Theta Phase");
   feedbackAlgorithmComboBox->addItem("Ripple Disruption");
-  layout->addWidget(new QLabel("Realtime Feedback Program"),1,0, Qt::AlignRight);
-  layout->addWidget(feedbackAlgorithmComboBox,1,1);
+  layout->addWidget(new QLabel("Realtime Feedback Program"),2,0, Qt::AlignRight);
+  layout->addWidget(feedbackAlgorithmComboBox,2,1);
 
   QTimer *timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkRealtimeStatus()));
@@ -71,6 +82,17 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
       this, SLOT(setFeedbackAlgorithm(int)));
 }
 
+void RealtimeFeedbackTab::updateActiveAOut(int aOutIndex, int aOut1Mode, 
+    int aOut2Mode)
+{
+  /* set the current analog out; at the moment we don't do anything different for
+   * the modes */
+  aOutSelectComboBox->setCurrentIndex(aOutIndex);
+}
+
+
+
+
 void RealtimeFeedbackTab::setFeedbackAlgorithm (int index)
 {
   int mode;
@@ -108,6 +130,7 @@ void RealtimeFeedbackTab::updateRealtimeStatus(char *s)
 {
   status->setText(QString(s));
 }
+
 
 LatencyTest::LatencyTest(QWidget *parent)
   : QWidget(parent)

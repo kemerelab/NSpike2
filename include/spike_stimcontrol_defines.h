@@ -64,20 +64,39 @@
 
 #define DIO_DEFAULT_CM_PER_PIX 0.87
 
+#define DIO_AO_MODE_CONTINUOUS 	1
+#define DIO_AO_MODE_PULSE	2
+#define DIO_AO_MODE_RAMP	3
+#define DIO_AO_MODE_SINE	4
+
 #include <stdint.h>
 
 typedef struct _PulseCommand {
     uint32_t start_samp_timestamp;
+    bool digital;  // true if we should do digital IO; false for analog IO 
+
+    /* digital defines */
+    uint64_t pin1, pin2;
+    int is_biphasic;
+
+    /* analog defines */
+    int aout;  // the number of the analog output to use
+    int aout_mode; // the mode for the analog out
+    float minv, maxv; // the minimum and maximum voltages
+
+    int cont_percent; // the continuous mode level (1-100% of max)
+    int pulse_percent; // the pulse mode level (1-100% of max)
+
+
     int line;
     int pre_delay; // in ticks; automatically zeroed after first
     int pulse_width; // in ticks (10 kHz)
     int n_pulses;
     int inter_pulse_delay; // in ticks
-    int is_biphasic;
-    uint64_t pin1, pin2;
     int n_repeats; // note that this is decremented to zero (not preserved) by code
                    // except for -1 which is the special case of continuous
     int inter_frame_delay; // in ticks;
+
 } PulseCommand;
 
 // special codes - embedded in the "pulse_width" field

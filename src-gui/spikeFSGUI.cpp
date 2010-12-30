@@ -51,8 +51,6 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     daq_io_widget = new DAQ_IO(this);
 
-    //connect(daq_io_widget,SIGNAL(userProgramRunning(bool)),this,SLOT(enableTabs(bool)));
-
     qtab = new QTabWidget(this);
     qtab->setUsesScrollButtons(false);
 
@@ -64,12 +62,22 @@ DIOInterface::DIOInterface(QWidget* parent,
     connect(mainConfigTab->saveSettingsButton, SIGNAL(clicked(void)), this, SLOT(saveSettings(void)));
 
     stimConfigTab = new StimConfigTab(this);
-    qtab->insertTab(stimConfigTab, "Configure Stimulators", CONFIG_STIMULATORS_TAB);
+    qtab->insertTab(stimConfigTab, "Configure Digital Stimulators", CONFIG_STIMULATORS_TAB);
+
+    aOutConfigTab = new AOutConfigTab(this);
+    qtab->insertTab(aOutConfigTab, "Configure Analog Out", CONFIG_ANALOG_OUT_TAB);
 
     stimOutputOnlyTab = new StimOutputOnlyTab(this);
     qtab->insertTab(stimOutputOnlyTab, "Output-Only Experiments", OUTPUT_ONLY_TAB);
+    
+    /* connections to stimConfig for digital stimulation */
     connect(stimConfigTab, SIGNAL(activeStimulatorChanged(int)), stimOutputOnlyTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(stimOutputOnlyTab->stimulatorSelectComboBox, SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
+
+    /* connections to aOutConfig for analog stimulation */
+    connect(aOutConfigTab, SIGNAL(activeAOutChanged(int, int, int)), stimOutputOnlyTab, SLOT(updateActiveAOut(int, int, int)));
+    connect(stimOutputOnlyTab->aOutSelectComboBox, SIGNAL(currentIndexChanged(int)), aOutConfigTab, SLOT(setActiveAOut(int)));
+
     connect(stimOutputOnlyTab->stimSingleButton, SIGNAL(clicked()), this, SLOT(triggerSingleStim()));
     connect(stimOutputOnlyTab->startStimButton, SIGNAL(clicked()), this, SLOT(startOutputOnlyStim()));
     connect(stimOutputOnlyTab->abortStimButton, SIGNAL(clicked()), this, SLOT(abortOutputOnlyStim()));
@@ -80,10 +88,18 @@ DIOInterface::DIOInterface(QWidget* parent,
     realtimeFeedbackTab = new RealtimeFeedbackTab(this);
     qtab->insertTab(realtimeFeedbackTab, "Real-time Feedback Experiments", 
         REALTIME_FEEDBACK_TAB);
+    /* connections to stimConfig for digital stimulation */
     connect(stimConfigTab, SIGNAL(activeStimulatorChanged(int)), 
         realtimeFeedbackTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(realtimeFeedbackTab->stimulatorSelectComboBox, 
         SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
+    /* connections to aOutConfig for analog stimulation */
+    connect(aOutConfigTab, SIGNAL(activeAOutChanged(int, int, int)), 
+	    realtimeFeedbackTab, SLOT(updateActiveAOut(int, int, int)));
+    connect(realtimeFeedbackTab->aOutSelectComboBox, 
+	    SIGNAL(currentIndexChanged(int)), aOutConfigTab, 
+	    SLOT(setActiveAOut(int)));
+
     connect(realtimeFeedbackTab->resetFeedbackButton, SIGNAL(clicked()), this, SLOT(resetRealtimeStim()));
     connect(realtimeFeedbackTab->startFeedbackButton, SIGNAL(clicked()), this, SLOT(startRealtimeStim()));
     connect(realtimeFeedbackTab->stopFeedbackButton, SIGNAL(clicked()), this, SLOT(stopRealtimeStim()));
@@ -98,8 +114,6 @@ DIOInterface::DIOInterface(QWidget* parent,
 
     setLayout(layout);
     setWindowFlags(fl | Qt::Window);
-
-    // Can we auto start user program here?
 
     mainConfigTab->initializeValues();
 
@@ -176,7 +190,8 @@ void DIOInterface::enableTabs(bool enable)
 void DIOInterface::triggerSingleStim(void)
 {
   PulseCommand pCmd[3]; // at most 3 pulse commands are needed
-  qDebug("triggerSingleStim signal received. Current stimulator is: %d\n", stimConfigTab->activeStimulator);
+  qDebug("triggerSingleStim signal received.\nCurrent digital stimulator is: %d\nCurrent Analog Output is %d", stimConfigTab->activeStimulator, aOutConfigTab->activeAOut);
+  /* first handle digital stimulation events */
   switch (stimConfigTab->activeStimulator) {
   case 1:
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
@@ -207,7 +222,30 @@ void DIOInterface::triggerSingleStim(void)
     break;
   default:
   case 0:
-    qDebug("No active stimulator set.");
+    qDebug("No active digital stimulator set.");
+    break;
+  }
+
+  switch (aOutConfigTab->activeAOut) {
+  case 1:
+    pCmd[0] = aOutConfigTab->aOut1Config->aOutPulseCmd;
+    pCmd[0].n_repeats = 0;
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    SendFSDataMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
+    SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
+    stimOutputOnlyTab->startStimulation(1);
+    break;
+  case 2:
+    pCmd[0] = aOutConfigTab->aOut2Config->aOutPulseCmd;
+    pCmd[0].n_repeats = 0;
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    SendFSDataMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
+    SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
+    stimOutputOnlyTab->startStimulation(1);
+    break;
+  default:
+  case 0:
+    qDebug("No active Analog Output set.");
     break;
   }
 
@@ -218,6 +256,7 @@ void DIOInterface::startOutputOnlyStim(void)
   PulseCommand pCmd[4]; // at most 3 pulse commands are needed
   qDebug("startOutputOnlyStim signal received");
   // Generate sequence of pulse commands
+  // Start with the digital stimulator if selected
   switch (stimConfigTab->activeStimulator) {
   case 1:
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
@@ -274,6 +313,44 @@ void DIOInterface::startOutputOnlyStim(void)
   default:
   case 0:
     qDebug("No active stimulator set.");
+    break;
+  }
+
+  // Trigger the analog output if selected
+  switch (aOutConfigTab->activeAOut) {
+  case 1:
+    pCmd[0] = aOutConfigTab->aOut1Config->aOutPulseCmd;
+    pCmd[0].pre_delay = 0;
+    pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[0].n_repeats = -1;
+    else
+      pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    pCmd[0].line = 0;
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
+    SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
+
+    stimOutputOnlyTab->startStimulation(pCmd[0].n_repeats);
+    break;
+  case 2:
+    pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
+    pCmd[0].pre_delay = 0;
+    pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[0].n_repeats = -1;
+    else
+      pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    pCmd[0].line = 0;
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
+    SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
+
+    stimOutputOnlyTab->startStimulation(pCmd[0].n_repeats);
+    break;
+  default:
+  case 0:
+    qDebug("No active analog output set.");
     break;
   }
 }

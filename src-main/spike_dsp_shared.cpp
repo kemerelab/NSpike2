@@ -52,8 +52,8 @@ int WriteArbWaveForm(unsigned short *wavefm, int len)
 	DisplayErrorMessage(tmpstring);
 	return 0;
     }
-    ReadDSPData(DSPDIO, DSP_SRAM, DIO_ARB_LENGTH, 1, &tmplen);
-	    fprintf(stderr, "length %d\n", tmplen);
+    //ReadDSPData(DSPDIO, DSP_SRAM, DIO_ARB_LENGTH, 1, &tmplen);
+//	    fprintf(stderr, "length %d\n", tmplen);
     return SetArbPointer(0);
 }
 
@@ -106,6 +106,31 @@ int SetArbTrigger(unsigned short trigger)
    }
    return 1;
 }
+
+int SetupArb(bool continuous, unsigned short aout, unsigned short *wavefm, 
+	int len)
+    /* set the arbitrary waveform generator to put out a specified waveform
+     * either once or continuously */
+{
+  unsigned short trigger;
+  int ret = 1;
+  
+  ret &= SetArbAOutChan(aout);
+  ret &= WriteArbWaveForm(wavefm, len);
+
+  /* first trigger in high byte, retrigger in low byte */
+  if (continuous) {
+    trigger = DIO_ARB_ALWAYS_TRIGGER << 8 | DIO_ARB_ALWAYS_TRIGGER;
+  }
+  else {
+    trigger = DIO_ARB_ALWAYS_TRIGGER << 8;
+  }
+  ret &= SetArbTrigger(trigger);
+
+  return ret;
+}
+  
+
 
 #endif
 
@@ -357,10 +382,10 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 	     * 2) acquisition is on. 
 	     * If so, turn it off. This will do nothing if acquisition has already 
 	     * been stopped  */
-	    if ((dspnum != DSPDIO) && !acqmessage && sysinfo.dspacq) {
+	    if ((dspnum != 0) && (dspnum != DSPDIO) && !acqmessage && 
+		    sysinfo.dspacq) {
 		StopLocalAcq();
 		dspacq = 1;
-		fprintf(stderr, "stopping local acq\n");
 	    }
 	}
 	else {
@@ -383,7 +408,6 @@ int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
     } while (totalsize > 0);
     if (!acqmessage && dspacq) {
 	StartLocalAcq();
-		fprintf(stderr, "starting local acq\n");
     }
     return 1;
 #endif
@@ -434,9 +458,9 @@ int ReadDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 	/* if this is not check to see if this is not the master DSP and
 	 * if acquisition is on. If so, local dsp acquisition is stopped */
 	dspacq = 0;
-	if ((dspnum != 0) && (dspnum != DSPDIO) && !acqmessage && sysinfo.dspacq) {
+	if ((dspnum != 0) && (dspnum != DSPDIO) && !acqmessage && 
+		sysinfo.dspacq) {
 	    StopLocalAcq();
-	    fprintf(stderr, "stopping local DSP acquisition\n");
 	    dspacq = 1;
 	}
 	
@@ -486,7 +510,6 @@ int ReadDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
 	if (!acqmessage && dspacq) {
 	    usleep(DSP_PAUSE_USEC);
 	    StartLocalAcq();
-	    fprintf(stderr, "restarting local DSP acquisition\n");
 	}
     }
 #endif

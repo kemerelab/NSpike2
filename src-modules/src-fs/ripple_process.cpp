@@ -39,14 +39,10 @@ void InitRipple(void)
 
   //rippleStimPulseCmd = GenerateSimplePulseCmd(rippleStimParameters.pulse_length);
 
-  fprintf(stderr, "initr 1\n");
   ResetRippleData();
-  fprintf(stderr, "initr 2\n");
   ResetRippleCounters();
-  fprintf(stderr, "initr 3\n");
 
   ResetSpeedData();
-  fprintf(stderr, "initr 4\n");
 }
 
 void ResetSpeedData()
@@ -63,7 +59,6 @@ void ResetRippleData()
   RippleFilterStatus *rptr = ripFiltStat;
 
   for (i = 0; i < MAX_ELECTRODE_NUMBER ; i++, rptr++) {
-	  fprintf(stderr, "i = %d\n", i);
     memset(rptr, 0, sizeof(RippleFilterStatus));
   }
 }

@@ -106,8 +106,8 @@ void ProcessTimestamp(void);
 void ResetRealtimeProcessing(void);
 
 void ParsePulseFile (char *inData, PulseCommand *pulseArray);
-void PulseLaser (int pulseWidth);
-void PulseLaserCommand(PulseCommand pulseCmd, int ignoreTimestamp = 0); 
+void PulseOutput (int pulseWidth);
+void PulseOutputCommand(PulseCommand pulseCmd, int ignoreTimestamp = 0); 
 u32 PulseCommandLength(PulseCommand pulseCmd); 
 
 void PrepareStimCommand(PulseCommand pulseCmd);

@@ -49,6 +49,7 @@ public:
   RealtimeFeedbackTab (QWidget *parent);
 
   QComboBox *stimulatorSelectComboBox;
+  QComboBox *aOutSelectComboBox;
   QStackedWidget *algorithmAlternativesStack;
 
   QLabel *status;
@@ -60,6 +61,7 @@ public:
 
 public slots:
   void setFeedbackAlgorithm(int index);
+  void updateActiveAOut(int aOutIndex, int aOut1Mode, int aOut2Mode);
 
 private slots:
   void checkRealtimeStatus(void); 

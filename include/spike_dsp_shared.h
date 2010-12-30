@@ -13,6 +13,9 @@ int SetArbAOutChan(unsigned short aout);
 int SetArbPointer(unsigned short offset);
 int EnableArb(unsigned short enable);
 int SetArbTrigger(unsigned short trigger);
+int SetupArb(bool continuous, unsigned short aout, unsigned short *wavefm, 
+	int len);
+
 #endif
 #endif
 

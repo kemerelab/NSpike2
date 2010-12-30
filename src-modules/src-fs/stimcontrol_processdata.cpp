@@ -59,19 +59,19 @@ void ProcessData(int datatype, char *data, int datalen)
 	    if ((stim_timestamp > 0) && (realtimeProcessingEnabled)) {
 	      thetaStimPulseCmd.start_samp_timestamp = stim_timestamp * 
 		SAMP_TO_TIMESTAMP;
-	      PulseLaserCommand(thetaStimPulseCmd);
+	      PulseOutputCommand(thetaStimPulseCmd);
 	    }
 	    break;
 	  case DIO_RTMODE_RIPPLE_DISRUPT:
 	    stim = ProcessRippleData(*electnumptr, (double) *dataptr);
 	    if ((stim > 0) && (realtimeProcessingEnabled)) {
-	      PulseLaserCommand(rippleStimPulseCmd, PULSE_IMMEDIATELY);
+	      PulseOutputCommand(rippleStimPulseCmd, PULSE_IMMEDIATELY);
 	    }
 	    break;
 	  case DIO_RTMODE_LATENCY_TEST:
 	    stim = ProcessLatencyData(*dataptr);
 	    if ((stim > 0) && (realtimeProcessingEnabled)) {
-	      PulseLaserCommand(latencyTestPulseCmd, PULSE_IMMEDIATELY);
+	      PulseOutputCommand(latencyTestPulseCmd, PULSE_IMMEDIATELY);
 	    }
 	    break;
 	  default:
@@ -116,7 +116,7 @@ void ProcessTimestamp( void )
        (timestamp > nextPulseCmd->start_samp_timestamp/3 - 500) ) { 
       // consider sending another command
     fprintf(stderr,"\n\nrt_user: next command timestamp %d (%d) (%d)\n", nextPulseCmd->start_samp_timestamp/3, last_future_timestamp/3, timestamp);
-    PulseLaserCommand(*nextPulseCmd); // send current next command
+    PulseOutputCommand(*nextPulseCmd); // send current next command
     SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_STEP, (char *) &(nextPulseCmd->line),  sizeof(int));  // send info back to user program
 
     last_future_timestamp = nextPulseCmd->start_samp_timestamp;

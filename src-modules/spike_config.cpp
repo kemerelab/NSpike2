@@ -902,22 +902,22 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 
 	/* write out the fsdata data */
 	if (fsdatainfo.sendpos) {
-	    gzprintf(outfile, "fsdata\tPOSITION\t");
+	    gzprintf(outfile, "fsdata\tPOSITION\t\n");
 	}
 	if (fsdatainfo.senddigio) {
-	    gzprintf(outfile, "fsdata\tDIGITALIO\t");
+	    gzprintf(outfile, "fsdata\tDIGITALIO\t\n");
 	}
 	if (fsdatainfo.sendcont) {
 	    for (i = 1; i < MAX_ELECTRODE_NUMBER; i++) {
 		if (fsdatainfo.contelect[i]) {
-		    gzprintf(outfile, "fsdata\tCONTINUOUS\t%d", i);
+		    gzprintf(outfile, "fsdata\tCONTINUOUS\t%d\n", i);
 		}
 	    }
 	}
 	if (fsdatainfo.sendspike) {
 	    for (i = 1; i < MAX_ELECTRODE_NUMBER; i++) {
 		if (fsdatainfo.spikeelect[i]) {
-		    gzprintf(outfile, "fsdata\tSPIKE\t%d", i);
+		    gzprintf(outfile, "fsdata\tSPIKE\t%d\n", i);
 		}
 	    }
 	}

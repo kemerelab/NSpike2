@@ -8,6 +8,7 @@
 #include "spike_stimcontrol_defines.h"
 #include "fsMainConfig.h"
 #include "fsConfigureStimulators.h"
+#include "fsConfigureAOut.h"
 #include "fsOutputOnlyTab.h"
 #include "fsRealtimeFeedbackTab.h"
 
@@ -17,8 +18,9 @@
 #define DEFAULT_TMP_PULSE_COMMANDS_FILE "/tmp/tmp_pulse_commands"
 #define MAIN_CONFIG_TAB 0
 #define CONFIG_STIMULATORS_TAB 1
-#define OUTPUT_ONLY_TAB 2
-#define REALTIME_FEEDBACK_TAB 3
+#define CONFIG_ANALOG_OUT_TAB 2
+#define OUTPUT_ONLY_TAB 3
+#define REALTIME_FEEDBACK_TAB 4
 
 extern void StartDigIOProgram(int prognum);
 
@@ -80,6 +82,7 @@ protected:
   QTabWidget *qtab;
 
   StimConfigTab *stimConfigTab;
+  AOutConfigTab *aOutConfigTab;
   MainConfigTab *mainConfigTab;
   //PulseFileTab *pulseFileTabWidget;
   StimOutputOnlyTab *stimOutputOnlyTab;

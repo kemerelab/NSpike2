@@ -14,15 +14,18 @@ public:
 
   int trainCounter;
   int nTrains;
+  int aOut1Mode, aOut2Mode;
 
   QSpinBox *trainIntervalSpinBox;
   QSpinBox *nTrainsSpinBox;
   QPushButton *continuousButton;
 
   QComboBox *stimulatorSelectComboBox;
+  QComboBox *aOutSelectComboBox;
   QPushButton *stimSingleButton;
   QPushButton *startStimButton;
   QPushButton *abortStimButton;
+
 
   void startStimulation(int count);
 
@@ -33,8 +36,10 @@ public slots:
   void toggleContinuousMode(bool isToggled) {nTrainsSpinBox->setEnabled(!isToggled);}
   void endStimulation(int flag);
   void stepStimulation(int count);
+  void updateActiveAOut(int aOutIndex, int aOut1Mode, int aOut2Mode);
 
 private:
+  void updateAOutEnable(void);
 
 protected:
 };
