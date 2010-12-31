@@ -66,6 +66,8 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   stopFeedbackButton = new QPushButton("Stop Feedback");
   layout->addWidget(stopFeedbackButton,6,1, Qt::AlignCenter);
   // click signal connected in spikeFSGUI
+  // disable until needed
+  stopFeedbackButton->setEnabled(false);
 
   algorithmAlternativesStack = new QStackedWidget;
   QLabel *noAlgorithm = new QLabel("Select a Feedback Control Algorithm");

@@ -387,6 +387,7 @@ void DIOInterface::startRealtimeStim(void)
     return;
   }
 
+
   qDebug("startRealtimeStim signal received");
 
   // Generate pulse commands
@@ -479,6 +480,9 @@ void DIOInterface::startRealtimeStim(void)
     break;
   }
   SendFSDataMessage(DIO_START_RT_FEEDBACK, NULL, 0);
+  /* Now disable the start button and enable the stop button*/
+  realtimeFeedbackTab->startFeedbackButton->setEnabled(false);
+  realtimeFeedbackTab->stopFeedbackButton->setEnabled(true);
 }
 
 
@@ -486,6 +490,9 @@ void DIOInterface::stopRealtimeStim(void)
 {
   qDebug("stopRealtimeStim signal received");
   SendFSDataMessage(DIO_STOP_RT_FEEDBACK, NULL, 0);
+  /* Now disable the stop button and enable the start button*/
+  realtimeFeedbackTab->startFeedbackButton->setEnabled(true);
+  realtimeFeedbackTab->stopFeedbackButton->setEnabled(false);
 }
 
 DAQ_IO::DAQ_IO (QWidget *parent)

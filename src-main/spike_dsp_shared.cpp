@@ -330,12 +330,12 @@ int SendStartDIOCommand(int s)
 {
     unsigned short command[1];
     command[0] = 1;
-    fprintf(stderr, "writing start command to statemachine %d\n", s);
     if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command)) {
       sprintf(tmpstring, "Error writing digital IO state machine pointer to DIO DSP");
       DisplayErrorMessage(tmpstring);
       return 0;
     }
+    fprintf(stderr, "Wrote start command to statemachine %d\n", s);
     return 1;
 }
 

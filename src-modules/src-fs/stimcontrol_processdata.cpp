@@ -117,9 +117,6 @@ void ProcessData(int datatype, char *data, int datalen)
 	    spatialFiltStat.stimOn = false;
 	    spatialFiltStat.lastChange = timestamp;
 	  }
-	  else {
-	    fprintf(stderr, "????????????????n");
-	  }
 	}
       }
     }
