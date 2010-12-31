@@ -63,7 +63,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
     case DIO_SET_RT_STIM_PULSE_PARAMS:
       memcpy((char *)&rtStimPulseCmd, messagedata,
 	  sizeof(PulseCommand));
-      PrepareStimCommand(rtStimPulseCmd);
+      PrepareStimCommand(&rtStimPulseCmd, 1);
       fprintf(stderr, "Updating real time stimulation pulse parameters\n");
       break;
     case DIO_SET_RT_FEEDBACK_PARAMS:
@@ -74,6 +74,9 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       fprintf(stderr, "Updating ripple stim parameters\n");
       memcpy((char *)&rippleStimParameters, messagedata,
 	      sizeof(RippleStimParameters));
+      /* add the time delay to the pulse command and prepare it */
+      rtStimPulseCmd.pre_delay = rippleStimParameters.time_delay;
+      PrepareStimCommand(&rtStimPulseCmd, 1);
       break;
     case DIO_SET_SPATIAL_STIM_PARAMS:
       fprintf(stderr, "Updating spatial stim parameters\n");
@@ -104,6 +107,11 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
     case DIO_START_RT_FEEDBACK:
       realtimeProcessingEnabled = 1;
       fprintf(stderr,"rt_user: Received Realtime START command (state = %d)......\n", stimcontrolMode);
+      if (stimcontrolMode == DIO_RTMODE_RIPPLE_DISRUPT) {
+	/* add the time delay to the pulse command and prepare it */
+	rtStimPulseCmd.pre_delay = rippleStimParameters.time_delay;
+	PrepareStimCommand(&rtStimPulseCmd, 1);
+      }
       break;
     case DIO_STOP_RT_FEEDBACK:
       realtimeProcessingEnabled = 0;
@@ -121,7 +129,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       }
       nextPulseCmd = pulseArray;
       nextPulseCmd->start_samp_timestamp = 0; // wait for start
-      PrepareStimCommand(*nextPulseCmd);
+      PrepareStimCommand(nextPulseCmd, nPulses);
       break;
     case DIO_PULSE_SEQ_START:
       pending = 1;

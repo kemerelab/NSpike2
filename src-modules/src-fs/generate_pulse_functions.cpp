@@ -40,6 +40,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   int len = 0;
   int i;
   int tick_pulse_on, tick_pulse_off;
+  int waitsamp;
 
   int digitalPort1, digitalPort2;
   unsigned short aOutPort;
@@ -54,6 +55,20 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 
   digitalPort1 = (pulseCmd.pin1 / 16);
 
+  /* initialize the wait (wait for 0 samples) */
+  command[len++] = DIO_S_WAIT;
+  if (pulseCmd.pre_delay) {
+    // now wait for (pre_delay-1) * 3 samples */
+    waitsamp = (pulseCmd.pre_delay - 1) * SAMP_TO_TIMESTAMP;
+    while (waitsamp > 65536) {
+      command[len++] = DIO_S_WAIT_WAIT | 65533; // subtract 3 samples for processing
+      waitsamp -= 65536;
+    }
+    if (waitsamp > 3) {
+      command[len++] = DIO_S_WAIT_WAIT | (waitsamp - 3); 
+    }
+  }
+
   if (pulseCmd.digital_only) {
     if (pulseCmd.is_biphasic) {
       digitalPort2 = (pulseCmd.pin2 / 16);
@@ -67,17 +82,17 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
     for (i = 0; i < pulseCmd.n_pulses; i++) {
       command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin1;
       if (pulseCmd.is_biphasic) {
-	command[len++] = DIO_S_WAIT | tick_pulse_on; 
+	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
 	command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin2;
-	command[len++] = DIO_S_WAIT | tick_pulse_on; 
+	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
       }
       else {
-	command[len++] = DIO_S_WAIT | tick_pulse_on; 
+	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
       }
       command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin1;
       command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin2;
       if (i < (pulseCmd.n_pulses-1))
-	command[len++] = DIO_S_WAIT | tick_pulse_off;
+	command[len++] = DIO_S_WAIT_WAIT| tick_pulse_off;
     }
   }
   else {
@@ -106,7 +121,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
       /* if this is not continuous output mode, we need to turn it off at the
        * desired time */
       if (pulseCmd.aout_mode != DIO_AO_MODE_CONTINUOUS) {
-	command[len++] = DIO_S_WAIT | tick_pulse_on; 
+	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
 	/* first turn off the analog output and then signal the change */
 	command[len++] = DIO_S_SET_PORT | aOutPort; 
 	command[len++] = 0x00; 
@@ -114,7 +129,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
       }
 
       if (i < (pulseCmd.n_pulses-1))
-	command[len++] = DIO_S_WAIT | tick_pulse_off;
+	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_off;
     }
   }
   return len;
@@ -183,13 +198,13 @@ u32 PulseCommandLength(PulseCommand pulseCmd) {
     return len;
 }
 
-void PrepareStimCommand(PulseCommand pulseCmd)
+void PrepareStimCommand(PulseCommand *pulseCmd, int nPulses)
 {
-  int len;
+  int i, len = 0;
   unsigned short command[DIO_MAX_COMMAND_LEN+3];
-  int whichstatemachine = pulseCmd.statemachine;
+  int whichstatemachine = pulseCmd->statemachine;
 
-  len = GeneratePulseCommand(pulseCmd, command);
+  len = GeneratePulseCommand(*pulseCmd, command);
 
   if (!WriteDSPDIOCommand(command, len ,whichstatemachine, 0)) {
     fprintf(stderr, "Error writing Digital IO command\n");

@@ -117,7 +117,7 @@ void PulseOutput (int pulseWidth);
 void PulseOutputCommand(PulseCommand pulseCmd, int ignoreTimestamp = 0); 
 u32 PulseCommandLength(PulseCommand pulseCmd); 
 
-void PrepareStimCommand(PulseCommand pulseCmd);
+void PrepareStimCommand(PulseCommand *pulseCmd, int nPulses);
 void StopOutput(PulseCommand *pulseCmd);
 
 void InitTheta(void);

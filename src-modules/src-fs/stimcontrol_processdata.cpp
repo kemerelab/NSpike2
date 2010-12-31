@@ -115,7 +115,7 @@ void ProcessData(int datatype, char *data, int datalen)
 	  spatialFiltStat.stimOn = false;
 	  spatialFiltStat.lastChange = timestamp;
 	  /* prepare the next command */
-          PrepareStimCommand(rtStimPulseCmd);
+          PrepareStimCommand(&rtStimPulseCmd, 1);
 	}
       }
     }
@@ -157,7 +157,6 @@ void ProcessTimestamp( void )
       nextPulseCmd->pre_delay = 0;
       nextPulseCmd->start_samp_timestamp = last_future_timestamp +
       nextPulseCmd->inter_frame_delay*3;
-      //PulseCommandLength(*nextPulseCmd) +
       return;
     }
 
