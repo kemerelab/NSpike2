@@ -60,23 +60,11 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 	  break;
       }
       break;
-    case DIO_SET_RT_STIM_PARAMS:
+    case DIO_SET_RT_STIM_PULSE_PARAMS:
       memcpy((char *)&rtStimPulseCmd, messagedata,
 	  sizeof(PulseCommand));
       PrepareStimCommand(rtStimPulseCmd);
-      break;
-    case DIO_SET_RIPPLE_STIM_PULSE_PARAMS:
-      memcpy((char *)&rippleStimPulseCmd, messagedata,
-	  sizeof(PulseCommand));
-      PrepareStimCommand(rippleStimPulseCmd);
-      fprintf(stderr, "Updating ripple stimulation pulse parameters\n");
-
-      break;
-    case DIO_SET_SPATIAL_STIM_PULSE_PARAMS:
-      memcpy((char *)&spatialStimPulseCmd, messagedata,
-	  sizeof(PulseCommand));
-      PrepareStimCommand(spatialStimPulseCmd);
-      fprintf(stderr, "Updating spatial stimulation pulse parameters\n");
+      fprintf(stderr, "Updating real time stimulation pulse parameters\n");
       break;
     case DIO_SET_RT_FEEDBACK_PARAMS:
       //memcpy((char *)&rtStimParameters, messagedata,
@@ -146,7 +134,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       if (nextPulseCmd->aout_mode == DIO_AO_MODE_CONTINUOUS) {
 	// we need to turn off the analog output.  Note that the information has
 	// been duplicated in nextPulseCmd so we have access to it.
-	StopAOut(nextPulseCmd);
+	StopOutput(nextPulseCmd);
       }
       SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
       break;

@@ -352,7 +352,7 @@ SpatialStimulation::SpatialStimulation(QWidget *parent)
   connect(minSpeedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateSpatialData(void)));
   connect(maxSpeedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateSpatialData(void)));
 
-//  connect(daq_io_widget, SIGNAL(rippleStatusUpdate(char *)), parentWidget(), SLOT(updateRealtimeStatus(char *)));
+  connect(daq_io_widget, SIGNAL(spatialStatusUpdate(char *)), parentWidget(), SLOT(updateRealtimeStatus(char *)));
   
 
   algorithmParametersGroupBox->setLayout(parametersLayout);
@@ -372,7 +372,7 @@ void SpatialStimulation::updateSpatialData(void)
   data.upperRightX = upperRightX->value();
   data.upperRightY = upperRightY->value();
   data.minSpeed = minSpeedThresh->text().toDouble();
-  data.maxSpeed = minSpeedThresh->text().toDouble();
+  data.maxSpeed = maxSpeedThresh->text().toDouble();
 
   SendFSDataMessage(DIO_SET_SPATIAL_STIM_PARAMS, (char *) &data, sizeof(SpatialStimParameters));
 }

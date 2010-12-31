@@ -182,6 +182,18 @@ int SetupArb(int arb)
 
 #endif
 
+int ResetStateMachine(int number)
+    /* reset the state machine pointer.  Note that this does not set the output
+     * to be 0 */
+{
+    unsigned short command[1];
+    if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[number], 
+		1, command)) {
+	sprintf(tmpstring, "Error reseting Digital IO state machine pointer on master DSP");
+	DisplayErrorMessage(tmpstring);
+	return 0;
+    }
+}
 
 int ResetStateMachines()
 {
@@ -193,12 +205,7 @@ int ResetStateMachines()
      * set its output to be 0 */
     command[0] = 0;
     for (i = 0; i <  DIO_N_STATE_MACHINES; i++) {
-	if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[i], 
-		    1, command)) {
-	    sprintf(tmpstring, "Error reseting Digital IO state machine pointer on master DSP");
-	    DisplayErrorMessage(tmpstring);
-	    return 0;
-	}
+	ResetStateMachine(i);
 	switch(i) {
 	    case 0:
 		addr = DIO_OUT_1;

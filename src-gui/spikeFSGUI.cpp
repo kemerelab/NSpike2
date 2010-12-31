@@ -379,15 +379,105 @@ void DIOInterface::resetRealtimeStim(void)
 
 void DIOInterface::startRealtimeStim(void)
 {
-  PulseCommand pCmd; // one pulse command for real time ripple disruption
+  PulseCommand pCmd[4]; // at most 3 pulse commands are needed
+  
+  /* Check to see that only one analog or one digital output is selected */
+  if ((aOutConfigTab->activeAOut > 0) && (stimConfigTab->activeStimulator > 0)) {
+    qDebug("Error: both analog and digital stimulation selected");
+    return;
+  }
 
-  pCmd = stimConfigTab->stimConfigA->stimPulseCmd;
-  pCmd.pre_delay = 0;
-  pCmd.n_repeats = -1;
-  pCmd.line = 0;
   qDebug("startRealtimeStim signal received");
-  SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) &pCmd, 
-		  sizeof(PulseCommand));
+
+  // Generate pulse commands
+  // Start with the digital stimulator if selected
+  switch (stimConfigTab->activeStimulator) {
+  case 1:
+    pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
+    pCmd[0].pre_delay = 0;
+    pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[0].n_repeats = -1;
+    else
+      pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    pCmd[0].line = 0;
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 2*sizeof(PulseCommand));
+    break;
+  case 2:
+    pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
+    pCmd[0].pre_delay = 0;
+    pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() 
+	* 10.0; // convert to ticks
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[0].n_repeats = -1;
+    else
+      pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    pCmd[0].line = 0;
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 2*sizeof(PulseCommand));
+    break;
+  case 3: 
+    pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
+    pCmd[0].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
+    pCmd[0].n_repeats = 0;
+    pCmd[0].line = 0;
+    pCmd[1] = stimConfigTab->stimConfigB->stimPulseCmd;
+    pCmd[1].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
+    pCmd[1].n_repeats = 0;
+    pCmd[1].line = 1;
+    pCmd[2].pulse_width = DIO_PULSE_COMMAND_REPEAT;
+    pCmd[2].line = 0;
+    //pCmd[2].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;;
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[2].n_repeats = -1;
+    else
+      pCmd[2].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    pCmd[3].pulse_width = DIO_PULSE_COMMAND_END;
+    SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 4*sizeof(PulseCommand));
+    break;
+  default:
+  case 0:
+    qDebug("No active stimulator set.");
+    break;
+  }
+
+  // Trigger the analog output if selected
+  switch (aOutConfigTab->activeAOut) {
+  case 1:
+    pCmd[0] = aOutConfigTab->aOut1Config->aOutPulseCmd;
+    pCmd[0].pre_delay = 0;
+    pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[0].n_repeats = -1;
+    else
+      pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    pCmd[0].line = 0;
+    /* copy the information to the next command */
+    memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 2*sizeof(PulseCommand));
+    break;
+  case 2:
+    pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
+    pCmd[0].pre_delay = 0;
+    pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
+    if (stimOutputOnlyTab->continuousButton->isChecked())
+      pCmd[0].n_repeats = -1;
+    else
+      pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
+    pCmd[0].line = 0;
+    /* copy the information to the next command */
+    memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
+    pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    pCmd[1].aout_mode = pCmd[0].aout_mode;
+    SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 2*sizeof(PulseCommand));
+    break;
+  default:
+  case 0:
+    qDebug("No active analog output set.");
+    break;
+  }
   SendFSDataMessage(DIO_START_RT_FEEDBACK, NULL, 0);
 }
 

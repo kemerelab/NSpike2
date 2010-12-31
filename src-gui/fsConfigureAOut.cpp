@@ -231,6 +231,9 @@ void AOutConfigureWidget::setAOutRange(int index)
 void AOutConfigureWidget::updateAOutPulseCmd(void)
 {
   /* go through all the objects and update the pulse command */
+
+  // we assume statemachine 0; we probably want to make this user selectable
+  aOutPulseCmd.statemachine = 0;
   aOutPulseCmd.digital_only = false;
   aOutPulseCmd.pin1 = aOutTriggerBitSpinBox->value();
   aOutPulseCmd.minv = aOutRangeMinSpinBox->value();

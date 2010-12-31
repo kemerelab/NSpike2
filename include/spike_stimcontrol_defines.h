@@ -15,8 +15,8 @@
 #define DIO_RTMODE_SPATIAL_STIM 2005
 
 #define DIO_SET_RT_STIM_PARAMS 101
-#define DIO_SET_RIPPLE_STIM_PARAMS 102
-#define DIO_SET_RIPPLE_STIM_PULSE_PARAMS 103
+#define DIO_SET_RT_STIM_PULSE_PARAMS 102
+#define DIO_SET_RIPPLE_STIM_PARAMS 103
 #define DIO_SET_RT_FEEDBACK_PARAMS 104
 #define DIO_SET_CM_PER_PIX 105
 #define DIO_SET_SPATIAL_STIM_PARAMS 106
@@ -78,6 +78,7 @@
 typedef struct _PulseCommand {
     uint32_t start_samp_timestamp;
     bool digital_only;  // true if we should do only digital IO; false for analog IO 
+    int statemachine;
 
     /* digital defines */
     unsigned short pin1, pin2;
@@ -144,7 +145,6 @@ typedef struct _LatencyTestParameters {
 } LatencyTestParameters;
 
 typedef struct _SpatialStimParameters {
-    bool stimOn;
     short xpos, ypos;
     int lowerLeftX;
     int lowerLeftY;

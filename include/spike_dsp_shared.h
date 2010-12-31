@@ -3,6 +3,7 @@
 
 int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine=-1, int sendResetStateMachine=1);
 int SendStartDIOCommand(int s);
+int ResetStateMachine(int number);
 int ResetStateMachines();
 int WriteDSPDIORestartStateMachine(int s);
 int LookForDSPDIOResponse(void);

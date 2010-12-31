@@ -1,19 +1,34 @@
 #include "stimcontrol_defines.h"
 
-void StopAOut(PulseCommand *pulseCmd)
-  // generate a command to turn out the analog output and the associated digital bit
+void StopOutput(PulseCommand *pulseCmd)
+  // generate a command to stop the state machine and, if relevant, the analog output and the associated digital bit
 {
   int len = 0;
   unsigned short aOutPort;
   unsigned short command[3];
 
-  aOutPort = (pulseCmd->aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
-  command[len++] = DIO_S_SET_PORT | aOutPort; 
-  command[len++] = 0x00; 
-  command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
-  if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
-    fprintf(stderr, "Error stopping analog out %d\n", pulseCmd->aout);
+  /* stop the state machine */
+  ResetStateMachine(pulseCmd->statemachine);
+
+  if (pulseCmd->digital_only) {
+    /* set the bits to be 0 */
+    command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
+    command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin2; 
+    if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
+      fprintf(stderr, "Error statemachine %d\n", pulseCmd->statemachine);
+    }
   }
+  else {
+    /* turn off the analog output */
+    aOutPort = (pulseCmd->aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
+    command[len++] = DIO_S_SET_PORT | aOutPort; 
+    command[len++] = 0x00; 
+    command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
+    if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
+      fprintf(stderr, "Error stopping analog out %d\n", pulseCmd->aout);
+    }
+  }
+  return;
 }
 
 
@@ -158,7 +173,7 @@ void PrepareStimCommand(PulseCommand pulseCmd)
 {
   int len;
   unsigned short command[DIO_MAX_COMMAND_LEN+3];
-  int whichstatemachine = 0;
+  int whichstatemachine = pulseCmd.statemachine;
 
   len = GeneratePulseCommand(pulseCmd, command);
 

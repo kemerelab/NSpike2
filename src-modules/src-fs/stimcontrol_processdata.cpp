@@ -6,6 +6,7 @@
 
 extern SocketInfo client_data[MAX_CONNECTIONS]; // the structure for sending data
 extern SpeedFilterStatus speedFiltStat;
+extern SpatialFilterStatus spatialFiltStat;
 extern double speedFilt[NSPEED_FILT_POINTS];
 
 
@@ -59,19 +60,19 @@ void ProcessData(int datatype, char *data, int datalen)
 	    if ((stim_timestamp > 0) && (realtimeProcessingEnabled)) {
 	      thetaStimPulseCmd.start_samp_timestamp = stim_timestamp * 
 		SAMP_TO_TIMESTAMP;
-	      PulseOutputCommand(thetaStimPulseCmd);
+	      PulseOutputCommand(rtStimPulseCmd);
 	    }
 	    break;
 	  case DIO_RTMODE_RIPPLE_DISRUPT:
 	    stim = ProcessRippleData(*electnumptr, (double) *dataptr);
 	    if ((stim > 0) && (realtimeProcessingEnabled)) {
-	      PulseOutputCommand(rippleStimPulseCmd, PULSE_IMMEDIATELY);
+	      PulseOutputCommand(rtStimPulseCmd, PULSE_IMMEDIATELY);
 	    }
 	    break;
 	  case DIO_RTMODE_LATENCY_TEST:
 	    stim = ProcessLatencyData(*dataptr);
 	    if ((stim > 0) && (realtimeProcessingEnabled)) {
-	      PulseOutputCommand(latencyTestPulseCmd, PULSE_IMMEDIATELY);
+	      PulseOutputCommand(rtStimPulseCmd, PULSE_IMMEDIATELY);
 	    }
 	    break;
 	  default:
@@ -101,16 +102,26 @@ void ProcessData(int datatype, char *data, int datalen)
       }
       ratSpeed = filterPosSpeed(posdataptr[1],posdataptr[2]);
       if (stimcontrolMode == DIO_RTMODE_SPATIAL_STIM) {
-	inbox = ProcessSpatialData(posdataptr[1], posdataptr[2]);
-	if (inbox && !spatialFiltStat.stimOn) {
-	    // the animal is in the box and stimulation is off, so turn it on
-	    PulseOutputCommand(spatialStimPulseCmd, PULSE_IMMEDIATELY);
+	stim = ProcessSpatialData(posdataptr[1], posdataptr[2]);
+	if (stim && !spatialFiltStat.stimOn) {
+	  // the animal is in the box and stimulation is off, so turn it on
+	  PulseOutputCommand(rtStimPulseCmd, PULSE_IMMEDIATELY);
+	  spatialFiltStat.stimOn = true;
+	  spatialFiltStat.lastChange = timestamp;
 	}
-	else if (!inbox && spatialFiltStat.stimOn) {
-	    // the animal is not in the box and stimulation is on, so turn it off
-
-
-
+	else if (!stim && spatialFiltStat.stimOn) {
+	  // the animal is not in the box and stimulation is on, so turn it off.
+	  // We only need to do something if the output is analog
+	  if (!rtStimPulseCmd.digital_only) {
+	    StopOutput(&rtStimPulseCmd);
+	    spatialFiltStat.stimOn = false;
+	    spatialFiltStat.lastChange = timestamp;
+	  }
+	  else {
+	    fprintf(stderr, "????????????????n");
+	  }
+	}
+      }
     }
   }
 }
@@ -144,7 +155,6 @@ void ProcessTimestamp( void )
       nextPulseCmd->pre_delay = 0;
       nextPulseCmd->start_samp_timestamp = last_future_timestamp +
       nextPulseCmd->inter_frame_delay*3;
-      //PulseCommandLength(*nextPulseCmd) +
       return;
     }
     else if (nextPulseCmd->n_repeats == -1) { // continuous
@@ -179,7 +189,6 @@ void ProcessTimestamp( void )
       
     nextPulseCmd->start_samp_timestamp = last_future_timestamp + 
       nextPulseCmd->pre_delay*3;
-      //PulseCommandLength(*nextPulseCmd) +
   }
 
 }
