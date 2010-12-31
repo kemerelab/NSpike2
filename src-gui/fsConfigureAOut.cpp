@@ -23,9 +23,9 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     layout->addWidget(explanation,0,0,1,2);
 
     
-    activeAOut = 1;
+    activeAOut = 0;
     aOut1Button = new QPushButton("AOut 1");
-    layout->addWidget(aOut1Button,1,0,Qt::AlignRight);
+    layout->addWidget(aOut1Button,1,0,Qt::AlignRight | Qt::AlignVCenter);
     aOut1Button->setCheckable(true);
     aOut1Button->setChecked(false);
     aOut1Button->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
@@ -38,10 +38,10 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     connect(aOut1Config, SIGNAL(aOutModeChangedSignal(void)), this, 
 	    SLOT(aOutModeChanged(void)));
 
-    layout->addWidget(aOut1Config,1,1,Qt::AlignLeft);
+    layout->addWidget(aOut1Config,1,1,Qt::AlignLeft | Qt::AlignVCenter);
 
     aOut2Button = new QPushButton("AOut 2");
-    layout->addWidget(aOut2Button,2,0,Qt::AlignRight);
+    layout->addWidget(aOut2Button,2,0,Qt::AlignRight | Qt::AlignVCenter);
     aOut2Button->setCheckable(true);
     aOut2Button->setChecked(false);
     aOut2Button->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
@@ -54,7 +54,7 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     aOut2Config->aOutPulseCmd.aout = 1;
     connect(aOut2Config, SIGNAL(aOutModeChangedSignal(void)), this, 
 	    SLOT(aOutModeChanged(void)));
-    layout->addWidget(aOut2Config,2,1,Qt::AlignLeft);
+    layout->addWidget(aOut2Config,2,1,Qt::AlignLeft | Qt::AlignVCenter);
 
     QFont font;
     font.setPointSize(12);
@@ -65,6 +65,7 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     layout->setColumnStretch(1,1);
 
     setLayout(layout);
+    setActiveAOut(0);
 
 }
 
@@ -117,21 +118,27 @@ AOutConfigureWidget::AOutConfigureWidget(QWidget *parent)
   connect(aOutRangeSelectBox, SIGNAL(currentIndexChanged(int)), this, 
       	  SLOT(setAOutRange(int)));
 
-  layout->addWidget(new QLabel("Min."), 1, 0, 1, 1, Qt::AlignTop);
+  layout->addWidget(new QLabel("Min."), 1, 0, 1, 1, Qt::AlignVCenter);
   aOutRangeMinSpinBox = new QDoubleSpinBox();
   aOutRangeMinSpinBox->setRange(0,1);
   aOutRangeMinSpinBox->setDecimals(2);
   aOutRangeMinSpinBox->setSuffix(" Volts");
-  layout->addWidget(aOutRangeMinSpinBox, 1, 1, 1, 1, Qt::AlignTop);
+  layout->addWidget(aOutRangeMinSpinBox, 1, 1, 1, 1, Qt::AlignVCenter);
   connect(aOutRangeMinSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateAOutPulseCmd(void)));
 
-  layout->addWidget(new QLabel("Max"), 1, 2, 1, 1, Qt::AlignTop);
+  layout->addWidget(new QLabel("Max"), 1, 2, 1, 1, Qt::AlignVCenter);
   aOutRangeMaxSpinBox = new QDoubleSpinBox();
   aOutRangeMaxSpinBox->setRange(0,1);
   aOutRangeMaxSpinBox->setDecimals(2);
   aOutRangeMaxSpinBox->setSuffix(" Volts");
-  layout->addWidget(aOutRangeMaxSpinBox, 1, 3, 1, 1, Qt::AlignTop);
+  layout->addWidget(aOutRangeMaxSpinBox, 1, 3, 1, 1, Qt::AlignVCenter);
   connect(aOutRangeMinSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateAOutPulseCmd(void)));
+
+  layout->addWidget(new QLabel("Trigger Bit"), 2, 0, 1, 1, Qt::AlignTop);
+  aOutTriggerBitSpinBox = new QSpinBox();
+  aOutTriggerBitSpinBox->setRange(0,63);
+  layout->addWidget(aOutTriggerBitSpinBox, 2, 1, 1, 1, Qt::AlignTop);
+  connect(aOutTriggerBitSpinBox, SIGNAL(valueChanged(int)), this, SLOT(updateAOutPulseCmd(void))); 
 
   aOutModeComboBox = new QComboBox();
   aOutModeComboBox->addItem("No Output");
@@ -160,7 +167,7 @@ AOutConfigureWidget::AOutConfigureWidget(QWidget *parent)
 //  aOutModeStack->addWidget(aOutRampMode);
 //  aOutModeStack->addWidget(aOutSineMode);
 //
-  layout->addWidget(aOutModeStack, 0, 5, 2, 1, Qt::AlignVCenter);
+  layout->addWidget(aOutModeStack, 0, 5, 3, 1, Qt::AlignVCenter);
   setLayout(layout);
 
 
@@ -224,7 +231,8 @@ void AOutConfigureWidget::setAOutRange(int index)
 void AOutConfigureWidget::updateAOutPulseCmd(void)
 {
   /* go through all the objects and update the pulse command */
-  aOutPulseCmd.digital = false;
+  aOutPulseCmd.digital_only = false;
+  aOutPulseCmd.pin1 = aOutTriggerBitSpinBox->value();
   aOutPulseCmd.minv = aOutRangeMinSpinBox->value();
   aOutPulseCmd.maxv = aOutRangeMaxSpinBox->value();
 
@@ -291,9 +299,7 @@ AOutPulseMode::AOutPulseMode(QWidget *parent) : QWidget(parent)
 
 
   nPulsesSpinBox = new QSpinBox();
-  //nPulsesSpinBox->setRange(1,10);
-  //FIX when new analog commands available */
-  nPulsesSpinBox->setRange(1,1);
+  nPulsesSpinBox->setRange(1,10);
   nPulsesSpinBox->setAlignment(Qt::AlignRight);
   nPulsesSpinBox->setToolTip("Number of pulses in pulse sequence.");
   connect(nPulsesSpinBox, SIGNAL(valueChanged(int)), this, SLOT(ablePulseSequence(void)));

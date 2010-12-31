@@ -25,18 +25,15 @@
 #define DIO_MAX_COMMAND_LEN	DIO_STATE_SIZE // the maximum length of a dio command
 #define DIO_S_HALT		0xffff  // halt the state machine
 #define DIO_S_WAIT		0x8000  // wait for # samples in bits 1-15
-
-#ifndef DIO_ON_MASTER_DSP
-#define DIO_S_WAIT_WAIT		0xC000  // wait from last wait command
-#endif
-
 #define DIO_S_WAIT_TIME		0x7000  // wait for absolute time given in argument
 #define DIO_S_WAIT_MASKED_INPUT	0x6000  // wait for masked input to change
 #define DIO_S_WAIT_INPUT_HIGH	0x4100  // wait for input in bits 1-6 to be high
 #define DIO_S_WAIT_INPUT_LOW	0x4000  // wait for input in bits 1-6 to be low
 #define DIO_S_SET_OUTPUT_HIGH	0x3100  // set output in bits 1-6 to be high
 #define DIO_S_SET_OUTPUT_LOW	0x3000  // set output in bits 1-6 to be low
-#define DIO_S_SET_PORT		0x2000  // set port in bits 1-2 to argument
+
+#define DIO_S_SET_PORT		0x2000  // set port in bits 1-3 to argument
+
 #define DIO_S_JUMP_ABS		0x0100  // jump to absolute address in bits 1-8
 #define DIO_S_JUMP_REL		0x0000  // jump to bits 1-8 instructions relative to current address
 /* For Loop defines.  Note that these require MainDSP code rev 9 or greater */
@@ -45,9 +42,21 @@
 
 #define DIO_RESET_STATE_MACHINES 0xfffe	// command (interpreted by the main program) to reset all of the state machine pointers and stop execution of all state machines 
 
-/* Defines for the arbitrary waveform generator */
-#ifndef DIO_ON_MASTER_DSP
-#define DIO_ARB_WAVE_LEN	DIO_STATE_SIZE // the maximum length of an analog waveform for the arbitrary waveform generator
+/* definitions specific to location of DIO */
+#ifdef DIO_ON_MASTER_DSP
+#define DIO_STATE_SIZE		62	// instructions per state machine. The first instruction is always left at "wait forever", and the final instruction is always a jump to instruction 0, so there are 64 - 2 = 62 instructions available for programming 
+#else
+#define DIO_STATE_SIZE	   	  65534	// instructions per state machine. The first instruction is always left at "wait forever", and the final instruction is always a jump to instruction 0, so there are 65536 - 2 instructions available for programming 
+#define DIO_S_WAIT_WAIT		0xC000  // wait from last wait command
+#define DIO_AOUT1_PORT		0x0100  // the port index for AOUT 1 to be used in conjuction with DIO_S_SET_PORT
+#define DIO_AOUT2_PORT		0x0101  // the port index for AOUT 2 to be used in conjuction with DIO_S_SET_PORT
+
+#define DIO_AOUT_BASE_ADDR	0xC000
+#define DIO_AOUT1_ADDR		0x0000
+#define DIO_AOUT2_ADDR		0x0001
+#define DIO_ARB_WAVE_ADDR	  0x4114 // base location for the arbitrary waveform generator
+
+#define DIO_ARB_MAX_WAVE_LEN	DIO_STATE_SIZE // the maximum length of an analog waveform for the arbitrary waveform generator
 #define DIO_ARB_ENABLE		0x00C4  // 0 disables, 1 enables, read for status
 #define DIO_ARB_TRIGGER	0x00C5  // first trigger info in high byte, retrigger in low byte
 #define DIO_ARB_NEVER_TRIGGER  0
@@ -63,7 +72,7 @@
 
 #define DIO_ARB_LENGTH			0x00C6 // 16 bit # of points in buffer
 #define DIO_ARB_POINTER		0x00C7 // 16 bit pointer to offset of data (set to 0 when initializing)
-#define DIO_ARB_AOUT_CHANNEL		0x00C8 // Address for AOUT channel setting
+#define DIO_ARB_AOUT_CHANNEL_ADDR		0x00C8 // Address for AOUT channel setting
 #define DIO_ARB_AOUT_CHANNEL_1		0x0000 // use AOUT 1
 #define DIO_ARB_AOUT_CHANNEL_2		0x0001 // use AOUT 2
 #endif
@@ -98,5 +107,6 @@
 #define 	O14				(1<<14)
 #define 	O15				(1<<15)
 
-
 #endif
+
+

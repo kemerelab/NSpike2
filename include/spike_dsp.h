@@ -62,7 +62,6 @@ void SendDigIOFSMessage(char *message, int len);
 #define DIO_STATE1_BUFFER_START	0x0240 // the start offset for the state pointer for state machine 1
 #define DIO_STATE2_BUFFER_START	0x0280 // the start offset for the state pointer for state machine 2
 #define DIO_STATE3_BUFFER_START	0x02C0 // the start offset for the state pointer for state machine 3
-#define DIO_STATE_SIZE		62	// instructions per state machine. The first instruction is always left at "wait forever", and the final instruction is always a jump to instruction 0, so there are 64 - 2 = 62 instructions available for programming 
 
 #else
 /* each state machine has its own base address  */
@@ -74,8 +73,7 @@ void SendDigIOFSMessage(char *message, int len);
 #define DIO_STATE1_BUFFER_START	  0 // the start offset for the state pointer for state machine 1
 #define DIO_STATE2_BUFFER_START	  0 // the start offset for the state pointer for state machine 2
 #define DIO_STATE3_BUFFER_START	  0 // the start offset for the state pointer for state machine 3
-#define DIO_STATE_SIZE	   	  65534	// instructions per state machine. The first instruction is always left at "wait forever", and the final instruction is always a jump to instruction 0, so there are 65536 - 2 instructions available for programming 
-#define DIO_ARB_WAVE_ADDR	  0x4114 // base location for the arbitrary waveform generator
+#define NUM_ARBS	1 // Currently we have one arbitrary waveform generator
 #endif
 
 
@@ -225,5 +223,14 @@ typedef struct _CommonDSPInfo {
     short mute;
     short dspcal[MAX_ELECTRODES];  // the calibration factors for each channel
 } CommonDSPInfo;
+
+typedef struct _ArbInfo {
+    int aout;
+    bool continuous;
+    unsigned short trigger_pin;
+    unsigned short trigger;
+    unsigned short wavefm[DIO_ARB_MAX_WAVE_LEN];
+    unsigned short len;
+} ArbInfo; 
 
 #endif

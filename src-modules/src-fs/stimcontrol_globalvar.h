@@ -5,6 +5,7 @@ extern SocketInfo	client_data[MAX_CONNECTIONS];  // data output
 ThetaStimParameters thetaStimParameters;
 RippleStimParameters rippleStimParameters;
 LatencyTestParameters latencyTestParameters;
+SpatialStimParameters spatialStimParameters;
 
 PulseCommand thetaStimPulseCmd;
 PulseCommand rippleStimPulseCmd;
@@ -15,6 +16,7 @@ PulseCommand pulseArray[MAX_PULSE_SEQS+1];
 
 RippleFilterStatus ripFiltStat[MAX_ELECTRODES];
 SpeedFilterStatus speedFiltStat;
+SpatialFilterStatus spatialFiltStat;
 
 u32 last_future_timestamp;
 

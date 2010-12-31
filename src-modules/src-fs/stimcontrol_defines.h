@@ -44,6 +44,7 @@ extern LatencyTestParameters latencyTestParameters;
 extern PulseCommand thetaStimPulseCmd;
 extern PulseCommand rippleStimPulseCmd;
 extern PulseCommand latencyTestPulseCmd;
+extern PulseCommand spatialPulseCmd;
 extern PulseCommand rtStimPulseCmd;
 extern PulseCommand *nextPulseCmd;
 extern PulseCommand pulseArray[MAX_PULSE_SEQS+1];
@@ -85,6 +86,17 @@ typedef struct {
 } SpeedFilterStatus;
 
 typedef struct {
+    double speed[NSPEED_FILT_POINTS];
+    double lastx;
+    double lasty;
+    int	   ind;
+} SpeedFilterStatus;
+
+typedef struct {
+    bool stimOn;
+} SpatialFilterStatus;
+
+typedef struct {
   double w1,w2;
   double b0, b1, b2;
   double a1, a2;
@@ -100,6 +112,7 @@ double filterPosSpeed(u32 x, u32 y);
 
 void InitTheta(void);
 void InitRipple(void);
+void InitSpatial(void);
 void InitPulseArray(void);
 
 void ProcessTimestamp(void);
@@ -111,6 +124,7 @@ void PulseOutputCommand(PulseCommand pulseCmd, int ignoreTimestamp = 0);
 u32 PulseCommandLength(PulseCommand pulseCmd); 
 
 void PrepareStimCommand(PulseCommand pulseCmd);
+void StopAOut(PulseCommand *pulseCmd);
 
 void InitTheta(void);
 u32 ProcessThetaData(double d, u32 t);
@@ -123,6 +137,9 @@ void ResetRippleCounters(void);
 int nAboveRippleThresh(RippleFilterStatus *rptr);
 
 void ResetSpeedData(void);
+
+void ProcessSpatialData(u32 xpos, u32 ypos);
+void sendSpatialStatusUpdate(void);
 
 void InitLatency(void);
 int ProcessLatencyData(short d);

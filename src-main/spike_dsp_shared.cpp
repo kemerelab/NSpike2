@@ -30,13 +30,29 @@ void ByteSwap(unsigned short *sptr, int nelem);
 void ByteSwap(long *lptr, int nelem);
 
 #ifndef DIO_ON_MASTER_DSP
+int SetAOut(int aout, unsigned short level)
+  /* Set the level of the specific analog output directly */
+{
+  unsigned short addr;
+  
+  addr = (aout == 1) ? DIO_AOUT1_ADDR : DIO_AOUT2_ADDR;
+
+  if (!WriteDSPData(DSPDIO, DIO_AOUT_BASE_ADDR, addr, 1, &level)) {
+      sprintf(tmpstring, "Error writing output to analog out %d", aout);
+      DisplayErrorMessage(tmpstring);
+      return 0;
+  }
+  return 1;
+}
+
+
 int WriteArbWaveForm(unsigned short *wavefm, int len) 
 {
     unsigned short tmplen = (unsigned short) len; 
 
     /* check that the waveform length is within limits */
-    if (len > DIO_ARB_WAVE_LEN) {
-	sprintf(tmpstring, "Error: waveform length %d too long to write to digital IO state machine. Must be <= %d", len, DIO_ARB_WAVE_LEN);
+    if (len > DIO_ARB_MAX_WAVE_LEN) {
+	sprintf(tmpstring, "Error: waveform length %d too long to write to digital IO state machine. Must be <= %d", len, DIO_ARB_MAX_WAVE_LEN);
 	DisplayErrorMessage(tmpstring);
 	return 0;
     }
@@ -77,7 +93,7 @@ int SetArbAOutChan(unsigned short aout)
 	DisplayErrorMessage(tmpstring);
 	return 0;
     }
-    if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_AOUT_CHANNEL, 1, &aout)) {
+    if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_AOUT_CHANNEL_ADDR, 1, &aout)) {
 	sprintf(tmpstring, "Error setting analog output of arbitrary waveform generator");
 	DisplayErrorMessage(tmpstring);
 	return 0;
@@ -107,25 +123,57 @@ int SetArbTrigger(unsigned short trigger)
    return 1;
 }
 
-int SetupArb(bool continuous, unsigned short aout, unsigned short *wavefm, 
-	int len)
+int SetupArb(int arb)
     /* set the arbitrary waveform generator to put out a specified waveform
      * either once or continuously */
 {
-  unsigned short trigger;
   int ret = 1;
-  
-  ret &= SetArbAOutChan(aout);
-  ret &= WriteArbWaveForm(wavefm, len);
+  int trigger_port;
+  unsigned short trigger_command;
 
-  /* first trigger in high byte, retrigger in low byte */
-  if (continuous) {
-    trigger = DIO_ARB_ALWAYS_TRIGGER << 8 | DIO_ARB_ALWAYS_TRIGGER;
+  trigger_port = arbinfo[arb].trigger_pin / 16;
+  if (digioinfo.porttype[trigger_port] == OUTPUT_PORT) {
+    switch (trigger_port) {
+      case 0:
+	trigger_command = DIO_ARB_DIO_OUTPUT1_TRIGGER;
+	break;
+      case 1:
+	trigger_command = DIO_ARB_DIO_OUTPUT2_TRIGGER;
+	break;
+      case 2:
+	trigger_command = DIO_ARB_DIO_OUTPUT3_TRIGGER;
+	break;
+      case 3:
+	trigger_command = DIO_ARB_DIO_OUTPUT4_TRIGGER;
+	break;
+    }
   }
   else {
-    trigger = DIO_ARB_ALWAYS_TRIGGER << 8;
+    switch (trigger_port) {
+      case 0:
+	trigger_command = DIO_ARB_DIO_INPUT1_TRIGGER;
+	break;
+      case 1:
+	trigger_command = DIO_ARB_DIO_INPUT2_TRIGGER;
+	break;
+      case 2:
+	trigger_command = DIO_ARB_DIO_INPUT3_TRIGGER;
+	break;
+      case 3:
+	trigger_command = DIO_ARB_DIO_INPUT4_TRIGGER;
+	break;
+    }
   }
-  ret &= SetArbTrigger(trigger);
+  /* first trigger in high byte, retrigger in low byte */
+  arbinfo[arb].trigger = (trigger_command|arbinfo[arb].trigger_pin) << 8;
+  if (arbinfo[arb].continuous) {
+    arbinfo[arb].trigger |= DIO_ARB_ALWAYS_TRIGGER;
+  }
+
+  ret &= SetArbAOutChan(arbinfo[arb].aout);
+  ret &= WriteArbWaveForm(arbinfo[arb].wavefm, arbinfo[arb].len);
+
+  ret &= SetArbTrigger(arbinfo[arb].trigger);
 
   return ret;
 }

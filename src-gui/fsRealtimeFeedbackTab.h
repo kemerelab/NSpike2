@@ -41,6 +41,24 @@ private slots:
   void updateRippleData(void);
 };
 
+class SpatialStimulation : public QWidget
+{
+  Q_OBJECT
+
+public:
+  SpatialStimulation (QWidget *parent);
+  QSpinBox *lowerLeftX;
+  QSpinBox *lowerLeftY;
+  QSpinBox *upperRightX;
+  QSpinBox *upperRightY;
+  QLineEdit *minSpeedThresh;
+  QLineEdit *maxSpeedThresh;
+
+private slots:
+  void updateSpatialData(void);
+};
+
+
 class RealtimeFeedbackTab : public QWidget
 {
   Q_OBJECT

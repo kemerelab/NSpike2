@@ -30,6 +30,7 @@ extern SysInfo sysinfo;
 extern NetworkInfo netinfo;
 extern CommonDSPInfo cdspinfo;
 extern DigIOInfo digioinfo;
+extern ArbInfo *arbinfo;
 
 extern SocketInfo         server_message[MAX_CONNECTIONS];
 extern SocketInfo         client_message[MAX_CONNECTIONS];

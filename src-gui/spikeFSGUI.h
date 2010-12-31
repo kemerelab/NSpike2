@@ -38,6 +38,7 @@ signals:
   void changedFSProgramStatus(int);
   void updateChanDisplay(int);
   void rippleStatusUpdate(char *);
+  void spatialStatusUpdate(char *);
 
   void pulseSeqLineExecuted(int);
   void pulseSeqFinished(int);

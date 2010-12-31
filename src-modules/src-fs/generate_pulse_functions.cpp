@@ -1,6 +1,21 @@
 #include "stimcontrol_defines.h"
 
-void ByteSwap(unsigned short *sptr, int nelem);
+void StopAOut(PulseCommand *pulseCmd)
+  // generate a command to turn out the analog output and the associated digital bit
+{
+  int len = 0;
+  unsigned short aOutPort;
+  unsigned short command[3];
+
+  aOutPort = (pulseCmd->aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
+  command[len++] = DIO_S_SET_PORT | aOutPort; 
+  command[len++] = 0x00; 
+  command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
+  if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
+    fprintf(stderr, "Error stopping analog out %d\n", pulseCmd->aout);
+  }
+}
+
 
 int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   int len = 0;
@@ -8,8 +23,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   int tick_pulse_on, tick_pulse_off;
 
   int digitalPort1, digitalPort2;
-  uint16_t p1mask, p2mask;
-
+  unsigned short aOutPort;
   unsigned short alevel;
   float ascale ;
 
@@ -19,48 +33,59 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   tick_pulse_on = tick_pulse_on - 3; // account for 3 word command processing
   tick_pulse_off = tick_pulse_off - 3; // account for command processing
 
-  if (pulseCmd.digital) {
-    digitalPort1 = (pulseCmd.pin1 / 16);
-    p1mask = (uint16_t) (1 << (pulseCmd.pin1 % 16));
+  digitalPort1 = (pulseCmd.pin1 / 16);
+
+  if (pulseCmd.digital_only) {
     if (pulseCmd.is_biphasic) {
       digitalPort2 = (pulseCmd.pin2 / 16);
-      p2mask = (uint16_t) (1 << (pulseCmd.pin2 % 16));
       if (digitalPort1 != digitalPort2)
-	fprintf(stderr,"rt_user: warning - digital ports are different. probably won't work.");
+	fprintf(stderr,"rt_user: warning - digital ports are different. Make sure this is correct\n");
     }
 
     fprintf(stderr,"rt_user: port %d and pin %d (biphasic: %d)\n",
-	digitalPort1, p1mask, pulseCmd.is_biphasic);
+	digitalPort1, pulseCmd.pin1, pulseCmd.is_biphasic);
 
     for (i = 0; i < pulseCmd.n_pulses; i++) {
-      command[len++] = DIO_S_SET_PORT | digitalPort1; 
+      command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin1;
       if (pulseCmd.is_biphasic) {
-	command[len++] = p1mask;
 	command[len++] = DIO_S_WAIT | tick_pulse_on; 
-	command[len++] = DIO_S_SET_PORT | digitalPort1; 
-	command[len++] = p2mask; 
+	command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin2;
 	command[len++] = DIO_S_WAIT | tick_pulse_on; 
       }
       else {
-	command[len++] = p1mask; 
 	command[len++] = DIO_S_WAIT | tick_pulse_on; 
       }
-      command[len++] = DIO_S_SET_PORT | digitalPort1; 
-      command[len++] = 0x00; 
+      command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin1;
+      command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin2;
       if (i < (pulseCmd.n_pulses-1))
 	command[len++] = DIO_S_WAIT | tick_pulse_off;
     }
   }
   else {
-    /* create an analog pulse at the desired level. Here command contains the
-     * waveform. At the moment this only works for a single pulse */
-    alevel = (unsigned short) ((pulseCmd.minv + ((pulseCmd.maxv - pulseCmd.minv) * 
-	         pulseCmd.pulse_percent)) * USHRT_MAX); 
-    for (i = 0; i < tick_pulse_on; i++) {
+    /* create an analog pulse at the desired level. */
+    alevel = (unsigned short) ((pulseCmd.minv + 
+	                 ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
+	         pulseCmd.pulse_percent))) * USHRT_MAX); 
+    aOutPort = (pulseCmd.aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
+    for (i = 0; i < pulseCmd.n_pulses; i++) {
+      /* set the digital port to 1 as our signal that we've changed the output */
+      command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin1;
+      /* set the analog port level */
+      command[len++] = DIO_S_SET_PORT | aOutPort; 
       command[len++] = alevel;
-    }
-    for (i = 0; i < tick_pulse_off; i++) {
-      command[len++] = pulseCmd.minv;
+
+      /* if this is not continuous output mode, we need to turn it off at the
+       * desired time */
+      if (pulseCmd.aout_mode != DIO_AO_MODE_CONTINUOUS) {
+	command[len++] = DIO_S_WAIT | tick_pulse_on; 
+	/* first turn off the analog output and then signal the change */
+	command[len++] = DIO_S_SET_PORT | aOutPort; 
+	command[len++] = 0x00; 
+	command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin1;
+      }
+
+      if (i < (pulseCmd.n_pulses-1))
+	command[len++] = DIO_S_WAIT | tick_pulse_off;
     }
   }
   return len;
@@ -75,22 +100,9 @@ void PulseOutputCommand (PulseCommand pulseCmd, int ignoreTimestamp) {
   unsigned short time_on_high;
   u32 actualnext;
 
-  /* FIX -- for the moment we pulse immediately when we get a pulse command for
-   * analog outputs */
-  if (!pulseCmd.digital) {
-    ignoreTimestamp = 1;
-  }
-
   if (commandCached == 1) {
-    if (pulseCmd.digital) {
-      if (SendStartDIOCommand(0) <= 0) {
-	fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
-      }
-    }
-    else {
-      if (EnableArb(1) <= 0) {
-	fprintf(stderr,": error sending start Analog output command.\n");
-      }
+    if (SendStartDIOCommand(0) <= 0) {
+      fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
     }
   }
 
@@ -118,15 +130,8 @@ void PulseOutputCommand (PulseCommand pulseCmd, int ignoreTimestamp) {
 
   }
 
-  if (pulseCmd.digital) {
-    if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
-      fprintf(stderr, "Error writing Digital IO command\n");
-    }
-  }
-  else {
-    if (!SetupArb(0, pulseCmd.aout, command, len)) {
-      fprintf(stderr, "Error writing Arbitrary Waveform to DIO box\n");
-    }
+  if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
+    fprintf(stderr, "Error writing Digital IO command\n");
   }
 }
 
@@ -157,21 +162,11 @@ void PrepareStimCommand(PulseCommand pulseCmd)
 
   len = GeneratePulseCommand(pulseCmd, command);
 
-  if (pulseCmd.digital) {
-    if (WriteDSPDIOCommand(command, len ,whichstatemachine, 0)) {
-      fprintf(stderr, "Error writing Digital IO command\n");
-    }
-    else {
-      fprintf(stderr,"rt_user: setting up pulse command on statemachine %d\n", whichstatemachine);
-    }
+  if (!WriteDSPDIOCommand(command, len ,whichstatemachine, 0)) {
+    fprintf(stderr, "Error writing Digital IO command\n");
   }
   else {
-    if (!SetupArb(0, pulseCmd.aout, command, len)) {
-      fprintf(stderr, "Error writing Arbitrary Waveform to DIO box\n");
-    }
-    else {
-      fprintf(stderr,"fs: setting up arbitrary waveform\n");
-    }
+    fprintf(stderr,"rt_user: setting up pulse command on statemachine %d\n", whichstatemachine);
   }
   commandCached = 1;
 }

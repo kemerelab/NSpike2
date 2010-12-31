@@ -20,7 +20,6 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 
   int pulseArraySize;
 
-
   switch(message) {
     case DIO_EVENT:
       /* a behavioral event contains three unsigned ints. The first
@@ -52,6 +51,9 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
 	  InitLatency();
 	  fprintf(stderr,"rt_user: Received request to do latency test.\n");
 	  break;
+	case DIO_RTMODE_SPATIAL_STIM:
+	  InitSpatial();
+	  fprintf(stderr,"rt_user: Received request to do spatial stimulation.\n");
 	case DIO_RTMODE_DEFAULT:
 	default:
 	  fprintf(stderr,"rt_user: Entering default gui mode.\n");
@@ -70,6 +72,12 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       fprintf(stderr, "Updating ripple stimulation pulse parameters\n");
 
       break;
+    case DIO_SET_SPATIAL_STIM_PULSE_PARAMS:
+      memcpy((char *)&spatialStimPulseCmd, messagedata,
+	  sizeof(PulseCommand));
+      PrepareStimCommand(spatialStimPulseCmd);
+      fprintf(stderr, "Updating spatial stimulation pulse parameters\n");
+      break;
     case DIO_SET_RT_FEEDBACK_PARAMS:
       //memcpy((char *)&rtStimParameters, messagedata,
 	  //sizeof(rtStimParameters));
@@ -79,10 +87,18 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       memcpy((char *)&rippleStimParameters, messagedata,
 	      sizeof(RippleStimParameters));
       break;
+    case DIO_SET_SPATIAL_STIM_PARAMS:
+      fprintf(stderr, "Updating spatial stim parameters\n");
+      memcpy((char *)&spatialStimParameters, messagedata,
+	      sizeof(SpatialStimParameters));
+      break;
     case DIO_QUERY_RT_FEEDBACK_STATUS:
       switch (stimcontrolMode) {
 	case DIO_RTMODE_RIPPLE_DISRUPT:
 	  sendRippleStatusUpdate();
+	  break;
+	case DIO_RTMODE_SPATIAL_STIM:
+	  sendSpatialStatusUpdate();
 	  break;
 	case DIO_RTMODE_OUTPUT_ONLY:
 	case DIO_RTMODE_THETA:
@@ -128,8 +144,9 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       nextPulseCmd->start_samp_timestamp = 0;
       messageCode = -1;
       if (nextPulseCmd->aout_mode == DIO_AO_MODE_CONTINUOUS) {
-	// we need to disable the arbitrary waveform generator 
-	EnableArb(0);
+	// we need to turn off the analog output.  Note that the information has
+	// been duplicated in nextPulseCmd so we have access to it.
+	StopAOut(nextPulseCmd);
       }
       SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
       break;

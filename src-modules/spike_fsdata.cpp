@@ -51,6 +51,7 @@ SysInfo 		sysinfo;
 NetworkInfo		netinfo;
 FSDataInfo		fsdatainfo;
 DigIOInfo		digioinfo;
+ArbInfo			arbinfo[NUM_ARBS];
 
 SocketInfo 		server_message[MAX_CONNECTIONS]; // the structure for the server messaging
 SocketInfo 		client_message[MAX_CONNECTIONS]; // the structure for the client messaging

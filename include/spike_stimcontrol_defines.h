@@ -12,12 +12,15 @@
 #define DIO_RTMODE_LATENCY_TEST 2002
 #define DIO_RTMODE_THETA 2003
 #define DIO_RTMODE_RIPPLE_DISRUPT 2004
+#define DIO_RTMODE_SPATIAL_STIM 2005
 
 #define DIO_SET_RT_STIM_PARAMS 101
 #define DIO_SET_RIPPLE_STIM_PARAMS 102
 #define DIO_SET_RIPPLE_STIM_PULSE_PARAMS 103
 #define DIO_SET_RT_FEEDBACK_PARAMS 104
 #define DIO_SET_CM_PER_PIX 105
+#define DIO_SET_SPATIAL_STIM_PARAMS 106
+#define DIO_SET_SPATIAL_STIM_PULSE_PARAMS 107
 
 #define DIO_STOP_RT_FEEDBACK 2200
 #define DIO_START_RT_FEEDBACK 2201
@@ -35,6 +38,7 @@
 
 #define DIO_QUERY_RT_FEEDBACK_STATUS 400
 #define DIO_RT_STATUS_RIPPLE_DISRUPT 404
+#define DIO_RT_STATUS_SPATIAL_STIM 408
 
 #define DIO_PULSE_SEQ_STEP	411  // a single command has been exec'd
 #define DIO_PULSE_SEQ_EXECUTED	412  // the complete file has been exec'd
@@ -73,10 +77,10 @@
 
 typedef struct _PulseCommand {
     uint32_t start_samp_timestamp;
-    bool digital;  // true if we should do digital IO; false for analog IO 
+    bool digital_only;  // true if we should do only digital IO; false for analog IO 
 
     /* digital defines */
-    uint64_t pin1, pin2;
+    unsigned short pin1, pin2;
     int is_biphasic;
 
     /* analog defines */
@@ -126,6 +130,7 @@ typedef struct _RippleStimParameters {
 
 typedef struct _RippleStatusMsg {
   double ripMean;
+  // think about using a qsignalmapper 
   double ripStd;
   int sincelast;
   int isRunning;
@@ -138,4 +143,14 @@ typedef struct _LatencyTestParameters {
     int thresh;
 } LatencyTestParameters;
 
+typedef struct _SpatialStimParameters {
+    bool stimOn;
+    short xpos, ypos;
+    int lowerLeftX;
+    int lowerLeftY;
+    int upperRightX;
+    int upperRightY;
+    double minSpeed;
+    double maxSpeed;
+} SpatialStimParameters;
 #endif

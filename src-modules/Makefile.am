@@ -32,6 +32,7 @@ spike_fsdata_SOURCES = spike_fsdata.cpp spike_message.cpp \
 		src-fs/stimcontrol_processmessage.cpp \
 		src-fs/stimcontrol_processdata.cpp \
 		src-fs/generate_pulse_functions.cpp \
-		src-fs/ripple_process.cpp 
+		src-fs/ripple_process.cpp \
+		src-fs/spatial_process.cpp 
 
 INCLUDES = -I@top_srcdir@/include -I@top_srcdir@/src-modules/src-fs

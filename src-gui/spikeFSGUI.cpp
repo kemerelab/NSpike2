@@ -230,9 +230,9 @@ void DIOInterface::triggerSingleStim(void)
   case 1:
     pCmd[0] = aOutConfigTab->aOut1Config->aOutPulseCmd;
     pCmd[0].n_repeats = 0;
+    /* copy the information to the next command */
+    memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
-    /* set the end pulse with information about the analog output mode */
-    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
     stimOutputOnlyTab->startStimulation(1);
@@ -240,9 +240,9 @@ void DIOInterface::triggerSingleStim(void)
   case 2:
     pCmd[0] = aOutConfigTab->aOut2Config->aOutPulseCmd;
     pCmd[0].n_repeats = 0;
+    /* copy the information to the next command */
+    memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
-    /* set the end pulse with information about the analog output state */
-    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
     stimOutputOnlyTab->startStimulation(1);
@@ -332,9 +332,9 @@ void DIOInterface::startOutputOnlyStim(void)
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[0].line = 0;
+    /* copy the information to the next command */
+    memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
-    /* set the end pulse with information about the analog output state */
-    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
 
@@ -349,8 +349,9 @@ void DIOInterface::startOutputOnlyStim(void)
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[0].line = 0;
+    /* copy the information to the next command */
+    memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
-    /* set the end pulse with information about the analog output state */
     pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
@@ -385,7 +386,7 @@ void DIOInterface::startRealtimeStim(void)
   pCmd.n_repeats = -1;
   pCmd.line = 0;
   qDebug("startRealtimeStim signal received");
-  SendFSDataMessage(DIO_SET_RIPPLE_STIM_PULSE_PARAMS, (char *) &pCmd, 
+  SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) &pCmd, 
 		  sizeof(PulseCommand));
   SendFSDataMessage(DIO_START_RT_FEEDBACK, NULL, 0);
 }
@@ -430,6 +431,9 @@ void DAQ_IO::msgFromFS (int msg, char *data) {
       break;
     case DIO_RT_STATUS_RIPPLE_DISRUPT:
       emit rippleStatusUpdate(data);
+      break;
+    case DIO_RT_STATUS_SPATIAL_STIM:
+      emit spatialStatusUpdate(data);
       break;
     default:
       fprintf(stderr,"Unknown message from user program (%d)\n",msg);

@@ -92,6 +92,7 @@ private:
   QComboBox *aOutRangeSelectBox;
   QDoubleSpinBox *aOutRangeMinSpinBox;
   QDoubleSpinBox *aOutRangeMaxSpinBox;
+  QSpinBox *aOutTriggerBitSpinBox;
   QComboBox *aOutModeComboBox;
   QStackedWidget *aOutModeStack;
 

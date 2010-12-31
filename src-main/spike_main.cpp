@@ -43,6 +43,7 @@ DisplayInfo     dispinfo;
 DigIOInfo       digioinfo;
 CommonDSPInfo   cdspinfo;
 FSDataInfo    fsdatainfo;
+ArbInfo		arbinfo[NUM_ARBS];  // this will eventu
 
 struct DisplayData *displaybuf;    // the buffer to be displayed next
 struct DisplayData *databuf;    // the buffer to be filled with data

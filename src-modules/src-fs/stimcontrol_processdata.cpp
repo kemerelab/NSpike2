@@ -92,7 +92,25 @@ void ProcessData(int datatype, char *data, int datalen)
     else {
       timestamp = *posdataptr;
       ProcessTimestamp();
+      if (pending) {
+	nextPulseCmd->start_samp_timestamp = timestamp * SAMP_TO_TIMESTAMP + 
+					     DELAY_TO_START_PULSE_FILE; // start
+	fprintf(stderr,"Starting stim: %d, %d\n", timestamp,
+		nextPulseCmd->start_samp_timestamp);
+	pending = 0;
+      }
       ratSpeed = filterPosSpeed(posdataptr[1],posdataptr[2]);
+      if (stimcontrolMode == DIO_RTMODE_SPATIAL_STIM) {
+	inbox = ProcessSpatialData(posdataptr[1], posdataptr[2]);
+	if (inbox && !spatialFiltStat.stimOn) {
+	    // the animal is in the box and stimulation is off, so turn it on
+	    PulseOutputCommand(spatialStimPulseCmd, PULSE_IMMEDIATELY);
+	}
+	else if (!inbox && spatialFiltStat.stimOn) {
+	    // the animal is not in the box and stimulation is on, so turn it off
+
+
+
     }
   }
 }

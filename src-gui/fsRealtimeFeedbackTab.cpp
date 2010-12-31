@@ -24,8 +24,8 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
 
   aOutSelectComboBox = new QComboBox;
   aOutSelectComboBox->addItem("None");
-  aOutSelectComboBox->addItem("A");
-  aOutSelectComboBox->addItem("B");
+  aOutSelectComboBox->addItem("AOut 1");
+  aOutSelectComboBox->addItem("AOut 2");
   // Signals/Slots for aOutSelectComboBox are connected in
   //  main GUI code to StimConfigTab.
   layout->addWidget(new QLabel("Active AOut"),1,0, 
@@ -38,6 +38,7 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   feedbackAlgorithmComboBox->addItem("Latency Test");
   feedbackAlgorithmComboBox->addItem("Theta Phase");
   feedbackAlgorithmComboBox->addItem("Ripple Disruption");
+  feedbackAlgorithmComboBox->addItem("Spatially Selective Stim.");
   layout->addWidget(new QLabel("Realtime Feedback Program"),2,0, Qt::AlignRight);
   layout->addWidget(feedbackAlgorithmComboBox,2,1);
 
@@ -73,6 +74,7 @@ RealtimeFeedbackTab::RealtimeFeedbackTab (QWidget *parent)
   algorithmAlternativesStack->addWidget(new LatencyTest(this));
   algorithmAlternativesStack->addWidget(new ThetaPhaseStim(this));
   algorithmAlternativesStack->addWidget(new RippleDisruption(this));
+  algorithmAlternativesStack->addWidget(new SpatialStimulation(this));
 
   layout->addWidget(algorithmAlternativesStack,0,2,4,5);
 
@@ -89,7 +91,6 @@ void RealtimeFeedbackTab::updateActiveAOut(int aOutIndex, int aOut1Mode,
    * the modes */
   aOutSelectComboBox->setCurrentIndex(aOutIndex);
 }
-
 
 
 
@@ -111,6 +112,9 @@ void RealtimeFeedbackTab::setFeedbackAlgorithm (int index)
       break;
     case 3:
       mode = DIO_RTMODE_RIPPLE_DISRUPT;
+      break;
+    case 4:
+      mode = DIO_RTMODE_SPATIAL_STIM;
       break;
   }
 
@@ -295,11 +299,80 @@ void RippleDisruption::updateRippleData(void)
   SendFSDataMessage(DIO_SET_RIPPLE_STIM_PARAMS, (char *) &data, sizeof(RippleStimParameters));
 }
 
-/*
 
-void RippleDisruption::showEvent(QShowEvent *e) {
-  QWidget::showEvent(e);
-  updateRippleData();
-  stopRTData(TRUE);
-} */
+SpatialStimulation::SpatialStimulation(QWidget *parent)
+  : QWidget(parent)
+{
+  QGroupBox *algorithmParametersGroupBox = new QGroupBox("Spatial Stimulation Parameters");
+  QGridLayout *parametersLayout = new QGridLayout;
 
+  lowerLeftX = new QSpinBox;
+  lowerLeftX->setRange(0,sysinfo.posimagesize[0]);
+  lowerLeftX->setValue(0);
+  lowerLeftX->setAlignment(Qt::AlignRight);
+  lowerLeftY = new QSpinBox;
+  lowerLeftY->setRange(0,sysinfo.posimagesize[1]);
+  lowerLeftY->setValue(0);
+  lowerLeftY->setAlignment(Qt::AlignRight);
+  parametersLayout->addWidget(new QLabel("Lower Left (X,Y)"),0,0,1,1, Qt::AlignRight);
+  parametersLayout->addWidget(lowerLeftX, 0, 1);
+  parametersLayout->addWidget(lowerLeftY, 0, 2);
+
+  upperRightX = new QSpinBox;
+  upperRightX->setRange(0,sysinfo.posimagesize[0]);
+  upperRightX->setValue(0);
+  upperRightX->setAlignment(Qt::AlignRight);
+  upperRightY = new QSpinBox;
+  upperRightY->setRange(0,sysinfo.posimagesize[1]);
+  upperRightY->setValue(0);
+  upperRightY->setAlignment(Qt::AlignRight);
+  parametersLayout->addWidget(new QLabel("Upper Right (X,Y)"),1,0,1,1, Qt::AlignRight);
+  parametersLayout->addWidget(upperRightX, 1, 1);
+  parametersLayout->addWidget(upperRightY, 1, 2);
+
+  minSpeedThresh = new QLineEdit(QString::number(0), this);
+  minSpeedThresh->setValidator(new QDoubleValidator(0.0,200.0,2,this));
+  minSpeedThresh->setAlignment(Qt::AlignRight);
+  parametersLayout->addWidget(new QLabel("Minimum Speed"),2,0,1,1, Qt::AlignRight);
+  parametersLayout->addWidget(minSpeedThresh, 2, 1, 1, 1);
+  parametersLayout->addWidget(new QLabel("cm/sec"),2,2,1,1);
+  maxSpeedThresh = new QLineEdit(QString::number(200), this);
+  maxSpeedThresh->setValidator(new QDoubleValidator(0.0,200.0,2,this));
+  maxSpeedThresh->setAlignment(Qt::AlignRight);
+  parametersLayout->addWidget(new QLabel("Maximum Speed"),3,0,1,1, Qt::AlignRight);
+  parametersLayout->addWidget(maxSpeedThresh, 3, 1, 1, 1);
+  parametersLayout->addWidget(new QLabel("cm/sec"),3,2,1,1);
+
+  parametersLayout->setColumnStretch(0, 2);
+
+  connect(lowerLeftX, SIGNAL(valueChanged(int)), this, SLOT(updateSpatialData(void)));
+  connect(lowerLeftY, SIGNAL(valueChanged(int)), this, SLOT(updateSpatialData(void)));
+  connect(upperRightX, SIGNAL(valueChanged(int)), this, SLOT(updateSpatialData(void)));
+  connect(upperRightY, SIGNAL(valueChanged(int)), this, SLOT(updateSpatialData(void)));
+  connect(minSpeedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateSpatialData(void)));
+  connect(maxSpeedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateSpatialData(void)));
+
+//  connect(daq_io_widget, SIGNAL(rippleStatusUpdate(char *)), parentWidget(), SLOT(updateRealtimeStatus(char *)));
+  
+
+  algorithmParametersGroupBox->setLayout(parametersLayout);
+
+  QVBoxLayout *layout = new QVBoxLayout;
+  layout->addWidget(algorithmParametersGroupBox,Qt::AlignCenter);
+  setLayout(layout);
+}
+
+
+void SpatialStimulation::updateSpatialData(void)
+{
+  SpatialStimParameters data;
+
+  data.lowerLeftX = lowerLeftX->value();
+  data.lowerLeftY = lowerLeftY->value();
+  data.upperRightX = upperRightX->value();
+  data.upperRightY = upperRightY->value();
+  data.minSpeed = minSpeedThresh->text().toDouble();
+  data.maxSpeed = minSpeedThresh->text().toDouble();
+
+  SendFSDataMessage(DIO_SET_SPATIAL_STIM_PARAMS, (char *) &data, sizeof(SpatialStimParameters));
+}
