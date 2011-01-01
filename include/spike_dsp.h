@@ -227,13 +227,13 @@ typedef struct _CommonDSPInfo {
     short dspcal[MAX_ELECTRODES];  // the calibration factors for each channel
 } CommonDSPInfo;
 
-typedef struct _ArbInfo {
+/*typedef struct _ArbInfo {
     int aout;
     bool continuous;
     unsigned short trigger_pin;
     unsigned short trigger;
     unsigned short wavefm[DIO_ARB_MAX_WAVE_LEN];
     unsigned short len;
-} ArbInfo; 
+} ArbInfo;  */
 
 #endif

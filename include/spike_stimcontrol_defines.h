@@ -70,10 +70,10 @@
 
 #define DIO_AO_MODE_CONTINUOUS 	1
 #define DIO_AO_MODE_PULSE	2
-#define DIO_AO_MODE_RAMP	3
-#define DIO_AO_MODE_SINE	4
+#define DIO_AO_MODE_WAVE	3
 
 #include <stdint.h>
+#include "spikecommon.h"
 
 typedef struct _PulseCommand {
     uint32_t start_samp_timestamp;
@@ -91,6 +91,7 @@ typedef struct _PulseCommand {
 
     int cont_percent; // the continuous mode level (1-100% of max)
     int pulse_percent; // the pulse mode level (1-100% of max)
+    int wave_percent; // the wave mode peak level (1-100% of max)
 
     int pre_delay; // in ticks; 
     int pulse_width; // in ticks (10 kHz)
@@ -99,6 +100,8 @@ typedef struct _PulseCommand {
     int n_repeats; // note that this is decremented to zero (not preserved) by code
                    // except for -1 which is the special case of continuous
     int inter_frame_delay; // in ticks;
+
+    ArbInfo arbinfo;
 
 } PulseCommand;
 

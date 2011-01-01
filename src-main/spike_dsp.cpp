@@ -902,24 +902,15 @@ void GetDSPHighFilterCoeff(short lowpass, unsigned short *data)
 int TriggerOutput(int output)
 {
     unsigned short command[DIO_MAX_COMMAND_LEN];
-    int tmptime, len;
-
-    tmptime = digioinfo.length[output];
-
+    int len = 0;
+    u32 tmptime;
 
     /* to trigger an output we send in a seqence of commands to the current 
      * state machine */
-    command[0] = DIO_S_SET_OUTPUT_HIGH | output;
-    tmptime = digioinfo.length[output];
-    len = 1;
-    /* string together a set of wait commands to wait for the specified
-     * interval */
-    while (tmptime > 10000) {
-	command[len++] = DIO_S_WAIT | (10000 * SAMP_TO_TIMESTAMP);
-	tmptime -= 10000;
-    }
-    command[len++] = DIO_S_WAIT | (tmptime * SAMP_TO_TIMESTAMP);
-    /* now turn off the output */
+    // initialize the wait command
+    command[len++] = DIO_S_WAIT; 
+    command[len++] = DIO_S_SET_OUTPUT_HIGH | output;
+    len += AddWaitToCommand(digioinfo.length[output], command+len, &tmptime);
     command[len++] = DIO_S_SET_OUTPUT_LOW | output;
     /* send the command off to the DSP */
     if (!WriteDSPDIOCommand(command, len)) { 
@@ -983,7 +974,7 @@ int TriggerOutputs(int *bit, int *length, int *delay, int n)
     /* now we can create the statemachine command.  Note that we have to subtract the
      * cumulative time to get the wait lengths right */
     // initizize the wait 
-    command[len++] = DIO_S_WAIT_WAIT;
+    command[len++] = DIO_S_WAIT;
     tmp = 0;
     for (i = 0; i < 2*n; i++) {
 	tdiff = times[i] - tmp;

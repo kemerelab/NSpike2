@@ -42,37 +42,26 @@ signals:
 };
 
 
-/*
-class AOutRampMode : public QWidget {
+class AOutWaveMode : public QWidget {
   Q_OBJECT
 
 public:
-  AOutRampMode(QWidget *parent = 0);
-  QRadioButton *single;
-  QRadioButton *continuous;
-  QSpinBox     *min;
-  QSpinBox     *max;
-  QSpinBox     *length;
+  AOutWaveMode(QWidget *parent = 0);
+  QPushButton *rampButton;
+  QPushButton *sineButton;
+  QSpinBox     *maxPercentSpinBox;
+  QSpinBox     *lengthSpinBox;
+  QDoubleSpinBox     *periodSpinBox;
+  QPushButton  *continuousButton;
 
-public slots:
-  void rampParmChanged(void);
+private slots:
+  void waveChanged(void);
+
+signals:
+  void aOutWaveChanged(void);
 };
 
-class AOutSineMode : public QWidget {
-  Q_OBJECT
 
-public:
-  AOutSineMode(QWidget *parent = 0);
-  QRadioButton *single;
-  QRadioButton *continuous;
-  QSpinBox     *min;
-  QSpinBox     *max;
-  QSpinBox     *freq;
-
-public slots:
-  void sinParmChanged(void);
-};
-*/
 
 
 class AOutConfigureWidget : public QWidget
@@ -87,6 +76,7 @@ public slots:
   void setAOutMode(int);
   void setAOutRange(int);
   void updateAOutPulseCmd(void);
+  void updateAOutWaveCmd(void);
 
 private:
   QComboBox *aOutRangeSelectBox;
@@ -98,8 +88,7 @@ private:
 
   AOutContinuousMode *aOutContinuousMode;
   AOutPulseMode *aOutPulseMode;
-  //AOutRampMode *aOutRampMode;
-  //AOutSineMode *aOutSineMode;
+  AOutWaveMode *aOutWaveMode;
   
 signals:
   void aOutModeChangedSignal(void);

@@ -31,6 +31,7 @@
 #define DIO_S_WAIT_INPUT_LOW	0x4000  // wait for input in bits 1-6 to be low
 #define DIO_S_SET_OUTPUT_HIGH	0x3100  // set output in bits 1-6 to be high
 #define DIO_S_SET_OUTPUT_LOW	0x3000  // set output in bits 1-6 to be low
+#define DIO_MAX_WAIT_SAMP	16382   // We can wait at most 16382 samples per wait command
 
 #define DIO_S_SET_PORT		0x2000  // set port in bits 1-3 to argument
 
@@ -57,6 +58,7 @@
 #define DIO_ARB_WAVE_ADDR	  0x4114 // base location for the arbitrary waveform generator
 
 #define DIO_ARB_MAX_WAVE_LEN	DIO_STATE_SIZE // the maximum length of an analog waveform for the arbitrary waveform generator
+#define DIO_ARB_MAX_WAVE_LEN_MS	(DIO_STATE_SIZE / SAMP_TO_TIMESTAMP / 10) // the maximum length in milliseconds of an analog waveform for the arbitrary waveform generator
 #define DIO_ARB_ENABLE		0x00C4  // 0 disables, 1 enables, read for status
 #define DIO_ARB_TRIGGER	0x00C5  // first trigger info in high byte, retrigger in low byte
 #define DIO_ARB_NEVER_TRIGGER  0

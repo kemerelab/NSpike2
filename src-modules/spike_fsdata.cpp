@@ -132,10 +132,6 @@ int main(int argc, char **argv)
      * have already filtered it */
     while ((i = netinfo.datainfd[id]) != -1) {
       if (FD_ISSET(server_data[i].fd, &readfds)) {
-	/* check to see if the disk is on, and if not, get the message
-	 * and discard it. Note that this works for everyone except
-	 * spike_process_posdata, as it only sends data out when the
-	 * disk is on.  */
 	message = GetMessage(server_data[i].fd, savebuf, &savebufsize, 
 		1);
 	if (sysinfo.fsdataon) {

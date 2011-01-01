@@ -39,6 +39,7 @@ void ProcessData(int datatype, char *data, int datalen)
 	                                   DELAY_TO_START_PULSE_FILE; // start
       fprintf(stderr,"Starting stim: %d, %d\n", ctinfo.timestamp,
               nextPulseCmd->start_samp_timestamp);
+      PulseOutputCommand(*nextPulseCmd);
       pending = 0;
     }
 
@@ -93,6 +94,7 @@ void ProcessData(int datatype, char *data, int datalen)
 					     DELAY_TO_START_PULSE_FILE; // start
 	fprintf(stderr,"Starting stim: %d, %d\n", ctinfo.timestamp,
 		nextPulseCmd->start_samp_timestamp);
+        PulseOutputCommand(*nextPulseCmd);
 	pending = 0;
       }
       ratSpeed = filterPosSpeed(posdataptr[1],posdataptr[2]);
@@ -125,7 +127,7 @@ void InitPulseArray( void)
   ctinfo.command_time = 0;
   ctinfo.next_command_time = 0;
   ctinfo.command_cached = false;
-  ctinfo.message_sent = true;
+  ctinfo.message_sent = false;
 }
 
 void ProcessTimestamp( void )
@@ -146,6 +148,7 @@ void ProcessTimestamp( void )
     if (!ctinfo.message_sent) {
       fprintf(stderr, "sending executed message, mode = %d\n", nextPulseCmd->aout_mode);
       SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
+      ctinfo.message_sent = true;
     }
   }
 

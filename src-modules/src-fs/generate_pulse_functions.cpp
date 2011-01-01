@@ -10,14 +10,15 @@ void StopOutput(PulseCommand *pulseCmd)
   unsigned short command[3];
 
   /* stop the state machine */
-  //ResetStateMachine(pulseCmd->statemachine);
+  fprintf(stderr, "stopping state machine %d\n",pulseCmd->statemachine);
+  ResetStateMachine(pulseCmd->statemachine);
 
   if (pulseCmd->digital_only) {
     /* set the bits to be 0 */
     command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
     command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin2; 
     if (!WriteDSPDIOCommand(command, len ,pulseCmd->statemachine, 0)) {
-      fprintf(stderr, "Error statemachine %d\n", pulseCmd->statemachine);
+      fprintf(stderr, "Error writing to statemachine %d\n", pulseCmd->statemachine);
     }
   }
   else {
@@ -43,6 +44,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   int i;
   int tick_pulse_on, tick_pulse_off;
   int waitsamp;
+  bool use_arb;
 
   u32 time_on, time_on_low, time_on_high;
 
@@ -53,9 +55,6 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 
   tick_pulse_on = pulseCmd.pulse_width * 3;
   tick_pulse_off = pulseCmd.inter_pulse_delay * 3;
-
-  tick_pulse_on = tick_pulse_on - 1; // account for command processing
-  tick_pulse_off = tick_pulse_off - 1; // account for command processing
 
   digitalPort1 = (pulseCmd.pin1 / 16);
 
@@ -113,34 +112,47 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
     }
   }
   else {
+    use_arb = false;
     /* create an analog pulse at the desired level. */
-    if (pulseCmd.aout_mode == DIO_AO_MODE_CONTINUOUS) {
-      alevel = (unsigned short) ((pulseCmd.minv + 
-			   ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
-		   ((float) pulseCmd.cont_percent) / 100.0))) * USHRT_MAX); 
-    }
-    else {
-      alevel = (unsigned short) ((pulseCmd.minv + 
-			   ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
-		   ((float) pulseCmd.pulse_percent) / 100.0))) * USHRT_MAX); 
+    switch (pulseCmd.aout_mode) {
+      case (DIO_AO_MODE_CONTINUOUS) :
+	alevel = (unsigned short) ((pulseCmd.minv + 
+			     ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
+		     ((float) pulseCmd.cont_percent) / 100.0))) * USHRT_MAX); 
+
+	break;
+      case (DIO_AO_MODE_PULSE):
+	alevel = (unsigned short) ((pulseCmd.minv + 
+		     ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
+		     ((float) pulseCmd.pulse_percent) / 100.0))) * USHRT_MAX); 
+	break;
+      case (DIO_AO_MODE_WAVE):
+	SetupArb(pulseCmd.arbinfo);
+	use_arb = true;
+	break;
+      default:
+	fprintf(stderr, "Error in spike_fsdata: DIO mode %d unknown\n", pulseCmd.aout_mode);
     }
     aOutPort = (pulseCmd.aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
     for (i = 0; i < pulseCmd.n_pulses; i++) {
       /* set the digital port to 1 as our signal that we've changed the output */
       command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin1;
-      /* set the analog port level */
-      command[len++] = DIO_S_SET_PORT | aOutPort; 
-      command[len++] = alevel;
+      if (!use_arb) {
+	/* set the analog port level */
+	command[len++] = DIO_S_SET_PORT | aOutPort; 
+	command[len++] = alevel;
+      }
 
-      fprintf(stderr, "writing to aout %d port %d, level %d\n", pulseCmd.aout, aOutPort, alevel);
-
-      /* if this is not continuous output mode, we need to turn it off at the
+      /* if this is not continuous mode, we need to turn it off at the
        * desired time */
       if (pulseCmd.aout_mode != DIO_AO_MODE_CONTINUOUS) {
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
-	/* first turn off the analog output and then signal the change */
-	command[len++] = DIO_S_SET_PORT | aOutPort; 
-	command[len++] = 0x00; 
+	if (!use_arb) {
+	  /* turn off the analog output */
+	  command[len++] = DIO_S_SET_PORT | aOutPort; 
+	  command[len++] = 0x00; 
+	}
+	/* reset the digital output */
 	command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin1;
 	ctinfo.command_time += pulseCmd.pulse_width;
       }
@@ -159,35 +171,52 @@ void PulseOutputCommand (PulseCommand pulseCmd)
     fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
   }
   ctinfo.command_cached = 0;
-  /* set the time that the next command can be sent */
-  ctinfo.next_command_time = ctinfo.timestamp + ctinfo.command_time;
+  /* set the time that the next command can be sent if we have not already set 
+   * it to be UINT_MAX, which indicates continuous mode */
+  if (ctinfo.next_command_time != UINT_MAX) {
+    ctinfo.next_command_time = ctinfo.timestamp + ctinfo.command_time;
+  }
+  ctinfo.message_sent = false;
 }
 
 void PrepareStimCommand(PulseCommand *pulseCmd, int nPC)
 {
   int i, r, len = 0;
+  bool continuous = false;
   unsigned short command[DIO_MAX_COMMAND_LEN];
+  u32		cttmp;
 
   /* reset the command_time so we can calculate it correctly */
   ctinfo.command_time = 0;
 
   for (i = 0; i < nPC; i++) {
+    cttmp = ctinfo.command_time;
+    if (pulseCmd[i].pulse_width == DIO_PULSE_COMMAND_END) {
+      break;
+    }
+
     if (pulseCmd[i].n_repeats > 1) {
       /* loop through the repeats */
-      command[len++] = DIO_S_FOR_BEGIN | pulseCmd[i].n_repeats;
+      command[len++] = DIO_S_FOR_BEGIN | (pulseCmd[i].n_repeats + 1);
     }
     len += GeneratePulseCommand(*pulseCmd, command+len);
+
     /* add in the inter_frame_delay wait  */
     len += AddWaitToCommand(pulseCmd->inter_frame_delay, command + len, 
 	    &ctinfo.command_time);
     if (pulseCmd[i].n_repeats > 1) {
       /* loop through the repeats */
       command[len++] = DIO_S_FOR_END;
+      /* calculate the time for this command */
+      cttmp = ctinfo.command_time - cttmp;
+      /* add in the time for the repeats */
+      ctinfo.command_time += cttmp * (pulseCmd[i].n_repeats - 1);
     }
     if (pulseCmd[i].n_repeats == -1) {
       // This only occurs for the last pulseCmd, where we then run continuously.
-      // To do so, jump back to offset 1 
+      // To do so, jump back to offset 1 and indicate that the command will not finish
       command[len++] = DIO_S_JUMP_ABS | 1;
+      ctinfo.next_command_time = UINT_MAX;
     }
   }
   if (!WriteDSPDIOCommand(command, len, pulseCmd->statemachine, 0)) {

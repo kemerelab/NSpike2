@@ -35,15 +35,19 @@ int AddWaitToCommand(u32 waittime, unsigned short *command, u32 *command_time)
   int len = 0;
   u32 waitsamp;
 
+  if (waittime < 1) {
+    return 0;
+  }
+
   *command_time += waittime;
   // now wait for (pre_delay * 3 samples - 1 for processing*/
   waitsamp = (waittime) * SAMP_TO_TIMESTAMP - 1;
-  while (waitsamp > 65536) {
-    command[len++] = DIO_S_WAIT_WAIT | 65535; // subtract 1 sample for processing
-    waitsamp -= 65536;
+  while (waitsamp > DIO_MAX_WAIT_SAMP) {
+    command[len++] = DIO_S_WAIT_WAIT | DIO_MAX_WAIT_SAMP;
+    waitsamp -= DIO_MAX_WAIT_SAMP;
   }
   if (waitsamp > 1) {
-    command[len++] = DIO_S_WAIT_WAIT | (waitsamp - 1); 
+    command[len++] = DIO_S_WAIT_WAIT | waitsamp; 
   }
   return len;
 }
@@ -142,7 +146,7 @@ int SetArbTrigger(unsigned short trigger)
    return 1;
 }
 
-int SetupArb(int arb)
+int SetupArb(ArbInfo arbinfo)
     /* set the arbitrary waveform generator to put out a specified waveform
      * either once or continuously */
 {
@@ -150,7 +154,7 @@ int SetupArb(int arb)
   int trigger_port;
   unsigned short trigger_command;
 
-  trigger_port = arbinfo[arb].trigger_pin / 16;
+  trigger_port = arbinfo.trigger_pin / 16;
   if (digioinfo.porttype[trigger_port] == OUTPUT_PORT) {
     switch (trigger_port) {
       case 0:
@@ -184,15 +188,15 @@ int SetupArb(int arb)
     }
   }
   /* first trigger in high byte, retrigger in low byte */
-  arbinfo[arb].trigger = (trigger_command|arbinfo[arb].trigger_pin) << 8;
-  if (arbinfo[arb].continuous) {
-    arbinfo[arb].trigger |= DIO_ARB_ALWAYS_TRIGGER;
+  arbinfo.trigger = (trigger_command|arbinfo.trigger_pin) << 8;
+  if (arbinfo.continuous) {
+    arbinfo.trigger |= DIO_ARB_ALWAYS_TRIGGER;
   }
 
-  ret &= SetArbAOutChan(arbinfo[arb].aout);
-  ret &= WriteArbWaveForm(arbinfo[arb].wavefm, arbinfo[arb].len);
+  ret &= SetArbAOutChan(arbinfo.aout);
+  ret &= WriteArbWaveForm(arbinfo.wavefm, arbinfo.len);
 
-  ret &= SetArbTrigger(arbinfo[arb].trigger);
+  ret &= SetArbTrigger(arbinfo.trigger);
 
   return ret;
 }
@@ -206,12 +210,14 @@ int ResetStateMachine(int number)
      * to be 0 */
 {
     unsigned short command[1];
+    command[0] = 0;
     if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[number], 
 		1, command)) {
 	sprintf(tmpstring, "Error reseting Digital IO state machine pointer on master DSP");
 	DisplayErrorMessage(tmpstring);
 	return 0;
     }
+    return 1;
 }
 
 int ResetStateMachines()

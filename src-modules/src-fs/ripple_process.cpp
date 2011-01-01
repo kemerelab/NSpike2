@@ -11,6 +11,7 @@ extern double fDenominator[NFILT];
 
 extern RippleStimParameters rippleStimParameters;
 extern PulseCommand rippleStimPulseCmd;
+extern CommandTimeInfo ctinfo;
 
 extern RippleFilterStatus ripFiltStat[MAX_ELECTRODES];
 extern SpeedFilterStatus speedFiltStat;
@@ -126,7 +127,7 @@ int ProcessRippleData(short electnum, double d) {
 
   rptr = ripFiltStat + electnum;
 
-  timeSinceLast = timestamp - lastStimTimestamp;
+  timeSinceLast = ctinfo.timestamp - lastStimTimestamp;
   /* --------------------------------------------------- */
   /* 
      ARE WE IN LOCKOUT? 
@@ -214,7 +215,7 @@ int ProcessRippleData(short electnum, double d) {
   /* --------------------------------------------------- */
   if (stim == 1) {
     timeSinceLast = 0; // If we're going to stimulate, reset lockout counter
-    lastStimTimestamp = timestamp;
+    lastStimTimestamp = ctinfo.timestamp;
   }
   return stim;
 }

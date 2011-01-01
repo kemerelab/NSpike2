@@ -140,11 +140,8 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       fprintf(stderr,"rt_user: Received STOP command, aout_mode = %d\n", nextPulseCmd->aout_mode);
       nextPulseCmd->start_samp_timestamp = 0;
       messageCode = -1;
-      if (nextPulseCmd->aout_mode == DIO_AO_MODE_CONTINUOUS) {
-	// we need to turn off the analog output.  Note that the information has
-	// been duplicated in nextPulseCmd so we have access to it.
-	StopOutput(nextPulseCmd);
-      }
+      // turn off the state machine
+      StopOutput(nextPulseCmd);
       SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
       break;
     case EXIT:
