@@ -38,7 +38,6 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     connect(aOut1Config, SIGNAL(aOutModeChangedSignal(void)), this, 
 	    SLOT(aOutModeChanged(void)));
 
-
     layout->addWidget(aOut1Config,1,1,Qt::AlignLeft);
 
     aOut2Button = new QPushButton("AOut 2");
@@ -114,24 +113,24 @@ AOutConfigureWidget::AOutConfigureWidget(QWidget *parent)
   aOutRangeSelectBox = new QComboBox(); 
   aOutRangeSelectBox->addItem("Mambo 594nm Laser");
   aOutRangeSelectBox->addItem("Adjustable Range");
-  layout->addWidget(aOutRangeSelectBox, 0, 0, 1, 4);
+  layout->addWidget(aOutRangeSelectBox, 0, 0, 1, 4, Qt::AlignBottom);
   connect(aOutRangeSelectBox, SIGNAL(currentIndexChanged(int)), this, 
       	  SLOT(setAOutRange(int)));
 
-  layout->addWidget(new QLabel("Min."), 1, 0, 1, 1);
+  layout->addWidget(new QLabel("Min."), 1, 0, 1, 1, Qt::AlignTop);
   aOutRangeMinSpinBox = new QDoubleSpinBox();
   aOutRangeMinSpinBox->setRange(0,1);
   aOutRangeMinSpinBox->setDecimals(2);
   aOutRangeMinSpinBox->setSuffix(" Volts");
-  layout->addWidget(aOutRangeMinSpinBox, 1, 1, 1, 1);
+  layout->addWidget(aOutRangeMinSpinBox, 1, 1, 1, 1, Qt::AlignTop);
   connect(aOutRangeMinSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateAOutPulseCmd(void)));
 
-  layout->addWidget(new QLabel("Max"), 1, 2, 1, 1);
+  layout->addWidget(new QLabel("Max"), 1, 2, 1, 1, Qt::AlignTop);
   aOutRangeMaxSpinBox = new QDoubleSpinBox();
   aOutRangeMaxSpinBox->setRange(0,1);
   aOutRangeMaxSpinBox->setDecimals(2);
   aOutRangeMaxSpinBox->setSuffix(" Volts");
-  layout->addWidget(aOutRangeMaxSpinBox, 1, 3, 1, 1);
+  layout->addWidget(aOutRangeMaxSpinBox, 1, 3, 1, 1, Qt::AlignTop);
   connect(aOutRangeMinSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateAOutPulseCmd(void)));
 
   aOutModeComboBox = new QComboBox();
@@ -140,7 +139,7 @@ AOutConfigureWidget::AOutConfigureWidget(QWidget *parent)
   aOutModeComboBox->addItem("Pulse");
   //aOutModeComboBox->addItem("Ramp");
   //aOutModeComboBox->addItem("Sine Wave");
-  layout->addWidget(aOutModeComboBox, 0, 4, 1, 1);
+  layout->addWidget(aOutModeComboBox, 0, 4, 1, 1, Qt::AlignBottom);
   connect(aOutModeComboBox, SIGNAL(currentIndexChanged(int)), this, 
       	  SLOT(setAOutMode(int)));
 
@@ -161,7 +160,7 @@ AOutConfigureWidget::AOutConfigureWidget(QWidget *parent)
 //  aOutModeStack->addWidget(aOutRampMode);
 //  aOutModeStack->addWidget(aOutSineMode);
 //
-  layout->addWidget(aOutModeStack, 0, 5, 3, 1);
+  layout->addWidget(aOutModeStack, 0, 5, 2, 1, Qt::AlignVCenter);
   setLayout(layout);
 
 
