@@ -114,6 +114,7 @@ void StimOutputOnlyTab::updateAOutEnable()
     stimSingleButton->setEnabled(false);
   }
   else {
+    continuousButton->setEnabled(true);
     nTrainsSpinBox->setEnabled(true);
     trainIntervalSpinBox->setEnabled(true);
     stimSingleButton->setEnabled(true);

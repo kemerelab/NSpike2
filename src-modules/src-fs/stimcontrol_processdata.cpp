@@ -151,8 +151,10 @@ void ProcessTimestamp( void )
       }
     }
 
-    if (nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END) { // end of file
+    if ((nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END) && 
+	(nextPulseCmd->aout_mode != DIO_AO_MODE_CONTINUOUS)) { // end of file
       messageCode = 0;
+      fprintf(stderr, "sending executed message, mode = %d\n", nextPulseCmd->aout_mode);
       SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
       return;
     }

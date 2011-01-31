@@ -231,6 +231,8 @@ void DIOInterface::triggerSingleStim(void)
     pCmd[0] = aOutConfigTab->aOut1Config->aOutPulseCmd;
     pCmd[0].n_repeats = 0;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    /* set the end pulse with information about the analog output mode */
+    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
     stimOutputOnlyTab->startStimulation(1);
@@ -239,6 +241,8 @@ void DIOInterface::triggerSingleStim(void)
     pCmd[0] = aOutConfigTab->aOut2Config->aOutPulseCmd;
     pCmd[0].n_repeats = 0;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    /* set the end pulse with information about the analog output state */
+    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *)pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
     stimOutputOnlyTab->startStimulation(1);
@@ -276,7 +280,8 @@ void DIOInterface::startOutputOnlyStim(void)
   case 2:
     pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
     pCmd[0].pre_delay = 0;
-    pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
+    pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() 
+	* 10.0; // convert to ticks
     if (stimOutputOnlyTab->continuousButton->isChecked())
       pCmd[0].n_repeats = -1;
     else
@@ -328,6 +333,8 @@ void DIOInterface::startOutputOnlyStim(void)
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[0].line = 0;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    /* set the end pulse with information about the analog output state */
+    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
 
@@ -343,6 +350,8 @@ void DIOInterface::startOutputOnlyStim(void)
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
     pCmd[0].line = 0;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
+    /* set the end pulse with information about the analog output state */
+    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
 

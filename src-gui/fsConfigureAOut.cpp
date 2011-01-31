@@ -27,7 +27,7 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     aOut1Button = new QPushButton("AOut 1");
     layout->addWidget(aOut1Button,1,0,Qt::AlignRight);
     aOut1Button->setCheckable(true);
-    aOut1Button->setChecked(true);
+    aOut1Button->setChecked(false);
     aOut1Button->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
     aOut1Button->setStyleSheet("QPushButton::checked{color: green;}");
     aOut1Button->setStyle("Windows");

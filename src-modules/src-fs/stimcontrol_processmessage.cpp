@@ -124,13 +124,14 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       fprintf(stderr,"rt_user: Received START command......\n");
       break;
     case DIO_PULSE_SEQ_STOP:
-      fprintf(stderr,"rt_user: Received STOP command\n");
+      fprintf(stderr,"rt_user: Received STOP command, aout_mode = %d\n", nextPulseCmd->aout_mode);
       nextPulseCmd->start_samp_timestamp = 0;
       messageCode = -1;
+      if (nextPulseCmd->aout_mode == DIO_AO_MODE_CONTINUOUS) {
+	// we need to disable the arbitrary waveform generator 
+	EnableArb(0);
+      }
       SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
-      break;
-      // reset real time processing for new tetrode
-      ResetRealtimeProcessing();
       break;
     case EXIT:
       fprintf(stderr, "rt_user: exiting\n");

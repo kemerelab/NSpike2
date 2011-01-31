@@ -27,12 +27,12 @@ StimConfigTab::StimConfigTab (QWidget *parent)
     stimulatorAButton = new QPushButton("A");
     layout->addWidget(stimulatorAButton,1,0,Qt::AlignRight);
     stimulatorAButton->setCheckable(true);
-    stimulatorAButton->setChecked(true);
+    stimulatorAButton->setChecked(false);
     stimulatorAButton->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
     stimulatorAButton->setStyleSheet("QPushButton::checked{color: green;}");
     stimulatorAButton->setStyle("Windows");
     layout->addWidget(stimConfigA,1,1,Qt::AlignLeft);
-    activeStimulator = 1;
+    activeStimulator = 0;
 
     stimulatorBButton = new QPushButton("B");
     layout->addWidget(stimulatorBButton,2,0,Qt::AlignRight);
