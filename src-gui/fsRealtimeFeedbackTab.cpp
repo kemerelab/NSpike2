@@ -332,8 +332,8 @@ SpatialStimulation::SpatialStimulation(QWidget *parent)
   parametersLayout->addWidget(upperRightX, 1, 1);
   parametersLayout->addWidget(upperRightY, 1, 2);
 
-  minSpeedThresh = new QLineEdit(QString::number(0), this);
-  minSpeedThresh->setValidator(new QDoubleValidator(0.0,200.0,2,this));
+  minSpeedThresh = new QLineEdit(QString::number(-1), this);
+  minSpeedThresh->setValidator(new QDoubleValidator(-1,200.0,2,this));
   minSpeedThresh->setAlignment(Qt::AlignRight);
   parametersLayout->addWidget(new QLabel("Minimum Speed"),2,0,1,1, Qt::AlignRight);
   parametersLayout->addWidget(minSpeedThresh, 2, 1, 1, 1);

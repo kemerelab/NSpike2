@@ -34,7 +34,7 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     connect(aOut1Button, SIGNAL(clicked(bool)), this, SLOT(selectAOut(void)));
 
     aOut1Config = new AOutConfigureWidget(this);
-    aOut1Config->aOutPulseCmd.aout = 0;
+    aOut1Config->aOutPulseCmd.aout = 1;
     connect(aOut1Config, SIGNAL(aOutModeChangedSignal(void)), this, 
 	    SLOT(aOutModeChanged(void)));
 
@@ -47,11 +47,11 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     aOut2Button->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Maximum);
     aOut2Button->setStyleSheet("QPushButton::checked{color: green;}");
     aOut2Button->setStyle("Windows");
-    aOut2Button->setEnabled(false);
+    //aOut2Button->setEnabled(false);
     connect(aOut2Button, SIGNAL(clicked(bool)), this, SLOT(selectAOut(void)));
 
     aOut2Config = new AOutConfigureWidget(this);
-    aOut2Config->aOutPulseCmd.aout = 1;
+    aOut2Config->aOutPulseCmd.aout = 2;
     connect(aOut2Config, SIGNAL(aOutModeChangedSignal(void)), this, 
 	    SLOT(aOutModeChanged(void)));
     layout->addWidget(aOut2Config,2,1,Qt::AlignLeft | Qt::AlignVCenter);

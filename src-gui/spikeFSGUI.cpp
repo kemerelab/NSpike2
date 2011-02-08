@@ -341,7 +341,7 @@ void DIOInterface::startOutputOnlyStim(void)
     stimOutputOnlyTab->startStimulation(pCmd[0].n_repeats);
     break;
   case 2:
-    pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
+    pCmd[0] = aOutConfigTab->aOut2Config->aOutPulseCmd;
     pCmd[0].pre_delay = 0;
     pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     if (stimOutputOnlyTab->continuousButton->isChecked())
@@ -352,7 +352,6 @@ void DIOInterface::startOutputOnlyStim(void)
     /* copy the information to the next command */
     memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
-    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
 
@@ -460,7 +459,7 @@ void DIOInterface::startRealtimeStim(void)
     SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 2*sizeof(PulseCommand));
     break;
   case 2:
-    pCmd[0] = stimConfigTab->stimConfigB->stimPulseCmd;
+    pCmd[0] = aOutConfigTab->aOut2Config->aOutPulseCmd;
     pCmd[0].pre_delay = 0;
     pCmd[0].inter_frame_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     if (stimOutputOnlyTab->continuousButton->isChecked())
@@ -471,7 +470,6 @@ void DIOInterface::startRealtimeStim(void)
     /* copy the information to the next command */
     memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
-    pCmd[1].aout_mode = pCmd[0].aout_mode;
     SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 2*sizeof(PulseCommand));
     break;
   default:

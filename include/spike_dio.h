@@ -48,8 +48,8 @@
 #else
 #define DIO_STATE_SIZE	   	  65534	// instructions per state machine. The first instruction is always left at "wait forever", and the final instruction is always a jump to instruction 0, so there are 65536 - 2 instructions available for programming 
 #define DIO_S_WAIT_WAIT		0xC000  // wait from last wait command
-#define DIO_AOUT1_PORT		0x0100  // the port index for AOUT 1 to be used in conjuction with DIO_S_SET_PORT
-#define DIO_AOUT2_PORT		0x0101  // the port index for AOUT 2 to be used in conjuction with DIO_S_SET_PORT
+#define DIO_AOUT1_PORT		0x0004  // the port index for AOUT 1 to be used in conjuction with DIO_S_SET_PORT
+#define DIO_AOUT2_PORT		0x0005  // the port index for AOUT 2 to be used in conjuction with DIO_S_SET_PORT
 
 #define DIO_AOUT_BASE_ADDR	0xC000
 #define DIO_AOUT1_ADDR		0x0000

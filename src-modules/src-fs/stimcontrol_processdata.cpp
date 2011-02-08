@@ -111,12 +111,11 @@ void ProcessData(int datatype, char *data, int datalen)
 	}
 	else if (!stim && spatialFiltStat.stimOn) {
 	  // the animal is not in the box and stimulation is on, so turn it off.
-	  // We only need to do something if the output is analog
-	  if (!rtStimPulseCmd.digital_only) {
-	    StopOutput(&rtStimPulseCmd);
-	    spatialFiltStat.stimOn = false;
-	    spatialFiltStat.lastChange = timestamp;
-	  }
+	  StopOutput(&rtStimPulseCmd);
+	  spatialFiltStat.stimOn = false;
+	  spatialFiltStat.lastChange = timestamp;
+	  /* prepare the next command */
+          PrepareStimCommand(rtStimPulseCmd);
 	}
       }
     }

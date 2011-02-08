@@ -8,26 +8,30 @@ void StopOutput(PulseCommand *pulseCmd)
   unsigned short command[3];
 
   /* stop the state machine */
-  ResetStateMachine(pulseCmd->statemachine);
+  //ResetStateMachine(pulseCmd->statemachine);
 
   if (pulseCmd->digital_only) {
     /* set the bits to be 0 */
     command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
     command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin2; 
-    if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
+    if (!WriteDSPDIOCommand(command, len ,pulseCmd->statemachine, 0)) {
       fprintf(stderr, "Error statemachine %d\n", pulseCmd->statemachine);
     }
   }
   else {
     /* turn off the analog output */
     aOutPort = (pulseCmd->aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
+    command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
     command[len++] = DIO_S_SET_PORT | aOutPort; 
     command[len++] = 0x00; 
-    command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
-    if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
+    if (!WriteDSPDIOCommand(command, len, pulseCmd->statemachine, 0)) {
       fprintf(stderr, "Error stopping analog out %d\n", pulseCmd->aout);
     }
   }
+  if (SendStartDIOCommand(0) <= 0) {
+    fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
+  }
+    fprintf(stderr, "turned off dio and aout, %d\n", aOutPort);
   return;
 }
 
@@ -78,9 +82,16 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   }
   else {
     /* create an analog pulse at the desired level. */
-    alevel = (unsigned short) ((pulseCmd.minv + 
-	                 ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
-	         pulseCmd.pulse_percent))) * USHRT_MAX); 
+    if (pulseCmd.aout_mode == DIO_AO_MODE_CONTINUOUS) {
+      alevel = (unsigned short) ((pulseCmd.minv + 
+			   ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
+		   ((float) pulseCmd.cont_percent) / 100.0))) * USHRT_MAX); 
+    }
+    else {
+      alevel = (unsigned short) ((pulseCmd.minv + 
+			   ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
+		   ((float) pulseCmd.pulse_percent) / 100.0))) * USHRT_MAX); 
+    }
     aOutPort = (pulseCmd.aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
     for (i = 0; i < pulseCmd.n_pulses; i++) {
       /* set the digital port to 1 as our signal that we've changed the output */
@@ -88,6 +99,9 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
       /* set the analog port level */
       command[len++] = DIO_S_SET_PORT | aOutPort; 
       command[len++] = alevel;
+
+      fprintf(stderr, "writing to aout %d port %d, level %d\n", pulseCmd.aout, aOutPort, alevel);
+
 
       /* if this is not continuous output mode, we need to turn it off at the
        * desired time */
@@ -145,7 +159,7 @@ void PulseOutputCommand (PulseCommand pulseCmd, int ignoreTimestamp) {
 
   }
 
-  if(!WriteDSPDIOCommand(command, len ,0 ,0)) {
+  if (!WriteDSPDIOCommand(command, len, pulseCmd.statemachine, 0)) {
     fprintf(stderr, "Error writing Digital IO command\n");
   }
 }
