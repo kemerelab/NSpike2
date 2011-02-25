@@ -63,19 +63,20 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
     case DIO_SET_RT_STIM_PULSE_PARAMS:
       memcpy((char *)&rtStimPulseCmd, messagedata,
 	  sizeof(PulseCommand));
+      /* FIX - set delay in gui */
+      rtStimPulseCmd.pre_delay = rippleStimParameters.time_delay * 10;
+      fprintf(stderr, "Updating real time stimulation pulse parameters, statemachine = %d\n", rtStimPulseCmd.statemachine);
       PrepareStimCommand(&rtStimPulseCmd, 1);
-      fprintf(stderr, "Updating real time stimulation pulse parameters\n");
-      break;
-    case DIO_SET_RT_FEEDBACK_PARAMS:
-      //memcpy((char *)&rtStimParameters, messagedata,
-	  //sizeof(rtStimParameters));
+      fprintf(stderr, "Updating real time stimulation pulse parameters, statemachine = %d\n", rtStimPulseCmd.statemachine);
       break;
     case DIO_SET_RIPPLE_STIM_PARAMS:
       fprintf(stderr, "Updating ripple stim parameters\n");
       memcpy((char *)&rippleStimParameters, messagedata,
 	      sizeof(RippleStimParameters));
-      /* add the time delay to the pulse command and prepare it */
-      rtStimPulseCmd.pre_delay = rippleStimParameters.time_delay;
+      /* add the time delay to the pulse command and prepare it. Note that the
+       * time_delay is in ms, so we need to convert to timestamps  */
+      /* FIX - set delay in gui */
+      rtStimPulseCmd.pre_delay = rippleStimParameters.time_delay * 10;
       PrepareStimCommand(&rtStimPulseCmd, 1);
       break;
     case DIO_SET_SPATIAL_STIM_PARAMS:
@@ -108,8 +109,8 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       realtimeProcessingEnabled = 1;
       fprintf(stderr,"rt_user: Received Realtime START command (state = %d)......\n", stimcontrolMode);
       if (stimcontrolMode == DIO_RTMODE_RIPPLE_DISRUPT) {
-	/* add the time delay to the pulse command and prepare it */
-	rtStimPulseCmd.pre_delay = rippleStimParameters.time_delay;
+	/* FIX add the time delay to the pulse command and prepare it */
+	rtStimPulseCmd.pre_delay = rippleStimParameters.time_delay * 10;
 	PrepareStimCommand(&rtStimPulseCmd, 1);
       }
       break;

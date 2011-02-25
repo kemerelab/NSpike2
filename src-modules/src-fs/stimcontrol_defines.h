@@ -66,6 +66,17 @@ extern double cmPerPix; // global mapping between video and reality
 extern double ratSpeed; // global measure of rat speed
 
 typedef struct {
+  u32 next_command_time; // the time when we can send the next command
+  u32 command_time = 0; // the lenght of time required for the current command
+  u32 timestamp; // global timestamp tracking
+  bool command_cached; // the command has been sent to the statemachine
+  bool message_sent;  // a pulse sequence execulted message has been sent to the main program
+} CommandTimeInfo;
+  
+
+
+
+typedef struct {
     double rippleMean;
     double rippleSd;
     double fX[NFILT];

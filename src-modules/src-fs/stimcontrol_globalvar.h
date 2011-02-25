@@ -18,13 +18,18 @@ RippleFilterStatus ripFiltStat[MAX_ELECTRODES];
 SpeedFilterStatus speedFiltStat;
 SpatialFilterStatus spatialFiltStat;
 
-u32 last_future_timestamp;
+CommandTimeInfo ctinfo;
+
+/* the time to send the next command */
+u32 next_command_time = 0;
+/* the length of time the current command will take to execute */
+u32 command_time = 0;
+u32 timestamp; // global timestamp tracking
 
 int stimcontrolMode = DIO_RTMODE_DEFAULT; // global program mode determinator
 
 int realtimeProcessingEnabled = 0;
 
-u32 timestamp; // global timestamp tracking
 
 unsigned short laserPort = 2;  // the default laser port is 2
 

@@ -25,25 +25,19 @@ void ProcessData(int datatype, char *data, int datalen)
 
   static int flag = 1;
 
-  //if (stimcontrolMode == DIO_RTMODE_OUTPUT_ONLY) // not processing data
-   // return;
-
   if (stimcontrolMode == DIO_RTMODE_DEFAULT) {// not processing data
     return;
   }
-
-  //if (realtimeProcessingEnabled == 0) // start button not pushed
-    //return;
 
 
   if (datatype == CONTINUOUS_DATA_TYPE) {
     cptr = (FSDataContBuffer *) data;
     dataptr = cptr->data;
-    timestamp = cptr->timestamp;
+    ctinfo.timestamp = cptr->timestamp;
     if (pending) {
-      nextPulseCmd->start_samp_timestamp = timestamp * SAMP_TO_TIMESTAMP + 
+      nextPulseCmd->start_samp_timestamp = ctinfo.timestamp * SAMP_TO_TIMESTAMP + 
 	                                   DELAY_TO_START_PULSE_FILE; // start
-      fprintf(stderr,"Starting stim: %d, %d\n", timestamp,
+      fprintf(stderr,"Starting stim: %d, %d\n", ctinfo.timestamp,
               nextPulseCmd->start_samp_timestamp);
       pending = 0;
     }
@@ -54,25 +48,26 @@ void ProcessData(int datatype, char *data, int datalen)
       for (j = 0; j < cptr->nchan; j++, dataptr++, electnumptr++) {
 	switch (stimcontrolMode) {
 	  case DIO_RTMODE_THETA:
-	    curr_timestamp = timestamp + (i * DSP_BASE_SAMP_RATE) / 
+	    curr_timestamp = ctinfo.timestamp + (i * DSP_BASE_SAMP_RATE) / 
 			     cptr->samprate / SAMP_TO_TIMESTAMP;
 	    stim_timestamp = ProcessThetaData((double) *dataptr, curr_timestamp);
 	    if ((stim_timestamp > 0) && (realtimeProcessingEnabled)) {
-	      thetaStimPulseCmd.start_samp_timestamp = stim_timestamp * 
+	      rtStimPulseCmd.start_samp_timestamp = stim_timestamp * 
 		SAMP_TO_TIMESTAMP;
-	      PulseOutputCommand(rtStimPulseCmd);
+	      PrepareStimCommand(&rtStimPulseCmd, 1);
+	      PulseOutputCommand(&rtStimPulseCmd);
 	    }
 	    break;
 	  case DIO_RTMODE_RIPPLE_DISRUPT:
 	    stim = ProcessRippleData(*electnumptr, (double) *dataptr);
 	    if ((stim > 0) && (realtimeProcessingEnabled)) {
-	      PulseOutputCommand(rtStimPulseCmd, PULSE_IMMEDIATELY);
+	      PulseOutputCommand(rtStimPulseCmd);
 	    }
 	    break;
 	  case DIO_RTMODE_LATENCY_TEST:
 	    stim = ProcessLatencyData(*dataptr);
 	    if ((stim > 0) && (realtimeProcessingEnabled)) {
-	      PulseOutputCommand(rtStimPulseCmd, PULSE_IMMEDIATELY);
+	      PulseOutputCommand(rtStimPulseCmd);
 	    }
 	    break;
 	  default:
@@ -91,12 +86,12 @@ void ProcessData(int datatype, char *data, int datalen)
       fprintf(stderr,"rt_user: Misunderstood POS_DATA message received (wrong size: %d)\n",datalen);
     }
     else {
-      timestamp = *posdataptr;
+      ctinfo.timestamp = *posdataptr;
       ProcessTimestamp();
       if (pending) {
-	nextPulseCmd->start_samp_timestamp = timestamp * SAMP_TO_TIMESTAMP + 
+	nextPulseCmd->start_samp_timestamp = ctinfo.timestamp * SAMP_TO_TIMESTAMP + 
 					     DELAY_TO_START_PULSE_FILE; // start
-	fprintf(stderr,"Starting stim: %d, %d\n", timestamp,
+	fprintf(stderr,"Starting stim: %d, %d\n", ctinfo.timestamp,
 		nextPulseCmd->start_samp_timestamp);
 	pending = 0;
       }
@@ -105,15 +100,15 @@ void ProcessData(int datatype, char *data, int datalen)
 	stim = ProcessSpatialData(posdataptr[1], posdataptr[2]);
 	if (stim && !spatialFiltStat.stimOn) {
 	  // the animal is in the box and stimulation is off, so turn it on
-	  PulseOutputCommand(rtStimPulseCmd, PULSE_IMMEDIATELY);
+	  PulseOutputCommand(rtStimPulseCmd);
 	  spatialFiltStat.stimOn = true;
-	  spatialFiltStat.lastChange = timestamp;
+	  spatialFiltStat.lastChange = ctinfo.timestamp;
 	}
 	else if (!stim && spatialFiltStat.stimOn) {
 	  // the animal is not in the box and stimulation is on, so turn it off.
 	  StopOutput(&rtStimPulseCmd);
 	  spatialFiltStat.stimOn = false;
-	  spatialFiltStat.lastChange = timestamp;
+	  spatialFiltStat.lastChange = ctinfo.timestamp;
 	  /* prepare the next command */
           PrepareStimCommand(&rtStimPulseCmd, 1);
 	}
@@ -124,9 +119,13 @@ void ProcessData(int datatype, char *data, int datalen)
 
 void InitPulseArray( void)
 {
-  last_future_timestamp = 0;
   pulseArray[0].start_samp_timestamp = 0;
   nextPulseCmd = &pulseArray[0];
+
+  ctinfo.command_time = 0;
+  ctinfo.next_command_time = 0;
+  ctinfo.command_cached = false;
+  ctinfo.message_sent = true;
 }
 
 void ProcessTimestamp( void )
@@ -134,56 +133,20 @@ void ProcessTimestamp( void )
 
   int messageCode;
 
-  if ((nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END ) || (nextPulseCmd->start_samp_timestamp == 0))
-    return;
-
-  if ( (timestamp * SAMP_TO_TIMESTAMP > last_future_timestamp) && 
-       (timestamp > nextPulseCmd->start_samp_timestamp/3 - 500) ) { 
-      // consider sending another command
-    fprintf(stderr,"\n\nrt_user: next command timestamp %d (%d) (%d)\n", nextPulseCmd->start_samp_timestamp/3, last_future_timestamp/3, timestamp);
-    PulseOutputCommand(*nextPulseCmd); // send current next command
-    SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_STEP, (char *) &(nextPulseCmd->line),  sizeof(int));  // send info back to user program
-
-    last_future_timestamp = nextPulseCmd->start_samp_timestamp;
-
-    if (nextPulseCmd->n_repeats > 0) {
-      nextPulseCmd->n_repeats--;
-      nextPulseCmd->pre_delay = 0;
-      nextPulseCmd->start_samp_timestamp = last_future_timestamp +
-      nextPulseCmd->inter_frame_delay*3;
-      return;
-    }
-    else if (nextPulseCmd->n_repeats == -1) { // continuous
-      nextPulseCmd->pre_delay = 0;
-      nextPulseCmd->start_samp_timestamp = last_future_timestamp +
-      nextPulseCmd->inter_frame_delay*3;
-      return;
-    }
-
-    nextPulseCmd++;
-
-    if (nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_REPEAT)
-    {
-      if (nextPulseCmd->n_repeats == 0) // done with repeats
-        nextPulseCmd++;
-      else if (nextPulseCmd->n_repeats == -1)  // continuous repeat mode
-        nextPulseCmd = &pulseArray[nextPulseCmd->line];
-      else {
-        nextPulseCmd->n_repeats--;
-        nextPulseCmd = &pulseArray[nextPulseCmd->line];
+  if (ctinfo.timestamp > next_command_time) {
+    /* prepare the next stimulation command if appropriate */
+    if (!ctinfo.command_cached) {
+      switch (stimcontrolMode) {
+	case DIO_RTMODE_RIPPLE_DISRUPT:
+	case DIO_RTMODE_LATENCY_TEST:
+	  PrepareStimCommand(&rtStimPulseCmd, 1);
+	  break;
       }
     }
-
-    if ((nextPulseCmd->pulse_width == DIO_PULSE_COMMAND_END) && 
-	(nextPulseCmd->aout_mode != DIO_AO_MODE_CONTINUOUS)) { // end of file
-      messageCode = 0;
+    if (!ctinfo.message_sent) {
       fprintf(stderr, "sending executed message, mode = %d\n", nextPulseCmd->aout_mode);
       SendMessage(client_data[SPIKE_MAIN].fd, DIO_PULSE_SEQ_EXECUTED, (char *)&messageCode, sizeof(int)); 
-      return;
     }
-      
-    nextPulseCmd->start_samp_timestamp = last_future_timestamp + 
-      nextPulseCmd->pre_delay*3;
   }
 
 }

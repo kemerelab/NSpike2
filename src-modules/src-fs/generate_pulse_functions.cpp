@@ -1,5 +1,7 @@
 #include "stimcontrol_defines.h"
 
+int AddWaitToCommand(u32 waittime, unsigned short *command);
+
 void StopOutput(PulseCommand *pulseCmd)
   // generate a command to stop the state machine and, if relevant, the analog output and the associated digital bit
 {
@@ -28,11 +30,30 @@ void StopOutput(PulseCommand *pulseCmd)
       fprintf(stderr, "Error stopping analog out %d\n", pulseCmd->aout);
     }
   }
-  if (SendStartDIOCommand(0) <= 0) {
+  if (SendStartDIOCommand(pulseCmd->statemachine) <= 0) {
     fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
   }
     fprintf(stderr, "turned off dio and aout, %d\n", aOutPort);
   return;
+}
+
+int AddWaitToCommand(u32 waittime, unsigned short *command)
+    /* add a wait to the command. waittime is in timestamps  */
+{
+  int len = 0;
+  u32 waitsamp;
+
+  ctinfo.command_time += waittime;
+  // now wait for (pre_delay * 3 samples - 1 for processing*/
+  waitsamp = (waittime) * SAMP_TO_TIMESTAMP - 1;
+  while (waitsamp > 65536) {
+    command[len++] = DIO_S_WAIT_WAIT | 65535; // subtract 1 sample for processing
+    waitsamp -= 65536;
+  }
+  if (waitsamp > 1) {
+    command[len++] = DIO_S_WAIT_WAIT | (waitsamp - 1); 
+  }
+  return len;
 }
 
 
@@ -42,6 +63,8 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   int tick_pulse_on, tick_pulse_off;
   int waitsamp;
 
+  u32 time_on, time_on_low, time_on_high;
+
   int digitalPort1, digitalPort2;
   unsigned short aOutPort;
   unsigned short alevel;
@@ -50,23 +73,32 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   tick_pulse_on = pulseCmd.pulse_width * 3;
   tick_pulse_off = pulseCmd.inter_pulse_delay * 3;
 
-  tick_pulse_on = tick_pulse_on - 3; // account for 3 word command processing
-  tick_pulse_off = tick_pulse_off - 3; // account for command processing
+  tick_pulse_on = tick_pulse_on - 1; // account for command processing
+  tick_pulse_off = tick_pulse_off - 1; // account for command processing
 
   digitalPort1 = (pulseCmd.pin1 / 16);
 
   /* initialize the wait (wait for 0 samples) */
   command[len++] = DIO_S_WAIT;
+
+  
+  if (pulseCmd.start_samp_timestamp) {
+    /* set the sample at which the command should start */
+    time_on = pulseCmd.start_samp_timestamp;
+    time_on_low = (time_on & 0xFFFF);
+    time_on_high = (unsigned short) ((time_on & 0xFFFF0000) >> 16);
+
+    command[len++] = DIO_S_WAIT_TIME; // next two samps are time_on
+    command[len++] = *( ((unsigned short *) &time_on) + 1 );
+    command[len++] = time_on_low;
+    /* the approximate additional wait time is the difference between the most 
+     * recent timestamp and the start time */
+    ctinfo.command_time += pulseCmd.start_samp_timestamp - timestamp;
+  }
+
   if (pulseCmd.pre_delay) {
-    // now wait for (pre_delay-1) * 3 samples */
-    waitsamp = (pulseCmd.pre_delay - 1) * SAMP_TO_TIMESTAMP;
-    while (waitsamp > 65536) {
-      command[len++] = DIO_S_WAIT_WAIT | 65533; // subtract 3 samples for processing
-      waitsamp -= 65536;
-    }
-    if (waitsamp > 3) {
-      command[len++] = DIO_S_WAIT_WAIT | (waitsamp - 3); 
-    }
+    /* add the initial delay */
+    len += AddWaitToCommand(pulseCmd.pre_delay, command + len);
   }
 
   if (pulseCmd.digital_only) {
@@ -81,10 +113,12 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 
     for (i = 0; i < pulseCmd.n_pulses; i++) {
       command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin1;
+      ctinfo.command_time += pulseCmd.pulse_width;
       if (pulseCmd.is_biphasic) {
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
 	command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin2;
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
+	ctinfo.command_time += pulseCmd.pulse_width;
       }
       else {
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
@@ -93,6 +127,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
       command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin2;
       if (i < (pulseCmd.n_pulses-1))
 	command[len++] = DIO_S_WAIT_WAIT| tick_pulse_off;
+	ctinfo.command_time += pulseCmd.inter_pulse_delay;
     }
   }
   else {
@@ -117,7 +152,6 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 
       fprintf(stderr, "writing to aout %d port %d, level %d\n", pulseCmd.aout, aOutPort, alevel);
 
-
       /* if this is not continuous output mode, we need to turn it off at the
        * desired time */
       if (pulseCmd.aout_mode != DIO_AO_MODE_CONTINUOUS) {
@@ -126,92 +160,57 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 	command[len++] = DIO_S_SET_PORT | aOutPort; 
 	command[len++] = 0x00; 
 	command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin1;
+	ctinfo.command_time += pulseCmd.pulse_width;
       }
 
       if (i < (pulseCmd.n_pulses-1))
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_off;
+	ctinfo.command_time += pulseCmd.inter_pulse_delay;
     }
   }
   return len;
 }
 
-void PulseOutputCommand (PulseCommand pulseCmd, int ignoreTimestamp) {
-  // pulseWidth in 100 us units
-  unsigned short command[DIO_MAX_COMMAND_LEN+3];
-  int len = 0;
-  u32 time_on;
-  unsigned short time_on_low, bs_time_on_low;
-  unsigned short time_on_high;
-  u32 actualnext;
+void PulseOutputCommand (PulseCommand pulseCmd) 
 
-  if (commandCached == 1) {
-    if (SendStartDIOCommand(0) <= 0) {
-      fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
-    }
+  if (SendStartDIOCommand(pulseCmd->statemachine) <= 0) {
+    fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
   }
-
-
-  if (ignoreTimestamp == 0) {
-    if (pulseCmd.start_samp_timestamp <= timestamp * SAMP_TO_TIMESTAMP) {
-      fprintf(stderr,"rt_user: Tried to generate future timestamp pulse before now.\n");
-      return;
-    }
-
-    time_on = pulseCmd.start_samp_timestamp;
-    time_on_low = (time_on & 0xFFFF);
-    time_on_high = (unsigned short) ((time_on & 0xFFFF0000) >> 16);
-    actualnext = time_on_low + (time_on & 0xFFFF0000);
-
-    command[0] = DIO_S_WAIT_TIME; // next two samps are time_on
-    command[1] = *( ((unsigned short *) &time_on) + 1 );
-    command[2] = time_on_low;
-
-    len = GeneratePulseCommand(pulseCmd, &command[3]);
-    len = len + 3;
-  }
-  else {
-    len = GeneratePulseCommand(pulseCmd, command);
-
-  }
-
-  if (!WriteDSPDIOCommand(command, len, pulseCmd.statemachine, 0)) {
-    fprintf(stderr, "Error writing Digital IO command\n");
-  }
+  ctinfo.command_cached = 0;
+  /* set the time that the next command can be sent */
+  ctinfo.next_command_time = ctinfo.timestamp + ctinfo.command_time;
 }
 
-u32 PulseCommandLength(PulseCommand pulseCmd) {
-    u32 len = 0;
-    int i;
-    int tick_pulse_on, tick_pulse_off;
-
-    tick_pulse_on = pulseCmd.pulse_width * SAMP_TO_TIMESTAMP;
-    tick_pulse_off = pulseCmd.inter_pulse_delay * 3;
-
-    for (i = 0; i < pulseCmd.n_pulses; i++) {
-      len += tick_pulse_on;
-      if (pulseCmd.is_biphasic)
-        len += tick_pulse_on;
-      if (i < (pulseCmd.n_pulses-1))
-        len += tick_pulse_off;
-    }
-
-    return len;
-}
-
-void PrepareStimCommand(PulseCommand *pulseCmd, int nPulses)
+void PrepareStimCommand(PulseCommand *pulseCmd, int nPC)
 {
-  int i, len = 0;
-  unsigned short command[DIO_MAX_COMMAND_LEN+3];
-  int whichstatemachine = pulseCmd->statemachine;
+  int i, r, len = 0;
+  unsigned short command[DIO_MAX_COMMAND_LEN];
 
-  len = GeneratePulseCommand(*pulseCmd, command);
+  /* reset the command_time so we can calculate it correctly */
+  ctinfo.command_time = 0;
 
-  if (!WriteDSPDIOCommand(command, len ,whichstatemachine, 0)) {
-    fprintf(stderr, "Error writing Digital IO command\n");
+  for (i = 0; i < nPC; i++) {
+    if (pulseCmd[i].n_repeats > 1) {
+      /* loop through the repeats */
+      command[len++] = DIO_S_FOR_BEGIN | pulseCmd[i].n_repeats;
+    }
+    len += GeneratePulseCommand(*pulseCmd, command+len);
+    /* add in the inter_frame_delay wait  */
+    len += AddWaitToCommand(pulseCmd.inter_frame_delay, command + len);
+    if (pulseCmd[i].n_repeats > 1) {
+      /* loop through the repeats */
+      command[len++] = DIO_S_FOR_END;
+    }
+    if (pulseCmd[i].n_repeats == -1) {
+      // This only occurs for the last pulseCmd, where we then run continuously.
+      // To do so, jump back to offset 1 
+      command[len++] = DIO_S_JUMP_ABS | 1;
+    }
   }
-  else {
-    fprintf(stderr,"rt_user: setting up pulse command on statemachine %d\n", whichstatemachine);
+  if (!WriteDSPDIOCommand(command, len, pulseCmd->statemachine, 0)) {
+    fprintf(stderr, "Error writing Digital IO command to statemachine %d\n", 
+	pulseCmd->statemachine);
   }
-  commandCached = 1;
+  ctinfo.command_cached = 1;
 }
 

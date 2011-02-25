@@ -92,9 +92,7 @@ typedef struct _PulseCommand {
     int cont_percent; // the continuous mode level (1-100% of max)
     int pulse_percent; // the pulse mode level (1-100% of max)
 
-
-    int line;
-    int pre_delay; // in ticks; automatically zeroed after first
+    int pre_delay; // in ticks; 
     int pulse_width; // in ticks (10 kHz)
     int n_pulses;
     int inter_pulse_delay; // in ticks

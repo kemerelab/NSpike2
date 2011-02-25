@@ -14,7 +14,7 @@
 // capture card and to build a dummy/demo version of nspike -- 
 // so comment this out for a final build
 //
-////#define NO_VIDEO_DEBUG
+//#define NO_VIDEO_DEBUG
 
 // uncomment to produce output of each digitial IO packet 
 #define DIO_DEBUG

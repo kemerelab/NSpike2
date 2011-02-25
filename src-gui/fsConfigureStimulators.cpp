@@ -92,6 +92,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
 {
   stimPulseCmd.digital_only = 1;
   stimPulseCmd.line = 0;
+  stimPulseCmd.statemachine = 0;
   stimPulseCmd.pre_delay = 0;
   stimPulseCmd.pulse_width = 1; // default value - should set this below?
   stimPulseCmd.inter_pulse_delay = 1249;
@@ -221,7 +222,7 @@ StimConfigureWidget::StimConfigureWidget(const QString &title, QWidget *parent)
 void StimConfigureWidget::frequencyChanged(void)
 {
   sequencePeriodSpinBox->blockSignals(true);
-  sequencePeriodSpinBox->setValue(10000/sequenceFrequencySpinBox->value());
+  sequencePeriodSpinBox->setValue(1000/sequenceFrequencySpinBox->value());
   sequencePeriodSpinBox->blockSignals(false);
   updateStimParameters();
     return;

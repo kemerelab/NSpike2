@@ -882,6 +882,9 @@ int WriteConfigFile(char *outfilename, int gzip, int datafile)
 	    if (sysinfo.datatype[i] & DIGITALIO) {
 		gzprintf(outfile, "DIGITALIO\t");
 	    }
+	    if (sysinfo.datatype[i] & FSDATA) {
+		gzprintf(outfile, "FSDATA\t");
+	    }
 	    gzprintf(outfile, "\n");
 	}
 	/* write out the data directories */

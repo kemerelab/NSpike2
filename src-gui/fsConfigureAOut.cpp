@@ -272,6 +272,7 @@ AOutContinuousMode::AOutContinuousMode(QWidget *parent) : QWidget(parent)
 AOutPulseMode::AOutPulseMode(QWidget *parent) : QWidget(parent)
 {
   aOutPulseCmd.line = 0;
+  aOutPulseCmd.statemachine = 0;
   aOutPulseCmd.pre_delay = 0;
   aOutPulseCmd.pulse_width = 1; // default value - should set this below?
   aOutPulseCmd.pulse_percent = 0; // default value - should set this below?
@@ -289,7 +290,7 @@ AOutPulseMode::AOutPulseMode(QWidget *parent) : QWidget(parent)
   pulseLengthSpinBox->setSuffix(" ms");
   pulseLengthSpinBox->setAlignment(Qt::AlignRight);
   pulseLengthSpinBox->setDecimals(1);
-  pulseLengthSpinBox->setRange(0.1,2000);
+  pulseLengthSpinBox->setRange(0.1,5000);
   pulseLengthSpinBox->setToolTip("Length in milliseconds of each pulse in pulse sequence.");
   connect(pulseLengthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(pulseChanged(void)));
 
@@ -310,12 +311,12 @@ AOutPulseMode::AOutPulseMode(QWidget *parent) : QWidget(parent)
   sequencePeriodSpinBox = new QDoubleSpinBox();
   sequencePeriodSpinBox->setAlignment(Qt::AlignRight);
   sequencePeriodSpinBox->setSuffix(" ms");
-  sequencePeriodSpinBox->setRange(125,5000);
+  sequencePeriodSpinBox->setRange(10,10000);
   sequencePeriodSpinBox->setToolTip("Period of pulses in pulse sequence.");
   connect(sequencePeriodSpinBox, SIGNAL(valueChanged(double)), this, SLOT(periodChanged(void)));
   sequenceFrequencySpinBox = new QSpinBox();
   sequenceFrequencySpinBox->setAlignment(Qt::AlignRight);
-  sequenceFrequencySpinBox->setRange(0.2,1000);
+  sequenceFrequencySpinBox->setRange(0.1,100);
   sequenceFrequencySpinBox->setSuffix(" Hz");
   sequenceFrequencySpinBox->setToolTip("Frequency of pulses in pulse sequence.");
   connect(sequenceFrequencySpinBox, SIGNAL(valueChanged(int)), this, SLOT(frequencyChanged(void)));
@@ -384,7 +385,7 @@ void AOutPulseMode::pulseChanged(void)
 void AOutPulseMode::frequencyChanged(void)
 {
   sequencePeriodSpinBox->blockSignals(true);
-  sequencePeriodSpinBox->setValue(10000/sequenceFrequencySpinBox->value());
+  sequencePeriodSpinBox->setValue(1000/sequenceFrequencySpinBox->value());
   sequencePeriodSpinBox->blockSignals(false);
   emit aOutPulseCmdChanged();
   return;
