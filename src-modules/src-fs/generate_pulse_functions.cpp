@@ -1,5 +1,7 @@
 #include "stimcontrol_defines.h"
 
+extern CommandTimeInfo ctinfo;
+
 int AddWaitToCommand(u32 waittime, unsigned short *command);
 
 void StopOutput(PulseCommand *pulseCmd)
@@ -172,8 +174,8 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 }
 
 void PulseOutputCommand (PulseCommand pulseCmd) 
-
-  if (SendStartDIOCommand(pulseCmd->statemachine) <= 0) {
+{
+  if (SendStartDIOCommand(pulseCmd.statemachine) <= 0) {
     fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
   }
   ctinfo.command_cached = 0;
@@ -194,9 +196,9 @@ void PrepareStimCommand(PulseCommand *pulseCmd, int nPC)
       /* loop through the repeats */
       command[len++] = DIO_S_FOR_BEGIN | pulseCmd[i].n_repeats;
     }
-    len += GeneratePulseCommand(*pulseCmd, command+len);
+    len += GeneratePulseCommand(pulseCmd[i], command+len);
     /* add in the inter_frame_delay wait  */
-    len += AddWaitToCommand(pulseCmd.inter_frame_delay, command + len);
+    len += AddWaitToCommand(pulseCmd[i].inter_frame_delay, command + len);
     if (pulseCmd[i].n_repeats > 1) {
       /* loop through the repeats */
       command[len++] = DIO_S_FOR_END;

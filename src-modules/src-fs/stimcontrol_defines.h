@@ -67,7 +67,7 @@ extern double ratSpeed; // global measure of rat speed
 
 typedef struct {
   u32 next_command_time; // the time when we can send the next command
-  u32 command_time = 0; // the lenght of time required for the current command
+  u32 command_time; // the lenght of time required for the current command
   u32 timestamp; // global timestamp tracking
   bool command_cached; // the command has been sent to the statemachine
   bool message_sent;  // a pulse sequence execulted message has been sent to the main program
@@ -125,7 +125,7 @@ void ResetRealtimeProcessing(void);
 
 void ParsePulseFile (char *inData, PulseCommand *pulseArray);
 void PulseOutput (int pulseWidth);
-void PulseOutputCommand(PulseCommand pulseCmd, int ignoreTimestamp = 0); 
+void PulseOutputCommand(PulseCommand pulseCmd); 
 u32 PulseCommandLength(PulseCommand pulseCmd); 
 
 void PrepareStimCommand(PulseCommand *pulseCmd, int nPulses);

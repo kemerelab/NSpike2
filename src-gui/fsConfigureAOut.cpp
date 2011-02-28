@@ -271,7 +271,6 @@ AOutContinuousMode::AOutContinuousMode(QWidget *parent) : QWidget(parent)
 
 AOutPulseMode::AOutPulseMode(QWidget *parent) : QWidget(parent)
 {
-  aOutPulseCmd.line = 0;
   aOutPulseCmd.statemachine = 0;
   aOutPulseCmd.pre_delay = 0;
   aOutPulseCmd.pulse_width = 1; // default value - should set this below?

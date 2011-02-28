@@ -1,12 +1,12 @@
 #include "spikecommon.h"
 #include "spike_dio.h"
-
 #include "stimcontrol_defines.h"
 #include "spike_stimcontrol_defines.h"
 
 extern SocketInfo client_data[MAX_CONNECTIONS]; // the structure for sending data
 extern SpeedFilterStatus speedFiltStat;
 extern SpatialFilterStatus spatialFiltStat;
+extern CommandTimeInfo ctinfo;
 extern double speedFilt[NSPEED_FILT_POINTS];
 
 
@@ -55,7 +55,7 @@ void ProcessData(int datatype, char *data, int datalen)
 	      rtStimPulseCmd.start_samp_timestamp = stim_timestamp * 
 		SAMP_TO_TIMESTAMP;
 	      PrepareStimCommand(&rtStimPulseCmd, 1);
-	      PulseOutputCommand(&rtStimPulseCmd);
+	      PulseOutputCommand(rtStimPulseCmd);
 	    }
 	    break;
 	  case DIO_RTMODE_RIPPLE_DISRUPT:
@@ -133,7 +133,7 @@ void ProcessTimestamp( void )
 
   int messageCode;
 
-  if (ctinfo.timestamp > next_command_time) {
+  if (ctinfo.timestamp > ctinfo.next_command_time) {
     /* prepare the next stimulation command if appropriate */
     if (!ctinfo.command_cached) {
       switch (stimcontrolMode) {
