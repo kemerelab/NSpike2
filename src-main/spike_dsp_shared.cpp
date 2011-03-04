@@ -29,6 +29,25 @@ int GetDSPResponse(int dspnum, int n, unsigned short *data);
 void ByteSwap(unsigned short *sptr, int nelem);
 void ByteSwap(long *lptr, int nelem);
 
+int AddWaitToCommand(u32 waittime, unsigned short *command, u32 *command_time)
+    /* add a wait to the command. waittime is in timestamps  */
+{
+  int len = 0;
+  u32 waitsamp;
+
+  *command_time += waittime;
+  // now wait for (pre_delay * 3 samples - 1 for processing*/
+  waitsamp = (waittime) * SAMP_TO_TIMESTAMP - 1;
+  while (waitsamp > 65536) {
+    command[len++] = DIO_S_WAIT_WAIT | 65535; // subtract 1 sample for processing
+    waitsamp -= 65536;
+  }
+  if (waitsamp > 1) {
+    command[len++] = DIO_S_WAIT_WAIT | (waitsamp - 1); 
+  }
+  return len;
+}
+
 #ifndef DIO_ON_MASTER_DSP
 int SetAOut(int aout, unsigned short level)
   /* Set the level of the specific analog output directly */

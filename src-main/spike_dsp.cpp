@@ -898,18 +898,19 @@ void GetDSPHighFilterCoeff(short lowpass, unsigned short *data)
 }
 
 
+
 int TriggerOutput(int output)
 {
     unsigned short command[DIO_MAX_COMMAND_LEN];
     int tmptime, len;
 
-    tmptime = digioinfo.rewardlength[output];
+    tmptime = digioinfo.length[output];
 
 
     /* to trigger an output we send in a seqence of commands to the current 
      * state machine */
     command[0] = DIO_S_SET_OUTPUT_HIGH | output;
-    tmptime = digioinfo.rewardlength[output];
+    tmptime = digioinfo.length[output];
     len = 1;
     /* string together a set of wait commands to wait for the specified
      * interval */
@@ -929,9 +930,84 @@ int TriggerOutput(int output)
 
     digioinfo.raised[output] = 0;
 
-    sprintf(tmpstring, "Output triggered on port %d for %f ms", output, 
-	    (float) digioinfo.rewardlength[output] / 10.0);
+    sprintf(tmpstring, "Output triggered on port %d for %f ms", output / MAX_DIO_PORTS, 
+	    (float) digioinfo.length[output] / 10.0);
     DisplayStatusMessage(tmpstring);
+    return 1;
+}
+
+int TriggerOutputs(int *bit, int *length, int *delay, int n)
+{
+    unsigned short command[DIO_MAX_COMMAND_LEN];
+    int len = 0;
+
+    int times[MAX_BITS*2];
+    int bitind[MAX_BITS*2];
+    int i;
+    int j = 0;
+    int tmp;
+    int bitnum;
+    int tdiff;
+    u32 tmptime;
+
+
+    /* make a list of the times when things need to happen and a parallel list of the bit
+     * numbers with 0&1 for start and stop times of bit 1, 2&3 for bit 2 and so on */
+    for(i = 0; i < n; i++) {
+	times[j] = delay[i];
+	bitind[j] = j;
+	times[++j] = delay[i] + length[i];
+	bitind[j] = j;
+	j++;
+    }
+
+    /* now we need to sort the two lists in parallel */
+    for (i = 0; i < 2*n; i++) {
+	for (j = 0; j < 2*n-i; j++) {
+	    if (times[j] < times[j+1]) {
+		// swap values in both lists
+		tmp = times[j];
+		times[j] = times[j+1];
+		times[j+1] = tmp;
+		tmp = bitind[j];
+		bitind[j] = bitind[j+1];
+		bitind[j+1] = tmp;
+	    }
+	}
+    }
+
+    /* now we can create the statemachine command.  Note that we have to subtract the
+     * cumulative time to get the wait lengths right */
+    // initizize the wait 
+    command[len++] = DIO_S_WAIT_WAIT;
+    for (i = 0; i < 2*n; i++) {
+	tdiff = times[i] - tmp;
+	if (tdiff > 0) {
+	    // add a wait to get us up to the time of the next change in state
+	    len += AddWaitToCommand(tdiff, command+len, &tmptime);
+	}
+	// add the change of the appropriate bit 
+	bitnum = bitind[i] / 2;
+	/* check that this is a valid bit */
+	if (bit[bitnum] != -1) {
+	    if ((bitind[i] % 2) == 0) {
+		// turn the bit on
+		command[len++] = DIO_S_SET_OUTPUT_HIGH | bit[bitnum];
+	    }
+	    else {
+		// turn the bit off
+		command[len++] = DIO_S_SET_OUTPUT_LOW | bit[bitnum];
+	    }
+	}
+    }
+
+
+    /* send the command off to the DSP */
+    if (!WriteDSPDIOCommand(command, len)) { 
+        sprintf(tmpstring, "Error writing DIO command to master DSP");
+        DisplayErrorMessage(tmpstring);
+	return 0;
+    }
     return 1;
 }
 

@@ -270,7 +270,6 @@ void DIOInterface::startOutputOnlyStim(void)
       pCmd[0].n_repeats = -1;
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
-    pCmd[0].line = 0;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
@@ -286,7 +285,6 @@ void DIOInterface::startOutputOnlyStim(void)
       pCmd[0].n_repeats = -1;
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
-    pCmd[0].line = 0;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
     SendFSDataMessage(DIO_PULSE_SEQ, (char *) pCmd, 2*sizeof(PulseCommand));
     SendFSDataMessage(DIO_PULSE_SEQ_START,NULL,0);
@@ -297,13 +295,10 @@ void DIOInterface::startOutputOnlyStim(void)
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
     pCmd[0].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[0].n_repeats = 0;
-    pCmd[0].line = 0;
     pCmd[1] = stimConfigTab->stimConfigB->stimPulseCmd;
     pCmd[1].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[1].n_repeats = 0;
-    pCmd[1].line = 1;
     pCmd[2].pulse_width = DIO_PULSE_COMMAND_REPEAT;
-    pCmd[2].line = 0;
     //pCmd[2].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;;
     if (stimOutputOnlyTab->continuousButton->isChecked())
       pCmd[2].n_repeats = -1;
@@ -331,7 +326,6 @@ void DIOInterface::startOutputOnlyStim(void)
       pCmd[0].n_repeats = -1;
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
-    pCmd[0].line = 0;
     /* copy the information to the next command */
     memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
@@ -348,7 +342,6 @@ void DIOInterface::startOutputOnlyStim(void)
       pCmd[0].n_repeats = -1;
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
-    pCmd[0].line = 0;
     /* copy the information to the next command */
     memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
@@ -400,7 +393,6 @@ void DIOInterface::startRealtimeStim(void)
       pCmd[0].n_repeats = -1;
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
-    pCmd[0].line = 0;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
     SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 2*sizeof(PulseCommand));
     break;
@@ -413,7 +405,6 @@ void DIOInterface::startRealtimeStim(void)
       pCmd[0].n_repeats = -1;
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
-    pCmd[0].line = 0;
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
     SendFSDataMessage(DIO_SET_RT_STIM_PULSE_PARAMS, (char *) pCmd, 2*sizeof(PulseCommand));
     break;
@@ -421,13 +412,10 @@ void DIOInterface::startRealtimeStim(void)
     pCmd[0] = stimConfigTab->stimConfigA->stimPulseCmd;
     pCmd[0].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[0].n_repeats = 0;
-    pCmd[0].line = 0;
     pCmd[1] = stimConfigTab->stimConfigB->stimPulseCmd;
     pCmd[1].pre_delay = stimOutputOnlyTab->trainIntervalSpinBox->value() * 10.0; // convert to ticks
     pCmd[1].n_repeats = 0;
-    pCmd[1].line = 1;
     pCmd[2].pulse_width = DIO_PULSE_COMMAND_REPEAT;
-    pCmd[2].line = 0;
     //pCmd[2].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;;
     if (stimOutputOnlyTab->continuousButton->isChecked())
       pCmd[2].n_repeats = -1;
@@ -452,7 +440,6 @@ void DIOInterface::startRealtimeStim(void)
       pCmd[0].n_repeats = -1;
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
-    pCmd[0].line = 0;
     /* copy the information to the next command */
     memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
@@ -466,7 +453,6 @@ void DIOInterface::startRealtimeStim(void)
       pCmd[0].n_repeats = -1;
     else
       pCmd[0].n_repeats = stimOutputOnlyTab->nTrainsSpinBox->value() - 1;
-    pCmd[0].line = 0;
     /* copy the information to the next command */
     memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;

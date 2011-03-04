@@ -247,7 +247,7 @@ int main(int argc, char **argv)
     for (i = 0; i < digioinfo.nports; i++) {
       for (j = 0; j < BITS_PER_PORT; j++, ind++) {
         if (digioinfo.porttype[i]) {
-          digioinfo.rewardlength[ind] = OUTPUT_PULSE_LENGTH;
+          digioinfo.length[ind] = OUTPUT_PULSE_LENGTH;
           digioinfo.raised[ind] = 0;
         }
       }

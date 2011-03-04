@@ -67,11 +67,14 @@ class rewardControl : public QDialog {
     };
     void 	dialogClosed(void);
 
+    void enableEditSequence(void);
+    void loadSequence(void);
+
   protected slots:
     void reject();
     void resetRewardCounters(void);
     void setAirTimer(void); 
-    void	warnOff() { TriggerOutput(outputBit[0]->value()); };
+    void	warnOff() { TriggerOutput(outputBit1[0]->value()); };
     void	airOn() { TriggerOutput(outputBitAir->value()); };
 
   protected:
@@ -119,12 +122,26 @@ class rewardControl : public QDialog {
     QLabel		*inputBitLabel;
     QSpinBox	**inputBit;
     QRadioButton	**triggerHigh;
-    QLabel		*outputBitLabel;
-    QSpinBox	**outputBit;
-    QLabel		*rewardLengthLabel;
-    QSpinBox	**rewardLength;
-    QLabel		*rewardPercentLabel;
-    QSpinBox	**rewardPercent;
+    QLabel		*outputBit1Label;
+    QSpinBox		**outputBit1;
+    QLabel		*outputBit1LengthLabel;
+    QSpinBox		**outputBit1Length;
+    QLabel		*outputBit1PercentLabel;
+    QSpinBox		**outputBit1Percent;
+    QLabel		*outputBit2Label;
+    QSpinBox		**outputBit2;
+    QLabel		*outputBit2LengthLabel;
+    QSpinBox		**outputBit2Length;
+    QLabel		*outputBit3Label;
+    QSpinBox		**outputBit3;
+    QLabel		*outputBit3LengthLabel;
+    QSpinBox		**outputBit3Length;
+    QLabel		*outputBit3DelayLabel;
+    QSpinBox		**outputBit3Delay;
+    QLabel		*output0BitLabel;
+    QSpinBox		**output0Bit;
+    QLabel		*output0BitLengthLabel;
+    QSpinBox		**output0BitLength;
 
     /* third tab */
     QRadioButton	*firstTrial;
@@ -135,6 +152,11 @@ class rewardControl : public QDialog {
     QRadioButton	**next;
     QLabel		**status;
     QPushButton	*nextReward;
+
+    QPushButton	*useSequenceButton;
+    QPushButton	*loadSequenceButton;
+    QPushButton	*editSequenceButton;
+    QListWidget	*wellSequenceListWidget;
 
     /* fourth tab */
     QLabel		*restLengthLabel;
@@ -164,7 +186,9 @@ class setRewardsDialog : public QDialog {
 
     public slots:
 	void	changePulseLength(int bit, unsigned short len) { 
-			digioinfo.rewardlength[bit] = len; };
+			digioinfo.length[bit] = len; };
+	void	changePulseDelay(int bit, u32 delay) { 
+			digioinfo.delay[bit] = delay; };
 	void	pulseBit(int bit) { TriggerOutput(bit + port * 16); };
 	void	changeBit(int bit) { 
 		       if (digioinfo.raised[bit+port*16]) {

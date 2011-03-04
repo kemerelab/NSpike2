@@ -184,9 +184,16 @@ void rewardControl::writeRewardConfig(QString fileName)
 	    stream << QString("\n");
 	    stream << QString("\tinputBit\t%1\t\n").arg(inputBit[i]->value());
 	    stream << QString("\ttriggerHigh\t%1\t\n").arg(triggerHigh[i]->isOn());
-	    stream << QString("\toutputBit\t%1\t\n").arg(outputBit[i]->value());
-	    stream << QString("\trewardLength\t%1\t\n").arg(rewardLength[i]->value());
-	    stream << QString("\trewardPercent\t%1\t\n").arg(rewardPercent[i]->value());
+	    stream << QString("\toutputBit1\t%1\t\n").arg(outputBit1[i]->value());
+	    stream << QString("\toutputBit1Length\t%1\t\n").arg(outputBit1Length[i]->value());
+	    stream << QString("\toutputBit1Percent\t%1\t\n").arg(outputBit1Percent[i]->value());
+	    stream << QString("\toutputBit2\t%1\t\n").arg(outputBit2[i]->value());
+	    stream << QString("\toutputBit2Length\t%1\t\n").arg(outputBit2Length[i]->value());
+	    stream << QString("\toutputBit3\t%1\t\n").arg(outputBit3[i]->value());
+	    stream << QString("\toutputBit3Length\t%1\t\n").arg(outputBit3Length[i]->value());
+	    stream << QString("\toutputBit3Delay\t%1\t\n").arg(outputBit3Delay[i]->value());
+	    stream << QString("\toutput0Bit\t%1\t\n").arg(output0Bit[i]->value());
+	    stream << QString("\toutput0BitLength\t%1\t\n").arg(output0BitLength[i]->value());
 	}
 	stream << QString("firstReward\t%1\t\n").arg(firstRewardWell->value());
         file.close();
@@ -263,20 +270,62 @@ void rewardControl::readRewardConfig(QString fileName)
 		sscanf(str, "%d", &t1);
 		triggerHigh[well]->setChecked((bool) t1);
 	    }
-	    else if (strncmp(str, "outputBit", 9) == 0) {
+	    else if (strncmp(str, "outputBit1", 10) == 0) {
+		str += 10;
+		sscanf(str, "%d", &t1);
+		outputBit1[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBit1Length", 16) == 0) {
+		str += 16;
+		sscanf(str, "%d", &t1);
+		outputBit1Length[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBit1Percent", 17) == 0) {
+		str += 17;
+		sscanf(str, "%d", &t1);
+		outputBit1Percent[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBit2", 10) == 0) {
+		str += 10;
+		sscanf(str, "%d", &t1);
+		outputBit2[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBit2Length", 16) == 0) {
+		str += 16;
+		sscanf(str, "%d", &t1);
+		outputBit2Length[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBit3", 10) == 0) {
+		str += 10;
+		sscanf(str, "%d", &t1);
+		outputBit3[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBit3Length", 16) == 0) {
+		str += 16;
+		sscanf(str, "%d", &t1);
+		outputBit3Length[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBit3Delay", 15) == 0) {
+		str += 15;
+		sscanf(str, "%d", &t1);
+		outputBit3Delay[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "output0Bit", 10) == 0) {
+		str += 10;
+		sscanf(str, "%d", &t1);
+		output0Bit[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "output0BitLength", 16) == 0) {
+		str += 16;
+		sscanf(str, "%d", &t1);
+		output0BitLength[well]->setValue(t1);
+	    }
+	    /* for backward compatibility, if none of the above match, then it
+	     * is Bit 1 */
+	    else if (strncmp(str, "outputBit",9) == 0) {
 		str += 9;
 		sscanf(str, "%d", &t1);
-		outputBit[well]->setValue(t1);
-	    }
-	    else if (strncmp(str, "rewardLength", 12) == 0) {
-		str += 12;
-		sscanf(str, "%d", &t1);
-		rewardLength[well]->setValue(t1);
-	    }
-	    else if (strncmp(str, "rewardPercent", 13) == 0) {
-		str += 13;
-		sscanf(str, "%d", &t1);
-		rewardPercent[well]->setValue(t1);
+		outputBit1[well]->setValue(t1);
 	    }
 	    else if (strncmp(str, "firstReward", 11) == 0) {
 		str += 11;
@@ -291,6 +340,62 @@ void rewardControl::readRewardConfig(QString fileName)
 }
 
 
+void rewardControl::enableEditSequence(void)
+{
+    /* check the status of the editSequenceButton and enable or disable the ListWidget */
+    if (editSequenceButton->isChecked()) {
+	wellSequenceListWidget->setEnabled(true);
+    }
+    else {
+	wellSequenceListWidget->setEnabled(false);
+    }
+}
+
+
+void rewardControl::loadSequence(void) 
+{
+    QString s;
+    int i, nextWell;
+
+    QString fileName = Q3FileDialog::getOpenFileName(".",
+                    "All Files (*)",
+                    this,
+                    "Load Sequence ",
+                    "Choose a file to load" );
+    if (!fileName.isEmpty()) {
+	QFile file(fileName);
+	if (file.open(QIODevice::ReadOnly) ) {
+	    QTextStream stream(&file);
+	    /* clear out current items */
+	    wellSequenceListWidget->clear();
+	    while (!stream.atEnd()) {
+		s = stream.readLine();
+	        fprintf(stderr,"%s\n",s.ascii());
+		/* put the current value into the list widget */
+		wellSequenceListWidget->addItem(s);
+	    }
+	}
+	wellSequenceListWidget->setCurrentRow(0);
+	wellSequenceListWidget->setEnabled(false);
+	/* set the next variables correctly */
+	nextWell = wellSequenceListWidget->currentItem()->text().toInt();
+	for (i = 0; i < nWells->value(); i++) {
+	    if (i == nextWell) {
+		next[i]->setChecked(true);
+	    }
+	    else {
+		next[i]->setChecked(false);
+	    }
+	}
+	useSequenceButton->setChecked(true);
+	setStatus();
+    }
+    else {
+	fprintf(stderr, "Unable to read file %s\n", fileName.ascii());
+    }
+}
+
+    
 void rewardControl::createLogicTab(int n) 
 {
     int i, col;
@@ -308,7 +413,7 @@ void rewardControl::createLogicTab(int n)
     w = new QWidget(qtab, 0, 0);
     QString tablabel2 = QString("Logic"); 
     qtab->insertTab(w, tablabel2, 1); 
-    Q3GridLayout *grid1 = new Q3GridLayout(w, 8, n+1, 0, 0, "grid 1");
+    Q3GridLayout *grid1 = new Q3GridLayout(w, 15, n+1, 0, 0, "grid 1");
 
     /* I don't know if the following is necessary */
     QSizePolicy es(QSizePolicy::Expanding, QSizePolicy::Expanding, 1, 1);
@@ -321,23 +426,52 @@ void rewardControl::createLogicTab(int n)
     grid1->addMultiCellWidget(currLabel, 2, 2, 0, 0);
     inputBitLabel = new QLabel(QString("Input Bit"), w, "input label", 0);
     grid1->addMultiCellWidget(inputBitLabel, 3, 3, 0, 0);
-    outputBitLabel = new QLabel(QString("Output Bit"), w, "output label", 0);
-    grid1->addMultiCellWidget(outputBitLabel, 5, 5, 0, 0);
-    rewardLengthLabel = new QLabel(QString("Reward Length (100 usec)"), w, 
-	    "reward len label", 0);
-    grid1->addMultiCellWidget(rewardLengthLabel, 6, 6, 0, 0);
-    rewardPercentLabel = new QLabel(QString("Reward Percentage"), w, 
-	    "reward percentage label", 0);
-    grid1->addMultiCellWidget(rewardPercentLabel, 7, 7, 0, 0);
+    outputBit1Label = new QLabel(QString("Output Bit 1"), w, "output label", 0);
+    grid1->addMultiCellWidget(outputBit1Label, 5, 5, 0, 0);
+    outputBit1LengthLabel = new QLabel(QString("Output 1 Length (100 usec)"), w, 
+	    "output 1 len label", 0);
+    grid1->addMultiCellWidget(outputBit1LengthLabel, 6, 6, 0, 0);
+    outputBit1PercentLabel = new QLabel(QString("Output 1 Percentage"), w, 
+	    "output 1 percentage label", 0);
+    grid1->addMultiCellWidget(outputBit1PercentLabel, 7, 7, 0, 0);
+
+    outputBit2Label = new QLabel(QString("Output Bit 2"), w, "output 2 label", 0);
+    grid1->addMultiCellWidget(outputBit2Label, 8, 8, 0, 0);
+    outputBit2LengthLabel = new QLabel(QString("Output 2 Length (100 usec)"), w, 
+	    "output 2 len label", 0);
+    grid1->addMultiCellWidget(outputBit2LengthLabel, 9, 9, 0, 0);
+
+    outputBit3Label = new QLabel(QString("Output Bit 3"), w, "output 3 label", 0);
+    grid1->addMultiCellWidget(outputBit3Label, 10, 10, 0, 0);
+    outputBit3LengthLabel = new QLabel(QString("Output 3 Length (100 usec)"), w, 
+	    "output 3 len label", 0);
+    grid1->addMultiCellWidget(outputBit3LengthLabel, 11, 11, 0, 0);
+    outputBit3DelayLabel = new QLabel(QString("Output 3 Delay (100 usec)"), w, 
+	    "output 3 delay label", 0);
+    grid1->addMultiCellWidget(outputBit3DelayLabel, 12, 12, 0, 0);
+
+    output0BitLabel = new QLabel(QString("Output @ Well 0 Bit\nif next"), w, "output 0 label", 0);
+    grid1->addMultiCellWidget(output0BitLabel, 13, 13, 0, 0);
+    output0BitLengthLabel = new QLabel(QString("Output @ Well 0 Length\n(100 usec)"), w, 
+	    "output 0 len label", 0);
+    grid1->addMultiCellWidget(output0BitLengthLabel, 14, 14, 0, 0);
+
 
     wellLabel = new QLabel* [n];
     prev = new Q3ListBox* [n];
     curr = new Q3ListBox* [n];
-    outputBit = new QSpinBox* [n];
     inputBit = new QSpinBox* [n];
+    outputBit1 = new QSpinBox* [n];
     triggerHigh = new QRadioButton* [n];
-    rewardLength = new QSpinBox* [n];
-    rewardPercent = new QSpinBox* [n];
+    outputBit1Length = new QSpinBox* [n];
+    outputBit1Percent = new QSpinBox* [n];
+    outputBit2= new QSpinBox* [n];
+    outputBit2Length = new QSpinBox* [n];
+    outputBit3= new QSpinBox* [n];
+    outputBit3Length = new QSpinBox* [n];
+    outputBit3Delay = new QSpinBox* [n];
+    output0Bit= new QSpinBox* [n];
+    output0BitLength = new QSpinBox* [n];
     for (i = 0; i < n; i++) {
 	col = i+1;
 	wellLabel[i] = new QLabel(QString("Activate Well %1").arg(i), w, 
@@ -353,16 +487,44 @@ void rewardControl::createLogicTab(int n)
 
 	inputBit[i] = new QSpinBox(0, MAX_BITS, 1, w, "Input Bit");
 	grid1->addMultiCellWidget(inputBit[i], 3, 3, col, col);
+	
 	triggerHigh[i] = new QRadioButton("Trigger High", w, 0);
-  triggerHigh[i]->setAutoExclusive(false);
+        triggerHigh[i]->setAutoExclusive(false);
 	grid1->addMultiCellWidget(triggerHigh[i], 4, 4, col, col);
-	outputBit[i] = new QSpinBox(0, MAX_BITS, 1, w, "Output Bit");
-	grid1->addMultiCellWidget(outputBit[i], 5, 5, col, col);
-	rewardLength[i] = new QSpinBox(0, 30000, 1, w, "Reward Length");
-	grid1->addMultiCellWidget(rewardLength[i], 6, 6, col, col);
-	rewardPercent[i] = new QSpinBox(0, 100, 1, w, "Reward Prob");
-	rewardPercent[i]->setValue(100);
-	grid1->addMultiCellWidget(rewardPercent[i], 7, 7, col, col);
+	
+	outputBit1[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 1");
+	grid1->addMultiCellWidget(outputBit1[i], 5, 5, col, col);
+	
+	outputBit1Length[i] = new QSpinBox(0, 30000, 1, w, "Output Bit 1  Length");
+	grid1->addMultiCellWidget(outputBit1Length[i], 6, 6, col, col);
+
+	outputBit1Percent[i] = new QSpinBox(0, 100, 1, w, "output 1 Prob");
+	outputBit1Percent[i]->setValue(100);
+	grid1->addMultiCellWidget(outputBit1Percent[i], 7, 7, col, col);
+
+	outputBit2[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 2");
+	grid1->addMultiCellWidget(outputBit2[i], 8, 8, col, col);
+
+	outputBit2Length[i] = new QSpinBox(0, 1000000, 1, w, "Output Bit 2 Length");
+	grid1->addMultiCellWidget(outputBit2Length[i], 9, 9, col, col);
+
+	outputBit3[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 3");
+	grid1->addMultiCellWidget(outputBit3[i], 10, 10, col, col);
+
+	outputBit3Length[i] = new QSpinBox(0, 1000000, 1, w, "Output Bit 3 Length");
+	grid1->addMultiCellWidget(outputBit3Length[i], 11, 11, col, col);
+
+	outputBit3Delay[i] = new QSpinBox(0, 1000000, 1, w, "Output Bit 3 Delay");
+	grid1->addMultiCellWidget(outputBit3Delay[i], 12, 12, col, col);
+
+	if (i > 0) {
+	    /* we only need the output 0 bit for wells 1-n */
+	    output0Bit[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output 0 Bit");
+	    grid1->addMultiCellWidget(output0Bit[i], 13, 13, col, col);
+
+	    output0BitLength[i] = new QSpinBox(0, 1000000, 1, w, "Output 0 Bit Length");
+	    grid1->addMultiCellWidget(output0BitLength[i], 14, 14, col, col);
+	}
     }
 }
 
@@ -400,22 +562,19 @@ void rewardControl::createStatusTab(int n)
   /* create the status tab with the correct number of wells */
   QString tablabel2 = QString("Status"); 
   qtab->insertTab(w, tablabel2, 2); 
-  Q3GridLayout *grid2 = new Q3GridLayout(w, 6, MIN(n,3), 0, 0, "grid 2");
-
-  /* I don't know if the following is necessary */
-  QSizePolicy es(QSizePolicy::Expanding, QSizePolicy::Expanding, 1, 1);
-  w->setSizePolicy(es); 
+  //Q3GridLayout *grid2 = new Q3GridLayout(w, 9, MIN(n,3), 0, 0, "grid 2");
+  QGridLayout *grid2 = new QGridLayout(w);
 
   /* create the well labels and the logic  */
   firstTrial = new QRadioButton("First Trial", w, 0);
   firstTrial->setChecked(true);
-  grid2->addMultiCellWidget(firstTrial, 1, 1, 0, 0);
+  grid2->addWidget(firstTrial, 1, 0, 1, 1);
   firstRewardLabel = new QLabel("First Reward Well", w, "first reward label",
       0);
-  grid2->addMultiCellWidget(firstRewardLabel, 1, 1, 1, 1); 
+  grid2->addWidget(firstRewardLabel, 1, 1, 1, 1); 
   firstRewardWell = new QSpinBox(0, nWells->value()-1, 1, w, 
       "first reward well");
-  grid2->addMultiCellWidget(firstRewardWell, 1, 1, 2, 2);
+  grid2->addWidget(firstRewardWell, 1, 2, 1, 1);
   connect(firstRewardWell, SIGNAL(valueChanged(int)), this, 
       SLOT(setFirstReward(int)));
 
@@ -429,25 +588,41 @@ void rewardControl::createStatusTab(int n)
   for (i = 0; i < n; i++) {
     reward[i] = new QPushButton(QString("Well %1").arg(i), w, 
         "reward button");
-    grid2->addMultiCellWidget(reward[i], 2, 2, i, i);
+    grid2->addWidget(reward[i], 2, i, 1, 1);
     rewardButtonGroup->insert(reward[i], i);
     next[i] = new QRadioButton("Next", w, 0);
-    grid2->addMultiCellWidget(next[i], 3, 3, i, i);
+    grid2->addWidget(next[i], 3, i, 1, 1);
     status[i] = new QLabel("status", w, 0);
     status[i]->setAlignment(Qt::AlignHCenter);
-    grid2->addMultiCellWidget(status[i], 4, 4, i, i);
+    grid2->addWidget(status[i], 4, i, 1, 1);
 
     rewardCounter[i] = 0;
   }
   connect(rewardButtonGroup, SIGNAL(clicked(int)), this, 
       SLOT(setReward(int)));
   nextReward = new QPushButton("Next Reward", w, "next reward button");
-  grid2->addMultiCellWidget(nextReward, 5, 5, n-1, n-1);
+  grid2->addWidget(nextReward, 5, n-1, 1, 1, Qt::AlignTop);
   connect(nextReward, SIGNAL(clicked()), this, SLOT(setNextReward()));
 
   QPushButton *resetRewardCounterButton = new QPushButton("Reset Counters", w, "reset counters button");
-  grid2->addMultiCellWidget(resetRewardCounterButton, 5, 5, 0, 0);
+  grid2->addWidget(resetRewardCounterButton, 5, 0, 1, 1, Qt::AlignTop);
   connect(resetRewardCounterButton, SIGNAL(clicked()), this, SLOT(resetRewardCounters()));
+
+  useSequenceButton = new QPushButton("Use Sequence", w, "use sequence");
+  useSequenceButton->setCheckable(true);
+  grid2->addWidget(useSequenceButton, 6, 0, 1, 1, Qt::AlignVCenter);
+
+  editSequenceButton = new QPushButton("Edit Sequence", w, "edit sequence");
+  editSequenceButton->setCheckable(true);
+  connect(editSequenceButton, SIGNAL(clicked()), this, SLOT(enableEditSequence()));
+  grid2->addWidget(editSequenceButton, 7, 0, 1, 1, Qt::AlignVCenter);
+
+  loadSequenceButton = new QPushButton("Load Sequence", w, "load sequence");
+  connect(loadSequenceButton, SIGNAL(clicked()), this, SLOT(loadSequence()));
+  grid2->addWidget(loadSequenceButton, 8, 0, 1, 1, Qt::AlignVCenter);
+
+  wellSequenceListWidget = new QListWidget(w);
+  grid2->addWidget(wellSequenceListWidget, 6, 1, 3, 1, Qt::AlignVCenter);
 
   /* assume well 0 unless W track */
   if (n != 3) {
@@ -466,20 +641,20 @@ void rewardControl::setStatus()
 
     for (i = 0; i < nWells->value(); i++) {
 	if (next[i]->isChecked()) {
-      status[i]->setText(QString("\n %1").arg(rewardCounter[i]));
+	    status[i]->setText(QString("\n %1").arg(rewardCounter[i]));
 	    nNext++;
 	}
 	else if (prevWell == i) {
 	    if (prevRewarded) {
-    rewardCounter[i]++;
-    status[i]->setText(QString("Rewarded\n %1").arg(rewardCounter[i]));
+		rewardCounter[i]++;
+		status[i]->setText(QString("Rewarded\n %1").arg(rewardCounter[i]));
 	    }
 	    else {
 		status[i]->setText("Reward Omitted");
 	    }
 	} 
 	else {
-      status[i]->setText(QString("\n %1").arg(rewardCounter[i]));
+            status[i]->setText(QString("\n %1").arg(rewardCounter[i]));
 	}
     }
     if (nNext == 1) {
@@ -506,21 +681,64 @@ void rewardControl::rewardWell(int well, bool reward)
     int i;
     /* put a reward at the well if we should and use the logic to update the nextwell
      * variable */
+    int bit[3];
+    int length[3];
+    int delay[3];
+
+    int nextWell = 0;
 
     if (well < 0) {
         return;
     }
-    //if (reward && (well >= 0)) {
     if (reward) {
-	/* set the reward length */
-	digioinfo.rewardlength[outputBit[well]->value()] = 
-		rewardLength[well]->value();
-        
+	if (useSequenceButton->isChecked()) {
+	    if ((wellSequenceListWidget->currentRow() + 1) < 
+	         wellSequenceListWidget->count()) {
+		/* we first move on to the next row of the list*/
+		wellSequenceListWidget->setCurrentRow(
+			wellSequenceListWidget->currentRow() + 1);
+		/* we need to look up the next well we will be using */
+		nextWell = wellSequenceListWidget->currentItem()->text().toInt();
+		fprintf(stderr, "setting to row %d, nextWell = %d, count = %d\n", 
+			wellSequenceListWidget->currentRow(), nextWell, 
+			wellSequenceListWidget->count());
+		if ((well == 0) && (output0Bit[nextWell]->value() != -1)) {
+		    /* this means there is a special output for well 0 given 
+		     * that nextWell is coming up next */
+		    bit[0]= output0Bit[nextWell]->value();
+		    length[0]= output0BitLength[nextWell]->value();
+		    delay[0] = 0;
+		}
+		else {
+		    bit[0] = outputBit1[well]->value();
+		    length[0] = outputBit1[well]->value();
+		    delay[0] = 0;
+		}
+	    }
+	    else {
+		QMessageBox::critical(this, "Error", 
+			"End of sequence list reached");
+		return;
+	    }
+	}
+	else {
+	    bit[0] = outputBit1[well]->value();
+	    length[0] = outputBit1[well]->value();
+	    delay[0] = 0;
+	}
+	bit[1] = outputBit2[well]->value();
+	length[1] = outputBit2Length[well]->value();
+	delay[1] = 0;
+	bit[2] = outputBit3[well]->value();
+	length[2] = outputBit3Length[well]->value();
+	delay[2] = outputBit3Delay[well]->value();
+
 	/* use the random number generator to determine whether we issue a
 	 * reward */
-	if ((drand48() * 100) <=  rewardPercent[well]->value()) {
-	    TriggerOutput(outputBit[well]->value());
-	    setAirTimer();  // no effect if avoidButton is checked.
+	if ((drand48() * 100) <=  outputBit1Percent[well]->value()) {
+	    //TriggerOutput(outputBit[well]->value());
+	    TriggerOutputs(bit, length, delay, 3);
+	    setAirTimer();  // no effect if avoidButton is not checked.
 	    prevRewarded = 1;
 	}
 	else {
@@ -528,25 +746,34 @@ void rewardControl::rewardWell(int well, bool reward)
 	}
 	/* this is the end of the first trial */
 	firstTrial->setChecked(false);
-    }
 
-    for (i = 0; i < nWells->value(); i++) {
-	/* we can't reward the same well twice, so we skip the current well's
-	 * entry */
-	if (i != well) {
-	    if (((prevWell == -1) || prev[i]->isSelected(prevWell)) &&
-		curr[i]->isSelected(well)) {
-		/* we reward this well next. Note that this will update wellStatus*/
-		next[i]->setChecked(true);
-		fprintf(stderr, "next[%d] true\n",  i);
+	for (i = 0; i < nWells->value(); i++) {
+	    if (!useSequenceButton->isChecked()) {
+		/* we can't reward the same well twice, so we skip the current well's
+		 * entry */
+		if (i != well) {
+		    if (((prevWell == -1) || prev[i]->isSelected(prevWell)) &&
+			curr[i]->isSelected(well)) {
+			/* we reward this well next. Note that this will update wellStatus*/
+			next[i]->setChecked(true);
+			fprintf(stderr, "next[%d] true\n",  i);
+		    }
+		    else {
+			next[i]->setChecked(false);
+			fprintf(stderr, "next[%d] false\n", i);
+		    }
+		}
 	    }
 	    else {
-		next[i]->setChecked(false);
-		fprintf(stderr, "next[%d] false\n", i);
+		if (nextWell == i) {
+		    next[i]->setChecked(true);
+		}
+		else {
+		    next[i]->setChecked(false);
+		}
 	    }
 	}
     }
-    // next[well]->setChecked(false);
     prevWell = well;
     this->setStatus();
 }
@@ -724,7 +951,7 @@ setRewardsDialog::setRewardsDialog(QWidget* parent,
 	/* create the outputLength input */
 	outputLength[i] = new SpikeLineEdit(this, currentbit);
 	/* we set the depth here so that we can update it below  */
-	s = QString("%1").arg(digioinfo.rewardlength[currentbit]);
+	s = QString("%1").arg(digioinfo.length[currentbit]);
 	outputLength[i]->setText(s);
 	outputLength[i]->setFont(fs);
 	QIntValidator *valid = new QIntValidator(0, MAX_OUTPUT_PULSE_LENGTH, 

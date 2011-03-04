@@ -8,6 +8,8 @@ int ResetStateMachines();
 int WriteDSPDIORestartStateMachine(int s);
 int LookForDSPDIOResponse(void);
 int NextDIOStateMachine(void);
+int AddWaitToCommand(u32 waittime, unsigned short *command, u32 *command_time);
+
 #ifndef DIO_ON_MASTER_DSP
 int SetAOut(int aout, unsigned short level);
 int WriteArbWaveForm(unsigned short *wavefm, int len);

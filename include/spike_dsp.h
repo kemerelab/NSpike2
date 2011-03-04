@@ -7,6 +7,8 @@
 /* DSP digital IO commands */
 void StartDigIOProgram(int prognum);
 int TriggerOutput(int output);
+int TriggerOutputs(int output);
+int TriggerOutputs(int *bit, int *length, int *delay, int n);
 void ChangeOutput(int output, int raise);
 //void SendDAQFSMessage(int message, char *data, int datalen);
 void SendDigIOFSMessage(char *message, int len);
@@ -205,7 +207,8 @@ typedef struct _DigIOInfo {
     int currentprogram;
     int inputfd;
     int outputfd;
-    int rewardlength[MAX_BITS];
+    int length[MAX_BITS];
+    int delay[MAX_BITS];
     int raised[MAX_BITS];
     int enable_DAQ_TO_FS;
 } DigIOInfo;
