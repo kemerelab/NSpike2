@@ -192,8 +192,10 @@ void rewardControl::writeRewardConfig(QString fileName)
 	    stream << QString("\toutputBit3\t%1\t\n").arg(outputBit3[i]->value());
 	    stream << QString("\toutputBit3Length\t%1\t\n").arg(outputBit3Length[i]->value());
 	    stream << QString("\toutputBit3Delay\t%1\t\n").arg(outputBit3Delay[i]->value());
-	    stream << QString("\toutput0Bit\t%1\t\n").arg(output0Bit[i]->value());
-	    stream << QString("\toutput0BitLength\t%1\t\n").arg(output0BitLength[i]->value());
+	    if (i > 0) {
+		stream << QString("\toutput0Bit\t%1\t\n").arg(output0Bit[i]->value());
+		stream << QString("\toutput0BitLength\t%1\t\n").arg(output0BitLength[i]->value());
+	    }
 	}
 	stream << QString("firstReward\t%1\t\n").arg(firstRewardWell->value());
         file.close();
@@ -270,11 +272,6 @@ void rewardControl::readRewardConfig(QString fileName)
 		sscanf(str, "%d", &t1);
 		triggerHigh[well]->setChecked((bool) t1);
 	    }
-	    else if (strncmp(str, "outputBit1", 10) == 0) {
-		str += 10;
-		sscanf(str, "%d", &t1);
-		outputBit1[well]->setValue(t1);
-	    }
 	    else if (strncmp(str, "outputBit1Length", 16) == 0) {
 		str += 16;
 		sscanf(str, "%d", &t1);
@@ -285,20 +282,20 @@ void rewardControl::readRewardConfig(QString fileName)
 		sscanf(str, "%d", &t1);
 		outputBit1Percent[well]->setValue(t1);
 	    }
-	    else if (strncmp(str, "outputBit2", 10) == 0) {
+	    else if (strncmp(str, "outputBit1", 10) == 0) {
 		str += 10;
 		sscanf(str, "%d", &t1);
-		outputBit2[well]->setValue(t1);
+		outputBit1[well]->setValue(t1);
 	    }
 	    else if (strncmp(str, "outputBit2Length", 16) == 0) {
 		str += 16;
 		sscanf(str, "%d", &t1);
 		outputBit2Length[well]->setValue(t1);
 	    }
-	    else if (strncmp(str, "outputBit3", 10) == 0) {
+	    else if (strncmp(str, "outputBit2", 10) == 0) {
 		str += 10;
 		sscanf(str, "%d", &t1);
-		outputBit3[well]->setValue(t1);
+		outputBit2[well]->setValue(t1);
 	    }
 	    else if (strncmp(str, "outputBit3Length", 16) == 0) {
 		str += 16;
@@ -310,15 +307,20 @@ void rewardControl::readRewardConfig(QString fileName)
 		sscanf(str, "%d", &t1);
 		outputBit3Delay[well]->setValue(t1);
 	    }
-	    else if (strncmp(str, "output0Bit", 10) == 0) {
+	    else if (strncmp(str, "outputBit3", 10) == 0) {
 		str += 10;
 		sscanf(str, "%d", &t1);
-		output0Bit[well]->setValue(t1);
+		outputBit3[well]->setValue(t1);
 	    }
 	    else if (strncmp(str, "output0BitLength", 16) == 0) {
 		str += 16;
 		sscanf(str, "%d", &t1);
 		output0BitLength[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "output0Bit", 10) == 0) {
+		str += 10;
+		sscanf(str, "%d", &t1);
+		output0Bit[well]->setValue(t1);
 	    }
 	    /* for backward compatibility, if none of the above match, then it
 	     * is Bit 1 */
@@ -493,6 +495,7 @@ void rewardControl::createLogicTab(int n)
 	grid1->addMultiCellWidget(triggerHigh[i], 4, 4, col, col);
 	
 	outputBit1[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 1");
+	outputBit1[i]->setValue(-1);
 	grid1->addMultiCellWidget(outputBit1[i], 5, 5, col, col);
 	
 	outputBit1Length[i] = new QSpinBox(0, 30000, 1, w, "Output Bit 1  Length");
@@ -503,12 +506,14 @@ void rewardControl::createLogicTab(int n)
 	grid1->addMultiCellWidget(outputBit1Percent[i], 7, 7, col, col);
 
 	outputBit2[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 2");
+	outputBit2[i]->setValue(-1);
 	grid1->addMultiCellWidget(outputBit2[i], 8, 8, col, col);
 
 	outputBit2Length[i] = new QSpinBox(0, 1000000, 1, w, "Output Bit 2 Length");
 	grid1->addMultiCellWidget(outputBit2Length[i], 9, 9, col, col);
 
 	outputBit3[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 3");
+	outputBit3[i]->setValue(-1);
 	grid1->addMultiCellWidget(outputBit3[i], 10, 10, col, col);
 
 	outputBit3Length[i] = new QSpinBox(0, 1000000, 1, w, "Output Bit 3 Length");
@@ -520,6 +525,7 @@ void rewardControl::createLogicTab(int n)
 	if (i > 0) {
 	    /* we only need the output 0 bit for wells 1-n */
 	    output0Bit[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output 0 Bit");
+	    output0Bit[i]->setValue(-1);
 	    grid1->addMultiCellWidget(output0Bit[i], 13, 13, col, col);
 
 	    output0BitLength[i] = new QSpinBox(0, 1000000, 1, w, "Output 0 Bit Length");
@@ -711,7 +717,7 @@ void rewardControl::rewardWell(int well, bool reward)
 		}
 		else {
 		    bit[0] = outputBit1[well]->value();
-		    length[0] = outputBit1[well]->value();
+		    length[0] = outputBit1Length[well]->value();
 		    delay[0] = 0;
 		}
 	    }
@@ -723,7 +729,7 @@ void rewardControl::rewardWell(int well, bool reward)
 	}
 	else {
 	    bit[0] = outputBit1[well]->value();
-	    length[0] = outputBit1[well]->value();
+	    length[0] = outputBit1Length[well]->value();
 	    delay[0] = 0;
 	}
 	bit[1] = outputBit2[well]->value();

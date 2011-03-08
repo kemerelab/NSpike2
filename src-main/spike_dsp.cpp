@@ -941,10 +941,11 @@ int TriggerOutputs(int *bit, int *length, int *delay, int n)
     unsigned short command[DIO_MAX_COMMAND_LEN];
     int len = 0;
 
-    int times[MAX_BITS*2];
-    int bitind[MAX_BITS*2];
+    int times[128];
+    int bitind[128];
     int i;
-    int j = 0;
+    int j;
+    int nelem;
     int tmp;
     int bitnum;
     int tdiff;
@@ -952,19 +953,22 @@ int TriggerOutputs(int *bit, int *length, int *delay, int n)
 
 
     /* make a list of the times when things need to happen and a parallel list of the bit
-     * numbers with 0&1 for start and stop times of bit 1, 2&3 for bit 2 and so on */
-    for(i = 0; i < n; i++) {
-	times[j] = delay[i];
-	bitind[j] = j;
-	times[++j] = delay[i] + length[i];
-	bitind[j] = j;
-	j++;
+     * numbers with 0&1 for start and stop times of bit 0, 2&3 for bit 1 and so on */
+    tmp = 0;
+    for (i = 0; i < n; i++) {
+	times[tmp] = delay[i];
+	bitind[tmp] = tmp;
+	tmp++;
+	times[tmp] = delay[i] + length[i];
+	bitind[tmp] = tmp;
+	tmp++;
     }
+    nelem = 2 * n;
 
     /* now we need to sort the two lists in parallel */
-    for (i = 0; i < 2*n; i++) {
-	for (j = 0; j < 2*n-i; j++) {
-	    if (times[j] < times[j+1]) {
+    for (i = 0; i < nelem; i++) {
+	for (j = 0; j < nelem-i-1; j++) {
+	    if (times[j] > times[j+1]) {
 		// swap values in both lists
 		tmp = times[j];
 		times[j] = times[j+1];
@@ -980,23 +984,28 @@ int TriggerOutputs(int *bit, int *length, int *delay, int n)
      * cumulative time to get the wait lengths right */
     // initizize the wait 
     command[len++] = DIO_S_WAIT_WAIT;
+    tmp = 0;
     for (i = 0; i < 2*n; i++) {
 	tdiff = times[i] - tmp;
 	if (tdiff > 0) {
 	    // add a wait to get us up to the time of the next change in state
 	    len += AddWaitToCommand(tdiff, command+len, &tmptime);
+	    tmp += tdiff;
 	}
 	// add the change of the appropriate bit 
 	bitnum = bitind[i] / 2;
 	/* check that this is a valid bit */
+	fprintf(stderr, "tmp = %d, times[%d] = %d, bitind[%d] = %d, bit[%d] = %d\n", tmp, i, times[i], i, bitind[i], bitnum, bit[bitnum]);
 	if (bit[bitnum] != -1) {
 	    if ((bitind[i] % 2) == 0) {
 		// turn the bit on
 		command[len++] = DIO_S_SET_OUTPUT_HIGH | bit[bitnum];
+		fprintf(stderr, "bit %d on\n", bit[bitnum]);
 	    }
 	    else {
 		// turn the bit off
 		command[len++] = DIO_S_SET_OUTPUT_LOW | bit[bitnum];
+		fprintf(stderr, "bit %d off\n", bit[bitnum]);
 	    }
 	}
     }

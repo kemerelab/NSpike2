@@ -2,8 +2,6 @@
 
 extern CommandTimeInfo ctinfo;
 
-int AddWaitToCommand(u32 waittime, unsigned short *command);
-
 void StopOutput(PulseCommand *pulseCmd)
   // generate a command to stop the state machine and, if relevant, the analog output and the associated digital bit
 {
@@ -37,25 +35,6 @@ void StopOutput(PulseCommand *pulseCmd)
   }
     fprintf(stderr, "turned off dio and aout, %d\n", aOutPort);
   return;
-}
-
-int AddWaitToCommand(u32 waittime, unsigned short *command)
-    /* add a wait to the command. waittime is in timestamps  */
-{
-  int len = 0;
-  u32 waitsamp;
-
-  ctinfo.command_time += waittime;
-  // now wait for (pre_delay * 3 samples - 1 for processing*/
-  waitsamp = (waittime) * SAMP_TO_TIMESTAMP - 1;
-  while (waitsamp > 65536) {
-    command[len++] = DIO_S_WAIT_WAIT | 65535; // subtract 1 sample for processing
-    waitsamp -= 65536;
-  }
-  if (waitsamp > 1) {
-    command[len++] = DIO_S_WAIT_WAIT | (waitsamp - 1); 
-  }
-  return len;
 }
 
 
@@ -100,7 +79,8 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 
   if (pulseCmd.pre_delay) {
     /* add the initial delay */
-    len += AddWaitToCommand(pulseCmd.pre_delay, command + len);
+    len += AddWaitToCommand(pulseCmd.pre_delay, command + len, 
+	    &ctinfo.command_time);
   }
 
   if (pulseCmd.digital_only) {
@@ -196,9 +176,10 @@ void PrepareStimCommand(PulseCommand *pulseCmd, int nPC)
       /* loop through the repeats */
       command[len++] = DIO_S_FOR_BEGIN | pulseCmd[i].n_repeats;
     }
-    len += GeneratePulseCommand(pulseCmd[i], command+len);
+    len += GeneratePulseCommand(*pulseCmd, command+len);
     /* add in the inter_frame_delay wait  */
-    len += AddWaitToCommand(pulseCmd[i].inter_frame_delay, command + len);
+    len += AddWaitToCommand(pulseCmd->inter_frame_delay, command + len, 
+	    &ctinfo.command_time);
     if (pulseCmd[i].n_repeats > 1) {
       /* loop through the repeats */
       command[len++] = DIO_S_FOR_END;
