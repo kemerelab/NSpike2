@@ -59,8 +59,8 @@
 
 #define DIO_ARB_MAX_WAVE_LEN	DIO_STATE_SIZE // the maximum length of an analog waveform for the arbitrary waveform generator
 #define DIO_ARB_MAX_WAVE_LEN_MS	(DIO_STATE_SIZE / SAMP_TO_TIMESTAMP / 10) // the maximum length in milliseconds of an analog waveform for the arbitrary waveform generator
-#define DIO_ARB_ENABLE		0x00C4  // 0 disables, 1 enables, read for status
-#define DIO_ARB_TRIGGER	0x00C5  // first trigger info in high byte, retrigger in low byte
+#define DIO_ARB_ENABLE_ADDR		0x00C4  // 0 disables, 1 enables, read for status
+#define DIO_ARB_TRIGGER_ADDR	0x00C5  // first trigger info in high byte, retrigger in low byte
 #define DIO_ARB_NEVER_TRIGGER  0
 #define DIO_ARB_ALWAYS_TRIGGER  1
 #define DIO_ARB_DIO_OUTPUT1_TRIGGER   0x0020  // OR with 0x000b to trigger off of high bit b of port 1 output

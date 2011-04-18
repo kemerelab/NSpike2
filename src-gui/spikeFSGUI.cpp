@@ -230,6 +230,7 @@ void DIOInterface::triggerSingleStim(void)
   case 1:
     pCmd[0] = aOutConfigTab->aOut1Config->aOutPulseCmd;
     pCmd[0].n_repeats = 0;
+    pCmd[0].pre_delay = 0;
     /* copy the information to the next command */
     memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;
@@ -240,6 +241,7 @@ void DIOInterface::triggerSingleStim(void)
   case 2:
     pCmd[0] = aOutConfigTab->aOut2Config->aOutPulseCmd;
     pCmd[0].n_repeats = 0;
+    pCmd[0].pre_delay = 0;
     /* copy the information to the next command */
     memcpy(pCmd+1, pCmd, sizeof(PulseCommand));
     pCmd[1].pulse_width = DIO_PULSE_COMMAND_END;

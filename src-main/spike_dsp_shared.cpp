@@ -22,7 +22,7 @@
 
 /* local functions */
 int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
-	short n, unsigned short *data);
+	unsigned short n, unsigned short *data);
 int ReadDSPData(short dspnum, unsigned short baseaddr, unsigned short address, 
 	short n, unsigned short *data);
 int GetDSPResponse(int dspnum, int n, unsigned short *data);
@@ -85,6 +85,7 @@ int WriteArbWaveForm(unsigned short *wavefm, int len)
 	DisplayErrorMessage(tmpstring);
 	return 0;
     }
+
     /* write out the waveform length */
     if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_LENGTH, 1, &tmplen)) {
 	sprintf(tmpstring, "Error writing waveform length for arbitrary waveform generator");
@@ -127,7 +128,7 @@ int SetArbAOutChan(unsigned short aout)
 int EnableArb(unsigned short enable)
     /* enable or disable the arbitrary waveform generator */
 {
-   if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_ENABLE, 1, &enable)) {
+   if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_ENABLE_ADDR, 1, &enable)) {
 	sprintf(tmpstring, "Error enabling or disabling arbitrary waveform generator");
 	DisplayErrorMessage(tmpstring);
 	return 0;
@@ -138,7 +139,7 @@ int EnableArb(unsigned short enable)
 int SetArbTrigger(unsigned short trigger)
     /* set the trigger for the aritrary waveform generator */
 {
-   if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_TRIGGER, 1, &trigger)) {
+   if (!WriteDSPData(DSPDIO, DSP_SRAM, DIO_ARB_TRIGGER_ADDR, 1, &trigger)) {
 	sprintf(tmpstring, "Error setting trigger for arbitrary waveform generator to 0x%x", trigger);
 	DisplayErrorMessage(tmpstring);
 	return 0;
@@ -156,6 +157,7 @@ int SetupArb(ArbInfo arbinfo)
 
   trigger_port = arbinfo.trigger_pin / 16;
   if (digioinfo.porttype[trigger_port] == OUTPUT_PORT) {
+    fprintf(stderr, "setting up trigger on output port %d, pin %d\n", trigger_port, arbinfo.trigger_pin);
     switch (trigger_port) {
       case 0:
 	trigger_command = DIO_ARB_DIO_OUTPUT1_TRIGGER;
@@ -191,12 +193,17 @@ int SetupArb(ArbInfo arbinfo)
   arbinfo.trigger = (trigger_command|arbinfo.trigger_pin) << 8;
   if (arbinfo.continuous) {
     arbinfo.trigger |= DIO_ARB_ALWAYS_TRIGGER;
+    //fprintf(stderr, "continuous mode, trigger = %d\n",
+     //   arbinfo.trigger);
   }
 
   ret &= SetArbAOutChan(arbinfo.aout);
+//  fprintf(stderr, "Writing ARB waveform, len = %d, wavefm[3000] = %d, bit = %d\n", arbinfo.len, arbinfo.wavefm[3000], arbinfo.trigger_pin);
   ret &= WriteArbWaveForm(arbinfo.wavefm, arbinfo.len);
 
+
   ret &= SetArbTrigger(arbinfo.trigger);
+  EnableArb(1);
 
   return ret;
 }
@@ -408,11 +415,11 @@ int WriteDSPDIORestartStateMachine(int s)
 }
 
 int WriteDSPData(short dspnum, unsigned short baseaddr, unsigned short address,
-	short n, unsigned short *data)
+	unsigned short n, unsigned short *data)
     /* write data to the dsp. data must contain < 500 words */
 {
     int 		size, writesize, totalsize, ntowrite;
-    unsigned short 	dataout[1000], offset;
+    unsigned short 	dataout[1024], offset;
     int 		dspacq, acqmessage = 0;
     (void) dspnum; // prevent compiler warnings
 

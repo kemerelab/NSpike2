@@ -37,9 +37,9 @@ void ProcessData(int datatype, char *data, int datalen)
     if (pending) {
       nextPulseCmd->start_samp_timestamp = ctinfo.timestamp * SAMP_TO_TIMESTAMP + 
 	                                   DELAY_TO_START_PULSE_FILE; // start
-      fprintf(stderr,"Starting stim: %d, %d\n", ctinfo.timestamp,
-              nextPulseCmd->start_samp_timestamp);
       PulseOutputCommand(*nextPulseCmd);
+      //fprintf(stderr,"Starting stim: %d, %d\n", ctinfo.timestamp,
+       //       nextPulseCmd->start_samp_timestamp);
       pending = 0;
     }
 
@@ -92,8 +92,8 @@ void ProcessData(int datatype, char *data, int datalen)
       if (pending) {
 	nextPulseCmd->start_samp_timestamp = ctinfo.timestamp * SAMP_TO_TIMESTAMP + 
 					     DELAY_TO_START_PULSE_FILE; // start
-	fprintf(stderr,"Starting stim: %d, %d\n", ctinfo.timestamp,
-		nextPulseCmd->start_samp_timestamp);
+//	fprintf(stderr,"Starting stim: %d, %d\n", ctinfo.timestamp,
+//		nextPulseCmd->start_samp_timestamp);
         PulseOutputCommand(*nextPulseCmd);
 	pending = 0;
       }

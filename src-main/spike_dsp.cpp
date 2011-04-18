@@ -1087,7 +1087,7 @@ int ReprogramAuxDSPs(char *filename)
 		/* Wait for the reply */
 		if (!WaitForMessage(netinfo.masterfd[i], DSPS_PROGRAMMED, 10)) {
 		    sprintf(tmpstring,"spike_main: no response to REPROGRAM_DSP message from slave %s", netinfo.slavename[i]);
-		    fprintf(STATUSFILE, tmpstring);
+		    fprintf(STATUSFILE, "%s\n", tmpstring);
 		    DisplayStatusMessage(tmpstring);
 		    return 0;
 		}

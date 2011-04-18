@@ -34,7 +34,7 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     connect(aOut1Button, SIGNAL(clicked(bool)), this, SLOT(selectAOut(void)));
 
     aOut1Config = new AOutConfigureWidget(this);
-    aOut1Config->aOutPulseCmd.aout = 1;
+    aOut1Config->aOutPulseCmd.aout = 0;
     connect(aOut1Config, SIGNAL(aOutModeChangedSignal(void)), this, 
 	    SLOT(aOutModeChanged(void)));
 
@@ -51,7 +51,7 @@ AOutConfigTab::AOutConfigTab (QWidget *parent)
     connect(aOut2Button, SIGNAL(clicked(bool)), this, SLOT(selectAOut(void)));
 
     aOut2Config = new AOutConfigureWidget(this);
-    aOut2Config->aOutPulseCmd.aout = 2;
+    aOut2Config->aOutPulseCmd.aout = 1;
     connect(aOut2Config, SIGNAL(aOutModeChangedSignal(void)), this, 
 	    SLOT(aOutModeChanged(void)));
     layout->addWidget(aOut2Config,2,1,Qt::AlignLeft | Qt::AlignVCenter);
@@ -121,7 +121,8 @@ AOutConfigureWidget::AOutConfigureWidget(QWidget *parent)
   layout->addWidget(new QLabel("Min."), 1, 0, 1, 1, Qt::AlignVCenter);
   aOutRangeMinSpinBox = new QDoubleSpinBox();
   aOutRangeMinSpinBox->setRange(0,1);
-  aOutRangeMinSpinBox->setDecimals(2);
+  aOutRangeMinSpinBox->setSingleStep(0.01);
+  aOutRangeMinSpinBox->setDecimals(3);
   aOutRangeMinSpinBox->setSuffix(" Volts");
   layout->addWidget(aOutRangeMinSpinBox, 1, 1, 1, 1, Qt::AlignVCenter);
   connect(aOutRangeMinSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateAOutPulseCmd(void)));
@@ -129,7 +130,8 @@ AOutConfigureWidget::AOutConfigureWidget(QWidget *parent)
   layout->addWidget(new QLabel("Max"), 1, 2, 1, 1, Qt::AlignVCenter);
   aOutRangeMaxSpinBox = new QDoubleSpinBox();
   aOutRangeMaxSpinBox->setRange(0,1);
-  aOutRangeMaxSpinBox->setDecimals(2);
+  aOutRangeMaxSpinBox->setSingleStep(0.01);
+  aOutRangeMaxSpinBox->setDecimals(3);
   aOutRangeMaxSpinBox->setSuffix(" Volts");
   layout->addWidget(aOutRangeMaxSpinBox, 1, 3, 1, 1, Qt::AlignVCenter);
   connect(aOutRangeMinSpinBox, SIGNAL(valueChanged(double)), this, SLOT(updateAOutPulseCmd(void)));
@@ -156,7 +158,8 @@ AOutConfigureWidget::AOutConfigureWidget(QWidget *parent)
   connect(aOutPulseMode, SIGNAL(aOutPulseCmdChanged(void)), this, SLOT(updateAOutPulseCmd(void)));
 
   aOutWaveMode = new AOutWaveMode(this);
-  connect(aOutWaveMode, SIGNAL(aOutWaveChanged(void)), this, SLOT(updateAOutWaveCmd(void)));
+  connect(aOutWaveMode, SIGNAL(aOutWaveChanged(void)), this,
+      SLOT(updateAOutPulseCmd(void)));
 
 
   aOutModeStack = new QStackedWidget;
@@ -226,6 +229,10 @@ void AOutConfigureWidget::setAOutRange(int index)
 
 void AOutConfigureWidget::updateAOutPulseCmd(void)
 {
+  float slope;
+  unsigned short minlevel, maxlevel, deltalevel;
+  int i;
+
   /* go through all the objects and update the pulse command */
 
   // we assume statemachine 0; we probably want to make this user selectable
@@ -242,21 +249,11 @@ void AOutConfigureWidget::updateAOutPulseCmd(void)
   aOutPulseCmd.inter_pulse_delay = aOutPulseMode->sequencePeriodSpinBox->value()*10 - aOutPulseCmd.pulse_width;
   aOutPulseCmd.n_pulses = aOutPulseMode->nPulsesSpinBox->value();
 
-}
-
-
-void AOutConfigureWidget::updateAOutWaveCmd(void)
-{
-  int i;
-
-  float slope;
-  unsigned short minlevel, maxlevel, deltalevel;
   /* go through all the objects and update the pulse command */
 
   // we assume statemachine 0; we probably want to make this user selectable
   aOutPulseCmd.statemachine = 0;
   aOutPulseCmd.digital_only = false;
-  aOutPulseCmd.pulse_width = 1; 
   aOutPulseCmd.pin1 = aOutTriggerBitSpinBox->value();
   aOutPulseCmd.minv = aOutRangeMinSpinBox->value();
   aOutPulseCmd.maxv = aOutRangeMaxSpinBox->value();
@@ -264,33 +261,43 @@ void AOutConfigureWidget::updateAOutWaveCmd(void)
 
   aOutPulseCmd.arbinfo.aout = aOutPulseCmd.aout;
   aOutPulseCmd.arbinfo.continuous = aOutWaveMode->continuousButton->isChecked();
+  fprintf(stderr, "cont = %d\n",
+      aOutWaveMode->continuousButton->isChecked());
+  aOutPulseCmd.pulse_width = 1; 
   aOutPulseCmd.arbinfo.trigger_pin = aOutPulseCmd.pin1;
 
   /* create the waveform */
   minlevel = (unsigned short) (aOutPulseCmd.minv * USHRT_MAX);
-  deltalevel = (unsigned short) ((float) ((aOutPulseCmd.maxv - aOutPulseCmd.minv) *
-		 ((float) aOutPulseCmd.wave_percent) / 100.0)) * USHRT_MAX;
+  deltalevel = (unsigned short) (((float) ((aOutPulseCmd.maxv - 
+          aOutPulseCmd.minv) * ((float) aOutPulseCmd.wave_percent) / 100.0)) * 
+          USHRT_MAX);
   maxlevel = minlevel + deltalevel;
 
   if (aOutWaveMode->rampButton->isChecked()) {
     /*  convert the length in ms to samples */
-    aOutPulseCmd.arbinfo.len = aOutWaveMode->lengthSpinBox->value() * SAMP_TO_TIMESTAMP * 10;
+    aOutPulseCmd.arbinfo.len =
+      aOutWaveMode->lengthSpinBox->value() * SAMP_TO_TIMESTAMP *
+      10;
     
     slope = (float) (maxlevel - minlevel) / aOutPulseCmd.arbinfo.len;
     /* create a ramp */
     for (i = 0; i < aOutPulseCmd.arbinfo.len; i++) {
       aOutPulseCmd.arbinfo.wavefm[i] = (unsigned short) (minlevel + i * slope);
     }
+    // set to zero to reset ramp
+    aOutPulseCmd.arbinfo.wavefm[i] = minlevel;
+    aOutPulseCmd.arbinfo.len++;
   }
-  else if (aOutWaveMode->continuousButton->isChecked()) {
+  else if (aOutWaveMode->sineButton->isChecked()) {
     /*  convert the length in ms to samples */
-    aOutPulseCmd.arbinfo.len = aOutWaveMode->periodSpinBox->value() * SAMP_TO_TIMESTAMP * 10;
+    aOutPulseCmd.arbinfo.len = (unsigned short) (aOutWaveMode->lengthSpinBox->value()) * SAMP_TO_TIMESTAMP * 10;
     
     /* create a sine wave that begins at a phase of -pi/2 to start at the minimum level */
     for (i = 0; i < aOutPulseCmd.arbinfo.len; i++) {
-      aOutPulseCmd.arbinfo.wavefm[i] = minlevel + (unsigned short) sin(TWOPI * 1.0 / ((float) 
-	    aOutPulseCmd.arbinfo.len) * i - PI / 2) * deltalevel;
-    }
+      aOutPulseCmd.arbinfo.wavefm[i] = minlevel + (unsigned
+          short) ((1 + sin(TWOPI * 1.0 / ((float) 
+	    aOutPulseCmd.arbinfo.len) * i - PI / 2)) / 2.0 * (float) deltalevel);
+    } 
   }
 }
 
@@ -316,7 +323,6 @@ AOutPulseMode::AOutPulseMode(QWidget *parent) : QWidget(parent)
 {
   aOutPulseCmd.statemachine = 0;
   aOutPulseCmd.pre_delay = 0;
-  aOutPulseCmd.pulse_width = 1; // default value - should set this below?
   aOutPulseCmd.pulse_width = 1; // default value - should set this below?
   aOutPulseCmd.pulse_percent = 0; // default value - should set this below?
   aOutPulseCmd.inter_pulse_delay = 1249;
@@ -467,6 +473,8 @@ AOutWaveMode::AOutWaveMode(QWidget *parent) : QWidget(parent)
   sineButton = new QPushButton("Sine Wave");
   sineButton->setCheckable(true);
   sineButton->setChecked(false);
+  sineButton->setStyleSheet("QPushButton::checked{color: green;}");
+  sineButton->setStyle("Windows");
   connect(sineButton, SIGNAL(clicked(bool)), this, SLOT(waveChanged(void)));
   waveModeButtonGroup->addButton(sineButton);
   layout->addWidget(sineButton, 0, 0,Qt::AlignRight | Qt::AlignVCenter);
@@ -474,6 +482,8 @@ AOutWaveMode::AOutWaveMode(QWidget *parent) : QWidget(parent)
   rampButton = new QPushButton("Ramp");
   rampButton->setCheckable(true);
   rampButton->setChecked(false);
+  rampButton->setStyleSheet("QPushButton::checked{color: green;}");
+  rampButton->setStyle("Windows");
   connect(rampButton, SIGNAL(clicked(bool)), this, SLOT(waveChanged(void)));
   waveModeButtonGroup->addButton(rampButton);
   layout->addWidget(rampButton, 0, 1,Qt::AlignRight | Qt::AlignVCenter);
@@ -488,7 +498,7 @@ AOutWaveMode::AOutWaveMode(QWidget *parent) : QWidget(parent)
   layout->addWidget(maxPercentSpinBox, 1, 1,  Qt::AlignRight);
   connect(maxPercentSpinBox, SIGNAL(valueChanged(int)), this, SLOT(waveChanged(void)));
 
-  layout->addWidget(new QLabel("Length: "), 2, 0,  Qt::AlignRight);
+  layout->addWidget(new QLabel("Length/Period: "), 2, 0,  Qt::AlignRight);
   lengthSpinBox = new QSpinBox();
   lengthSpinBox->setAlignment(Qt::AlignRight);
   lengthSpinBox->setRange(0, DIO_ARB_MAX_WAVE_LEN_MS);
@@ -498,19 +508,13 @@ AOutWaveMode::AOutWaveMode(QWidget *parent) : QWidget(parent)
   layout->addWidget(lengthSpinBox, 2, 1,  Qt::AlignRight);
   connect(lengthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(waveChanged(void)));
 
-  layout->addWidget(new QLabel("Period: "), 3, 0,  Qt::AlignRight);
-  periodSpinBox = new QDoubleSpinBox();
-  periodSpinBox->setAlignment(Qt::AlignRight);
-  periodSpinBox->setRange(1, DIO_ARB_MAX_WAVE_LEN_MS);
-  periodSpinBox->setValue(2000);
-  periodSpinBox->setSuffix(" ms");
-  periodSpinBox->setToolTip("Period of sine waveform");
-  layout->addWidget(periodSpinBox, 3, 1, Qt::AlignRight);
-
   continuousButton = new QPushButton("Continuous");
-  layout->addWidget(continuousButton, 4, 0,Qt::AlignRight | Qt::AlignVCenter);
+  layout->addWidget(continuousButton, 3, 0,Qt::AlignRight | Qt::AlignVCenter);
   continuousButton->setCheckable(true);
   continuousButton->setChecked(false);
+  continuousButton->setStyleSheet("QPushButton::checked{color: green;}");
+  continuousButton->setStyle("Windows");
+  connect(continuousButton, SIGNAL(toggled(bool)), this, SLOT(waveChanged(void)));
   setLayout(layout);
 
   qDebug("set up waveform mode");
@@ -519,15 +523,6 @@ AOutWaveMode::AOutWaveMode(QWidget *parent) : QWidget(parent)
 
 void AOutWaveMode::waveChanged(void)
 {
-  /* enable and disable the relevant buttons */
-  if (rampButton->isChecked()) {
-    periodSpinBox->setEnabled(false);
-    lengthSpinBox->setEnabled(true);
-  }
-  else if (sineButton->isChecked()) {
-    periodSpinBox->setEnabled(true);
-    lengthSpinBox->setEnabled(false);
-  }
   emit aOutWaveChanged();
   return;
 }

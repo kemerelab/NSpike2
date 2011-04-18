@@ -51,7 +51,6 @@ public:
   QPushButton *sineButton;
   QSpinBox     *maxPercentSpinBox;
   QSpinBox     *lengthSpinBox;
-  QDoubleSpinBox     *periodSpinBox;
   QPushButton  *continuousButton;
 
 private slots:
@@ -76,7 +75,6 @@ public slots:
   void setAOutMode(int);
   void setAOutRange(int);
   void updateAOutPulseCmd(void);
-  void updateAOutWaveCmd(void);
 
 private:
   QComboBox *aOutRangeSelectBox;

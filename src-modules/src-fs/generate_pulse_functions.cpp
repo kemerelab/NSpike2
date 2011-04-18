@@ -22,14 +22,19 @@ void StopOutput(PulseCommand *pulseCmd)
     }
   }
   else {
+    if (pulseCmd->aout_mode == DIO_AO_MODE_WAVE) {
+      /* disable the arbitrary waveform generator */
+      EnableArb(0);
+    }
     /* turn off the analog output */
-    aOutPort = (pulseCmd->aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
+    aOutPort = (pulseCmd->aout == 0) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
     command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd->pin1; 
     command[len++] = DIO_S_SET_PORT | aOutPort; 
     command[len++] = 0x00; 
     if (!WriteDSPDIOCommand(command, len, pulseCmd->statemachine, 0)) {
       fprintf(stderr, "Error stopping analog out %d\n", pulseCmd->aout);
     }
+
   }
   if (SendStartDIOCommand(pulseCmd->statemachine) <= 0) {
     fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
@@ -156,10 +161,21 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 	command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin1;
 	ctinfo.command_time += pulseCmd.pulse_width;
       }
+      else {
+        /* indicate that the command will not complete */
+	ctinfo.command_time = INT_MAX;
+      }
+      if (use_arb && pulseCmd.arbinfo.continuous) {
+        /* indicate that the command will not complete */
+	ctinfo.command_time = INT_MAX;
+      }
 
-      if (i < (pulseCmd.n_pulses-1))
+      if (i < (pulseCmd.n_pulses-1)) {
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_off;
-	ctinfo.command_time += pulseCmd.inter_pulse_delay;
+        if (ctinfo.command_time < UINT_MAX) {
+          ctinfo.command_time += pulseCmd.inter_pulse_delay;
+        }
+      }
     }
   }
   return len;
