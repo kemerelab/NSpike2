@@ -138,7 +138,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
       default:
 	fprintf(stderr, "Error in spike_fsdata: DIO mode %d unknown\n", pulseCmd.aout_mode);
     }
-    aOutPort = (pulseCmd.aout == 1) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
+    aOutPort = (pulseCmd.aout == 0) ? DIO_AOUT1_PORT : DIO_AOUT2_PORT;
     for (i = 0; i < pulseCmd.n_pulses; i++) {
       /* set the digital port to 1 as our signal that we've changed the output */
       command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin1;
