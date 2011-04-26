@@ -196,6 +196,10 @@ int SetupArb(ArbInfo arbinfo)
     //fprintf(stderr, "continuous mode, trigger = %d\n",
      //   arbinfo.trigger);
   }
+  else {
+      /* set to retrigger on the same pin */
+      arbinfo.trigger |= (trigger_command|arbinfo.trigger_pin);
+  }
 
   ret &= SetArbAOutChan(arbinfo.aout);
 //  fprintf(stderr, "Writing ARB waveform, len = %d, wavefm[3000] = %d, bit = %d\n", arbinfo.len, arbinfo.wavefm[3000], arbinfo.trigger_pin);
