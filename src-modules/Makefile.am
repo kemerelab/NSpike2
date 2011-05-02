@@ -12,7 +12,8 @@ spike_posdaq_SOURCES = spike_posdaq.cpp spike_message.cpp \
 
 spike_process_posdata_SOURCES = spike_process_posdata.cpp \
     spike_message.cpp spike_ffmpegEncoder.h spike_ffmpegEncoder.cpp
-# spike_process_posdata_CPPFLAGS = @FFMPEG_CFLAGS@
+spike_process_posdata_CPPFLAGS = -D__STDC_CONSTANT_MACROS
+                     # needed for FFMPEG
 spike_process_posdata_LDADD = -lavcodec -lavutil -lm -lz 
 spike_process_posdata_LDFLAGS = -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 
