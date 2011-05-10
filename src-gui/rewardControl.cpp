@@ -752,31 +752,30 @@ void rewardControl::rewardWell(int well, bool reward)
 	}
 	/* this is the end of the first trial */
 	firstTrial->setChecked(false);
-
-	for (i = 0; i < nWells->value(); i++) {
-	    if (!useSequenceButton->isChecked()) {
-		/* we can't reward the same well twice, so we skip the current well's
-		 * entry */
-		if (i != well) {
-		    if (((prevWell == -1) || prev[i]->isSelected(prevWell)) &&
-			curr[i]->isSelected(well)) {
-			/* we reward this well next. Note that this will update wellStatus*/
-			next[i]->setChecked(true);
-			fprintf(stderr, "next[%d] true\n",  i);
-		    }
-		    else {
-			next[i]->setChecked(false);
-			fprintf(stderr, "next[%d] false\n", i);
-		    }
-		}
-	    }
-	    else {
-		if (nextWell == i) {
+    }
+    for (i = 0; i < nWells->value(); i++) {
+	if (!useSequenceButton->isChecked()) {
+	    /* we can't reward the same well twice, so we skip the current well's
+	     * entry */
+	    if (i != well) {
+		if (((prevWell == -1) || prev[i]->isSelected(prevWell)) &&
+		    curr[i]->isSelected(well)) {
+		    /* we reward this well next. Note that this will update wellStatus*/
 		    next[i]->setChecked(true);
+		    fprintf(stderr, "next[%d] true\n",  i);
 		}
 		else {
 		    next[i]->setChecked(false);
+		    fprintf(stderr, "next[%d] false\n", i);
 		}
+	    }
+	}
+	else {
+	    if (nextWell == i) {
+		next[i]->setChecked(true);
+	    }
+	    else {
+		next[i]->setChecked(false);
 	    }
 	}
     }
