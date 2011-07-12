@@ -39,7 +39,11 @@ void StopOutput(PulseCommand *pulseCmd)
   if (SendStartDIOCommand(pulseCmd->statemachine) <= 0) {
     fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
   }
-    fprintf(stderr, "turned off dio and aout, %d\n", aOutPort);
+  if (pulseCmd->aout_mode == DIO_AO_MODE_WAVE) {
+      /* re-enable the arbitrary waveform generator */
+      EnableArb(1);
+  }
+  fprintf(stderr, "turned off dio and aout, %d\n", aOutPort);
   return;
 }
 
@@ -125,11 +129,13 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 			     ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
 		     ((float) pulseCmd.cont_percent) / 100.0))) * USHRT_MAX); 
 
+        EnableArb(0);
 	break;
       case (DIO_AO_MODE_PULSE):
 	alevel = (unsigned short) ((pulseCmd.minv + 
 		     ((float) ((pulseCmd.maxv - pulseCmd.minv) * 
 		     ((float) pulseCmd.pulse_percent) / 100.0))) * USHRT_MAX); 
+        EnableArb(0);
 	break;
       case (DIO_AO_MODE_WAVE):
 	SetupArb(pulseCmd.arbinfo);
@@ -150,7 +156,8 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 
       /* if this is not continuous mode, we need to turn it off at the
        * desired time */
-      if (pulseCmd.aout_mode != DIO_AO_MODE_CONTINUOUS) {
+      if ((pulseCmd.aout_mode != DIO_AO_MODE_CONTINUOUS) &&
+          !(use_arb && pulseCmd.arbinfo.continuous)) {
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
 	if (!use_arb) {
 	  /* turn off the analog output */
@@ -162,10 +169,6 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 	ctinfo.command_time += pulseCmd.pulse_width;
       }
       else {
-        /* indicate that the command will not complete */
-	ctinfo.command_time = INT_MAX;
-      }
-      if (use_arb && pulseCmd.arbinfo.continuous) {
         /* indicate that the command will not complete */
 	ctinfo.command_time = INT_MAX;
       }

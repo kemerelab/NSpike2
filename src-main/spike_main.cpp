@@ -1149,8 +1149,17 @@ void DisplayPosDataRate(void)
 void DrawInitialScreen(void)
 {
   int i;
-  /* clear the screen */
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+  /* clear the screen. Drawing at -1 puts this behind the
+   * buttons, which seems to ensure that the buttons come on top */
+  glBegin(GL_QUADS);
+  glColor3f(0, 0, 0);
+  glVertex3f(-100, -100, -1);
+  glVertex3f(-100, 100, -1);
+  glVertex3f(100, 100, -1);
+  glVertex3f(100, -100, -1);
+  glEnd();
+
+
   /* Draw the initial screen */
   if (sysinfo.datatype[sysinfo.machinenum] & SPIKE) {
     /* if we are in spike mode, we need to reset all of the projection window pointers so

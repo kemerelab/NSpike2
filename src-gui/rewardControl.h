@@ -154,6 +154,7 @@ class rewardControl : public QDialog {
     QPushButton	*nextReward;
 
     QPushButton	*useSequenceButton;
+    QPushButton	*nextWellOnErrorButton;
     QPushButton	*loadSequenceButton;
     QPushButton	*editSequenceButton;
     QListWidget	*wellSequenceListWidget;
