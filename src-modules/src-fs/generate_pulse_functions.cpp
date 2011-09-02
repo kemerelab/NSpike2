@@ -47,8 +47,6 @@ void StopOutput(PulseCommand *pulseCmd)
   while (ReadStateMachinePtr(pulseCmd->statemachine)) {
     usleep(2000);
   }
-
-
   fprintf(stderr, "turned off dio and aout, %d\n", aOutPort);
   return;
 }
