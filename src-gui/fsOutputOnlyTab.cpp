@@ -43,10 +43,10 @@ StimOutputOnlyTab::StimOutputOnlyTab (QWidget *parent)
   nTrainsSpinBox->setRange(1,200);
   nTrainsSpinBox->setToolTip("Number of output sequences to trigger before returning.");
   nTrainsLayout->addWidget(nTrainsSpinBox);
-  continuousButton = new QPushButton("Continuous");
+  continuousButton = new QPushButton("Continuous Pulses");
   continuousButton->setCheckable(true);
   continuousButton->setStyle("Windows");
-  continuousButton->setToolTip("Execute digital or analog outputs until Abort button is pressed.");
+  continuousButton->setToolTip("Execute digital or analog pulse sequence until Abort button is pressed. Not for use with continuous analog waveforms");
   connect(continuousButton, SIGNAL(toggled(bool)), this, SLOT(toggleContinuousMode(bool)));
 
   nTrainsLayout->addWidget(continuousButton);

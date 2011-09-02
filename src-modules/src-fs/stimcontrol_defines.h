@@ -98,6 +98,7 @@ typedef struct {
 
 typedef struct {
     bool stimOn;
+    int  lockoutTime;
     u32	 lastChange;
 } SpatialFilterStatus;
 

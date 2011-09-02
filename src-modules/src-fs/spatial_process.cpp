@@ -17,6 +17,7 @@ void InitSpatial(void)
 {
   fprintf(stderr, "Initializing spatial variables\n");
   spatialFiltStat.stimOn = false;
+  spatialFiltStat.lastChange = 0;
   ResetSpeedData();
 }
 
@@ -34,7 +35,7 @@ bool ProcessSpatialData(u32 xpos, u32 ypos)
   /* check that the speed is in the right window */
   if ((ratSpeed < spatialStimParameters.minSpeed) ||
       (ratSpeed > spatialStimParameters.maxSpeed)) {
-    fprintf(stderr, "speed low %f\n", ratSpeed);
+    fprintf(stderr, "speed %f outside range\n", ratSpeed);
     return 0;
   }
 

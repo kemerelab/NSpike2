@@ -338,12 +338,21 @@ SpatialStimulation::SpatialStimulation(QWidget *parent)
   parametersLayout->addWidget(new QLabel("Minimum Speed"),2,0,1,1, Qt::AlignRight);
   parametersLayout->addWidget(minSpeedThresh, 2, 1, 1, 1);
   parametersLayout->addWidget(new QLabel("cm/sec"),2,2,1,1);
-  maxSpeedThresh = new QLineEdit(QString::number(200), this);
-  maxSpeedThresh->setValidator(new QDoubleValidator(0.0,200.0,2,this));
+
+  maxSpeedThresh = new QLineEdit(QString::number(500), this);
+  maxSpeedThresh->setValidator(new QDoubleValidator(0.0,500.0,2,this));
   maxSpeedThresh->setAlignment(Qt::AlignRight);
   parametersLayout->addWidget(new QLabel("Maximum Speed"),3,0,1,1, Qt::AlignRight);
   parametersLayout->addWidget(maxSpeedThresh, 3, 1, 1, 1);
   parametersLayout->addWidget(new QLabel("cm/sec"),3,2,1,1);
+
+  lockoutTime = new QSpinBox;
+  lockoutTime->setRange(500,100000);
+  lockoutTime->setValue(0);
+  lockoutTime->setAlignment(Qt::AlignRight);
+  parametersLayout->addWidget(new QLabel("Min On/Off Length"),4,0,1,1, Qt::AlignRight);
+  parametersLayout->addWidget(lockoutTime, 4, 1);
+  parametersLayout->addWidget(new QLabel("100 usec units"),5,2,1,1);
 
   parametersLayout->setColumnStretch(0, 2);
 
@@ -353,6 +362,7 @@ SpatialStimulation::SpatialStimulation(QWidget *parent)
   connect(upperRightY, SIGNAL(valueChanged(int)), this, SLOT(updateSpatialData(void)));
   connect(minSpeedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateSpatialData(void)));
   connect(maxSpeedThresh, SIGNAL(textChanged(const QString &)), this, SLOT(updateSpatialData(void)));
+  connect(lockoutTime, SIGNAL(valueChanged(int)), this, SLOT(updateSpatialData(void)));
 
   connect(daq_io_widget, SIGNAL(spatialStatusUpdate(char *)), parentWidget(), SLOT(updateRealtimeStatus(char *)));
   
@@ -375,6 +385,7 @@ void SpatialStimulation::updateSpatialData(void)
   data.upperRightY = upperRightY->value();
   data.minSpeed = minSpeedThresh->text().toDouble();
   data.maxSpeed = maxSpeedThresh->text().toDouble();
+  data.lockoutTime = lockoutTime->value();
 
   SendFSDataMessage(DIO_SET_SPATIAL_STIM_PARAMS, (char *) &data, sizeof(SpatialStimParameters));
 }
