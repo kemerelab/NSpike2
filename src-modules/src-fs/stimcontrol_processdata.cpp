@@ -100,8 +100,13 @@ void ProcessData(int datatype, char *data, int datalen)
       ratSpeed = filterPosSpeed(posdataptr[1],posdataptr[2]);
       if (stimcontrolMode == DIO_RTMODE_SPATIAL_STIM) {
 	stim = ProcessSpatialData(posdataptr[1], posdataptr[2]);
+<<<<<<< HEAD
         //fprintf(stderr, "stim = %d, tdiff = %d\n", 
             //stim, ctinfo.timestamp - spatialFiltStat.lastChange);
+=======
+        //fprintf(stderr, "stim = %d, tdiff = %d\n", stim,
+         //   ctinfo.timestamp - spatialFiltStat.lastChange);
+>>>>>>> f5e756a0826d9f6216d1d0478897ad51ca743877
 	if (stim && !spatialFiltStat.stimOn && 
             (ctinfo.timestamp - spatialFiltStat.lastChange >
              spatialFiltStat.lockoutTime)) {

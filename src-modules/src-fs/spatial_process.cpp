@@ -18,7 +18,10 @@ void InitSpatial(void)
   fprintf(stderr, "Initializing spatial variables\n");
   spatialFiltStat.stimOn = false;
   spatialFiltStat.lastChange = 0;
+<<<<<<< HEAD
   spatialFiltStat.lockoutTime = 500;
+=======
+>>>>>>> f5e756a0826d9f6216d1d0478897ad51ca743877
   ResetSpeedData();
 }
 
