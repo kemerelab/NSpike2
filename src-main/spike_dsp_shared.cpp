@@ -231,6 +231,20 @@ int ResetStateMachine(int number)
     return 1;
 }
 
+unsigned short ReadStateMachinePtr(int number)
+  /* returns the current offset for the specified state machine */
+{
+    unsigned short command[1];
+    if (!ReadDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[number], 
+          1, command)) {
+	sprintf(tmpstring, "Error reading Digital IO state machine pointer ");
+	DisplayErrorMessage(tmpstring);
+	return USHRT_MAX;
+    }
+    return command[0];
+}
+
+
 int ResetStateMachines()
 {
     int i;
@@ -264,26 +278,38 @@ int ResetStateMachines()
 	}
     }
 
-/*    fprintf(stderr, "TEST: setting port 0 bit 8 high\n");
-    usleep(500000);
-    command[0] = O8;
-    addr = DIO_OUT_1;
-    if (!WriteDSPData(DSPDIO, DSP_SRAM, addr, 1, command)) {
-	sprintf(tmpstring, "Error setting port %d to output 0", i);
+    return 1;
+}
+
+int EnableStateMachine(int number, bool enable)
+    /* enable or disable the specified state machine.  
+       Note that this does not set the output to be 0 */
+{
+    unsigned short command[1];
+    command[0] = 0;
+#ifdef DIO_ON_MASTER_DSP
+    number = 0;  // there is only one enable / disable in this case
+#endif
+    if (!WriteDSPData(DSPDIO, DSP_SRAM,
+          digioinfo.statemachineenableaddr[number], (short) enable, command)) {
+	sprintf(tmpstring, "Error enabling/disabling state machine %d", number);
 	DisplayErrorMessage(tmpstring);
 	return 0;
-    }  */
-
-    /* TEST of arbitrary waveform generator */
-    /* create 1000 point ramp 
-    for (i = 0; i < 30000; i++) {
-	command[i] = i / 2;
     }
-    WriteArbWaveForm(command, 30000);
-    SetArbAOutChan(DIO_ARB_AOUT_CHANNEL_2);
-    EnableArb(1);
-    SetArbTrigger(257); */
+    return 1;
+}
 
+int EnableStateMachines(bool enable)
+{
+    int i;
+    unsigned short addr;
+    unsigned short command[DIO_MAX_COMMAND_LEN];
+
+    /* enables or disables all state machines */
+    command[0] = 0;
+    for (i = 0; i <  DIO_N_STATE_MACHINES; i++) {
+	EnableStateMachine(i, enable);
+    }
 
     return 1;
 }
@@ -336,7 +362,7 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
     /* Now write the command to the DSP */
     if (!WriteDSPData(DSPDIO, digioinfo.statemachinebaseaddr[s], 
 		digioinfo.statemachinebuffer[s], len, command)) {
-        sprintf(tmpstring, "Error writing digital IO command to master DSP");
+        sprintf(tmpstring, "Error writing digital IO command to DSP");
         DisplayErrorMessage(tmpstring);
 	return 0;
     }
@@ -346,18 +372,11 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
        * new command, which is at offset 1 from the beginning of the buffer */
       command[0] = 1;
       if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command)) {
-          sprintf(tmpstring, "Error writing digital IO state machine pointer to master DSP");
+          sprintf(tmpstring, "Error writing digital IO state machine pointer to DSP");
           DisplayErrorMessage(tmpstring);
           return 0;
       }
     }
-    /* TEST: read back the pointer  
-    ReadDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command);
-	    fprintf(stderr, "in writedspdio: pointer at %d\n", command[0]);
-    ReadDSPData(DSPDIO, digioinfo.statemachinebaseaddr[s], digioinfo.statemachinebuffer[s] + command[0] - 1, 1, command);
-	    fprintf(stderr, "contents of pointer: %x\n", command[0]); */
-
-
     return 1;
 }
 

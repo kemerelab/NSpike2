@@ -83,6 +83,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       fprintf(stderr, "Updating spatial stim parameters\n");
       memcpy((char *)&spatialStimParameters, messagedata,
 	      sizeof(SpatialStimParameters));
+      spatialFiltStat.lockoutTime = spatialStimParameters.lockoutTime;
       break;
     case DIO_QUERY_RT_FEEDBACK_STATUS:
       switch (stimcontrolMode) {
@@ -115,6 +116,8 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       }
       break;
     case DIO_STOP_RT_FEEDBACK:
+      /* stop any ongoing output */
+	    StopOutput(&rtStimPulseCmd);
       realtimeProcessingEnabled = 0;
       fprintf(stderr,"rt_user: Received Realtime STOP command......\n");
       break;
@@ -132,8 +135,7 @@ void ProcessMessage(int message, char *messagedata, int messagedatalen)
       nextPulseCmd->start_samp_timestamp = 0; // wait for start
       PrepareStimCommand(nextPulseCmd, nPulses);
       break;
-    case DIO_PULSE_SEQ_START:
-      pending = 1;
+    case DIO_PULSE_SEQ_START: pending = 1;
       fprintf(stderr,"rt_user: Received START command......\n");
       break;
     case DIO_PULSE_SEQ_STOP:

@@ -275,7 +275,10 @@ void AOutConfigureWidget::updateAOutPulseCmd(void)
     aOutPulseCmd.arbinfo.len =
       aOutWaveMode->lengthSpinBox->value() * SAMP_TO_TIMESTAMP *
       10;
-    aOutPulseCmd.pulse_width = aOutPulseCmd.arbinfo.len;
+    /* calculate the pulse width for this signal in timestamp
+     * units */
+    aOutPulseCmd.pulse_width = aOutPulseCmd.arbinfo.len / 
+      SAMP_TO_TIMESTAMP;
     
     slope = (float) (maxlevel - minlevel) / aOutPulseCmd.arbinfo.len;
     /* create a ramp */
@@ -289,7 +292,12 @@ void AOutConfigureWidget::updateAOutPulseCmd(void)
   else if (aOutWaveMode->sineButton->isChecked()) {
     /*  convert the length in ms to samples */
     aOutPulseCmd.arbinfo.len = (unsigned short) (aOutWaveMode->lengthSpinBox->value()) * SAMP_TO_TIMESTAMP * 10;
-    aOutPulseCmd.pulse_width = aOutPulseCmd.arbinfo.len;
+    /* calculate the pulse width for this signal in timestamp
+     * units */
+    aOutPulseCmd.pulse_width = aOutPulseCmd.arbinfo.len /
+      SAMP_TO_TIMESTAMP;
+    fprintf(stderr, "pulse_width = %d timestamps\n",
+        aOutPulseCmd.arbinfo.len);
     
     /* create a sine wave that begins at a phase of -pi/2 to start at the minimum level */
     for (i = 0; i < aOutPulseCmd.arbinfo.len; i++) {

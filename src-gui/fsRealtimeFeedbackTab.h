@@ -53,6 +53,7 @@ public:
   QSpinBox *upperRightY;
   QLineEdit *minSpeedThresh;
   QLineEdit *maxSpeedThresh;
+  QSpinBox *lockoutTime;
 
 private slots:
   void updateSpatialData(void);

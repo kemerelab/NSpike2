@@ -220,7 +220,6 @@ void rewardControl::readRewardConfig(QString fileName)
         Q3TextStream stream(&file);
 	while (!stream.atEnd()) {
 	    s = stream.readLine();
-       fprintf(stderr,"%s\n",s.ascii());
 	    /* Parse the string */
 	    /* Skip comments */
 	    if (s.contains("%")) {
@@ -372,7 +371,7 @@ void rewardControl::loadSequence(void)
 	    wellSequenceListWidget->clear();
 	    while (!stream.atEnd()) {
 		s = stream.readLine();
-	        fprintf(stderr,"%s\n",s.ascii());
+	        //fprintf(stderr,"%s\n",s.ascii());
 		/* put the current value into the list widget */
 		wellSequenceListWidget->addItem(s);
 	    }
@@ -390,6 +389,7 @@ void rewardControl::loadSequence(void)
 	    }
 	}
 	useSequenceButton->setChecked(true);
+	nextWellOnErrorButton->setEnabled(true);
 	setStatus();
     }
     else {
@@ -618,17 +618,22 @@ void rewardControl::createStatusTab(int n)
   useSequenceButton->setCheckable(true);
   grid2->addWidget(useSequenceButton, 6, 0, 1, 1, Qt::AlignVCenter);
 
+  nextWellOnErrorButton = new QPushButton("0 Next on Error", w, "0 on error");
+  nextWellOnErrorButton->setCheckable(true);
+  grid2->addWidget(nextWellOnErrorButton, 7, 0, 1, 1, Qt::AlignVCenter);
+  nextWellOnErrorButton->setEnabled(false);
+
   editSequenceButton = new QPushButton("Edit Sequence", w, "edit sequence");
   editSequenceButton->setCheckable(true);
   connect(editSequenceButton, SIGNAL(clicked()), this, SLOT(enableEditSequence()));
-  grid2->addWidget(editSequenceButton, 7, 0, 1, 1, Qt::AlignVCenter);
+  grid2->addWidget(editSequenceButton, 8, 0, 1, 1, Qt::AlignVCenter);
 
   loadSequenceButton = new QPushButton("Load Sequence", w, "load sequence");
   connect(loadSequenceButton, SIGNAL(clicked()), this, SLOT(loadSequence()));
-  grid2->addWidget(loadSequenceButton, 8, 0, 1, 1, Qt::AlignVCenter);
+  grid2->addWidget(loadSequenceButton, 9, 0, 1, 1, Qt::AlignVCenter);
 
   wellSequenceListWidget = new QListWidget(w);
-  grid2->addWidget(wellSequenceListWidget, 6, 1, 3, 1, Qt::AlignVCenter);
+  grid2->addWidget(wellSequenceListWidget, 6, 1, 4, 1, Qt::AlignVCenter);
 
   /* assume well 0 unless W track */
   if (n != 3) {
@@ -684,9 +689,9 @@ void rewardControl::resetRewardCounters()
 
 void rewardControl::rewardWell(int well, bool reward) 
 {
-    int i;
     /* put a reward at the well if we should and use the logic to update the nextwell
      * variable */
+    int i;
     int bit[3];
     int length[3];
     int delay[3];
@@ -705,9 +710,6 @@ void rewardControl::rewardWell(int well, bool reward)
 			wellSequenceListWidget->currentRow() + 1);
 		/* we need to look up the next well we will be using */
 		nextWell = wellSequenceListWidget->currentItem()->text().toInt();
-		fprintf(stderr, "setting to row %d, nextWell = %d, count = %d\n", 
-			wellSequenceListWidget->currentRow(), nextWell, 
-			wellSequenceListWidget->count());
 		if ((well == 0) && (output0Bit[nextWell]->value() != -1)) {
 		    /* this means there is a special output for well 0 given 
 		     * that nextWell is coming up next */
@@ -728,6 +730,7 @@ void rewardControl::rewardWell(int well, bool reward)
 	    }
 	}
 	else {
+		fprintf(stderr, "not using sequence\n");
 	    bit[0] = outputBit1[well]->value();
 	    length[0] = outputBit1Length[well]->value();
 	    delay[0] = 0;
@@ -753,6 +756,31 @@ void rewardControl::rewardWell(int well, bool reward)
 	/* this is the end of the first trial */
 	firstTrial->setChecked(false);
     }
+    else if (useSequenceButton->isChecked() && 
+	    (nextWellOnErrorButton->isChecked()) && 
+	    !((well == 0) || (next[0]->isChecked()))) {
+	/* we need to move to the next well in the sequence which should be well 0 */
+	//fprintf(stderr, "error, moving on to next well\n");
+	/* We need to move on to the next well if this was an error at 
+	 * well other than well 0 */
+	if ((wellSequenceListWidget->currentRow() + 1) < 
+	     wellSequenceListWidget->count()) {
+	    /* we first move on to the next row of the list*/
+	    wellSequenceListWidget->setCurrentRow(
+		    wellSequenceListWidget->currentRow() + 1);
+	    /* we need to look up the next well we will be using */
+	    nextWell = wellSequenceListWidget->currentItem()->text().toInt();
+	}
+	else {
+	    QMessageBox::critical(this, "Error", 
+		    "End of sequence list reached");
+	    return;
+	}
+    }
+    else if (useSequenceButton->isChecked()) {
+	/* we didn't reward the animal and we shouldn't move on, so do nothing */
+	return;
+    }
     for (i = 0; i < nWells->value(); i++) {
 	if (!useSequenceButton->isChecked()) {
 	    /* we can't reward the same well twice, so we skip the current well's
@@ -762,11 +790,11 @@ void rewardControl::rewardWell(int well, bool reward)
 		    curr[i]->isSelected(well)) {
 		    /* we reward this well next. Note that this will update wellStatus*/
 		    next[i]->setChecked(true);
-		    fprintf(stderr, "next[%d] true\n",  i);
+		    //fprintf(stderr, "next[%d] true\n",  i);
 		}
 		else {
 		    next[i]->setChecked(false);
-		    fprintf(stderr, "next[%d] false\n", i);
+		    //fprintf(stderr, "next[%d] false\n", i);
 		}
 	    }
 	}
@@ -812,10 +840,12 @@ void rewardControl::DIOInput(DIOBuffer *diobuf)
 	    /* we ignore this if the animal was just rewarded at this well*/
 	    if (prevWell != i) {
 		if (next[i]->isChecked()) {
+		    //fprintf(stderr, "rewardWell %d\n", i);
 		    rewardWell(i, true);
 		    break;
 		}
 		else {
+		//fprintf(stderr, "rewardWell %d\n", i);
 		    /* this is an error */
 		    rewardWell(i, false);
 		    break;

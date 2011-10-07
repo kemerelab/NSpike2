@@ -100,13 +100,19 @@ void ProcessData(int datatype, char *data, int datalen)
       ratSpeed = filterPosSpeed(posdataptr[1],posdataptr[2]);
       if (stimcontrolMode == DIO_RTMODE_SPATIAL_STIM) {
 	stim = ProcessSpatialData(posdataptr[1], posdataptr[2]);
-	if (stim && !spatialFiltStat.stimOn) {
+        //fprintf(stderr, "stim = %d, tdiff = %d\n", 
+            //stim, ctinfo.timestamp - spatialFiltStat.lastChange);
+	if (stim && !spatialFiltStat.stimOn && 
+            (ctinfo.timestamp - spatialFiltStat.lastChange >
+             spatialFiltStat.lockoutTime)) {
 	  // the animal is in the box and stimulation is off, so turn it on
 	  PulseOutputCommand(rtStimPulseCmd);
 	  spatialFiltStat.stimOn = true;
 	  spatialFiltStat.lastChange = ctinfo.timestamp;
 	}
-	else if (!stim && spatialFiltStat.stimOn) {
+	else if (!stim && spatialFiltStat.stimOn &&
+                (ctinfo.timestamp - spatialFiltStat.lastChange >
+                 spatialFiltStat.lockoutTime)) {
 	  // the animal is not in the box and stimulation is on, so turn it off.
 	  StopOutput(&rtStimPulseCmd);
 	  spatialFiltStat.stimOn = false;

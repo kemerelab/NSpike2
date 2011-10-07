@@ -200,6 +200,7 @@ typedef struct _DigIOInfo {
     unsigned short statemachineptr[DIO_N_STATE_MACHINES];  // the current pointer for each state machines */
     unsigned short statemachinebaseaddr[DIO_N_STATE_MACHINES];  // the base address for each state machine
     unsigned short statemachinebuffer[DIO_N_STATE_MACHINES];  // the start of the memory buffer to be written to for each state machine
+    unsigned short statemachineenableaddr[DIO_N_STATE_MACHINES]; // the address to write the enable / disable command to a  state machine
     int nports;
     int porttype[MAX_DSP_DIO_PORTS];  // 0 for input, 1 for output 
     int nprograms;

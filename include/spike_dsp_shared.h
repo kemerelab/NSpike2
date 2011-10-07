@@ -12,8 +12,11 @@ typedef struct _ArbInfo {
 
 int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine=-1, int sendResetStateMachine=1);
 int SendStartDIOCommand(int s);
+int EnableStateMachine(int number, bool enable);
+int EnableStateMachines(bool enable);
 int ResetStateMachine(int number);
 int ResetStateMachines();
+unsigned short ReadStateMachinePtr(int s);
 int WriteDSPDIORestartStateMachine(int s);
 int LookForDSPDIOResponse(void);
 int NextDIOStateMachine(void);

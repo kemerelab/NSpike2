@@ -153,5 +153,6 @@ typedef struct _SpatialStimParameters {
     int upperRightY;
     double minSpeed;
     double maxSpeed;
+    int   lockoutTime;
 } SpatialStimParameters;
 #endif

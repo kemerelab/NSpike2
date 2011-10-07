@@ -268,6 +268,14 @@ int main(int argc, char **argv)
     digioinfo.statemachineptr[1] = DIO_STATE1_PTR;
     digioinfo.statemachineptr[2] = DIO_STATE2_PTR;
     digioinfo.statemachineptr[3] = DIO_STATE3_PTR;
+#ifdef DIO_ON_MASTER_DSP
+    digioinfo.statemachineenableaddr[0] = DIO_STATE_ENABLE;
+#else
+    digioinfo.statemachineenableaddr[0] = DIO_STATE0_ENABLE;
+    digioinfo.statemachineenableaddr[1] = DIO_STATE1_ENABLE;
+    digioinfo.statemachineenableaddr[2] = DIO_STATE2_ENABLE;
+    digioinfo.statemachineenableaddr[3] = DIO_STATE3_ENABLE;
+#endif
   }
 
 
@@ -1149,8 +1157,17 @@ void DisplayPosDataRate(void)
 void DrawInitialScreen(void)
 {
   int i;
-  /* clear the screen */
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+  /* clear the screen. Drawing at -1 puts this behind the
+   * buttons, which seems to ensure that the buttons come on top */
+  glBegin(GL_QUADS);
+  glColor3f(0, 0, 0);
+  glVertex3f(-100, -100, -1);
+  glVertex3f(-100, 100, -1);
+  glVertex3f(100, 100, -1);
+  glVertex3f(100, -100, -1);
+  glEnd();
+
+
   /* Draw the initial screen */
   if (sysinfo.datatype[sysinfo.machinenum] & SPIKE) {
     /* if we are in spike mode, we need to reset all of the projection window pointers so
