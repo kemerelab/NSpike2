@@ -3,7 +3,7 @@
 
 # the following looks at the host variable and sets the ethernet interfact
 # appropriately.  Modify this for your system.
-eth=eth1
+eth=eth0
 
 #reload the sysctl settings
 # sysctl -p

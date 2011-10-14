@@ -53,6 +53,11 @@ void StopOutput(PulseCommand *pulseCmd)
   while (ReadStateMachinePtr(pulseCmd->statemachine)) {
     usleep(2000);
   }
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> f5e756a0826d9f6216d1d0478897ad51ca743877
   fprintf(stderr, "turned off dio and aout, %d\n", aOutPort);
   return;
 }
@@ -66,7 +71,6 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
   bool use_arb;
 
   u32 time_on, time_on_low, time_on_high;
-  u32 dummyCommandTime;
 
   int digitalPort1, digitalPort2;
   unsigned short aOutPort;
@@ -169,9 +173,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
        * desired time */
       if ((pulseCmd.aout_mode != DIO_AO_MODE_CONTINUOUS) &&
           !(use_arb && pulseCmd.arbinfo.continuous)) {
-	//command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on;  //Changed by Caleb
-        len += AddWaitToCommand(tick_pulse_on, command + len, 
-              &dummyCommandTime);
+	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
 	if (!use_arb) {
 	  /* turn off the analog output */
 	  command[len++] = DIO_S_SET_PORT | aOutPort; 
@@ -187,9 +189,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
       }
 
       if (i < (pulseCmd.n_pulses-1)) {
-	//command[len++] = DIO_S_WAIT_WAIT | tick_pulse_off; //Changed by Caleb
-        len += AddWaitToCommand(tick_pulse_off, command + len, 
-              &dummyCommandTime);
+	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_off;
         if (ctinfo.command_time < UINT_MAX) {
           ctinfo.command_time += pulseCmd.inter_pulse_delay;
         }
