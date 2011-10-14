@@ -170,7 +170,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
       if ((pulseCmd.aout_mode != DIO_AO_MODE_CONTINUOUS) &&
           !(use_arb && pulseCmd.arbinfo.continuous)) {
 	//command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on;  //Changed by Caleb
-        len += AddWaitToCommand(tick_pulse_on, command + len, 
+        len += AddWaitToCommand(pulseCmd.pulse_width, command + len, 
               &dummyCommandTime);
 	if (!use_arb) {
 	  /* turn off the analog output */
@@ -188,7 +188,7 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
 
       if (i < (pulseCmd.n_pulses-1)) {
 	//command[len++] = DIO_S_WAIT_WAIT | tick_pulse_off; //Changed by Caleb
-        len += AddWaitToCommand(tick_pulse_off, command + len, 
+        len += AddWaitToCommand(pulseCmd.inter_pulse_delay, command + len, 
               &dummyCommandTime);
         if (ctinfo.command_time < UINT_MAX) {
           ctinfo.command_time += pulseCmd.inter_pulse_delay;
