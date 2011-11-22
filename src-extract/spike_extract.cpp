@@ -26,7 +26,6 @@
 #include "spike_dio.h"
 #define fopen fopen64
 
-
 int WriteSpikeData(u32 offset);
 int WriteContData(u32 offset);
 int WritePosData(u32 offset);
@@ -399,8 +398,7 @@ int WriteContData(u32 offset)
       /* construct strings for each of them so that all of the directory 
        * names are the same length */
       if (extractinfo.usechannum) {
-	sprintf(outfilename, "%02d-%02d-%03d", ch->number, ch->electchan, 
-		ch->depth);
+	sprintf(outfilename, "%02d-%02d-%03d", ch->number, ch->electchan, ch->depth);
       }
       else {
         sprintf(outfilename, "%02d-%03d", ch->number, ch->depth);
@@ -910,6 +908,19 @@ int WriteEventData(u32 offset)
     return 0;
 }
 
+
+int PROTECTED_gzread(gzFile file, void *buf, unsigned len) {
+  int tmp;
+  try {
+    tmp = gzread(file, buf, len);
+  }
+  catch (int exception){
+    fprintf(stderr, "Exception in gzread: %d\n", exception);
+    return -1;
+  }
+  return tmp;
+}
+
 short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
 {
     PosMPEGBuffer   ptmp;
@@ -926,7 +937,7 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
     int i;
 
     /* get the character that will tell us what kind of record we're looking at */
-    if ((tmp = gzread(extractinfo.datafile, &recordtype, sizeof(short))) != sizeof(short)) {
+    if ((tmp = PROTECTED_gzread(extractinfo.datafile, &recordtype, sizeof(short))) != sizeof(short)) {
   fprintf(stderr, "Error: unable to read in record type from file at offset %ld\n", 
       (long int)(*fileoffset));
   return -1;
@@ -938,13 +949,13 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
     switch ((int) recordtype) {
   case SPIKE_DATA_TYPE:
       /* read in the data size */
-      if (gzread(extractinfo.datafile, &size, sizeof(int)) != sizeof(int)) {
+      if (PROTECTED_gzread(extractinfo.datafile, &size, sizeof(int)) != sizeof(int)) {
     fprintf(stderr, "Error: unable to read in size from file at offset %ld\n", 
         (long int)(*fileoffset));
     return -1;
       }
       *fileoffset += sizeof(int);
-      if (gzread(extractinfo.datafile, data, size) != size) {
+      if (PROTECTED_gzread(extractinfo.datafile, data, size) != size) {
     fprintf(stderr, "Error: unable to read in size from file at offset %ld\n", 
         (long int)(*fileoffset));
     return -1;
@@ -959,14 +970,14 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
       break;
   case CONTINUOUS_DATA_TYPE:
       /* read in the size of the record */
-      if (gzread(extractinfo.datafile, &size, sizeof(int)) != sizeof(int)) {
+      if (PROTECTED_gzread(extractinfo.datafile, &size, sizeof(int)) != sizeof(int)) {
     fprintf(stderr, "Error: unable to read in size from file at offset %ld\n", 
         (long int)(*fileoffset));
     return -1;
       }
       *fileoffset += sizeof(int);
       /* read in the data */
-      if (gzread(extractinfo.datafile, &ctmp, size) != size) {
+      if (PROTECTED_gzread(extractinfo.datafile, &ctmp, size) != size) {
     fprintf(stderr, "Error: unable to read in continuous data from file at offset %ld\n", 
         (long int) (*fileoffset));
     return -1;
@@ -980,7 +991,7 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
   case POSITION_DATA_TYPE:
       /* read in the timestamp */
       size = sizeof(ptmp.timestamp);
-      if (gzread(extractinfo.datafile, &ptmp.timestamp, size) != size) {
+      if (PROTECTED_gzread(extractinfo.datafile, &ptmp.timestamp, size) != size) {
     fprintf(stderr, "Error: unable to read in position timestamp from file at offset %ld\n",
         (long int) (*fileoffset));
     return -1;
@@ -989,7 +1000,7 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
       fileoffset += size;
       size = sizeof(ptmp.size);
       /* read in the size */
-      if (gzread(extractinfo.datafile, &ptmp.size, size) != size) {
+      if (PROTECTED_gzread(extractinfo.datafile, &ptmp.size, size) != size) {
     fprintf(stderr, "Error: unable to read in position size from file at offset %ld\n",
         (long int) (*fileoffset));
     return -1;
@@ -998,7 +1009,7 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
       *datasize += size;
       /* read in the data */
       size = ptmp.size * sizeof(unsigned char);
-      if (gzread(extractinfo.datafile, &ptmp.frame, size) != size) {
+      if (PROTECTED_gzread(extractinfo.datafile, &ptmp.frame, size) != size) {
     fprintf(stderr, "Error: unable to read in position data from file at offset %ld\n",
         (long int) (*fileoffset));
     return -1;
@@ -1011,7 +1022,7 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
       break;
   case DIGITALIO_DATA_TYPE:
       size = DIO_BUF_STATIC_SIZE;
-      if (gzread(extractinfo.datafile, &dtmp, size) 
+      if (PROTECTED_gzread(extractinfo.datafile, &dtmp, size) 
         != size) {
     fprintf(stderr, "Error: unable to read in digital IO data from file at offset %ld\n",
         (long int) (*fileoffset));
@@ -1027,7 +1038,7 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
       /* the data consist of an event structure */
       size = sizeof(EventBuffer);
       *datasize = size;
-      if (gzread(extractinfo.datafile, &etmp, size) != size) {
+      if (PROTECTED_gzread(extractinfo.datafile, &etmp, size) != size) {
     fprintf(stderr, "Error: unable to read in event data from file at offset %ld\n",
         (long int) (*fileoffset));
     return -1;
@@ -1041,7 +1052,7 @@ short GetNextRecord(char *data, u32 *fileoffset, int *datasize)
       /* the data are three u32 times */
       size = TIME_CHECK_BUF_STATIC_SIZE;
       *datasize = size;
-      if (gzread(extractinfo.datafile, tptr, size) != size) {
+      if (PROTECTED_gzread(extractinfo.datafile, tptr, size) != size) {
     fprintf(stderr, "Error: unable to read in timecheck data from file at offset %ld\n",
         (long int) (*fileoffset));
     return -1;

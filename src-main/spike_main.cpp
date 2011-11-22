@@ -253,17 +253,17 @@ int main(int argc, char **argv)
       }
     }
     /* set the pointers to the state machine memory locations. We start
-     * one instruction into the buffer so that we can leave the first
-     * instruction as a wait forever that we will jump back to once the 
+     * TWO instructions into the buffer so that we can leave the first two
+     * instructions as wait forevers that we will jump back to once the 
      * state machine is done executing */
     digioinfo.statemachinebaseaddr[0] = DIO_STATE0_BASE_ADDR;
     digioinfo.statemachinebaseaddr[1] = DIO_STATE1_BASE_ADDR;
     digioinfo.statemachinebaseaddr[2] = DIO_STATE2_BASE_ADDR;
     digioinfo.statemachinebaseaddr[3] = DIO_STATE3_BASE_ADDR;
-    digioinfo.statemachinebuffer[0] = DIO_STATE0_BUFFER_START + 1;
-    digioinfo.statemachinebuffer[1] = DIO_STATE1_BUFFER_START + 1;
-    digioinfo.statemachinebuffer[2] = DIO_STATE2_BUFFER_START + 1;
-    digioinfo.statemachinebuffer[3] = DIO_STATE3_BUFFER_START + 1;
+    digioinfo.statemachinebuffer[0] = DIO_STATE0_BUFFER_START + 2;
+    digioinfo.statemachinebuffer[1] = DIO_STATE1_BUFFER_START + 2;
+    digioinfo.statemachinebuffer[2] = DIO_STATE2_BUFFER_START + 2;
+    digioinfo.statemachinebuffer[3] = DIO_STATE3_BUFFER_START + 2;
     digioinfo.statemachineptr[0] = DIO_STATE0_PTR;
     digioinfo.statemachineptr[1] = DIO_STATE1_PTR;
     digioinfo.statemachineptr[2] = DIO_STATE2_PTR;

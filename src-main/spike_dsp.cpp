@@ -209,6 +209,17 @@ int ProgramDSPDIO(short dspnum)
 	}
     }
 #endif
+    /* Initialize the first two elements of each state machine buffer to 0 (JUMP_REL to self) */
+    data[0] = 0x0000; // JUMP_REL to self
+    data[1] = 0x0000;
+    for (i = 0; i < DIO_N_STATE_MACHINES; i++) {
+    if (!WriteDSPData(DSPDIO, digioinfo.statemachinebaseaddr[i], 
+      digioinfo.statemachinebuffer[i] - 2, 2, data)) {
+        sprintf(tmpstring, "Error initialing state machine buffers in DSP");
+        DisplayErrorMessage(tmpstring);
+	return 0;
+    }
+    }
 
     if (error) {
         return 0;

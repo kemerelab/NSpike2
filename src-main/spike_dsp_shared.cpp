@@ -369,8 +369,8 @@ int WriteDSPDIOCommand(unsigned short *command, int len, int statemachine, int s
     
     if (sendResetStateMachine == 1) {
       /* Finally, we reset the state machine pointer to the beginning of the 
-       * new command, which is at offset 1 from the beginning of the buffer */
-      command[0] = 1;
+       * new command, which is at offset 2 from the beginning of the buffer */
+      command[0] = 2;
       if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command)) {
           sprintf(tmpstring, "Error writing digital IO state machine pointer to DSP");
           DisplayErrorMessage(tmpstring);
@@ -384,7 +384,7 @@ int SendStartDIOCommand(int s)
     /* write data to the dsp. data must contain < 24 words */
 {
     unsigned short command[1];
-    command[0] = 1;
+    command[0] = 2;
     if (!WriteDSPData(DSPDIO, DSP_SRAM, digioinfo.statemachineptr[s], 1, command)) {
       sprintf(tmpstring, "Error writing digital IO state machine pointer to DIO DSP");
       DisplayErrorMessage(tmpstring);
