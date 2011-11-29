@@ -64,8 +64,10 @@ DIOInterface::DIOInterface(QWidget* parent,
     stimConfigTab = new StimConfigTab(this);
     qtab->insertTab(stimConfigTab, "Configure Digital Stimulators", CONFIG_STIMULATORS_TAB);
 
+#ifndef DIO_ON_MASTER_DSP
     aOutConfigTab = new AOutConfigTab(this);
     qtab->insertTab(aOutConfigTab, "Configure Analog Out", CONFIG_ANALOG_OUT_TAB);
+#endif
 
     stimOutputOnlyTab = new StimOutputOnlyTab(this);
     qtab->insertTab(stimOutputOnlyTab, "Output-Only Experiments", OUTPUT_ONLY_TAB);
@@ -74,9 +76,12 @@ DIOInterface::DIOInterface(QWidget* parent,
     connect(stimConfigTab, SIGNAL(activeStimulatorChanged(int)), stimOutputOnlyTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(stimOutputOnlyTab->stimulatorSelectComboBox, SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
 
+
+#ifndef DIO_ON_MASTER_DSP
     /* connections to aOutConfig for analog stimulation */
     connect(aOutConfigTab, SIGNAL(activeAOutChanged(int, int, int)), stimOutputOnlyTab, SLOT(updateActiveAOut(int, int, int)));
     connect(stimOutputOnlyTab->aOutSelectComboBox, SIGNAL(currentIndexChanged(int)), aOutConfigTab, SLOT(setActiveAOut(int)));
+#endif
 
     connect(stimOutputOnlyTab->stimSingleButton, SIGNAL(clicked()), this, SLOT(triggerSingleStim()));
     connect(stimOutputOnlyTab->startStimButton, SIGNAL(clicked()), this, SLOT(startOutputOnlyStim()));
@@ -93,12 +98,14 @@ DIOInterface::DIOInterface(QWidget* parent,
         realtimeFeedbackTab->stimulatorSelectComboBox,SLOT(setCurrentIndex(int)));
     connect(realtimeFeedbackTab->stimulatorSelectComboBox, 
         SIGNAL(currentIndexChanged(int)), stimConfigTab, SLOT(setActiveStimulator(int)));
+#ifndef DIO_ON_MASTER_DSP
     /* connections to aOutConfig for analog stimulation */
     connect(aOutConfigTab, SIGNAL(activeAOutChanged(int, int, int)), 
 	    realtimeFeedbackTab, SLOT(updateActiveAOut(int, int, int)));
     connect(realtimeFeedbackTab->aOutSelectComboBox, 
 	    SIGNAL(currentIndexChanged(int)), aOutConfigTab, 
 	    SLOT(setActiveAOut(int)));
+#endif
 
     connect(realtimeFeedbackTab->resetFeedbackButton, SIGNAL(clicked()), this, SLOT(resetRealtimeStim()));
     connect(realtimeFeedbackTab->startFeedbackButton, SIGNAL(clicked()), this, SLOT(startRealtimeStim()));
@@ -190,7 +197,13 @@ void DIOInterface::enableTabs(bool enable)
 void DIOInterface::triggerSingleStim(void)
 {
   PulseCommand pCmd[3]; // at most 3 pulse commands are needed
-  qDebug("triggerSingleStim signal received.\nCurrent digital stimulator is: %d\nCurrent Analog Output is %d", stimConfigTab->activeStimulator, aOutConfigTab->activeAOut);
+#ifdef DIO_ON_MASTER_DSP
+  qDebug("triggerSingleStim signal received.\nCurrent digital stimulator is: %d\n", 
+      stimConfigTab->activeStimulator);
+#else
+  qDebug("triggerSingleStim signal received.\nCurrent digital stimulator is: %d\nCurrent Analog Output is %d", 
+      stimConfigTab->activeStimulator, aOutConfigTab->activeAOut);
+#endif
   /* first handle digital stimulation events */
   switch (stimConfigTab->activeStimulator) {
   case 1:
@@ -226,6 +239,7 @@ void DIOInterface::triggerSingleStim(void)
     break;
   }
 
+#ifndef DIO_ON_MASTER_DSP
   switch (aOutConfigTab->activeAOut) {
   case 1:
     pCmd[0] = aOutConfigTab->aOut1Config->aOutPulseCmd;
@@ -254,6 +268,7 @@ void DIOInterface::triggerSingleStim(void)
     qDebug("No active Analog Output set.");
     break;
   }
+#endif
 
 }
 
@@ -318,6 +333,7 @@ void DIOInterface::startOutputOnlyStim(void)
     break;
   }
 
+#ifdef DIO_ON_MASTER_DSP
   // Trigger the analog output if selected
   switch (aOutConfigTab->activeAOut) {
   case 1:
@@ -357,6 +373,7 @@ void DIOInterface::startOutputOnlyStim(void)
     qDebug("No active analog output set.");
     break;
   }
+#endif
 }
 
 void DIOInterface::abortOutputOnlyStim(void)
@@ -375,12 +392,13 @@ void DIOInterface::startRealtimeStim(void)
 {
   PulseCommand pCmd[4]; // at most 3 pulse commands are needed
   
+#ifndef DIO_ON_MASTER_DSP
   /* Check to see that only one analog or one digital output is selected */
   if ((aOutConfigTab->activeAOut > 0) && (stimConfigTab->activeStimulator > 0)) {
     qDebug("Error: both analog and digital stimulation selected");
     return;
   }
-
+#endif
 
   qDebug("startRealtimeStim signal received");
 
@@ -432,6 +450,7 @@ void DIOInterface::startRealtimeStim(void)
     break;
   }
 
+#ifndef DIO_ON_MASTER_DSP
   // Trigger the analog output if selected
   switch (aOutConfigTab->activeAOut) {
   case 1:
@@ -465,6 +484,8 @@ void DIOInterface::startRealtimeStim(void)
     qDebug("No active analog output set.");
     break;
   }
+#endif
+
   SendFSDataMessage(DIO_START_RT_FEEDBACK, NULL, 0);
   /* Now disable the start button and enable the stop button*/
   realtimeFeedbackTab->startFeedbackButton->setEnabled(false);

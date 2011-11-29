@@ -259,6 +259,8 @@ void AOutConfigureWidget::updateAOutPulseCmd(void)
   aOutPulseCmd.maxv = aOutRangeMaxSpinBox->value();
   aOutPulseCmd.wave_percent = aOutWaveMode->maxPercentSpinBox->value();
 
+
+#ifndef DIO_ON_MASTER_DSP
   aOutPulseCmd.arbinfo.aout = aOutPulseCmd.aout;
   aOutPulseCmd.arbinfo.continuous = aOutWaveMode->continuousButton->isChecked();
   aOutPulseCmd.arbinfo.trigger_pin = aOutPulseCmd.pin1;
@@ -306,6 +308,7 @@ void AOutConfigureWidget::updateAOutPulseCmd(void)
 	    aOutPulseCmd.arbinfo.len) * i - PI / 2)) / 2.0 * (float) deltalevel);
     } 
   }
+#endif
 }
 
 AOutContinuousMode::AOutContinuousMode(QWidget *parent) : QWidget(parent)
@@ -508,7 +511,9 @@ AOutWaveMode::AOutWaveMode(QWidget *parent) : QWidget(parent)
   layout->addWidget(new QLabel("Length/Period: "), 2, 0,  Qt::AlignRight);
   lengthSpinBox = new QSpinBox();
   lengthSpinBox->setAlignment(Qt::AlignRight);
+#ifndef DIO_ON_MASTER_DSP
   lengthSpinBox->setRange(0, DIO_ARB_MAX_WAVE_LEN_MS);
+#endif
   lengthSpinBox->setValue(0);
   lengthSpinBox->setSuffix(" ms");
   lengthSpinBox->setToolTip("Length in ms of ramp");

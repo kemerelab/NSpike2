@@ -27,6 +27,7 @@ void StopOutput(PulseCommand *pulseCmd)
     }
   }
   else {
+#ifndef DIO_ON_MASTER_DSP
     if (pulseCmd->aout_mode == DIO_AO_MODE_WAVE) {
       /* disable the arbitrary waveform generator */
       EnableArb(0);
@@ -40,14 +41,18 @@ void StopOutput(PulseCommand *pulseCmd)
       fprintf(stderr, "Error stopping analog out %d\n", pulseCmd->aout);
     }
 
+#endif
   }
   if (SendStartDIOCommand(pulseCmd->statemachine) <= 0) {
     fprintf(stderr,"feedback/stim: error sending start DIO command.\n");
   }
+
+#ifndef DIO_ON_MASTER_DSP
   if (pulseCmd->aout_mode == DIO_AO_MODE_WAVE) {
       /* re-enable the arbitrary waveform generator */
       EnableArb(1);
   }
+#endif
   /* Wait for the state machine pointer to go to 0 so that we
    * know the output has been turned off */
   while (ReadStateMachinePtr(pulseCmd->statemachine) > 1) {
@@ -116,22 +121,38 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
       command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin1;
       ctinfo.command_time += pulseCmd.pulse_width;
       if (pulseCmd.is_biphasic) {
+
+#ifdef DIO_ON_MASTER_DSP // more accurate DIO_S_WAIT_WAIT not available
+	command[len++] = DIO_S_WAIT | tick_pulse_on; 
+	command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin2;
+	command[len++] = DIO_S_WAIT | tick_pulse_on; 
+#else
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
 	command[len++] = DIO_S_SET_OUTPUT_HIGH | pulseCmd.pin2;
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
+#endif
 	ctinfo.command_time += pulseCmd.pulse_width;
       }
       else {
+#ifdef DIO_ON_MASTER_DSP // more accurate DIO_S_WAIT_WAIT not available
+	command[len++] = DIO_S_WAIT | tick_pulse_on; 
+#else
 	command[len++] = DIO_S_WAIT_WAIT | tick_pulse_on; 
+#endif
       }
       command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin1;
       command[len++] = DIO_S_SET_OUTPUT_LOW | pulseCmd.pin2;
       if (i < (pulseCmd.n_pulses-1))
+#ifdef DIO_ON_MASTER_DSP // more accurate DIO_S_WAIT_WAIT not available
+	command[len++] = DIO_S_WAIT| tick_pulse_off;
+#else
 	command[len++] = DIO_S_WAIT_WAIT| tick_pulse_off;
+#endif
 	ctinfo.command_time += pulseCmd.inter_pulse_delay;
     }
   }
   else {
+#ifndef DIO_ON_MASTER_DSP // more accurate DIO_S_WAIT_WAIT not available
     use_arb = false;
     /* create an analog pulse at the desired level. */
     switch (pulseCmd.aout_mode) {
@@ -195,6 +216,9 @@ int GeneratePulseCommand(PulseCommand pulseCmd, unsigned short *command) {
         }
       }
     }
+#else
+    fprintf(stderr, "spike_fsdata: Analog DIO not enabled.\n");
+#endif
   }
   return len;
 }

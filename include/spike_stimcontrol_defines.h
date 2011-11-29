@@ -101,7 +101,9 @@ typedef struct _PulseCommand {
                    // except for -1 which is the special case of continuous
     int inter_frame_delay; // in ticks;
 
+#ifndef DIO_ON_MASTER_DSP
     ArbInfo arbinfo;
+#endif
 
 } PulseCommand;
 

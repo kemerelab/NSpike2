@@ -42,6 +42,18 @@ int AddWaitToCommand(u32 waittime, unsigned short *command, u32 *command_time)
   *command_time += waittime;
   // now wait for (pre_delay * 3 samples - 1 for processing*/
   waitsamp = (waittime) * SAMP_TO_TIMESTAMP - 1;
+
+
+#ifdef DIO_ON_MASTER_DSP
+  // more accurrate DO_S_WAIT_WAIT is not available
+  while (waitsamp > DIO_MAX_WAIT_SAMP) {
+    command[len++] = DIO_S_WAIT | DIO_MAX_WAIT_SAMP;
+    waitsamp -= DIO_MAX_WAIT_SAMP;
+  }
+  if (waitsamp > 1) {
+    command[len++] = DIO_S_WAIT | waitsamp; 
+  }
+#else
   while (waitsamp > DIO_MAX_WAIT_SAMP) {
     command[len++] = DIO_S_WAIT_WAIT | DIO_MAX_WAIT_SAMP;
     waitsamp -= DIO_MAX_WAIT_SAMP;
@@ -49,6 +61,7 @@ int AddWaitToCommand(u32 waittime, unsigned short *command, u32 *command_time)
   if (waitsamp > 1) {
     command[len++] = DIO_S_WAIT_WAIT | waitsamp; 
   }
+#endif
   return len;
 }
 

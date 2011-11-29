@@ -51,7 +51,9 @@ SysInfo 		sysinfo;
 NetworkInfo		netinfo;
 FSDataInfo		fsdatainfo;
 DigIOInfo		digioinfo;
+#ifndef DIO_ON_MASTER_DSP
 ArbInfo			arbinfo[NUM_ARBS];
+#endif
 
 SocketInfo 		server_message[MAX_CONNECTIONS]; // the structure for the server messaging
 SocketInfo 		client_message[MAX_CONNECTIONS]; // the structure for the client messaging
