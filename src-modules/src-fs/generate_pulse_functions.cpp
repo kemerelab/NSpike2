@@ -14,7 +14,7 @@ void StopOutput(PulseCommand *pulseCmd)
 
   /* Wait for the state machine pointer to go to 0 so that we
    * know it has been stopped */
-  while (ReadStateMachinePtr(pulseCmd->statemachine)) {
+  while (ReadStateMachinePtr(pulseCmd->statemachine) > 1) {
     usleep(2000);
   }
 
@@ -50,7 +50,7 @@ void StopOutput(PulseCommand *pulseCmd)
   }
   /* Wait for the state machine pointer to go to 0 so that we
    * know the output has been turned off */
-  while (ReadStateMachinePtr(pulseCmd->statemachine)) {
+  while (ReadStateMachinePtr(pulseCmd->statemachine) > 1) {
     usleep(2000);
   }
   fprintf(stderr, "turned off dio and aout, %d\n", aOutPort);
