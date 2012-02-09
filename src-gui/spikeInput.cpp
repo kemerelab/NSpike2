@@ -23,8 +23,8 @@
 #include "spikeInput.h"
 #include "spike_main.h"
 #include "spike_functions.h"
-
 #include "spikeMainWindow.h"
+#include "audio.h"
 
 #include <string>
 #include <sstream>
@@ -982,12 +982,19 @@ void SpikeEEGInfo::updateAll(void)
     }
 }
 
+
 SpikeEEGDialog::SpikeEEGDialog(QWidget* parent, const char* name, bool modal, 
 	Qt::WFlags fl, int chanNum)
     : QDialog( parent, name, modal, fl ), chanNum(chanNum)
 {
   bool enabled; 
   ChannelInfo *ch;
+
+ //  AudioThread *audThread = new AudioThread();
+//   audThread->sound = new QAlsaSound("test", NULL);
+//   audThread->start();
+//   sleep(2);
+//   audThread->stopSound();
 
   enabled = !sysinfo.fileopen;
 

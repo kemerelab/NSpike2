@@ -15,6 +15,7 @@
 #include <Q3GridLayout>
 #include <Q3BoxLayout>
 
+#include "audio.h"
 #include "spikeGLPane.h"
 #include "spikeFSGUI.h"
 #include "spike_dsp.h"
@@ -36,11 +37,14 @@ class rewardControl : public QDialog {
         Qt::WFlags fl = 0);
     ~rewardControl();
     void 	DIOInput(DIOBuffer *diobuf);
+    AudioThread *audThread;
 
   signals:
     void finished(void);
 
   private slots:
+  //  void        timedOut(void){ audThread->stopSound();};
+
     void 	load() { loadFile(); };
     void 	save() { saveFile(); };
     void	createTabs(void) { 

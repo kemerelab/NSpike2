@@ -18,6 +18,9 @@ HEADERS += rewardControl.h
 SOURCES += spikeFSData.cpp
 HEADERS += spikeFSData.h
 
+SOURCES += qsoundalsa.cpp
+HEADERS += audio.h
+
 # SOURCES += spikeFSThetaGUI.cpp 
 # SOURCES += fsRippleGUI.cpp
 # SOURCES += spikeFSLatencyGUI.cpp 
@@ -36,6 +39,8 @@ SOURCES += fsOutputOnlyTab.cpp
 HEADERS += fsOutputOnlyTab.h 
 SOURCES += fsRealtimeFeedbackTab.cpp
 HEADERS += fsRealtimeFeedbackTab.h 
+
+LIBS += libasound
 
 RESOURCES += guiresources.qrc
 QT += qt3support

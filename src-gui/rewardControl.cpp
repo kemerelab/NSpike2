@@ -22,6 +22,7 @@
 #include "rewardControl.h"
 #include "spikeGLPane.h"
 #include "spike_main.h"
+#include "audio.h"
 
 
 #include <string>
@@ -61,6 +62,13 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
     struct timezone tz;
     gettimeofday(&tv, &tz);
     srand48((long) tv.tv_sec);
+
+    
+
+    //gideon's addition
+    //  audThread = new AudioThread();
+
+
 
 
     /* Tab 1 */
@@ -532,6 +540,7 @@ void rewardControl::createLogicTab(int n)
 	    grid1->addMultiCellWidget(output0BitLength[i], 14, 14, col, col);
 	}
     }
+    audThread = NULL;
 }
 
 
@@ -568,7 +577,7 @@ void rewardControl::createStatusTab(int n)
   /* create the status tab with the correct number of wells */
   QString tablabel2 = QString("Status"); 
   qtab->insertTab(w, tablabel2, 2); 
-  //Q3GridLayout *grid2 = new Q3GridLayout(w, 9, MIN(n,3), 0, 0, "grid 2");
+  //q3GridLayout *grid2 = new Q3GridLayout(w, 9, MIN(n,3), 0, 0, "grid 2");
   QGridLayout *grid2 = new QGridLayout(w);
 
   /* create the well labels and the logic  */
@@ -689,139 +698,176 @@ void rewardControl::resetRewardCounters()
 
 void rewardControl::rewardWell(int well, bool reward) 
 {
-    /* put a reward at the well if we should and use the logic to update the nextwell
-     * variable */
-    int i;
-    int bit[3];
-    int length[3];
-    int delay[3];
+  /* put a reward at the well if we should and use the logic to update the nextwell
+   * variable */
+  int i;
+  int bit[3];
+  int length[3];
+  int delay[3];
 
-    int nextWell = 0;
+  int nextWell = 0;
 
-    if (well < 0) {
-        return;
-    }
-    if (reward) {
-	if (useSequenceButton->isChecked()) {
-	    if ((wellSequenceListWidget->currentRow() + 1) < 
-	         wellSequenceListWidget->count()) {
-		/* we first move on to the next row of the list*/
-		wellSequenceListWidget->setCurrentRow(
-			wellSequenceListWidget->currentRow() + 1);
-		/* we need to look up the next well we will be using */
-		nextWell = wellSequenceListWidget->currentItem()->text().toInt();
-		if ((well == 0) && (output0Bit[nextWell]->value() != -1)) {
-		    /* this means there is a special output for well 0 given 
-		     * that nextWell is coming up next */
-		    bit[0]= output0Bit[nextWell]->value();
-		    length[0]= output0BitLength[nextWell]->value();
-		    delay[0] = 0;
-		}
-		else {
-		    bit[0] = outputBit1[well]->value();
-		    length[0] = outputBit1Length[well]->value();
-		    delay[0] = 0;
-		}
-	    }
-	    else {
-		QMessageBox::critical(this, "Error", 
-			"End of sequence list reached");
-		return;
-	    }
+  if (well < 0) {
+    return;
+  }
+  if (reward) {
+    if (useSequenceButton->isChecked()) {
+      if ((wellSequenceListWidget->currentRow() + 1) < 
+	  wellSequenceListWidget->count()) {
+	/* we first move on to the next row of the list*/
+	wellSequenceListWidget->setCurrentRow(
+					      wellSequenceListWidget->currentRow() + 1);
+	/* we need to look up the next well we will be using */
+	nextWell = wellSequenceListWidget->currentItem()->text().toInt();
+	if ((well == 0) && (output0Bit[nextWell]->value() != -1)) {
+	  /* this means there is a special output for well 0 given 
+	   * that nextWell is coming up next */
+	  bit[0]= output0Bit[nextWell]->value();
+	  length[0]= output0BitLength[nextWell]->value();
+	  delay[0] = 0;
 	}
 	else {
-		fprintf(stderr, "not using sequence\n");
-	    bit[0] = outputBit1[well]->value();
-	    length[0] = outputBit1Length[well]->value();
-	    delay[0] = 0;
+	  bit[0] = outputBit1[well]->value();
+	  length[0] = outputBit1Length[well]->value();
+	  delay[0] = 0;
 	}
-	bit[1] = outputBit2[well]->value();
-	length[1] = outputBit2Length[well]->value();
-	delay[1] = 0;
-	bit[2] = outputBit3[well]->value();
-	length[2] = outputBit3Length[well]->value();
-	delay[2] = outputBit3Delay[well]->value();
-
-	/* use the random number generator to determine whether we issue a
-	 * reward */
-	if ((drand48() * 100) <=  outputBit1Percent[well]->value()) {
-	    //TriggerOutput(outputBit[well]->value());
-	    TriggerOutputs(bit, length, delay, 3);
-	    setAirTimer();  // no effect if avoidButton is not checked.
-	    prevRewarded = 1;
-	}
-	else {
-	    prevRewarded = 0;
-	}
-	/* this is the end of the first trial */
-	firstTrial->setChecked(false);
-    }
-    else if (useSequenceButton->isChecked() && 
-	    (nextWellOnErrorButton->isChecked()) && 
-	    !((well == 0) || (next[0]->isChecked()))) {
-	/* we need to move to the next well in the sequence which should be well 0 */
-	//fprintf(stderr, "error, moving on to next well\n");
-	/* We need to move on to the next well if this was an error at 
-	 * well other than well 0 */
-	if ((wellSequenceListWidget->currentRow() + 1) < 
-	     wellSequenceListWidget->count()) {
-	    /* we first move on to the next row of the list*/
-	    wellSequenceListWidget->setCurrentRow(
-		    wellSequenceListWidget->currentRow() + 1);
-	    /* we need to look up the next well we will be using */
-	    nextWell = wellSequenceListWidget->currentItem()->text().toInt();
-	}
-	else {
-	    QMessageBox::critical(this, "Error", 
-		    "End of sequence list reached");
-	    return;
-	}
-    }
-    else if (useSequenceButton->isChecked()) {
-	/* we didn't reward the animal and we shouldn't move on, so do nothing */
+      }
+      else {
+	QMessageBox::critical(this, "Error", 
+			      "End of sequence list reached");
 	return;
+      }
     }
-    for (i = 0; i < nWells->value(); i++) {
-	if (!useSequenceButton->isChecked()) {
-	    /* we can't reward the same well twice, so we skip the current well's
-	     * entry */
-	    if (i != well) {
-		if (((prevWell == -1) || prev[i]->isSelected(prevWell)) &&
-		    curr[i]->isSelected(well)) {
-		    /* we reward this well next. Note that this will update wellStatus*/
-		    next[i]->setChecked(true);
-		    //fprintf(stderr, "next[%d] true\n",  i);
-		}
-		else {
-		    next[i]->setChecked(false);
-		    //fprintf(stderr, "next[%d] false\n", i);
-		}
-	    }
+    else {
+      fprintf(stderr, "not using sequence\n");
+      bit[0] = outputBit1[well]->value();
+      length[0] = outputBit1Length[well]->value();
+      delay[0] = 0;
+    }
+    bit[1] = outputBit2[well]->value();
+    length[1] = outputBit2Length[well]->value();
+    delay[1] = 0;
+    bit[2] = outputBit3[well]->value();
+    length[2] = outputBit3Length[well]->value();
+    delay[2] = outputBit3Delay[well]->value();
+
+    /* use the random number generator to determine whether we issue a
+     * reward */
+    if ((drand48() * 100) <=  outputBit1Percent[well]->value()) {
+      //TriggerOutput(outputBit[well]->value());
+      TriggerOutputs(bit, length, delay, 3);
+      setAirTimer();  // no effect if avoidButton is not checked.
+      prevRewarded = 1;
+    }
+    else {
+      prevRewarded = 0;
+    }
+    /* this is the end of the first trial */
+    firstTrial->setChecked(false);
+  }
+  else if (useSequenceButton->isChecked() && 
+	   (nextWellOnErrorButton->isChecked()) && 
+	   !((well == 0) || (next[0]->isChecked()))) {
+    /* we need to move to the next well in the sequence which should be well 0 */
+    //fprintf(stderr, "error, moving on to next well\n");
+    /* We need to move on to the next well if this was an error at 
+     * well other than well 0 */
+    if ((wellSequenceListWidget->currentRow() + 1) < 
+	wellSequenceListWidget->count()) {
+      /* we first move on to the next row of the list*/
+      wellSequenceListWidget->setCurrentRow(
+					    wellSequenceListWidget->currentRow() + 1);
+      /* we need to look up the next well we will be using */
+      nextWell = wellSequenceListWidget->currentItem()->text().toInt();
+    }
+    else {
+      QMessageBox::critical(this, "Error", 
+			    "End of sequence list reached");
+      return;
+    }
+  }
+  else if (useSequenceButton->isChecked()) {
+    /* we didn't reward the animal and we shouldn't move on, so do nothing */
+    return;
+  }
+  for (i = 0; i < nWells->value(); i++) {
+    cout<<"i is "<<i<<"\n";
+    if (!useSequenceButton->isChecked()) {
+      /* we can't reward the same well twice, so we skip the current well's
+       * entry */
+      if (i != well) {
+	if (((prevWell == -1) || prev[i]->isSelected(prevWell)) &&
+	    curr[i]->isSelected(well)) {
+	  /* we reward this well next. Note that this will update wellStatus*/
+	  next[i]->setChecked(true);
+	  //fprintf(stderr, "next[%d] true\n",  i);
+	  // AudioThread *audThread;
+	 
+	  
+	  
+
 	}
 	else {
-	    if (nextWell == i) {
-		next[i]->setChecked(true);
-	    }
-	    else {
-		next[i]->setChecked(false);
-	    }
+	  next[i]->setChecked(false);
+	  //fprintf(stderr, "next[%d] false\n", i);
 	}
+      }
     }
-    prevWell = well;
-    this->setStatus();
+    else {
+      if (nextWell == i) {
+	next[i]->setChecked(true);
+      }
+      else {
+	next[i]->setChecked(false);
+      }
+    }
+  }
+
+
+
+  if (well == 1) {
+    if (next[2]->isChecked()) {
+	/* create the audio thread */
+	audThread = new AudioThread();
+	/* Move QAlsaSound creation into thread to avoid delay? */
+	audThread->sound = new QAlsaSound("sounds/soundLeft.wav", NULL);
+	audThread->start();
+    }
+    else {
+	/* create the audio thread */
+	audThread = new AudioThread();
+	audThread->sound = new QAlsaSound("sounds/soundRight.wav", NULL);
+	audThread->start();
+    }
+  }
+  else {
+    if (audThread && audThread->isRunning()) {
+      cout<<"Audio thread is running; stopping it now\n";
+      audThread->stopSound();
+    }
+    cout<<"port "<<well<<"\n";
+  }
+
+  prevWell = well;
+  this->setStatus();
 }
 
+// void rewardControl::timedOut()
+// {
+//  audThread->stopSound();
+
+// }
 
 int rewardControl::getNextWell(void) 
 {
-    int i;
+  int i;
 
-    for (i = 0; i < nWells->value(); i++) {
-	if (next[i]->isChecked()) {
-	    return i;
-	}
+  for (i = 0; i < nWells->value(); i++) {
+    if (next[i]->isChecked()) {
+      return i;
     }
-    return -1;
+  }
+  return -1;
 }
 
 

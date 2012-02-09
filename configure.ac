@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.64])
-AC_INIT([NSpike], [2.0.0], [ckemere@gmail.com])
-AM_INIT_AUTOMAKE(NSpike, 2.0.0)
+AC_INIT([NSpike], [2.1.0], [loren@phy.ucsf.edu])
+AM_INIT_AUTOMAKE(NSpike, 2.1.0)
 AC_CONFIG_SRCDIR([src-main/spike_main.cpp])
 
 # Checks for programs.
@@ -20,6 +20,7 @@ AC_CHECK_LIB([avcodec], [avcodec_open])
 
 AC_CHECK_LIB([m], [sin])
 AC_CHECK_LIB([z], [gzwrite])
+AC_CHECK_LIB([asound], [snd_pcm_open])
 
 AC_MSG_CHECKING(QT4 directory)
 QTDIR=xxx

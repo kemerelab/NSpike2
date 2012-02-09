@@ -1,7 +1,7 @@
 #ifndef __SPIKE_DEFINES_H__
 #define __SPIKE_DEFINES_H__
 
-#define VERSION "2.0.0"
+#define VERSION "2.1.0"
 
 // uncomment to debug without DSPs
 // in other words, #ifdef NO_DSP_DEBUG means to not really use DSPs and to build
