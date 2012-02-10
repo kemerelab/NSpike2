@@ -42,10 +42,7 @@
 void AudioThread::run()
 {
      sound->play();
-     close();
      exec();
-     fprintf(stderr, "Thread quiting\n");
-     quit();
 }
 
 void AudioThread::play()
@@ -55,12 +52,15 @@ void AudioThread::play()
 
 void AudioThread::stopSound()
 {
-     sound->stop();
+    sound->stop();
+    close();
+
 }
 
 void AudioThread::close()
 {
      sound->close();
+     quit();
 }
 
 QAlsaSound::QAlsaSound( const QString& filename, QObject* parent):
@@ -282,6 +282,7 @@ void QAlsaSound::play()
   int count,f;
   char *buffer2;
   buffer2 = (char *)malloc (buffer_size);
+  snd_pcm_start(handle);
   while ((count = read (fd, buffer2,buffer_size)))  {
     f=count*8/bits_per_frame;
     do {
@@ -293,11 +294,12 @@ void QAlsaSound::play()
 	  return;
       }
       /* write the data and prepare the pcm if there is an error writing */
+      snd_pcm_wait(handle, -1);
       if ((frames = snd_pcm_writei(handle, buffer2, f)) < 0) {
 	  snd_pcm_prepare(handle);
+	  fprintf(stderr, "frames < 0\n");
       }
-    }
-    while (frames < 0);
+    } while (frames < 0);
 
 /******************************************************************************************
 *   
@@ -329,9 +331,9 @@ void QAlsaSound::play()
 *****************************************************************************************/
 
   }
-  snd_pcm_drain(handle);
 
   free(buffer2);
+  
 
 #else
 
@@ -346,10 +348,8 @@ void QAlsaSound::stop()
     return;
  
   stopSound = true;
+  snd_pcm_drop(handle);
 
-  //if (handle) {
-  //    snd_pcm_drop(handle);
-  //}
 }
 
 void QAlsaSound::close()

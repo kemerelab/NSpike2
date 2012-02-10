@@ -122,6 +122,9 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
 
 rewardControl::~rewardControl() 
 {
+    if (audThread) {
+	audThread->close();
+    }
 }
 
 void rewardControl::dialogClosed()
