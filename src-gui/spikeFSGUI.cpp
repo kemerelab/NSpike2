@@ -333,7 +333,7 @@ void DIOInterface::startOutputOnlyStim(void)
     break;
   }
 
-#ifdef DIO_ON_MASTER_DSP
+#ifndef DIO_ON_MASTER_DSP
   // Trigger the analog output if selected
   switch (aOutConfigTab->activeAOut) {
   case 1:

@@ -140,6 +140,7 @@ void ProcessTimestamp( void )
   int messageCode;
 
   if (ctinfo.timestamp > ctinfo.next_command_time) {
+	  //fprintf(stderr, "timestamp = %d, next_time = %d\n", ctinfo.timestamp, ctinfo.next_command_time);
     /* prepare the next stimulation command if appropriate */
     if (!ctinfo.command_cached) {
       switch (stimcontrolMode) {
