@@ -8,7 +8,7 @@
 void StartDigIOProgram(int prognum);
 int TriggerOutput(int output);
 int TriggerOutputs(int output);
-int TriggerOutputs(int *bit, int *length, int *delay, int n);
+int TriggerOutputs(int *bit, int *length, int *delay, int *percent, int n);
 void ChangeOutput(int output, int raise);
 //void SendDAQFSMessage(int message, char *data, int datalen);
 void SendDigIOFSMessage(char *message, int len);

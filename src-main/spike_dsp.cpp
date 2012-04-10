@@ -940,7 +940,9 @@ int TriggerOutput(int output)
     return 1;
 }
 
-int TriggerOutputs(int *bit, int *length, int *delay, int n)
+int TriggerOutputs(int *bit, int *length, int *delay, int *percent, int n)
+    /* set up a command to trigger the specified outputs.  Returns 0 if the
+     * first bit is triggered and 0 otherwise */
 {
     unsigned short command[DIO_MAX_COMMAND_LEN];
     int len = 0;
@@ -951,6 +953,7 @@ int TriggerOutputs(int *bit, int *length, int *delay, int n)
     int j;
     int nelem;
     int tmp;
+    int ret;
     int bitnum;
     int tdiff;
     u32 tmptime;
@@ -959,15 +962,22 @@ int TriggerOutputs(int *bit, int *length, int *delay, int n)
     /* make a list of the times when things need to happen and a parallel list of the bit
      * numbers with 0&1 for start and stop times of bit 0, 2&3 for bit 1 and so on */
     tmp = 0;
+    nelem = 0;
     for (i = 0; i < n; i++) {
-	times[tmp] = delay[i];
-	bitind[tmp] = tmp;
-	tmp++;
-	times[tmp] = delay[i] + length[i];
-	bitind[tmp] = tmp;
-	tmp++;
+	/* calculate the percentage and add this if it passes */
+        if ((drand48() * 100) <=  percent[i]) {
+	    times[tmp] = delay[i];
+	    bitind[tmp] = tmp;
+	    tmp++;
+	    times[tmp] = delay[i] + length[i];
+	    bitind[tmp] = tmp;
+	    tmp++;
+	    nelem += 2;
+	    if (i == 0) {
+		ret = 1;
+	    }
+	}
     }
-    nelem = 2 * n;
 
     /* now we need to sort the two lists in parallel */
     for (i = 0; i < nelem; i++) {
@@ -1021,7 +1031,7 @@ int TriggerOutputs(int *bit, int *length, int *delay, int n)
         DisplayErrorMessage(tmpstring);
 	return 0;
     }
-    return 1;
+    return ret;
 }
 
 void ChangeOutput(int output, int raise)

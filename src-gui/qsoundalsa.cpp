@@ -23,6 +23,7 @@
 #include <alsa/asoundlib.h>
 #include <QSound>
 #include <QThread>
+#include <QMessageBox>
 
 #if WORDS_BIGENDIAN
 #define SwapLE16(x) ((((u_int16_t)x)<<8)|(((u_int16_t)x)>>8))
@@ -70,6 +71,7 @@ QAlsaSound::QAlsaSound( const QString& filename, QObject* parent):
   Path = filename;
   is_available = initialise();
 
+
 }
 
 
@@ -104,13 +106,19 @@ bool QAlsaSound::initialise()
 
   //Path="/home/eb/Documents/travail.wav";
 
+  QMessageBox msgBox;
+  QString errorMessage;
   if ( (fd = open(Path.toLatin1().constData(),O_RDONLY)) < 0 ) {
-    fprintf(stdout,"Error Opening WAV file %s\n",Path.toLatin1().constData());
+    errorMessage = QString("Error Opening WAV file %1").arg(Path.toLatin1().constData());
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return FALSE;
   }
 
   if ( lseek(fd,0L,SEEK_SET) != 0L ) {
-    printf("Error nRewinding WAV file %s\n",Path.toLatin1().constData());
+    errorMessage = QString("Error Rewinding WAVE file %1").arg(Path.toLatin1().constData());
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return FALSE;     /* Wav file must be seekable device */
   }
 
@@ -118,22 +126,25 @@ bool QAlsaSound::initialise()
   read (fd, buffer, AUDIOBUFFERSIZE) ;
 
   if (findchunk (buffer, "RIFF", AUDIOBUFFERSIZE) != buffer) {
-    fprintf(stdout,"Bad format: Cannot find RIFF file marker\n");   /* wwg:
-Report error */
+    errorMessage = QString("%1: Bad format: Cannot find RIFF file marker").arg(Path.toLatin1().constData());
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return  FALSE ;
   }
 
   if (! findchunk (buffer, "WAVE", AUDIOBUFFERSIZE)) {
-    fprintf(stdout,"Bad format: Cannot find WAVE file marker\n");   /* wwg:
-report error */
+    errorMessage = QString("%1: Bad format: Cannot find WAVE file marker").arg(Path.toLatin1().constData());
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return  FALSE ;
   }
 
   ptr = findchunk (buffer, "fmt ", AUDIOBUFFERSIZE) ;
 
   if (! ptr) {
-    fprintf(stdout,"Bad format: Cannot find 'fmt' file marker\n");  /* wwg:
-report error */
+    errorMessage = QString("%1: Bad format: Cannot find 'fmt' file marker").arg(Path.toLatin1().constData());
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return  FALSE ;
   }
 
@@ -151,8 +162,9 @@ report error */
   ptr = findchunk (buffer, "data", AUDIOBUFFERSIZE) ;
 
   if (! ptr) {
-    fprintf(stdout,"Bad format: unable to find 'data' file marker\n");      /* wwg:
-report error */
+    errorMessage = QString("%1: Bad format: Cannot find 'data' file marker").arg(Path.toLatin1().constData());
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return  FALSE ;
   }
 
@@ -174,7 +186,9 @@ report error */
       format = SND_PCM_FORMAT_S32_LE;
       break;
     default :
-      fprintf(stdout,"Bad format: %i bits per seconds\n",waveformat.wBitsPerSample ); /* wwg: report error */
+	errorMessage = QString("%1: Bad format: %2 bits per second").arg(Path.toLatin1().constData()).arg(waveformat.wBitsPerSample); 
+	msgBox.setText(errorMessage);
+	msgBox.exec();
       return  FALSE ;
       break;
   }
@@ -190,8 +204,9 @@ report error */
   if ((err = snd_pcm_open (&handle, device, SND_PCM_STREAM_PLAYBACK,
 		  SND_PCM_ASYNC)) < 0) {
 //		  SND_PCM_NONBLOCK)) < 0) {
-      fprintf (stdout, "cannot open audio device %s (%s)\n", 
-				device, snd_strerror (err));
+      errorMessage = QString("Cannot open audio device %s (%s)").arg(device).arg(snd_strerror (err));
+      msgBox.setText(errorMessage);
+      msgBox.exec();
       return FALSE;
     }
 
@@ -203,7 +218,9 @@ report error */
 
     /* Init hwparams with full configuration space */
   if (snd_pcm_hw_params_any(handle, params) < 0) {
-    fprintf(stdout, "Can not configure this PCM device.\n");
+    errorMessage = QString("Cannot configure PCM device");
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return FALSE;
     }
 
@@ -211,26 +228,34 @@ report error */
   err = snd_pcm_hw_params_set_access(handle, params, 
 	  SND_PCM_ACCESS_RW_INTERLEAVED);
   if (err < 0) {
-    fprintf(stdout,"Access type not available");
+    errorMessage = QString("Access type not available");
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return FALSE;
   }
 
   err = snd_pcm_hw_params_set_format(handle, params, format);
   if (err < 0) {
-    fprintf(stdout,"Sample format non available");
+    errorMessage = QString("Sample format type not available");
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return FALSE;
   }
 
   err = snd_pcm_hw_params_set_channels(handle, params, waveformat.wChannels);
   if (err < 0) {
-    fprintf(stdout,"Channels count non available");
+    errorMessage = QString("Channel count not available");
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return FALSE;
   }
 
   err = snd_pcm_hw_params_set_rate_near(handle, params, 
 	  &waveformat.dwSamplesPerSec, 0);
   if (err < 0) {
-    fprintf(stdout,"Unable to set rate : %d", waveformat.dwSamplesPerSec);
+    errorMessage = QString("Unable to set rate to %1").arg(waveformat.dwSamplesPerSec);
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return FALSE;
   }
 
@@ -239,7 +264,9 @@ report error */
   err = snd_pcm_hw_params(handle, params);
 
   if (err < 0) {
-    fprintf(stdout,"Unable to install hw params:");
+    errorMessage = QString("Unable to set hardware parameters");
+    msgBox.setText(errorMessage);
+    msgBox.exec();
     return FALSE;
   }
 

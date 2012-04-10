@@ -35,8 +35,8 @@ extern CommonDSPInfo cdspinfo;
 extern SpikeMainWindow *spikeMainWindow;
 extern char *tmpstring;
 
-SpikeLineEdit::SpikeLineEdit(QWidget *parent, int chanNum) : 
-	QLineEdit(parent), chanNum(chanNum)
+SpikeLineEdit::SpikeLineEdit(QWidget *parent, int chanNum, bool textIsNumeric) : 
+	QLineEdit(parent), chanNum(chanNum), textIsNumeric(textIsNumeric)
 {
     setStyle("Windows");
     // Attach the checkinput slot to a timer so that we can determine if the
@@ -71,8 +71,12 @@ void SpikeLineEdit::valueChanged(void) {
     /* the value has been changed, so we reset the modified flag and pass a
      * message back to our parent */
     this->clearModified();
-    emit updateVal(this->chanNum, (unsigned short) this->text().toInt());
-
+    if (textIsNumeric) {
+	emit updateVal(this->chanNum, (unsigned short) this->text().toInt());
+    }
+    else {
+	emit updateText(this->chanNum, this->text());
+    }
 }
 
 

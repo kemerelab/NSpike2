@@ -197,6 +197,7 @@ void DIOInterface::enableTabs(bool enable)
 void DIOInterface::triggerSingleStim(void)
 {
   PulseCommand pCmd[3]; // at most 3 pulse commands are needed
+
 #ifdef DIO_ON_MASTER_DSP
   qDebug("triggerSingleStim signal received.\nCurrent digital stimulator is: %d\n", 
       stimConfigTab->activeStimulator);
@@ -333,7 +334,7 @@ void DIOInterface::startOutputOnlyStim(void)
     break;
   }
 
-#ifdef DIO_ON_MASTER_DSP
+#ifndef DIO_ON_MASTER_DSP
   // Trigger the analog output if selected
   switch (aOutConfigTab->activeAOut) {
   case 1:

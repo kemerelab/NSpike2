@@ -23,6 +23,7 @@
 #include "spike_main.h"
 #define MAX_WELLS	8
 #define MAX_REST	90000	
+#define MAX_REWARD_BITS	8	
 
 extern DigIOInfo digioinfo;
 extern DisplayInfo dispinfo;
@@ -57,8 +58,8 @@ class rewardControl : public QDialog {
     void  	setNextReward() { rewardWell(getNextWell(), true); };
     void  	setReward(int well) { rewardWell(well, true); };
     void  	setFirstReward(int well) { 
-      int i;
-      if (firstTrial->isOn()) {
+    int i;
+    if (firstTrial->isOn()) {
         next[well]->setChecked(true);
         /* get rid of any other checked wells */
         for (i = 0; i < nWells->value(); i++) {
@@ -74,11 +75,13 @@ class rewardControl : public QDialog {
     void enableEditSequence(void);
     void loadSequence(void);
 
+    void setSoundFileName(QString fileName, int bit);
+
   protected slots:
     void reject();
     void resetRewardCounters(void);
     void setAirTimer(void); 
-    void	warnOff() { TriggerOutput(outputBit1[0]->value()); };
+    void	warnOff() { TriggerOutput(outputBit[1][0]->value()); };
     void	airOn() { TriggerOutput(outputBitAir->value()); };
 
   protected:
@@ -98,9 +101,9 @@ class rewardControl : public QDialog {
     void 		writeRewardConfig(QString fileName);
     void 		readRewardConfig(QString fileName);
 
-    QVector<int>    rewardCounter;
+    QVector<int>    	rewardCounter;
 
-    int		  prevWell;
+    int		  	prevWell;
     bool		prevRewarded;
 
     /* tab widgets */
@@ -111,57 +114,54 @@ class rewardControl : public QDialog {
     /* first tab: number of wells */
     QPushButton	*fileLoad;
     QPushButton	*fileSave;
-    QLabel		*nWellsLabel;
+    QLabel	*nWellsLabel;
     QSpinBox 	*nWells;
+    QLabel	*nOutputBitsLabel;
+    QSpinBox	*nOutputBits;
     QPushButton	*createTabsButton;
     QPushButton	*close;
     QRadioButton *avoidButton;
+    QRadioButton *audioButton;
 
     /* second tab - logic */
     QLabel		**wellLabel;
     QLabel		*prevLabel;
-    Q3ListBox	**prev;
+    Q3ListBox		**prev;
     QLabel		*currLabel;
-    Q3ListBox	**curr;
+    Q3ListBox		**curr;
     QLabel		*inputBitLabel;
-    QSpinBox	**inputBit;
+    QSpinBox		**inputBit;
     QRadioButton	**triggerHigh;
-    QLabel		*outputBit1Label;
-    QSpinBox		**outputBit1;
-    QLabel		*outputBit1LengthLabel;
-    QSpinBox		**outputBit1Length;
-    QLabel		*outputBit1PercentLabel;
-    QSpinBox		**outputBit1Percent;
-    QLabel		*outputBit2Label;
-    QSpinBox		**outputBit2;
-    QLabel		*outputBit2LengthLabel;
-    QSpinBox		**outputBit2Length;
-    QLabel		*outputBit3Label;
-    QSpinBox		**outputBit3;
-    QLabel		*outputBit3LengthLabel;
-    QSpinBox		**outputBit3Length;
-    QLabel		*outputBit3DelayLabel;
-    QSpinBox		**outputBit3Delay;
+    QLabel		**outputBitLabel;
+    QSpinBox		***outputBit;
+    QLabel		**outputBitLengthLabel;
+    QSpinBox		***outputBitLength;
+    QLabel		**outputBitPercentLabel;
+    QSpinBox		***outputBitPercent;
+    QLabel		**outputBitDelayLabel;
+    QSpinBox		***outputBitDelay;
     QLabel		*output0BitLabel;
     QSpinBox		**output0Bit;
     QLabel		*output0BitLengthLabel;
     QSpinBox		**output0BitLength;
+    QLabel		*output0SoundFileLabel;
+    SpikeLineEdit	**output0SoundFile;
 
     /* third tab */
     QRadioButton	*firstTrial;
     QLabel		*firstRewardLabel;
-    QSpinBox	*firstRewardWell;
+    QSpinBox		*firstRewardWell;
     Q3ButtonGroup	*rewardButtonGroup;
-    QPushButton	**reward;
+    QPushButton		**reward;
     QRadioButton	**next;
     QLabel		**status;
-    QPushButton	*nextReward;
+    QPushButton		*nextReward;
 
-    QPushButton	*useSequenceButton;
-    QPushButton	*nextWellOnErrorButton;
-    QPushButton	*loadSequenceButton;
-    QPushButton	*editSequenceButton;
-    QListWidget	*wellSequenceListWidget;
+    QPushButton		*useSequenceButton;
+    QPushButton		*nextWellOnErrorButton;
+    QPushButton		*loadSequenceButton;
+    QPushButton		*editSequenceButton;
+    QListWidget		*wellSequenceListWidget;
 
     /* fourth tab */
     QLabel		*restLengthLabel;

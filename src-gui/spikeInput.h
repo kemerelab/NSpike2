@@ -10,21 +10,23 @@ class SpikeLineEdit : public QLineEdit {
   Q_OBJECT
 
   public:
-    SpikeLineEdit(QWidget *parent = 0, int chanNum = 0);
+    SpikeLineEdit(QWidget *parent = 0, int chanNum = 0, bool textIsNumeric = true);
     ~SpikeLineEdit();    
 
 
-    public slots:
-      void      check() { checkinput(); }
+  public slots:
+    void      check() { checkinput(); }
     void       changed() { valueChanged(); };
 
 signals:
     void  updateVal(int, unsigned short);
+    void  updateText(int, QString);
 
   public:
     void    checkinput(void);
     void    valueChanged(void);
-    int chanNum;
+    int     chanNum;
+    bool    textIsNumeric;
 
   protected:
     QTimer *editTimer;

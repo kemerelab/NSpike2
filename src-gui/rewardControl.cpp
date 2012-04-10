@@ -46,7 +46,8 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
 {
     this->setCaption("Reward Control");
 
-    Q3GridLayout *mainGrid = new Q3GridLayout(this, 10, 10, 0, 0, "maingrid");
+    //Q3GridLayout *mainGrid = new Q3GridLayout(this, 10, 10, 0, 0, "maingrid");
+    QGridLayout *mainGrid = new QGridLayout(this);
 
     // Create a multitabbed window
     qtab = new QTabWidget(this, 0, 0);
@@ -65,17 +66,10 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
 
     
 
-    //gideon's addition
-    //  audThread = new AudioThread();
-
-
-
-
     /* Tab 1 */
     w = new QWidget(qtab, "Well Information");
 
-
-    Q3GridLayout *grid0 = new Q3GridLayout(w, 4, 2, 0, 0, "grid 0");
+    QGridLayout *grid0 = new QGridLayout(w);
 
     /* I don't know if the following is necessary */
     QSizePolicy es(QSizePolicy::Expanding, QSizePolicy::Expanding, 1, 1);
@@ -83,35 +77,52 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
 
     fileLoad = new QPushButton(QString("Load File"), w, "load button");
     connect(fileLoad, SIGNAL(clicked(void)), this, SLOT(load(void)));
-    grid0->addMultiCellWidget(fileLoad, 0, 0, 0, 0);
+    grid0->addWidget(fileLoad, 0, 0, 1, 1);
     fileSave = new QPushButton(QString("Save File"), w, "save button");
     connect(fileSave, SIGNAL(clicked(void)), this, SLOT(save(void)));
-    grid0->addMultiCellWidget(fileSave, 0, 0, 1, 1);
+    grid0->addWidget(fileSave, 0, 1, 1, 1);
 
     nWellsLabel = new QLabel("Number of Wells", w, "nwells label", 0);
-    grid0->addMultiCellWidget(nWellsLabel, 1, 1, 0, 0);
+    grid0->addWidget(nWellsLabel, 1, 0, 1, 1);
     nWells = new QSpinBox(1, MAX_WELLS, 1, w, "Number of Wells");
-    grid0->addMultiCellWidget(nWells, 1, 1, 1, 1);
+    grid0->addWidget(nWells, 1, 1, 1, 1);
     nWells->setValue(3);
+
+    nOutputBitsLabel = new QLabel("Number of Output Bits", w, 
+	    "noutputbits label", 0);
+    grid0->addWidget(nOutputBitsLabel, 2, 0, 1, 1);
+    nOutputBits = new QSpinBox(1, MAX_REWARD_BITS, 1, w, 
+	    "Number of OutputBits");
+    grid0->addWidget(nOutputBits, 2, 1, 1, 1);
+
+    /* set this to 1.  Note that this means we will ignore outputBits2 & 3 from
+     * old behavior configuration files */
+    nOutputBits->setValue(1);
 
     /* when the create tabs button is pressed we recreate the second and third
      * tabs with the appropriate number of wells */
-    createTabsButton = new QPushButton("Update Logic / Status", w, "CreateTabsButton");
-    connect(createTabsButton, SIGNAL( clicked() ), this, SLOT( createTabs() ) );
-    grid0->addMultiCellWidget(createTabsButton, 2, 2, 1, 1);
 
     avoidButton = new QRadioButton("Avoidance Task", w, 0);
     avoidButton->setAutoExclusive(false);
-    grid0->addMultiCellWidget(avoidButton, 2, 2, 0, 0);
+    grid0->addWidget(avoidButton, 3, 0, 1, 1);
+
+    audioButton = new QRadioButton("Audio Task", w, 0);
+    audioButton->setAutoExclusive(false);
+    audioButton->setChecked(false);
+    grid0->addWidget(audioButton, 3, 1, 1, 1);
+
+    createTabsButton = new QPushButton("Update Logic / Status", w, "CreateTabsButton");
+    connect(createTabsButton, SIGNAL( clicked() ), this, SLOT( createTabs() ) );
+    grid0->addWidget(createTabsButton, 4, 0, 1, 1);
 
     close = new QPushButton("Close", w, "CloseDialog");
     connect( close, SIGNAL( clicked() ), this, SLOT( dialogClosed() ) );
-    grid0->addMultiCellWidget(close, 3, 3, 1, 1);
+    grid0->addWidget(close, 4, 1, 1, 1);
 
     tablabel = QString("Well Info"); 
     qtab->addTab(w, tablabel); 
 
-    mainGrid->addMultiCellWidget(qtab, 0, 9, 0, 9);
+    mainGrid->addWidget(qtab, 0, 0, 9, 9);
 
     setWindowFlags(fl | Qt::Window);
     show();
@@ -176,9 +187,10 @@ void rewardControl::writeRewardConfig(QString fileName)
   QFile file(fileName);
   int i, j;
   if (file.open(QIODevice::WriteOnly) ) {
-    Q3TextStream stream(&file);
+        Q3TextStream stream(&file);
 	/* number of wells */
 	stream << QString("nWells\t\t%1\n").arg(nWells->value());
+	stream << QString("nOutputBits\t\t%1\n").arg(nOutputBits->value());
 
 	/* Well Information */
 	for (i = 0; i < nWells->value(); i++) {
@@ -195,17 +207,23 @@ void rewardControl::writeRewardConfig(QString fileName)
 	    stream << QString("\n");
 	    stream << QString("\tinputBit\t%1\t\n").arg(inputBit[i]->value());
 	    stream << QString("\ttriggerHigh\t%1\t\n").arg(triggerHigh[i]->isOn());
-	    stream << QString("\toutputBit1\t%1\t\n").arg(outputBit1[i]->value());
-	    stream << QString("\toutputBit1Length\t%1\t\n").arg(outputBit1Length[i]->value());
-	    stream << QString("\toutputBit1Percent\t%1\t\n").arg(outputBit1Percent[i]->value());
-	    stream << QString("\toutputBit2\t%1\t\n").arg(outputBit2[i]->value());
-	    stream << QString("\toutputBit2Length\t%1\t\n").arg(outputBit2Length[i]->value());
-	    stream << QString("\toutputBit3\t%1\t\n").arg(outputBit3[i]->value());
-	    stream << QString("\toutputBit3Length\t%1\t\n").arg(outputBit3Length[i]->value());
-	    stream << QString("\toutputBit3Delay\t%1\t\n").arg(outputBit3Delay[i]->value());
-	    if (i > 0) {
-		stream << QString("\toutput0Bit\t%1\t\n").arg(output0Bit[i]->value());
-		stream << QString("\toutput0BitLength\t%1\t\n").arg(output0BitLength[i]->value());
+	    for (j = 0; j < nOutputBits->value(); j++) {
+
+		stream << QString("\toutputBit\t%1\t%2\n").arg(j, i,
+			outputBit[j][i]->value());
+		stream << QString("\toutputBitLength\t%1\t%2\n").arg(j, i, 
+			outputBitLength[j][i]->value());
+		stream << QString("\toutputBitPercent\t%1\t%2\n").arg(j, i, 
+			outputBitPercent[j][i]->value());
+		stream << QString("\toutputBitDelay\t%1\t%2\n").arg(j, i, 
+			outputBitDelay[j][i]->value());
+		if (i > 0) {
+		    stream << QString("\toutput0Bit\t%1\t\n").arg(output0Bit[i]->value());
+		    stream << QString("\toutput0BitLength\t%1\t\n").arg(output0BitLength[i]->value());
+		    if (audioButton->isChecked()) {
+			stream << QString("\toutput0AudioFile\t%1\t\n").arg(output0SoundFile[i]->text());
+		    }
+		}
 	    }
 	}
 	stream << QString("firstReward\t%1\t\n").arg(firstRewardWell->value());
@@ -220,8 +238,8 @@ void rewardControl::writeRewardConfig(QString fileName)
 void rewardControl::readRewardConfig(QString fileName) 
 {
     QFile file(fileName);
-    int i, well, t1;
-    int nwells;
+    int i, well, onum, t1;
+    int nwells, noutputbits = 1;
     const char delim[] = " "; 
 
     QString s;
@@ -243,7 +261,13 @@ void rewardControl::readRewardConfig(QString fileName)
 		str += 6;
 		sscanf(str, "%d", &nwells);
 		nWells->setValue(nwells);
-      createTabs();
+
+	    }
+	    else if (strncmp(str, "nOutputBits", 11) == 0) {
+		str += 11;
+		sscanf(str, "%d", &noutputbits);
+		nOutputBits->setValue(noutputbits);
+                createTabs();
 	    }
 	    else if (strncmp(str, "well", 4) == 0) {
 		str += 4;
@@ -282,46 +306,73 @@ void rewardControl::readRewardConfig(QString fileName)
 		sscanf(str, "%d", &t1);
 		triggerHigh[well]->setChecked((bool) t1);
 	    }
+	    else if (strncmp(str, "outputBitLength", 15) == 0) {
+		str += 15;
+		sscanf(str, "%d%d", &onum, &t1);
+		outputBitLength[well][onum]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBitDelay", 14) == 0) {
+		str += 14;
+		sscanf(str, "%d%d", &onum, &t1);
+		outputBitDelay[well][onum]->setValue(t1);
+	    }
+	    else if (strncmp(str, "outputBitPercent", 17) == 0) {
+		str += 17;
+		sscanf(str, "%d%d", &onum, &t1);
+		outputBitPercent[well][onum]->setValue(t1);
+	    }
+
+	    /* Backward compatibility with old file format */
 	    else if (strncmp(str, "outputBit1Length", 16) == 0) {
 		str += 16;
 		sscanf(str, "%d", &t1);
-		outputBit1Length[well]->setValue(t1);
+		outputBitLength[well][0]->setValue(t1);
 	    }
 	    else if (strncmp(str, "outputBit1Percent", 17) == 0) {
 		str += 17;
 		sscanf(str, "%d", &t1);
-		outputBit1Percent[well]->setValue(t1);
+		outputBitPercent[well][0]->setValue(t1);
 	    }
 	    else if (strncmp(str, "outputBit1", 10) == 0) {
 		str += 10;
 		sscanf(str, "%d", &t1);
-		outputBit1[well]->setValue(t1);
+		outputBit[well][0]->setValue(t1);
+		/* the old format didn't set Delay, so set that to 0 */
+		outputBitDelay[well][0]->setValue(0);
 	    }
 	    else if (strncmp(str, "outputBit2Length", 16) == 0) {
-		str += 16;
+		/*str += 16;
 		sscanf(str, "%d", &t1);
-		outputBit2Length[well]->setValue(t1);
+		outputBitLength[well][1]->setValue(t1); */
 	    }
 	    else if (strncmp(str, "outputBit2", 10) == 0) {
-		str += 10;
+		/*str += 10;
 		sscanf(str, "%d", &t1);
-		outputBit2[well]->setValue(t1);
+		outputBit[well][1]->setValue(t1);*/
 	    }
 	    else if (strncmp(str, "outputBit3Length", 16) == 0) {
-		str += 16;
+		/*str += 16;
 		sscanf(str, "%d", &t1);
-		outputBit3Length[well]->setValue(t1);
+		outputBitLength[well][2]->setValue(t1);*/
 	    }
 	    else if (strncmp(str, "outputBit3Delay", 15) == 0) {
-		str += 15;
+		/*str += 15;
 		sscanf(str, "%d", &t1);
-		outputBit3Delay[well]->setValue(t1);
+		outputBitDelay[well][2]->setValue(t1); */
 	    }
 	    else if (strncmp(str, "outputBit3", 10) == 0) {
-		str += 10;
+		/*str += 10;
 		sscanf(str, "%d", &t1);
-		outputBit3[well]->setValue(t1);
+		outputBit[well][2]->setValue(t1); */
 	    }
+	    /* If none of the above match, then it
+	     * is Bit 1 */
+	    else if (strncmp(str, "outputBit",9) == 0) {
+		str += 9;
+		sscanf(str, "%d", &t1);
+		outputBit[well][0]->setValue(t1);
+	    }
+
 	    else if (strncmp(str, "output0BitLength", 16) == 0) {
 		str += 16;
 		sscanf(str, "%d", &t1);
@@ -331,13 +382,6 @@ void rewardControl::readRewardConfig(QString fileName)
 		str += 10;
 		sscanf(str, "%d", &t1);
 		output0Bit[well]->setValue(t1);
-	    }
-	    /* for backward compatibility, if none of the above match, then it
-	     * is Bit 1 */
-	    else if (strncmp(str, "outputBit",9) == 0) {
-		str += 9;
-		sscanf(str, "%d", &t1);
-		outputBit1[well]->setValue(t1);
 	    }
 	    else if (strncmp(str, "firstReward", 11) == 0) {
 		str += 11;
@@ -411,7 +455,7 @@ void rewardControl::loadSequence(void)
     
 void rewardControl::createLogicTab(int n) 
 {
-    int i, col;
+    int i, j, col, row, nrows;
     /* create the logic tab with the correct number of wells. We first get rid
      * of the current tab if it exists */
     /* see if the first page has been created */
@@ -423,124 +467,143 @@ void rewardControl::createLogicTab(int n)
 
     prevWell = -1;	/* set as first trial */
 
+    /* allocate space for the outputs */
+    outputBitLabel = new QLabel* [nOutputBits->value()];
+    outputBitLengthLabel = new QLabel* [nOutputBits->value()];
+    outputBitPercentLabel = new QLabel* [nOutputBits->value()];
+    outputBitDelayLabel = new QLabel* [nOutputBits->value()];
+
+    outputBit = new QSpinBox** [nWells->value()];
+    outputBitLength = new QSpinBox** [nWells->value()];
+    outputBitPercent = new QSpinBox** [nWells->value()];
+    outputBitDelay = new QSpinBox** [nWells->value()];
+    
+    /* the second index for the bits is the number of outputs */
+    for (i = 0; i < nWells->value(); i++) {
+	outputBit[i] = new QSpinBox* [nOutputBits->value()];
+	outputBitLength[i] = new QSpinBox* [nOutputBits->value()];
+	outputBitPercent[i] = new QSpinBox* [nOutputBits->value()];
+	outputBitDelay[i] = new QSpinBox* [nOutputBits->value()];
+    }
+
+    
+    nrows = 7 + 4 * nOutputBits->value();
+    if (audioButton->isChecked()) { 
+	nrows += 2;
+    }
+
+
     w = new QWidget(qtab, 0, 0);
     QString tablabel2 = QString("Logic"); 
     qtab->insertTab(w, tablabel2, 1); 
-    Q3GridLayout *grid1 = new Q3GridLayout(w, 15, n+1, 0, 0, "grid 1");
+
+    QGridLayout *grid1 = new QGridLayout(w);
 
     /* I don't know if the following is necessary */
     QSizePolicy es(QSizePolicy::Expanding, QSizePolicy::Expanding, 1, 1);
     w->setSizePolicy(es); 
 
+    row = 1;
+
     /* create the well labels and the logic */
     prevLabel = new QLabel(QString("Prev Prev Well(s)"), w, "PP label", 0);
-    grid1->addMultiCellWidget(prevLabel, 1, 1, 0, 0);
+    grid1->addWidget(prevLabel, row++, 0, 1, 1);
     currLabel = new QLabel(QString("Prev Well(s)"), w, "P label", 0);
-    grid1->addMultiCellWidget(currLabel, 2, 2, 0, 0);
+    grid1->addWidget(currLabel, row++, 0, 1, 1);
     inputBitLabel = new QLabel(QString("Input Bit"), w, "input label", 0);
-    grid1->addMultiCellWidget(inputBitLabel, 3, 3, 0, 0);
-    outputBit1Label = new QLabel(QString("Output Bit 1"), w, "output label", 0);
-    grid1->addMultiCellWidget(outputBit1Label, 5, 5, 0, 0);
-    outputBit1LengthLabel = new QLabel(QString("Output 1 Length (100 usec)"), w, 
-	    "output 1 len label", 0);
-    grid1->addMultiCellWidget(outputBit1LengthLabel, 6, 6, 0, 0);
-    outputBit1PercentLabel = new QLabel(QString("Output 1 Percentage"), w, 
-	    "output 1 percentage label", 0);
-    grid1->addMultiCellWidget(outputBit1PercentLabel, 7, 7, 0, 0);
+    grid1->addWidget(inputBitLabel, row++, 0, 1, 1);
 
-    outputBit2Label = new QLabel(QString("Output Bit 2"), w, "output 2 label", 0);
-    grid1->addMultiCellWidget(outputBit2Label, 8, 8, 0, 0);
-    outputBit2LengthLabel = new QLabel(QString("Output 2 Length (100 usec)"), w, 
-	    "output 2 len label", 0);
-    grid1->addMultiCellWidget(outputBit2LengthLabel, 9, 9, 0, 0);
+    row++;
+    for (i = 0; i < nOutputBits->value(); i++) {
+	outputBitLabel[i] = new QLabel(QString("Output Bit %1").arg(i), w, "output label", 0);
+	grid1->addWidget(outputBitLabel[i], row++, 0, 1, 1);
+	
+	outputBitLengthLabel[i] = new QLabel(QString("Output %1 Length (100 usec)").arg(i), w, "output len label", 0);
+	grid1->addWidget(outputBitLengthLabel[i], row++, 0, 1, 1);
 
-    outputBit3Label = new QLabel(QString("Output Bit 3"), w, "output 3 label", 0);
-    grid1->addMultiCellWidget(outputBit3Label, 10, 10, 0, 0);
-    outputBit3LengthLabel = new QLabel(QString("Output 3 Length (100 usec)"), w, 
-	    "output 3 len label", 0);
-    grid1->addMultiCellWidget(outputBit3LengthLabel, 11, 11, 0, 0);
-    outputBit3DelayLabel = new QLabel(QString("Output 3 Delay (100 usec)"), w, 
-	    "output 3 delay label", 0);
-    grid1->addMultiCellWidget(outputBit3DelayLabel, 12, 12, 0, 0);
+	outputBitDelayLabel[i] = new QLabel(QString("Output %1 Delay (100 usec)").arg(i), w, "output delay label", 0);
+	grid1->addWidget(outputBitDelayLabel[i], row++, 0, 1, 1);
+
+	outputBitPercentLabel[i] = new QLabel(QString("Output %1 Percentage").arg(i), w, "output 1 percentage label", 0);
+	grid1->addWidget(outputBitPercentLabel[i], row++, 0, 1, 1);
+    }
 
     output0BitLabel = new QLabel(QString("Output @ Well 0 Bit\nif next"), w, "output 0 label", 0);
-    grid1->addMultiCellWidget(output0BitLabel, 13, 13, 0, 0);
-    output0BitLengthLabel = new QLabel(QString("Output @ Well 0 Length\n(100 usec)"), w, 
-	    "output 0 len label", 0);
-    grid1->addMultiCellWidget(output0BitLengthLabel, 14, 14, 0, 0);
+    grid1->addWidget(output0BitLabel, row++, 0, 1, 1);
+    output0BitLengthLabel = new QLabel(QString("Output @ Well 0 Length\n(100 usec)"), w, "output 0 len label", 0);
+    grid1->addWidget(output0BitLengthLabel, row++, 0, 1, 1);
+   
+    if (audioButton->isChecked()) {
+	output0SoundFileLabel = new QLabel(QString("Sound @ Well 0\n"), w, 
+		"output 0 sound", 0);
+	grid1->addWidget(output0SoundFileLabel, row++, 0, 1, 1);
+	output0SoundFile = new SpikeLineEdit * [n];
+    }
 
 
     wellLabel = new QLabel* [n];
     prev = new Q3ListBox* [n];
     curr = new Q3ListBox* [n];
     inputBit = new QSpinBox* [n];
-    outputBit1 = new QSpinBox* [n];
     triggerHigh = new QRadioButton* [n];
-    outputBit1Length = new QSpinBox* [n];
-    outputBit1Percent = new QSpinBox* [n];
-    outputBit2= new QSpinBox* [n];
-    outputBit2Length = new QSpinBox* [n];
-    outputBit3= new QSpinBox* [n];
-    outputBit3Length = new QSpinBox* [n];
-    outputBit3Delay = new QSpinBox* [n];
     output0Bit= new QSpinBox* [n];
     output0BitLength = new QSpinBox* [n];
     for (i = 0; i < n; i++) {
 	col = i+1;
+	row = 0;
 	wellLabel[i] = new QLabel(QString("Activate Well %1").arg(i), w, 
 		"well label", 0);
 	wellLabel[i]->setAlignment(Qt::AlignHCenter);
-	grid1->addMultiCellWidget(wellLabel[i], 0, 0, col, col);
+	grid1->addWidget(wellLabel[i], row++, col, 1, 1);
 	prev[i] = new Q3ListBox(w, "prev list box", 0);
 	createRewardListBox(prev[i]);
-	grid1->addMultiCellWidget(prev[i], 1, 1, col, col);
+	grid1->addWidget(prev[i], row++, col, 1, 1);
 	curr[i] = new Q3ListBox(w, "curr list box", 0);
 	createRewardListBox(curr[i]);
-	grid1->addMultiCellWidget(curr[i], 2, 2, col, col);
+	grid1->addWidget(curr[i], row++, col, 1, 1);
 
 	inputBit[i] = new QSpinBox(0, MAX_BITS, 1, w, "Input Bit");
-	grid1->addMultiCellWidget(inputBit[i], 3, 3, col, col);
+	grid1->addWidget(inputBit[i], row++, col, 1, 1);
 	
 	triggerHigh[i] = new QRadioButton("Trigger High", w, 0);
         triggerHigh[i]->setAutoExclusive(false);
-	grid1->addMultiCellWidget(triggerHigh[i], 4, 4, col, col);
-	
-	outputBit1[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 1");
-	outputBit1[i]->setValue(-1);
-	grid1->addMultiCellWidget(outputBit1[i], 5, 5, col, col);
-	
-	outputBit1Length[i] = new QSpinBox(0, 30000, 1, w, "Output Bit 1  Length");
-	grid1->addMultiCellWidget(outputBit1Length[i], 6, 6, col, col);
+	grid1->addWidget(triggerHigh[i], row++, col, 1, 1);
 
-	outputBit1Percent[i] = new QSpinBox(0, 100, 1, w, "output 1 Prob");
-	outputBit1Percent[i]->setValue(100);
-	grid1->addMultiCellWidget(outputBit1Percent[i], 7, 7, col, col);
+	for (j = 0; j < nOutputBits->value(); j++) {
+	    outputBit[i][j] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit");
+	    outputBit[i][j]->setValue(-1);
+	    grid1->addWidget(outputBit[i][j], row++, col, 1, 1);
 
-	outputBit2[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 2");
-	outputBit2[i]->setValue(-1);
-	grid1->addMultiCellWidget(outputBit2[i], 8, 8, col, col);
+	    outputBitLength[i][j] = new QSpinBox(0, 1000000, 1, w, 
+		    "Output Bit Length");
+	    outputBitLength[i][j]->setValue(0);
+	    grid1->addWidget(outputBitLength[i][j], row++, col, 1, 1);
 
-	outputBit2Length[i] = new QSpinBox(0, 1000000, 1, w, "Output Bit 2 Length");
-	grid1->addMultiCellWidget(outputBit2Length[i], 9, 9, col, col);
+	    outputBitDelay[i][j] = new QSpinBox(0, 1000000, 1, w, 
+		    "Output Bit Delay");
+	    outputBitDelay[i][j]->setValue(0);
+	    grid1->addWidget(outputBitDelay[i][j], row++, col, 1, 1);
 
-	outputBit3[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output Bit 3");
-	outputBit3[i]->setValue(-1);
-	grid1->addMultiCellWidget(outputBit3[i], 10, 10, col, col);
+	    outputBitPercent[i][j] = new QSpinBox(0, 100, 1, w, "output Prob");
+	    outputBitPercent[i][j]->setValue(100);
+	    grid1->addWidget(outputBitPercent[i][j], row++, col, 1, 1);
 
-	outputBit3Length[i] = new QSpinBox(0, 1000000, 1, w, "Output Bit 3 Length");
-	grid1->addMultiCellWidget(outputBit3Length[i], 11, 11, col, col);
-
-	outputBit3Delay[i] = new QSpinBox(0, 1000000, 1, w, "Output Bit 3 Delay");
-	grid1->addMultiCellWidget(outputBit3Delay[i], 12, 12, col, col);
+	}
 
 	if (i > 0) {
 	    /* we only need the output 0 bit for wells 1-n */
 	    output0Bit[i] = new QSpinBox(-1, MAX_BITS, 1, w, "Output 0 Bit");
 	    output0Bit[i]->setValue(-1);
-	    grid1->addMultiCellWidget(output0Bit[i], 13, 13, col, col);
+	    grid1->addWidget(output0Bit[i], row++, col, 1, 1);
 
 	    output0BitLength[i] = new QSpinBox(0, 1000000, 1, w, "Output 0 Bit Length");
-	    grid1->addMultiCellWidget(output0BitLength[i], 14, 14, col, col);
+	    grid1->addWidget(output0BitLength[i], row++, col, 1, 1);
+	    if (audioButton->isChecked()) {
+		output0SoundFile[i] = new SpikeLineEdit(this, i, 0);
+		connect(output0SoundFile[i], SIGNAL(updateText(int, QString)), 
+			this, SLOT(setSoundFileName(int, QString)));
+		grid1->addWidget(output0SoundFile[i], row++, col, 1, 1);
+	    }
 	}
     }
     audThread = NULL;
@@ -703,10 +766,11 @@ void rewardControl::rewardWell(int well, bool reward)
 {
   /* put a reward at the well if we should and use the logic to update the nextwell
    * variable */
-  int i;
-  int bit[3];
-  int length[3];
-  int delay[3];
+  int i, currentBit;
+  static int bit[MAX_REWARD_BITS];
+  static int length[MAX_REWARD_BITS];
+  static int delay[MAX_REWARD_BITS];
+  static int percent[MAX_REWARD_BITS];
 
   int nextWell = 0;
 
@@ -714,6 +778,7 @@ void rewardControl::rewardWell(int well, bool reward)
     return;
   }
   if (reward) {
+    currentBit = 0;
     if (useSequenceButton->isChecked()) {
       if ((wellSequenceListWidget->currentRow() + 1) < 
 	  wellSequenceListWidget->count()) {
@@ -730,9 +795,12 @@ void rewardControl::rewardWell(int well, bool reward)
 	  delay[0] = 0;
 	}
 	else {
-	  bit[0] = outputBit1[well]->value();
-	  length[0] = outputBit1Length[well]->value();
-	  delay[0] = 0;
+	  /* set the first bit based on the well */
+	  i = 0;
+	  bit[0] = outputBit[well][i]->value();
+	  length[0] = outputBitLength[well][i]->value();
+	  delay[0] = outputBitDelay[well][i]->value();
+	  percent[0] = outputBitPercent[well][i]->value();
 	}
       }
       else {
@@ -740,25 +808,17 @@ void rewardControl::rewardWell(int well, bool reward)
 			      "End of sequence list reached");
 	return;
       }
+      currentBit++;
     }
-    else {
-      fprintf(stderr, "not using sequence\n");
-      bit[0] = outputBit1[well]->value();
-      length[0] = outputBit1Length[well]->value();
-      delay[0] = 0;
+    /* set the rest of the bits */
+    for (i = currentBit; i < nOutputBits->value(); i++) {
+      bit[i] = outputBit[well][i]->value();
+      length[i] = outputBitLength[well][i]->value();
+      delay[i] = outputBitDelay[well][i]->value();
+      percent[i] = outputBitPercent[well][i]->value();
     }
-    bit[1] = outputBit2[well]->value();
-    length[1] = outputBit2Length[well]->value();
-    delay[1] = 0;
-    bit[2] = outputBit3[well]->value();
-    length[2] = outputBit3Length[well]->value();
-    delay[2] = outputBit3Delay[well]->value();
 
-    /* use the random number generator to determine whether we issue a
-     * reward */
-    if ((drand48() * 100) <=  outputBit1Percent[well]->value()) {
-      //TriggerOutput(outputBit[well]->value());
-      TriggerOutputs(bit, length, delay, 3);
+    if (TriggerOutputs(bit, length, delay, percent, nOutputBits->value())) {
       setAirTimer();  // no effect if avoidButton is not checked.
       prevRewarded = 1;
     }
@@ -771,21 +831,19 @@ void rewardControl::rewardWell(int well, bool reward)
   else if (useSequenceButton->isChecked() && 
 	   (nextWellOnErrorButton->isChecked()) && 
 	   !((well == 0) || (next[0]->isChecked()))) {
-    /* we need to move to the next well in the sequence which should be well 0 */
     //fprintf(stderr, "error, moving on to next well\n");
     /* We need to move on to the next well if this was an error at 
      * well other than well 0 */
     if ((wellSequenceListWidget->currentRow() + 1) < 
 	wellSequenceListWidget->count()) {
       /* we first move on to the next row of the list*/
-      wellSequenceListWidget->setCurrentRow(
-					    wellSequenceListWidget->currentRow() + 1);
+      wellSequenceListWidget->setCurrentRow(wellSequenceListWidget->currentRow()
+	      					+ 1);
       /* we need to look up the next well we will be using */
       nextWell = wellSequenceListWidget->currentItem()->text().toInt();
     }
     else {
-      QMessageBox::critical(this, "Error", 
-			    "End of sequence list reached");
+      QMessageBox::critical(this, "Error", "End of sequence list reached");
       return;
     }
   }
@@ -804,10 +862,6 @@ void rewardControl::rewardWell(int well, bool reward)
 	  /* we reward this well next. Note that this will update wellStatus*/
 	  next[i]->setChecked(true);
 	  //fprintf(stderr, "next[%d] true\n",  i);
-	  // AudioThread *audThread;
-	 
-	  
-	  
 
 	}
 	else {
@@ -970,6 +1024,29 @@ void rewardControl::setAirTimer()
   };
 }
 
+void rewardControl::setSoundFileName(QString fileName, int bit)
+{
+    /* try to open the specified file to make sure it exists, and if it can't be opened file load dialog window */
+
+    QFile file(fileName);
+
+    if (~file.open(QIODevice::ReadOnly) ) {
+	/* we can't open the file, so lauch a dialog */
+	fileName = QFileDialog::getOpenFileName(this, tr("Open Sound File"), 
+		".", tr("Sound Files (*.wav)"));
+	file.setFileName(fileName);
+	if (!fileName.isEmpty()) {
+	    file.open(QIODevice::ReadOnly);
+	}
+    }
+    /* close the file */
+    file.close();
+    /* set the value of the line edit. Block signals to prevent a loop */
+    output0SoundFile[bit]->blockSignals(true);
+    output0SoundFile[bit]->setText(fileName);
+    output0SoundFile[bit]->blockSignals(false);
+}
+
 void setRewardsDialog::reject() {
   emit finished();
   QDialog::reject();
@@ -1042,11 +1119,11 @@ setRewardsDialog::setRewardsDialog(QWidget* parent,
 		this, "outputLengthValidator");
 	outputLength[i]->setValidator(valid);
 	grid->addMultiCellWidget(outputLength[i], i, i, 3, 3);
-	/* connect the update signal to the depth update function */
+	/* connect the update signal to the pulse update function */
 	connect(outputLength[i], SIGNAL(updateVal(int, unsigned short)), this, 
 		SLOT(changePulseLength(int, unsigned short)));
 
-	/* create the test button */
+	/* create the pulse button */
 	pulse[i] = new QPushButton("Pulse", this, "pulse");
 	pulse[i]->setSizePolicy(p);
 	pulse[i]->setFont(fs);
