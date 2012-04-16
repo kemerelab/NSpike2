@@ -41,16 +41,20 @@ class QAlsaSound : public QSound
 {
 Q_OBJECT
 public :
-        QAlsaSound( const QString& filename, QObject* parent=0) ;
+        QAlsaSound(int soundNum, const QString& filename, QObject* parent=0) ;
         ~QAlsaSound() {};
 
         QString Path ;
         bool initialise() ; 
         bool isAvailable() { return is_available ; }
         bool is_available;
-        void play();    
-        void stop();    
+	int soundNum;
+
+public slots:
+        void play(int);    
+        void stop(int);    
 	void close();
+    	
 
 private:
 	bool stopSound;
@@ -66,17 +70,10 @@ private:
         char* findchunk(char* pstart, char* fourcc, size_t n);
         WAVEFORMAT waveformat ;
         u_long samples, datastart;
+
+	char *buffer2;
 };
 
-class AudioThread : public QThread
-{
-public:
-     void run();
-     void play();
-     void stopSound();
-     void close();
-     QAlsaSound *sound;
-};
 
 
 #endif // _AUDIO_H_

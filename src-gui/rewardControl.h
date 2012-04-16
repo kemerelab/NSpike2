@@ -38,10 +38,11 @@ class rewardControl : public QDialog {
         Qt::WFlags fl = 0);
     ~rewardControl();
     void 	DIOInput(DIOBuffer *diobuf);
-    AudioThread *audThread;
 
   signals:
     void finished(void);
+    void playSound(int);
+    void stopSound(int);
 
   private slots:
   //  void        timedOut(void){ audThread->stopSound();};
@@ -74,8 +75,8 @@ class rewardControl : public QDialog {
 
     void enableEditSequence(void);
     void loadSequence(void);
+    void setSoundFileName(int bit);
 
-    void setSoundFileName(QString fileName, int bit);
 
   protected slots:
     void reject();
@@ -97,6 +98,9 @@ class rewardControl : public QDialog {
     int 		getPrevWell(void);
     int 		getNextWell(void);
     void		setStatus(void);
+
+    QThread		**audioThread;
+    QAlsaSound		**sound;
 
     void 		writeRewardConfig(QString fileName);
     void 		readRewardConfig(QString fileName);
@@ -145,7 +149,8 @@ class rewardControl : public QDialog {
     QLabel		*output0BitLengthLabel;
     QSpinBox		**output0BitLength;
     QLabel		*output0SoundFileLabel;
-    SpikeLineEdit	**output0SoundFile;
+    QPushButton		**output0SoundFile;
+    QButtonGroup	*output0SoundButtonGroup;
 
     /* third tab */
     QRadioButton	*firstTrial;

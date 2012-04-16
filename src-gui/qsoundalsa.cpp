@@ -40,32 +40,8 @@
 
 #define   AUDIOBUFFERSIZE        1024
 
-void AudioThread::run()
-{
-     sound->play();
-     exec();
-}
-
-void AudioThread::play()
-{
-     sound->play();
-}
-
-void AudioThread::stopSound()
-{
-    sound->stop();
-    close();
-
-}
-
-void AudioThread::close()
-{
-     sound->close();
-     quit();
-}
-
-QAlsaSound::QAlsaSound( const QString& filename, QObject* parent):
-  QSound(filename,parent) 
+QAlsaSound::QAlsaSound(int soundNum, const QString& filename, QObject* parent):
+  QSound(filename, parent), soundNum(soundNum)
 {
 
   Path = filename;
@@ -277,6 +253,9 @@ bool QAlsaSound::initialise()
   bits_per_sample = snd_pcm_format_physical_width(format);
   bits_per_frame = bits_per_sample * waveformat.wChannels;
   chunk_bytes = chunk_size * bits_per_frame / 8;
+  
+  /* allocate space for the buffer */
+  buffer2 = (char *)malloc (buffer_size);
 
   stopSound = false;
 
@@ -288,11 +267,16 @@ bool QAlsaSound::initialise()
 
 
 
-void QAlsaSound::play()
+void QAlsaSound::play(int snum)
 {
 
   if (!is_available) {
     fprintf(stderr, "not available\n");
+    return;
+  }
+
+  /* check to see if this is the correct sound */
+  if (snum != soundNum) {
     return;
   }
 
@@ -307,8 +291,6 @@ void QAlsaSound::play()
 
   //int written;
   int count,f;
-  char *buffer2;
-  buffer2 = (char *)malloc (buffer_size);
   snd_pcm_start(handle);
   while ((count = read (fd, buffer2,buffer_size)))  {
     f=count*8/bits_per_frame;
@@ -359,22 +341,15 @@ void QAlsaSound::play()
 
   }
 
-  free(buffer2);
-  
-
-#else
-
-  QSound::play();
 #endif
 
 }
 
-void QAlsaSound::stop()
+void QAlsaSound::stop(int snum)
 {
-  if (!is_available)
+  if ((!is_available) | (snum != soundNum))
     return;
  
-  stopSound = true;
   snd_pcm_drop(handle);
 
 }
@@ -387,6 +362,7 @@ void QAlsaSound::close()
   if (handle) {
       snd_pcm_hw_free(handle);
   }
+  free(buffer2);
 }
 
 

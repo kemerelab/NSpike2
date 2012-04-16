@@ -133,9 +133,6 @@ rewardControl::rewardControl(QWidget* parent, const char* name, bool modal,
 
 rewardControl::~rewardControl() 
 {
-    if (audThread) {
-	audThread->close();
-    }
 }
 
 void rewardControl::dialogClosed()
@@ -537,7 +534,14 @@ void rewardControl::createLogicTab(int n)
 	output0SoundFileLabel = new QLabel(QString("Sound @ Well 0\n"), w, 
 		"output 0 sound", 0);
 	grid1->addWidget(output0SoundFileLabel, row++, 0, 1, 1);
-	output0SoundFile = new SpikeLineEdit * [n];
+	output0SoundFile = new QPushButton * [n];
+        output0SoundButtonGroup = new QButtonGroup(this);
+	connect(output0SoundButtonGroup, SIGNAL(clicked(int)), 
+		this, SLOT(setSoundFileName(int)));
+
+	/* create the audio Threads and the sounds*/
+	audioThread = new QThread* [n];
+	sound = new QAlsaSound* [n];
     }
 
 
@@ -599,14 +603,13 @@ void rewardControl::createLogicTab(int n)
 	    output0BitLength[i] = new QSpinBox(0, 1000000, 1, w, "Output 0 Bit Length");
 	    grid1->addWidget(output0BitLength[i], row++, col, 1, 1);
 	    if (audioButton->isChecked()) {
-		output0SoundFile[i] = new SpikeLineEdit(this, i, 0);
-		connect(output0SoundFile[i], SIGNAL(updateText(int, QString)), 
-			this, SLOT(setSoundFileName(int, QString)));
+	  	output0SoundFile[i] = new QPushButton("No File", this, 
+			"use sequence");
+		output0SoundButtonGroup->addButton(output0SoundFile[i]);
 		grid1->addWidget(output0SoundFile[i], row++, col, 1, 1);
 	    }
 	}
     }
-    audThread = NULL;
 }
 
 
@@ -884,36 +887,23 @@ void rewardControl::rewardWell(int well, bool reward)
 
   if (well == 1) {
     if (next[2]->isChecked()) {
-	/* create the audio thread */
-	audThread = new AudioThread();
-	/* Move QAlsaSound creation into thread to avoid delay? */
-	audThread->sound = new QAlsaSound("sounds/soundLeft.wav", NULL);
-	audThread->start();
+      /* emit the signal to play sound 2 */
+      emit playSound(2);
     }
     else {
-	/* create the audio thread */
-	audThread = new AudioThread();
-	audThread->sound = new QAlsaSound("sounds/soundRight.wav", NULL);
-	audThread->start();
+      emit playSound(0);
     }
   }
   else {
-    if (audThread && audThread->isRunning()) {
-      cout<<"Audio thread is running; stopping it now\n";
-      audThread->stopSound();
-    }
+    /* stop both sounds */
+    emit stopSound(2);
+    emit stopSound(0);
     cout<<"port "<<well<<"\n";
   }
 
   prevWell = well;
   this->setStatus();
 }
-
-// void rewardControl::timedOut()
-// {
-//  audThread->stopSound();
-
-// }
 
 int rewardControl::getNextWell(void) 
 {
@@ -1024,27 +1014,34 @@ void rewardControl::setAirTimer()
   };
 }
 
-void rewardControl::setSoundFileName(QString fileName, int bit)
+void rewardControl::setSoundFileName(int bit)
 {
-    /* try to open the specified file to make sure it exists, and if it can't be opened file load dialog window */
+    /* first check to see if the file name is the same as has been set; if so
+     * don't do anything.  Otherwise try to open the specified file to make 
+     * sure it exists, and if it can't be opened file load dialog window */
 
-    QFile file(fileName);
+    QString fileName;
 
-    if (~file.open(QIODevice::ReadOnly) ) {
-	/* we can't open the file, so lauch a dialog */
-	fileName = QFileDialog::getOpenFileName(this, tr("Open Sound File"), 
-		".", tr("Sound Files (*.wav)"));
-	file.setFileName(fileName);
-	if (!fileName.isEmpty()) {
-	    file.open(QIODevice::ReadOnly);
+    fileName = QFileDialog::getOpenFileName(this, tr("Open Sound File"), 
+	    ".", tr("Sound Files (*.wav)"));
+    if (!fileName.isEmpty()) {
+	/* check to see if the thread exists, and if so tell it to stop */
+	if (audioThread[bit]) {
+	    audioThread[bit]->exit();
 	}
+	/* creat the thread */
+	audioThread[bit] = new QThread();
+	sound[bit] = new QAlsaSound(bit, fileName, NULL);
+	sound[bit]->moveToThread(audioThread[bit]);
+
+	/* connect the signals to the sound */
+	sound[bit]->connect(this, SIGNAL(playSound(int)), SLOT(play(int)));
+	sound[bit]->connect(this, SIGNAL(stopSound(int)), SLOT(stop(int)));
+	sound[bit]->connect(this, SIGNAL(finished()), SLOT(close));
+
+	/* start the thread */
+	audioThread[bit]->start();
     }
-    /* close the file */
-    file.close();
-    /* set the value of the line edit. Block signals to prevent a loop */
-    output0SoundFile[bit]->blockSignals(true);
-    output0SoundFile[bit]->setText(fileName);
-    output0SoundFile[bit]->blockSignals(false);
 }
 
 void setRewardsDialog::reject() {
