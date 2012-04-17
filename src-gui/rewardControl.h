@@ -76,6 +76,7 @@ class rewardControl : public QDialog {
     void enableEditSequence(void);
     void loadSequence(void);
     void setSoundFileName(int bit);
+    void startSoundThread(int bit, QString filename);
 
 
   protected slots:
@@ -101,6 +102,8 @@ class rewardControl : public QDialog {
 
     QThread		**audioThread;
     QAlsaSound		**sound;
+    QString		*audioFile;
+    bool		*threadRunning;
 
     void 		writeRewardConfig(QString fileName);
     void 		readRewardConfig(QString fileName);

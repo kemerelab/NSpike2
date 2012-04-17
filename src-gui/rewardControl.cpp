@@ -188,6 +188,11 @@ void rewardControl::writeRewardConfig(QString fileName)
 	/* number of wells */
 	stream << QString("nWells\t\t%1\n").arg(nWells->value());
 	stream << QString("nOutputBits\t\t%1\n").arg(nOutputBits->value());
+	
+	/* task information */
+
+	stream << QString("avoidTask\t\t%1\n").arg(avoidButton->isChecked());
+	stream << QString("audioTask\t\t%1\n").arg(audioButton->isChecked());
 
 	/* Well Information */
 	for (i = 0; i < nWells->value(); i++) {
@@ -206,19 +211,19 @@ void rewardControl::writeRewardConfig(QString fileName)
 	    stream << QString("\ttriggerHigh\t%1\t\n").arg(triggerHigh[i]->isOn());
 	    for (j = 0; j < nOutputBits->value(); j++) {
 
-		stream << QString("\toutputBit\t%1\t%2\n").arg(j, i,
-			outputBit[j][i]->value());
-		stream << QString("\toutputBitLength\t%1\t%2\n").arg(j, i, 
-			outputBitLength[j][i]->value());
-		stream << QString("\toutputBitPercent\t%1\t%2\n").arg(j, i, 
-			outputBitPercent[j][i]->value());
-		stream << QString("\toutputBitDelay\t%1\t%2\n").arg(j, i, 
-			outputBitDelay[j][i]->value());
+		stream << QString("\toutputBit\t%1\t%2\n").arg(j).
+		    arg(outputBit[i][j]->value());
+		stream << QString("\toutputBitLength\t%1\t%2\n").arg(j).
+		    arg(outputBitLength[i][j]->value());
+		stream << QString("\toutputBitPercent\t%1\t%2\n").arg(j).
+		    arg(outputBitPercent[i][j]->value());
+		stream << QString("\toutputBitDelay\t%1\t%2\n").arg(j).
+		    arg(outputBitDelay[i][j]->value());
 		if (i > 0) {
 		    stream << QString("\toutput0Bit\t%1\t\n").arg(output0Bit[i]->value());
 		    stream << QString("\toutput0BitLength\t%1\t\n").arg(output0BitLength[i]->value());
 		    if (audioButton->isChecked()) {
-			stream << QString("\toutput0AudioFile\t%1\t\n").arg(output0SoundFile[i]->text());
+			stream << QString("\toutput0AudioFile\t%1\t\n").arg(audioFile[i].ascii());
 		    }
 		}
 	    }
@@ -242,6 +247,8 @@ void rewardControl::readRewardConfig(QString fileName)
     QString s;
     const char *str;
     char *tmpstr;
+    bool tabsCreated = false;
+
     if (file.open(QIODevice::ReadOnly) ) {
         Q3TextStream stream(&file);
 	while (!stream.atEnd()) {
@@ -264,9 +271,24 @@ void rewardControl::readRewardConfig(QString fileName)
 		str += 11;
 		sscanf(str, "%d", &noutputbits);
 		nOutputBits->setValue(noutputbits);
-                createTabs();
+	    }
+	    else if (strncmp(str, "avoidTask", 9) == 0) {
+		str += 9;
+		sscanf(str, "%d", &t1);
+		avoidButton->setChecked(t1);
+	    }
+	    else if (strncmp(str, "audioTask", 9) == 0) {
+		str += 9;
+		sscanf(str, "%d", &t1);
+		audioButton->setChecked(t1);
 	    }
 	    else if (strncmp(str, "well", 4) == 0) {
+		/* this is the first entry after all of the task information,
+		 * so we create the tabs if that hasn't been done */
+		if (!tabsCreated) {
+		    createTabs();
+		    tabsCreated = true;
+		}
 		str += 4;
 		sscanf(str, "%d", &well);
 		/* create the prev and curr list */
@@ -318,7 +340,6 @@ void rewardControl::readRewardConfig(QString fileName)
 		sscanf(str, "%d%d", &onum, &t1);
 		outputBitPercent[well][onum]->setValue(t1);
 	    }
-
 	    /* Backward compatibility with old file format */
 	    else if (strncmp(str, "outputBit1Length", 16) == 0) {
 		str += 16;
@@ -369,7 +390,6 @@ void rewardControl::readRewardConfig(QString fileName)
 		sscanf(str, "%d", &t1);
 		outputBit[well][0]->setValue(t1);
 	    }
-
 	    else if (strncmp(str, "output0BitLength", 16) == 0) {
 		str += 16;
 		sscanf(str, "%d", &t1);
@@ -379,6 +399,12 @@ void rewardControl::readRewardConfig(QString fileName)
 		str += 10;
 		sscanf(str, "%d", &t1);
 		output0Bit[well]->setValue(t1);
+	    }
+	    else if (strncmp(str, "output0AudioFile", 16) == 0) {
+		str += 16;
+		audioFile[well] = QString(str);
+		audioFile[well] = audioFile[well].trimmed();
+		startSoundThread(well, audioFile[well]);
 	    }
 	    else if (strncmp(str, "firstReward", 11) == 0) {
 		str += 11;
@@ -536,11 +562,18 @@ void rewardControl::createLogicTab(int n)
 	grid1->addWidget(output0SoundFileLabel, row++, 0, 1, 1);
 	output0SoundFile = new QPushButton * [n];
         output0SoundButtonGroup = new QButtonGroup(this);
-	connect(output0SoundButtonGroup, SIGNAL(clicked(int)), 
+	connect(output0SoundButtonGroup, SIGNAL(buttonClicked(int)), 
 		this, SLOT(setSoundFileName(int)));
 
 	/* create the audio Threads and the sounds*/
 	audioThread = new QThread* [n];
+	audioFile = new QString [n];
+	threadRunning = new bool [n];
+	/* create the individual Threads */
+	for (i = 0; i < n; i++) {
+	    threadRunning[i] = false;
+	}
+
 	sound = new QAlsaSound* [n];
     }
 
@@ -605,7 +638,7 @@ void rewardControl::createLogicTab(int n)
 	    if (audioButton->isChecked()) {
 	  	output0SoundFile[i] = new QPushButton("No File", this, 
 			"use sequence");
-		output0SoundButtonGroup->addButton(output0SoundFile[i]);
+		output0SoundButtonGroup->addButton(output0SoundFile[i], i);
 		grid1->addWidget(output0SoundFile[i], row++, col, 1, 1);
 	    }
 	}
@@ -885,19 +918,19 @@ void rewardControl::rewardWell(int well, bool reward)
 
 
 
-  if (well == 1) {
+  if (well == 0) {
     if (next[2]->isChecked()) {
       /* emit the signal to play sound 2 */
       emit playSound(2);
     }
     else {
-      emit playSound(0);
+      emit playSound(1);
     }
   }
   else {
     /* stop both sounds */
     emit stopSound(2);
-    emit stopSound(0);
+    emit stopSound(1);
     cout<<"port "<<well<<"\n";
   }
 
@@ -1014,7 +1047,7 @@ void rewardControl::setAirTimer()
   };
 }
 
-void rewardControl::setSoundFileName(int bit)
+void rewardControl::setSoundFileName(int well)
 {
     /* first check to see if the file name is the same as has been set; if so
      * don't do anything.  Otherwise try to open the specified file to make 
@@ -1024,23 +1057,32 @@ void rewardControl::setSoundFileName(int bit)
 
     fileName = QFileDialog::getOpenFileName(this, tr("Open Sound File"), 
 	    ".", tr("Sound Files (*.wav)"));
+    audioFile[well] = fileName;
+    startSoundThread(well, fileName);
+}
+
+void rewardControl::startSoundThread(int well, QString fileName)
+{
+
     if (!fileName.isEmpty()) {
 	/* check to see if the thread exists, and if so tell it to stop */
-	if (audioThread[bit]) {
-	    audioThread[bit]->exit();
+	if (threadRunning[well]) {
+	    audioThread[well]->exit();
 	}
 	/* creat the thread */
-	audioThread[bit] = new QThread();
-	sound[bit] = new QAlsaSound(bit, fileName, NULL);
-	sound[bit]->moveToThread(audioThread[bit]);
+	audioThread[well] = new QThread();
+	sound[well] = new QAlsaSound(well, fileName, NULL);
+	sound[well]->moveToThread(audioThread[well]);
 
 	/* connect the signals to the sound */
-	sound[bit]->connect(this, SIGNAL(playSound(int)), SLOT(play(int)));
-	sound[bit]->connect(this, SIGNAL(stopSound(int)), SLOT(stop(int)));
-	sound[bit]->connect(this, SIGNAL(finished()), SLOT(close));
+	sound[well]->connect(this, SIGNAL(playSound(int)), SLOT(play(int)));
+	sound[well]->connect(this, SIGNAL(stopSound(int)), SLOT(stop(int)));
+	sound[well]->connect(this, SIGNAL(finished()), SLOT(close()));
 
 	/* start the thread */
-	audioThread[bit]->start();
+	audioThread[well]->start();
+	/* get just the file for the button text */
+	output0SoundFile[well]->setText(fileName.section('/', -1));
     }
 }
 
