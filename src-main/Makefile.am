@@ -4,7 +4,7 @@ nspike_SOURCES = spike_main.cpp spike_dsp.cpp \
     ../src-modules/spike_message.cpp \
     ../src-modules/spike_config.cpp
 nspike_LDFLAGS = -L @QTDIR@/lib 
-nspike_LDADD = @top_srcdir@/src-gui/libnspike.a -lpthread -lGLU -lGL -lQt3Support -lQtOpenGL -lQtGui -lQtCore
+nspike_LDADD = @top_srcdir@/src-gui/libnspike.a -lpthread -lasound -lGLU -lGL -lQt3Support -lQtOpenGL -lQtGui -lQtCore
 
 AM_CPPFLAGS = -pipe -D_REENTRANT -Wall -W -DQT_NO_DEBUG -DQT_QT3SUPPORT_LIB -DQT3_SUPPORT -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED $(all_includes) 
 
